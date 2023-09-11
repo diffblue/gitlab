@@ -26,15 +26,7 @@ RSpec.describe 'Start trial from external site without confirmation', :saas, :js
     user = build_stubbed(:user)
     visit new_trial_registration_path(glm_params)
 
-    fill_in 'new_user_first_name', with: user.first_name
-    fill_in 'new_user_last_name', with: user.last_name
-    fill_in 'new_user_username', with: user.username
-    fill_in 'new_user_email', with: user.email
-    fill_in 'new_user_password', with: user.password
-
-    wait_for_all_requests
-
-    click_button 'Continue'
+    fill_in_sign_up_form(user, 'Continue')
 
     select 'Software Developer', from: 'user_role'
     choose 'My company or team'

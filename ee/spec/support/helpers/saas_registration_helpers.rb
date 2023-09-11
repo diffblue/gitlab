@@ -79,15 +79,7 @@ module SaasRegistrationHelpers
 
     visit new_user_registration_path(params)
 
-    fill_in 'First name', with: new_user.first_name
-    fill_in 'Last name', with: new_user.last_name
-    fill_in 'Username', with: new_user.username
-    fill_in 'Email', with: new_user.email
-    fill_in 'Password', with: new_user.password
-
-    wait_for_all_requests
-
-    click_button 'Register'
+    fill_in_sign_up_form(new_user, 'Register')
   end
 
   def user_signs_up_with_sso(params = {}, provider: 'google_oauth2', name: 'Registering User')
@@ -201,15 +193,7 @@ module SaasRegistrationHelpers
   def user_signs_up_through_trial_registration
     new_user = build(:user, name: 'Registering User', email: user_email)
 
-    fill_in 'new_user_first_name', with: new_user.first_name
-    fill_in 'new_user_last_name', with: new_user.last_name
-    fill_in 'new_user_username', with: new_user.username
-    fill_in 'new_user_email', with: new_user.email
-    fill_in 'new_user_password', with: new_user.password
-
-    wait_for_all_requests
-
-    click_button 'Continue'
+    fill_in_sign_up_form(new_user, 'Continue')
   end
 
   def ensure_onboarding
@@ -232,15 +216,7 @@ module SaasRegistrationHelpers
 
     visit new_subscriptions_path(plan_id: 'bronze_id')
 
-    fill_in 'First name', with: new_user.first_name
-    fill_in 'Last name', with: new_user.last_name
-    fill_in 'Username', with: new_user.username
-    fill_in 'Email', with: new_user.email
-    fill_in 'Password', with: new_user.password
-
-    wait_for_all_requests
-
-    click_button 'Register'
+    fill_in_sign_up_form(new_user, 'Register')
   end
 
   def glm_params

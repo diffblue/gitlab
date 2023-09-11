@@ -175,9 +175,8 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   private
 
   def sign_up
-    fill_in_user_sign_up_form
-    solve_arkose_verify_challenge(risk: risk)
-    click_button _('Register')
+    new_user = build(:user, email: user_email)
+    fill_in_sign_up_form(new_user) { solve_arkose_verify_challenge(risk: risk) }
   end
 
   def saml_sign_up
@@ -186,21 +185,8 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   end
 
   def trial_sign_up
-    fill_in_user_sign_up_form
-    solve_arkose_verify_challenge(risk: risk)
-    click_button _('Continue')
-  end
-
-  def fill_in_user_sign_up_form
     new_user = build(:user, email: user_email)
-
-    fill_in _('First name'), with: new_user.first_name
-    fill_in _('Last name'), with: new_user.last_name
-    fill_in _('Username'), with: new_user.username
-    fill_in _('Email'), with: new_user.email
-    fill_in _('Password'), with: new_user.password
-
-    wait_for_all_requests
+    fill_in_sign_up_form(new_user, 'Continue') { solve_arkose_verify_challenge(risk: risk) }
   end
 
   def verify_credit_card

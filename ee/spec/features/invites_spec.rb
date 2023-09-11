@@ -17,18 +17,6 @@ RSpec.describe 'Group or Project invitations', :js, feature_category: :onboardin
     visit invite_path(group_invite.raw_invite_token)
   end
 
-  def fill_in_sign_up_form(user)
-    fill_in 'new_user_first_name', with: user.first_name
-    fill_in 'new_user_last_name', with: user.last_name
-    fill_in 'new_user_username', with: user.username
-    fill_in 'new_user_email', with: user.email
-    fill_in 'new_user_password', with: user.password
-
-    wait_for_all_requests
-
-    click_button 'Register'
-  end
-
   context 'when on .com' do
     context 'without setup question' do
       it 'bypasses the setup_for_company question' do

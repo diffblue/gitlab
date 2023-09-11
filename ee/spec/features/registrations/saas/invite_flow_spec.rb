@@ -72,21 +72,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
 
     visit invite_path(invitation.raw_invite_token, invite_type: Emails::Members::INITIAL_INVITE)
 
-    fill_in 'First name', with: user.first_name
-    fill_in 'Last name', with: user.last_name
-    fill_in 'Username', with: user.username
-    fill_in 'Email', with: user.email
-    fill_in 'Password', with: user.password
-
-    wait_for_all_requests
-
-    expect_username_to_be_validated
-
-    click_button 'Register'
-  end
-
-  def expect_username_to_be_validated
-    expect(page).to have_selector('[data-testid="new_user_username_field"].gl-field-success-outline')
+    fill_in_sign_up_form(user)
   end
 
   def fill_in_welcome_form
