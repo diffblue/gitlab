@@ -912,7 +912,6 @@ Style/PercentLiteralDelimiters:
     - 'spec/views/projects/commit/branches.html.haml_spec.rb'
     - 'spec/workers/concerns/worker_context_spec.rb'
     - 'spec/workers/container_registry/migration/enqueuer_worker_spec.rb'
-    - 'spec/workers/gitlab/github_import/advance_stage_worker_spec.rb'
     - 'spec/workers/groups/update_statistics_worker_spec.rb'
     - 'spec/workers/jira_connect/sync_branch_worker_spec.rb'
     - 'spec/workers/post_receive_spec.rb'
