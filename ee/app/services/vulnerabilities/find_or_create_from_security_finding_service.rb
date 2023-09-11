@@ -77,7 +77,15 @@ module Vulnerabilities
 
     def update_existing_state_transition(vulnerability)
       state_transition = vulnerability.state_transitions.by_to_states(:dismissed).last
-      state_transition.update!(comment: params[:comment].presence) if state_transition
+      return unless state_transition && (params[:comment] || params[:dismissal_reason])
+
+      vulnerability.transaction do
+        state_transition.update!(params.slice(:comment, :dismissal_reason).compact)
+
+        if params[:dismissal_reason]
+          vulnerability.vulnerability_read.update!(dismissal_reason: params[:dismissal_reason])
+        end
+      end
     end
 
     def with_vulnerability_finding

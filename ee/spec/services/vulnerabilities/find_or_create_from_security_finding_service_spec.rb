@@ -138,18 +138,56 @@ feature_category: :vulnerability_management do
             :from_detected,
             :to_dismissed,
             vulnerability: vulnerability,
-            comment: nil)
+            comment: nil,
+            dismissal_reason: 'used_in_tests')
+        end
+
+        let!(:vulnerability_read) do
+          vulnerability.vulnerability_read
         end
 
         let(:comment) { "Dismissal comment" }
+        let(:dismissal_reason) { 'false_positive' }
+        let(:desired_params) { { comment: comment, dismissal_reason: dismissal_reason } }
 
         before do
-          params.merge!({ comment: comment })
+          params.merge!(desired_params)
+        end
+
+        it 'updates the existing state transition and vulnerability read with comment and dismissal_reason' do
+          expect do
+            subject
+            state_transition.reload
+            vulnerability_read.reload
+          end.to change { state_transition.comment }.from(nil).to(comment)
+            .and change { state_transition.dismissal_reason }.from('used_in_tests').to(dismissal_reason)
+            .and change { vulnerability_read.dismissal_reason }.from(nil).to(dismissal_reason)
+        end
+      end
+
+      context 'when vulnerability state is dismissed with just a comment' do
+        let!(:state_transition) do
+          create(:vulnerability_state_transition,
+            :from_detected,
+            :to_dismissed,
+            vulnerability: vulnerability,
+            comment: nil,
+            dismissal_reason: 'acceptable_risk')
+        end
+
+        let(:comment) { "Dismissal comment" }
+        let(:desired_params) { { comment: comment } }
+
+        before do
+          params.merge!(desired_params)
         end
 
         it 'updates the existing state transition with comment' do
-          state_transition = Vulnerabilities::StateTransition.last
-          expect { subject }.to change { state_transition.reload.comment }.from(nil).to(comment)
+          expect do
+            subject
+            state_transition.reload
+          end.to change { state_transition.comment }.from(nil).to(comment)
+          .and not_change { state_transition.dismissal_reason }.from('acceptable_risk')
         end
       end
     end

@@ -165,33 +165,32 @@ module Types
     end
 
     def dismissed_at(lookahead:)
-      dismissal_feedback(lookahead: lookahead) { |feedback| feedback&.created_at }
+      latest_state_transition(lookahead: lookahead) { |state_transition| state_transition&.created_at }
     end
 
     def dismissed_by(lookahead:)
-      dismissal_feedback(lookahead: lookahead) { |feedback| feedback&.author }
+      latest_state_transition(lookahead: lookahead) { |state_transition| state_transition&.author }
     end
 
     def dismissal_reason(lookahead:)
-      dismissal_feedback(lookahead: lookahead) { |feedback| feedback&.dismissal_reason }
+      latest_state_transition(lookahead: lookahead) { |state_transition| state_transition&.dismissal_reason }
     end
 
     def state_comment(lookahead:)
-      dismissal_feedback(lookahead: lookahead) { |feedback| feedback&.comment }
+      latest_state_transition(lookahead: lookahead) { |state_transition| state_transition&.comment }
     end
 
-    def dismissal_feedback(lookahead:, &block)
+    def latest_state_transition(lookahead:, &block)
       key = {
         preload_author: lookahead.selects?(:dismissed_by)
       }
 
       subject = BatchLoader::GraphQL.for(object.uuid).batch(key: key) do |uuids, loader, batch|
-        feedbacks = ::Vulnerabilities::Feedback.by_finding_uuid(uuids)
-        feedbacks = feedbacks.preload_author if batch[:key][:preload_author]
-        feedbacks = feedbacks.with_feedback_type('dismissal')
+        vulnerabilities = ::Vulnerability.with_findings_by_uuid(uuids).with_latest_state_transition
+        vulnerabilities = vulnerabilities.preload_transition_author if batch[:key][:preload_author]
 
-        feedbacks.each do |feedback|
-          loader.call(feedback.finding_uuid, feedback)
+        vulnerabilities.each do |vulnerability|
+          loader.call(vulnerability.finding.uuid, vulnerability.latest_state_transition_if_dismissed)
         end
       end
 

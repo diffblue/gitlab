@@ -58,7 +58,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
       query {
         project(fullPath: "#{project.full_path}") {
           pipeline(iid: "#{pipeline.iid}") {
-            securityReportFindings(reportType: ["sast"]) {
+            securityReportFindings(reportType: ["sast"], state: [CONFIRMED, DETECTED, DISMISSED, RESOLVED]) {
               nodes {
                 #{query_for_test}
               }
@@ -460,41 +460,36 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
       )
     end
 
-    context 'when there is a security finding with no dismissal feedback' do
+    context 'when there is a security finding with no dismissal state transition' do
       it 'returns no dismissal data' do
         expect(get_findings_from_response(subject).first['dismissed_at']).to be_nil
       end
     end
 
-    context 'when the security finding has a related dismissal feedback' do
-      let_it_be(:sast_dismissal_feedback) do
-        create(:vulnerability_feedback,
-               :dismissal,
-               :comment,
-               author: user,
-               project: project,
-               pipeline: pipeline,
-               finding_uuid: sast_findings.first.uuid)
+    context 'when the security finding has a related dismissal state transition' do
+      let_it_be(:sast_vulnerability) do
+        create_vulnerability_from_security_finding(project, sast_findings.first)
       end
 
-      let_it_be(:dep_scan_dismissal_feedback) do
-        create(:vulnerability_feedback,
-               :dismissal,
-               :comment,
-               author: user,
-               project: project,
-               pipeline: pipeline,
-               finding_uuid: dep_scan_findings.first.uuid)
+      let_it_be(:sast_dismissal_transition) do
+        create(:vulnerability_state_transition,
+          vulnerability: sast_vulnerability,
+          from_state: :detected,
+          to_state: :dismissed,
+          dismissal_reason: :used_in_tests,
+          comment: "Sast Test Dismissal",
+          author: user
+        )
       end
 
       let(:response_finding) { get_findings_from_response(subject).first }
       let(:expected_response_finding) do
         {
-          'uuid' => sast_dismissal_feedback.finding_uuid,
-          'dismissedAt' => sast_dismissal_feedback.created_at.iso8601,
-          'dismissedBy' => { 'name' => sast_dismissal_feedback.author.name },
-          'stateComment' => sast_dismissal_feedback.comment,
-          'dismissalReason' => sast_dismissal_feedback.dismissal_reason.upcase
+          'uuid' => sast_vulnerability.finding_uuid,
+          'dismissedAt' => sast_dismissal_transition.created_at.iso8601,
+          'dismissedBy' => { 'name' => sast_dismissal_transition.author.name },
+          'stateComment' => sast_dismissal_transition.comment,
+          'dismissalReason' => sast_dismissal_transition.dismissal_reason.upcase
         }
       end
 
@@ -519,7 +514,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
             query {
               project(fullPath: "#{project.full_path}") {
                 pipeline(iid: "#{pipeline.iid}") {
-                  securityReportFindings(reportType: ["sast"]) {
+                  securityReportFindings(reportType: ["sast"], state: [CONFIRMED, DETECTED, DISMISSED, RESOLVED]) {
                     nodes {
                       uuid
                       dismissedBy {
@@ -545,6 +540,15 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
         end
       end
     end
+  end
+
+  def create_vulnerability_from_security_finding(project, security_finding)
+    finding = create(:vulnerabilities_finding, project: project, uuid: security_finding.uuid)
+    create(:vulnerability,
+      findings: [finding],
+      project: project,
+      state: :dismissed
+    )
   end
 
   def create_findings(scan, report, artifact)
