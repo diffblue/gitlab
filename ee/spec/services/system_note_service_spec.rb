@@ -35,6 +35,16 @@ RSpec.describe SystemNoteService, feature_category: :team_planning do
     end
   end
 
+  describe '.change_checkin_reminder_note' do
+    it 'calls IssuableService' do
+      expect_next_instance_of(::SystemNotes::IssuablesService) do |service|
+        expect(service).to receive(:change_checkin_reminder_note)
+      end
+
+      described_class.change_checkin_reminder_note(noteable, author)
+    end
+  end
+
   describe '.change_epic_date_note' do
     let(:date_type) { double }
     let(:date) { double }

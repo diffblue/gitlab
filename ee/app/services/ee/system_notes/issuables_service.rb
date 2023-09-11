@@ -46,6 +46,25 @@ module EE
         create_note(NoteSummary.new(noteable, project, author, body, action: 'progress'))
       end
 
+      # Called when the reminder_frequency of a WorkItemProgress is changed
+      #
+      # Example Note text:
+      #
+      #   "set a weekly checkin reminder"
+      #
+      # Returns the created Note object
+      def change_checkin_reminder_note
+        cadence = noteable.progress&.reminder_frequency
+
+        body = if cadence == 'never'
+                 "removed the checkin reminder"
+               else
+                 "set a **#{cadence.humanize(capitalize: false)}** checkin reminder"
+               end
+
+        create_note(NoteSummary.new(noteable, project, author, body, action: 'checkin_reminder'))
+      end
+
       # Called when the an issue is published to a project's
       # status page application
       #

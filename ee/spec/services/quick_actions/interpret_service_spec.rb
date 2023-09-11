@@ -2017,5 +2017,29 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
         end
       end
     end
+
+    describe 'checkin_reminder command' do
+      let(:checkin_reminder_command) { "/checkin_reminder weekly" }
+
+      context 'for a work item type that supports reminders' do
+        let(:objective) { create(:work_item, :objective, project: project, author: current_user) }
+
+        it '/checkin_reminder is available' do
+          _, explanations = service.explain(checkin_reminder_command, objective)
+
+          expect(explanations).to contain_exactly("Sets checkin reminder frequency to weekly.")
+        end
+      end
+
+      context 'for a work item type that does not support reminders' do
+        let(:key_result) { create(:work_item, :key_result, project: project) }
+
+        it '/checkin_reminder is available' do
+          _, explanations = service.explain(checkin_reminder_command, key_result)
+
+          expect(explanations).not_to contain_exactly("Sets checkin reminder frequency to weekly.")
+        end
+      end
+    end
   end
 end

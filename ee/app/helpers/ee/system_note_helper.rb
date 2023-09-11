@@ -24,7 +24,8 @@ module EE
       'vulnerability_resolved' => 'status_closed',
       'published' => 'bullhorn',
       'paging_started' => 'mobile',
-      'progress' => 'progress'
+      'progress' => 'progress',
+      'checkin_reminder' => 'clock'
     }.freeze
 
     override :system_note_icon_name

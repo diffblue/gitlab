@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe WorkItems::Progress do
+RSpec.describe WorkItems::Progress, feature_category: :team_planning do
   describe 'associations' do
     it { is_expected.to belong_to(:work_item) }
   end
@@ -12,7 +12,7 @@ RSpec.describe WorkItems::Progress do
                         .is_less_than_or_equal_to(100)
     end
 
-    %w[start_value end_value current_value].each do |attribute|
+    %w[start_value end_value current_value reminder_frequency].each do |attribute|
       it "ensures presence of #{attribute}" do
         is_expected.to validate_presence_of(attribute.to_sym)
       end

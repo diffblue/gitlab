@@ -163,6 +163,10 @@ module EE
       issuables_service(noteable, noteable.project, user).change_progress_note
     end
 
+    def change_checkin_reminder_note(noteable, user)
+      issuables_service(noteable, noteable.project, user).change_checkin_reminder_note
+    end
+
     private
 
     def issuables_service(noteable, project, author)
