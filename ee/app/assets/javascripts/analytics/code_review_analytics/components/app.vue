@@ -72,6 +72,7 @@ export default {
           :primary-button-text="__('New merge request')"
           :primary-button-link="newMergeRequestUrl"
           :svg-path="emptyStateSvgPath"
+          :svg-height="150"
         >
           <template #description>
             <div class="gl-text-center">

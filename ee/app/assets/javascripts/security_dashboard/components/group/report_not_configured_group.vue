@@ -23,6 +23,7 @@ export default {
   <gl-empty-state
     :title="$options.i18n.title"
     :svg-path="emptyStateSvgPath"
+    :svg-height="150"
     :description="$options.i18n.description"
     :secondary-button-text="$options.i18n.secondaryButtonText"
     :secondary-button-link="$options.DOC_PATH_SECURITY_CONFIGURATION"

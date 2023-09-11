@@ -70,6 +70,7 @@ export default {
     :primary-button-link="newPolicyPath"
     :primary-button-text="emptyStatePrimaryButtonText"
     :svg-path="emptyListSvgPath"
+    :svg-height="150"
     title=""
   >
     <template #description>

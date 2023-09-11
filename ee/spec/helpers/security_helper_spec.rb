@@ -23,7 +23,7 @@ RSpec.describe SecurityHelper do
       is_expected.to eq({
         no_vulnerabilities_svg_path: image_path('illustrations/empty-state/empty-search-md.svg'),
         empty_state_svg_path: image_path('illustrations/empty-state/empty-radar-md.svg'),
-        security_dashboard_empty_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
+        security_dashboard_empty_svg_path: image_path('illustrations/empty-state/empty-secure-md.svg'),
         project_add_endpoint: security_projects_path,
         project_list_endpoint: security_projects_path,
         instance_dashboard_settings_path: settings_security_dashboard_path,
