@@ -88,10 +88,10 @@ module EE
 
     def validate_group_membership
       return unless group
+      return if project.ancestors.exists?(id: group.id)
+      return if project.project_group_links.exists?(group: group)
 
-      unless project.project_group_links.where(group: group).exists?
-        errors.add(:group, 'does not have access to the project')
-      end
+      errors.add(:group, 'does not have access to the project')
     end
 
     def validate_user_membership
