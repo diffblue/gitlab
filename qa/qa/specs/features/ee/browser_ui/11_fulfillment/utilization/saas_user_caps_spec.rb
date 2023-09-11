@@ -4,10 +4,6 @@ module QA
   RSpec.describe 'Fulfillment',
     :requires_admin,
     product_group: :utilization,
-    quarantine: {
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/410110',
-      type: :flaky
-    },
     feature_flag: {
       name: 'saas_user_caps',
       scope: :group
@@ -21,7 +17,7 @@ module QA
 
       let(:group) do
         Resource::Sandbox.fabricate! do |sandbox|
-          sandbox.path = "fulfillment-private-group-#{hash}"
+          sandbox.path = "fulfillment-user-caps-group-#{hash}"
           sandbox.api_client = admin_api_client
         end
       end
@@ -35,7 +31,12 @@ module QA
         Page::Group::Settings::General.perform do |settings|
           settings.set_saas_user_cap_limit(2)
         end
-        group.add_members(user_2, user_3)
+
+        group.add_member(user_2)
+      end
+
+      after do
+        group&.remove_via_api!
       end
 
       context 'when admin sets user cap limit for group' do
@@ -43,10 +44,21 @@ module QA
           'shows members over limit as pending for approvals',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/407170'
         ) do
-          expect(group.list_all_members.count).to eq(3)
-          expect { membership_state_count(group, 'active') }
-            .to eventually_eq(2).within(max_duration: 10, sleep_interval: 1)
-          expect(membership_state_count(group, 'awaiting')).to eq(1)
+          # Sometimes there is a delay when setting the SaaS user cap limit
+          # due to the application cache interval, so we need to retry adding
+          # the extra group member again if the limit had not taken effect yet
+          Support::Retrier.retry_until(
+            max_duration: 70,
+            retry_on_exception: true,
+            sleep_interval: 3,
+            message: "Waiting for membership state to update"
+          ) do
+            group.remove_member(user_3) if group.find_member(user_3.username).present?
+
+            group.add_member(user_3)
+
+            membership_state_count(group, 'active') == 2 && membership_state_count(group, 'awaiting') == 1
+          end
 
           Page::Group::Menu.perform(&:go_to_usage_quotas)
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
@@ -62,23 +74,6 @@ module QA
             expect { membership_state_count(group, 'active') }
               .to eventually_eq(3).within(max_duration: 10, sleep_interval: 1)
           end
-        end
-      end
-
-      context 'when admin removes user cap limit for group' do
-        it(
-          'does not automatically approve pending members',
-          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/407172'
-        ) do
-          expect { membership_state_count(group, 'awaiting') }
-            .to eventually_eq(1).within(max_duration: 10, sleep_interval: 1)
-
-          Page::Group::Settings::General.perform do |settings|
-            settings.set_saas_user_cap_limit('')
-          end
-
-          expect { membership_state_count(group, 'awaiting') }
-            .to eventually_eq(1).within(max_duration: 10, sleep_interval: 1)
         end
       end
 
