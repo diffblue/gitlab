@@ -28543,6 +28543,7 @@ Values for work item award emoji update enum.
 | ----- | ----------- |
 | <a id="workitemawardemojiupdateactionadd"></a>`ADD` | Adds the emoji. |
 | <a id="workitemawardemojiupdateactionremove"></a>`REMOVE` | Removes the emoji. |
+| <a id="workitemawardemojiupdateactiontoggle"></a>`TOGGLE` | Toggles the status of the emoji. |
 
 ### `WorkItemRelatedLinkType`
 
