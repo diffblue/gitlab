@@ -145,17 +145,16 @@ export default {
 };
 </script>
 <template>
-  <div class="issues-analytics-chart-wrapper" data-testid="issues_analytics_chart_wrapper">
+  <div class="issues-analytics-chart-wrapper">
     <gl-loading-icon v-if="loading" size="lg" class="mt-8" />
     <issues-analytics-empty-state
       v-else-if="showNoDataEmptyState || showNoDataWithFiltersEmptyState"
       :empty-state-type="emptyStateType"
     />
     <div v-else-if="showChart" data-testid="issues-analytics-chart-container">
-      <h4 class="gl-mt-6 gl-mb-7">{{ $options.i18n.chartHeader }}</h4>
+      <h4 class="gl-mt-0 gl-mb-7">{{ $options.i18n.chartHeader }}</h4>
 
       <gl-column-chart
-        data-testid="issues_analytics_graph"
         :bars="barsData"
         :option="$options.chartOptions"
         :y-axis-title="$options.i18n.seriesName"
