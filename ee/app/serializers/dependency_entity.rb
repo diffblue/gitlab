@@ -46,7 +46,9 @@ class DependencyEntity < Grape::Entity
   expose :name, :packager, :version
   expose :location, using: LocationEntity
   expose :vulnerabilities, using: VulnerabilityEntity, if: ->(_) { can_read_vulnerabilities? }
-  expose :licenses, using: LicenseEntity, if: ->(_) { can_read_licenses? }
+  expose :licenses, using: LicenseEntity, if: ->(_) { can_read_licenses? } do |object|
+    object[:licenses].presence || [::Gitlab::LicenseScanning::PackageLicenses::UNKNOWN_LICENSE]
+  end
   expose :project, using: ProjectEntity, if: ->(_) { group? }
   expose :project_count, :occurrence_count, if: ->(_) { group_counts? }
   expose :component_id, if: ->(_) { group? }
