@@ -52,6 +52,10 @@ module EE
             .for_project_paths(project_path)
         end
 
+        scope :recently_failed_on_instance_runner, -> (failure_reason) do
+          merge(::Ci::InstanceRunnerFailedJobs.recent_jobs(failure_reason: failure_reason))
+        end
+
         state_machine :status do
           after_transition any => [:success, :failed, :canceled] do |build|
             build.run_after_commit do

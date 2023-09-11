@@ -66,7 +66,11 @@ RSpec.describe Ci::InstanceRunnerFailedJobs, :freeze_time, :clean_gitlab_redis_s
   end
 
   describe '.recent_jobs' do
-    subject(:recent_jobs) { described_class.recent_jobs }
+    def recent_jobs
+      described_class.recent_jobs(failure_reason: failure_reason)
+    end
+
+    subject(:scope) { recent_jobs }
 
     let_it_be(:runner) { create(:ci_runner, :instance) }
     let_it_be(:job_args) { { runner: runner, failure_reason: :runner_system_failure } }
@@ -77,57 +81,71 @@ RSpec.describe Ci::InstanceRunnerFailedJobs, :freeze_time, :clean_gitlab_redis_s
     context 'with runner_performance_insights licensed feature' do
       let(:runner_performance_insights) { true }
 
-      context 'when content is not set' do
-        it { is_expected.to be_empty }
+      context 'when failure_reason is not runner_system_failure' do
+        let(:failure_reason) { :runner_unsupported }
+
+        it 'raises an error' do
+          expect { recent_jobs }.to raise_error(
+            ArgumentError, 'The only failure reason(s) supported are runner_system_failure'
+          )
+        end
       end
 
-      context 'when jobs are added' do
-        before do
-          described_class.track(job)
+      context 'when failure_reason is runner_system_failure' do
+        let(:failure_reason) { :runner_system_failure }
+
+        context 'when content is not set' do
+          it { is_expected.to be_empty }
         end
 
-        it 'returns 3 most recently finished jobs' do
-          expect(described_class.recent_jobs).to contain_exactly(an_object_having_attributes(id: job.id))
+        context 'when jobs are added' do
+          before do
+            described_class.track(job)
+          end
 
-          described_class.track(job2)
-          described_class.track(job3)
-
-          expect(described_class.recent_jobs).to match([
-            an_object_having_attributes(id: job.id),
-            an_object_having_attributes(id: job2.id),
-            an_object_having_attributes(id: job3.id)
-          ])
-        end
-
-        context 'when jobs are added in different order' do
           it 'returns 3 most recently finished jobs' do
-            expect(described_class.recent_jobs).to contain_exactly(an_object_having_attributes(id: job.id))
+            expect(recent_jobs).to contain_exactly(an_object_having_attributes(id: job.id))
 
-            described_class.track(job3)
             described_class.track(job2)
+            described_class.track(job3)
 
-            expect(described_class.recent_jobs).to match([
+            expect(recent_jobs).to match([
               an_object_having_attributes(id: job.id),
               an_object_having_attributes(id: job2.id),
               an_object_having_attributes(id: job3.id)
             ])
           end
-        end
 
-        context 'when trimming is required' do
-          before do
-            stub_const("#{described_class}::JOB_LIMIT", 1)
-            stub_const("#{described_class}::JOB_LIMIT_MARGIN", 1)
+          context 'when jobs are added in different order' do
+            it 'returns 3 most recently finished jobs' do
+              expect(recent_jobs).to contain_exactly(an_object_having_attributes(id: job.id))
+
+              described_class.track(job3)
+              described_class.track(job2)
+
+              expect(recent_jobs).to match([
+                an_object_having_attributes(id: job.id),
+                an_object_having_attributes(id: job2.id),
+                an_object_having_attributes(id: job3.id)
+              ])
+            end
           end
 
-          it 'returns 2 most recently finished jobs and purges the rest', :aggregate_failures do
-            described_class.track(job3)
-            described_class.track(job2)
+          context 'when trimming is required' do
+            before do
+              stub_const("#{described_class}::JOB_LIMIT", 1)
+              stub_const("#{described_class}::JOB_LIMIT_MARGIN", 1)
+            end
 
-            # Only the last 2 jobs saved will be retained
-            expect(redis_stored_job_ids).to eq(formatted_job_ids_for(job2, job3))
-            # and of those 2, the most recently finished will be returned (JOB_LIMIT)
-            expect(described_class.recent_jobs).to contain_exactly(an_object_having_attributes(id: job2.id))
+            it 'returns 2 most recently finished jobs and purges the rest', :aggregate_failures do
+              described_class.track(job3)
+              described_class.track(job2)
+
+              # Only the last 2 jobs saved will be retained
+              expect(redis_stored_job_ids).to eq(formatted_job_ids_for(job2, job3))
+              # and of those 2, the most recently finished will be returned (JOB_LIMIT)
+              is_expected.to contain_exactly(an_object_having_attributes(id: job2.id))
+            end
           end
         end
       end
@@ -136,7 +154,11 @@ RSpec.describe Ci::InstanceRunnerFailedJobs, :freeze_time, :clean_gitlab_redis_s
     context 'without runner_performance_insights licensed feature' do
       let(:runner_performance_insights) { false }
 
-      it { is_expected.to be_empty }
+      context 'when failure_reason is runner_system_failure' do
+        let(:failure_reason) { :runner_system_failure }
+
+        it { is_expected.to be_empty }
+      end
     end
   end
 
