@@ -1,6 +1,6 @@
 - purchase_link = plan.purchase_link
 - plan_name = plan.name
-- show_deprecated_plan = ::Feature.enabled?(:hide_deprecated_billing_plans) && plan.deprecated?
+- show_deprecated_plan = plan.deprecated?
 - has_upgrade = has_upgrade?(plan_offer_type)
 - if show_deprecated_plan
   - plan_name      += ' (Legacy)'

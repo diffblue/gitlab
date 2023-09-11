@@ -111,15 +111,13 @@ module BillingPlansHelper
     css_classes = []
 
     css_classes << 'disabled' if is_current_plan && !namespace.trial_active?
-    css_classes << 'invisible' if ::Feature.enabled?(:hide_deprecated_billing_plans) && plan.deprecated?
+    css_classes << 'invisible' if plan.deprecated?
     css_classes << "billing-cta-purchase#{'-new' if use_new_purchase_flow?(namespace)}"
 
     css_classes.join(' ')
   end
 
   def billing_available_plans(plans_data, current_plan)
-    return plans_data unless ::Feature.enabled?(:hide_deprecated_billing_plans)
-
     plans_data.reject do |plan_data|
       if plan_data.code == current_plan&.code
         plan_data.deprecated? && plan_data.hide_deprecated_card?

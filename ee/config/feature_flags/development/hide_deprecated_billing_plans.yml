@@ -1,8 +1,0 @@
----
-name: hide_deprecated_billing_plans
-introduced_by_url:
-rollout_issue_url:
-milestone: '13.7'
-type: development
-group: group::purchase
-default_enabled: false
