@@ -175,4 +175,38 @@ RSpec.describe ::Gitlab::Security::ScanConfiguration do
       it { is_expected.to be_falsey }
     end
   end
+
+  describe '#on_demand_available?' do
+    subject { scan.on_demand_available? }
+
+    context 'with type dast' do
+      let(:configured) { true }
+      let(:available) { true }
+      let(:type) { :dast }
+
+      context 'when FIPS mode is enabled' do
+        it do
+          expect(::Gitlab::FIPS).to receive(:enabled?).and_return(true)
+
+          is_expected.to be_falsy
+        end
+      end
+
+      context 'when FIPS mode is disabled' do
+        it do
+          expect(::Gitlab::FIPS).to receive(:enabled?).and_return(false)
+
+          is_expected.to be_truthy
+        end
+      end
+    end
+
+    context 'with other types' do
+      let(:type) { :my_scanner }
+      let(:configured) { true }
+      let(:available) { true }
+
+      it { is_expected.to be_falsy }
+    end
+  end
 end
