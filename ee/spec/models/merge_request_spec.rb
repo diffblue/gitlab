@@ -47,11 +47,8 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
         end
 
         context 'when there are associated source rules' do
-          let(:source_rule) { create(:approval_project_rule, project: merge_request.target_project) }
-
-          before do
-            rule.update!(approval_project_rule: source_rule)
-          end
+          let!(:source_rule) { create(:approval_project_rule, project: merge_request.target_project) }
+          let!(:rule) { create(:approval_merge_request_rule, merge_request: merge_request, approval_project_rule: source_rule) }
 
           context 'and rule is not modified_from_project_rule' do
             before do
@@ -95,20 +92,18 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
           end
 
           context 'and rule is overridden but not modified_from_project_rule' do
-            before do
-              source_rule.update!(name: 'Overridden Rule')
-            end
+            let!(:rule) { create(:approval_merge_request_rule, name: 'test', merge_request: merge_request, approval_project_rule: source_rule) }
 
             it_behaves_like 'with applicable rules to specified branch'
 
             context 'and protected branches exist but branch does not match anything' do
+              let(:protected_branches) { [create(:protected_branch, name: branch.reverse)] }
+
               before do
                 source_rule.update!(protected_branches: protected_branches)
               end
 
-              let(:protected_branches) { [create(:protected_branch, name: branch.reverse)] }
-
-              it 'does not find applicable rules', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/394838' do
+              it 'does not find applicable rules' do
                 expect(subject).to be_empty
               end
             end
