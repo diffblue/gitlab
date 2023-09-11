@@ -2335,6 +2335,37 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
+  describe 'inviting a group' do
+    let(:current_user) { developer }
+    let(:project) { public_project }
+
+    let_it_be(:banned_group) { create(:group) }
+    let_it_be(:banned_subgroup) { create(:group, parent: banned_group) }
+
+    before do
+      stub_licensed_features(unique_project_download_limit: true)
+      create(:namespace_ban, user: current_user, namespace: banned_group)
+    end
+
+    it { is_expected.to be_allowed(:read_project) }
+
+    context 'when the user is banned from the invited group' do
+      before do
+        create(:project_group_link, project: project, group: banned_group)
+      end
+
+      it { is_expected.to be_disallowed(:read_project) }
+    end
+
+    context 'when the user is banned from the invited subgroup' do
+      before do
+        create(:project_group_link, project: project, group: banned_subgroup)
+      end
+
+      it { is_expected.to be_disallowed(:read_project) }
+    end
+  end
+
   describe 'user banned from namespace' do
     let_it_be_with_reload(:current_user) { create(:user) }
 

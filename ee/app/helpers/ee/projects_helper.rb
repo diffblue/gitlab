@@ -347,6 +347,7 @@ module EE
         .with_group
         .include_project_feature
         .with_group_saml_provider
+        .with_invited_groups
         .in_namespace(allowed_subgroups(group_id))
         .not_aimed_for_deletion
     end

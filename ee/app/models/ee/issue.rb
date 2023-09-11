@@ -133,6 +133,10 @@ module EE
     end
 
     class_methods do
+      def with_web_entity_associations
+        super.preload(project: :invited_groups)
+      end
+
       def with_api_entity_associations
         super.preload(epic: { group: :route }, iteration: { group: :route })
       end

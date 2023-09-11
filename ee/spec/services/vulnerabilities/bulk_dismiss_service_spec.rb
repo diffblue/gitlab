@@ -128,7 +128,7 @@ RSpec.describe Vulnerabilities::BulkDismissService, feature_category: :vulnerabi
             service.execute
           end
 
-          expect(queries.count).to eq(13)
+          expect(queries.count).to eq(14)
         end
       end
 

@@ -39,5 +39,12 @@ module EE
         !user.belongs_to_paid_namespace? && user.owns_group_without_trial?
       end
     end
+
+    private
+
+    override :preload_project_associations
+    def preload_project_associations(projects)
+      ActiveRecord::Associations::Preloader.new(records: projects, associations: :invited_groups).call
+    end
   end
 end

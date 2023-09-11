@@ -16,7 +16,7 @@ module EE
 
         ActiveRecord::Associations::Preloader.new(
           records: project_labels,
-          associations: { project: :group }
+          associations: { project: [:group, :invited_groups] }
         ).call
 
         # preloading the root ancestors for the project labels for the authorizations checks

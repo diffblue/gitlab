@@ -237,6 +237,7 @@ module EE
       scope :with_vulnerability_statistics, -> { includes(:vulnerability_statistic) }
 
       scope :with_group_saml_provider, -> { preload(group: :saml_provider) }
+      scope :with_invited_groups, -> { preload(:invited_groups) }
 
       scope :with_total_repository_size_greater_than, -> (value) do
         statistics = ::ProjectStatistics.arel_table
@@ -491,12 +492,16 @@ module EE
 
       override :with_web_entity_associations
       def with_web_entity_associations
-        super.preload(:compliance_framework_setting, group: [:ip_restrictions, :saml_provider])
+        super.preload(:compliance_framework_setting, :invited_groups, group: [:ip_restrictions, :saml_provider])
       end
 
       override :with_api_entity_associations
       def with_api_entity_associations
-        super.preload(group: [:ip_restrictions, :saml_provider])
+        super.preload(:invited_groups, group: [:ip_restrictions, :saml_provider])
+      end
+
+      def with_api_commit_entity_associations
+        super.with_invited_groups
       end
 
       override :inactive

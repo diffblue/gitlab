@@ -39,7 +39,7 @@ module Gitlab
         when 'milestones'
           eager_load(milestones, page, per_page, preload_method, project: [:route, :namespace])
         when 'notes'
-          eager_load(notes, page, per_page, preload_method, project: [:route, :namespace])
+          eager_load(notes, page, per_page, preload_method, project: [:invited_groups, :route, :namespace])
         when 'epics'
           eager_load(epics, page, per_page, preload_method, nil)
         when 'blobs'
