@@ -228,7 +228,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
         let(:ci_configuration) do
           <<~CI_CONFIG
           image: busybox:latest
-          compliance:
+          custom:
             stage: build
             script:
               - echo "Defined in security policy"
@@ -238,7 +238,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
         it {
           is_expected.to eq(
             {
-              compliance: {
+              custom: {
                 script: [
                   "echo \"Defined in security policy\""
                 ],
@@ -253,7 +253,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
           let(:ci_configuration) do
             <<~CI_CONFIG
             image: busybox:latest
-            compliance:
+            custom:
               stage: build
               script:
                 - echo "Defined in security policy"

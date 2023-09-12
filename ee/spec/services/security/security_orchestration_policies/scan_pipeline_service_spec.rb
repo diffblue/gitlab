@@ -138,14 +138,14 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
       let(:ci_configuration) do
         <<~CI_CONFIG
         image: busybox:latest
-        compliance:
+        custom:
           stage: build
           script:
             - echo "Defined in security policy"
         CI_CONFIG
       end
 
-      it { is_expected.to eq({ pipeline_scan: { image: "busybox:latest", compliance: { stage: "build", script: ["echo \"Defined in security policy\""] } }, on_demand: {} }) }
+      it { is_expected.to eq({ pipeline_scan: { image: "busybox:latest", custom: { stage: "build", script: ["echo \"Defined in security policy\""] } }, on_demand: {} }) }
 
       context 'with the compliance_pipeline_in_policies feature disabled' do
         before do
