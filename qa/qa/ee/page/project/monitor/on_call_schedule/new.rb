@@ -10,35 +10,35 @@ module QA
               include QA::Page::Component::Dropdown
 
               view 'ee/app/assets/javascripts/oncall_schedules/components/oncall_schedules_wrapper.vue' do
-                element :add_on_call_schedule_button
+                element 'add-on-call-schedule-button'
               end
 
               view 'ee/app/assets/javascripts/oncall_schedules/components/add_edit_schedule_form.vue' do
-                element :schedule_name_field
-                element :schedule_timezone_container
+                element 'schedule-name-field'
+                element 'schedule-timezone-container'
               end
 
               view 'ee/app/assets/javascripts/oncall_schedules/components/add_edit_schedule_modal.vue' do
-                element :add_schedule_button
+                element 'add-schedule-button'
               end
 
               def open_add_schedule_modal
-                click_element(:add_on_call_schedule_button)
+                click_element('add-on-call-schedule-button')
               end
 
               def set_schedule_name(name: Faker::Lorem.word)
-                fill_element(:schedule_name_field, name)
+                fill_element('schedule-name-field', name)
               end
 
               def select_timezone(timezone: 'Pacific Time (US & Canada)')
-                within_element(:schedule_timezone_container) do
+                within_element('schedule-timezone-container') do
                   expand_select_list(css: '.btn.dropdown-toggle')
                   select_item(timezone, css: 'li.gl-dropdown-item')
                 end
               end
 
               def save_new_schedule
-                click_element(:add_schedule_button)
+                click_element('add-schedule-button')
               end
             end
           end

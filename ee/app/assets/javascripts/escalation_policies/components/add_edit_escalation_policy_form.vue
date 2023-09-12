@@ -143,7 +143,7 @@ export default {
       >
         <gl-form-input
           id="escalation-policy-name"
-          data-qa-selector="escalation_policy_name_field"
+          data-testid="escalation-policy-name-field"
           :value="form.name"
           @input="$emit('update-escalation-policy-form', { field: 'name', value: $event })"
         />

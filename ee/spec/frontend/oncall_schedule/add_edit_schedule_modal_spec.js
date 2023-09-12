@@ -128,7 +128,7 @@ describe('AddScheduleModal', () => {
         variant: 'confirm',
         loading: false,
         disabled: false,
-        'data-qa-selector': 'add_schedule_button',
+        'data-testid': 'add-schedule-button',
       });
     });
 
