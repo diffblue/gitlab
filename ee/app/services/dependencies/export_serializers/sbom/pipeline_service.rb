@@ -35,9 +35,7 @@ module Dependencies
         end
 
         def merged_report
-          ::Sbom::MergeReportsService.new(
-            pipeline.sbom_reports.reports, project
-          ).execute
+          ::Sbom::MergeReportsService.new(pipeline.sbom_reports.reports).execute
         end
 
         attr_reader :dependency_list_export, :scanner, :pipeline, :project

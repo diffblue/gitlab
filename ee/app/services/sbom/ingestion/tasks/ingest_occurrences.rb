@@ -83,7 +83,6 @@ module Sbom
 
           def licenses
             finder = Gitlab::LicenseScanning::PackageLicenses.new(
-              project: project,
               components: components
             )
             finder.fetch.each_with_object({}) do |result, hash|

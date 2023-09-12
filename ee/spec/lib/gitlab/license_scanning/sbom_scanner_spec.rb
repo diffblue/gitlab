@@ -47,126 +47,63 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
 
     context "when the pipeline is not nil" do
       context "when the pipeline contains an sbom report" do
-        context 'when querying uncompressed package metadata' do
-          let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
+        let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
 
-          before do
-            stub_feature_flags(compressed_package_metadata_query: false)
-          end
+        before_all do
+          components_to_create_in_db = [
+            Hashie::Mash.new(name: "github.com/astaxie/beego", purl_type: "golang", versions: ["v1.10.0"]),
+            Hashie::Mash.new(name: "acorn", purl_type: "npm", versions: ["5.7.3", "6.4.0"]),
+            Hashie::Mash.new(name: "json-schema", purl_type: "npm", versions: ["0.2.3"]),
+            Hashie::Mash.new(name: "org.apache.logging.log4j/log4j-core", purl_type: "maven", versions: ["2.6.1"]),
+            Hashie::Mash.new(name: "activesupport", purl_type: "gem", versions: ["5.1.4"]),
+            Hashie::Mash.new(name: "yargs-parser", purl_type: "npm", versions: ["9.0.2"])
+          ]
 
-          before_all do
-            components_to_create_in_db = [
-              Hashie::Mash.new(name: "github.com/astaxie/beego", purl_type: "golang", version: "v1.10.0"),
-              Hashie::Mash.new(name: "acorn", purl_type: "npm", version: "5.7.3"),
-              Hashie::Mash.new(name: "acorn", purl_type: "npm", version: "6.4.0"),
-              Hashie::Mash.new(name: "json-schema", purl_type: "npm", version: "0.2.3"),
-              Hashie::Mash.new(name: "org.apache.logging.log4j/log4j-core", purl_type: "maven", version: "2.6.1"),
-              Hashie::Mash.new(name: "activesupport", purl_type: "gem", version: "5.1.4"),
-              Hashie::Mash.new(name: "yargs-parser", purl_type: "npm", version: "9.0.2")
-            ]
-
-            components_to_create_in_db.each do |component|
-              create(:pm_package_version_license, :with_all_relations, name: component.name,
-                purl_type: component.purl_type, version: component.version, license_name: "OLDAP-2.1")
-              create(:pm_package_version_license, :with_all_relations, name: component.name,
-                purl_type: component.purl_type, version: component.version, license_name: "BSD")
-            end
-          end
-
-          it 'returns the expected licenses' do
-            expect(report.licenses).to match_array([
-              have_attributes(id: "BSD", name: "BSD-4-Clause"),
-              have_attributes(id: "OLDAP-2.1", name: "Open LDAP Public License v2.1"),
-              have_attributes(id: nil, name: "unknown")
-            ])
-          end
-
-          it 'returns the expected dependencies for known licenses' do
-            bsd_license = report.licenses.find { |license| license.name == "BSD-4-Clause" }
-
-            expect(bsd_license.dependencies).to match_array([
-              have_attributes(name: "github.com/astaxie/beego", version: "v1.10.0"),
-              have_attributes(name: "acorn", version: "5.7.3"),
-              have_attributes(name: "acorn", version: "6.4.0"),
-              have_attributes(name: "json-schema", version: "0.2.3"),
-              have_attributes(name: "org.apache.logging.log4j/log4j-core", version: "2.6.1"),
-              have_attributes(name: "activesupport", version: "5.1.4"),
-              have_attributes(name: "yargs-parser", version: "9.0.2")
-            ])
-          end
-
-          it 'returns the expected dependencies for unknown licenses' do
-            unknown_license = report.licenses.find { |license| license.name == "unknown" }
-
-            expect(unknown_license.dependencies.length).to be(434)
-
-            expect(unknown_license.dependencies).to include(
-              have_attributes(name: "byebug", version: "10.0.0"),
-              have_attributes(name: "rspec-core", version: "3.7.1"),
-              have_attributes(name: "yargs-parser", version: "8.1.0")
-            )
+          components_to_create_in_db.each do |component|
+            create(:pm_package, name: component.name, purl_type: component.purl_type,
+              other_licenses: [{ license_names: ["OLDAP-2.1", "BSD"], versions: component.versions }])
           end
         end
 
-        context 'when querying compressed package metadata' do
-          let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
+        it 'returns the expected licenses' do
+          expect(report.licenses).to match_array([
+            have_attributes(id: "BSD", name: "BSD-4-Clause"),
+            have_attributes(id: "DEFAULT-2.1", name: "Default License 2.1"),
+            have_attributes(id: "OLDAP-2.1", name: "Open LDAP Public License v2.1"),
+            have_attributes(id: nil, name: "unknown")
+          ])
+        end
 
-          before_all do
-            components_to_create_in_db = [
-              Hashie::Mash.new(name: "github.com/astaxie/beego", purl_type: "golang", versions: ["v1.10.0"]),
-              Hashie::Mash.new(name: "acorn", purl_type: "npm", versions: ["5.7.3", "6.4.0"]),
-              Hashie::Mash.new(name: "json-schema", purl_type: "npm", versions: ["0.2.3"]),
-              Hashie::Mash.new(name: "org.apache.logging.log4j/log4j-core", purl_type: "maven", versions: ["2.6.1"]),
-              Hashie::Mash.new(name: "activesupport", purl_type: "gem", versions: ["5.1.4"]),
-              Hashie::Mash.new(name: "yargs-parser", purl_type: "npm", versions: ["9.0.2"])
-            ]
+        it 'returns the expected dependencies for known licenses' do
+          bsd_license = report.licenses.find { |license| license.name == "BSD-4-Clause" }
 
-            components_to_create_in_db.each do |component|
-              create(:pm_package, name: component.name, purl_type: component.purl_type,
-                other_licenses: [{ license_names: ["OLDAP-2.1", "BSD"], versions: component.versions }])
-            end
-          end
+          expect(bsd_license.dependencies).to match_array([
+            have_attributes(name: "github.com/astaxie/beego", version: "v1.10.0"),
+            have_attributes(name: "acorn", version: "5.7.3"),
+            have_attributes(name: "acorn", version: "6.4.0"),
+            have_attributes(name: "json-schema", version: "0.2.3"),
+            have_attributes(name: "org.apache.logging.log4j/log4j-core", version: "2.6.1"),
+            have_attributes(name: "activesupport", version: "5.1.4"),
+            have_attributes(name: "yargs-parser", version: "9.0.2")
+          ])
+        end
 
-          it 'returns the expected licenses' do
-            expect(report.licenses).to match_array([
-              have_attributes(id: "BSD", name: "BSD-4-Clause"),
-              have_attributes(id: "DEFAULT-2.1", name: "Default License 2.1"),
-              have_attributes(id: "OLDAP-2.1", name: "Open LDAP Public License v2.1"),
-              have_attributes(id: nil, name: "unknown")
-            ])
-          end
+        it 'returns the expected dependencies for unknown licenses' do
+          unknown_license = report.licenses.find { |license| license.name == "unknown" }
+          expect(unknown_license.dependencies.length).to be(433)
 
-          it 'returns the expected dependencies for known licenses' do
-            bsd_license = report.licenses.find { |license| license.name == "BSD-4-Clause" }
+          expect(unknown_license.dependencies).to include(
+            have_attributes(name: "byebug", version: "10.0.0"),
+            have_attributes(name: "rspec-core", version: "3.7.1")
+          )
+        end
 
-            expect(bsd_license.dependencies).to match_array([
-              have_attributes(name: "github.com/astaxie/beego", version: "v1.10.0"),
-              have_attributes(name: "acorn", version: "5.7.3"),
-              have_attributes(name: "acorn", version: "6.4.0"),
-              have_attributes(name: "json-schema", version: "0.2.3"),
-              have_attributes(name: "org.apache.logging.log4j/log4j-core", version: "2.6.1"),
-              have_attributes(name: "activesupport", version: "5.1.4"),
-              have_attributes(name: "yargs-parser", version: "9.0.2")
-            ])
-          end
+        it 'returns the expected dependencies for the default license' do
+          default_license = report.licenses.find { |license| license.name == "Default License 2.1" }
 
-          it 'returns the expected dependencies for unknown licenses' do
-            unknown_license = report.licenses.find { |license| license.name == "unknown" }
-            expect(unknown_license.dependencies.length).to be(433)
-
-            expect(unknown_license.dependencies).to include(
-              have_attributes(name: "byebug", version: "10.0.0"),
-              have_attributes(name: "rspec-core", version: "3.7.1")
-            )
-          end
-
-          it 'returns the expected dependencies for the default license' do
-            default_license = report.licenses.find { |license| license.name == "Default License 2.1" }
-
-            expect(default_license.dependencies).to contain_exactly(
-              have_attributes(name: "yargs-parser", version: "8.1.0")
-            )
-          end
+          expect(default_license.dependencies).to contain_exactly(
+            have_attributes(name: "yargs-parser", version: "8.1.0")
+          )
         end
       end
 
@@ -335,92 +272,43 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
       described_class.new(project, create(:ee_ci_pipeline, project: project)).add_licenses(dependencies)
     end
 
-    context 'when querying compressed package metadata' do
-      before_all do
-        create(:pm_package, name: "activesupport", purl_type: "gem",
-          other_licenses: [{ license_names: ["OLDAP-2.3"], versions: ["5.1.4"] }])
-        create(:pm_package, name: "acorn", purl_type: "npm",
-          other_licenses: [{ license_names: ["OLDAP-2.1", "OLDAP-2.2"], versions: ["5.7.3"] }])
-        create(:pm_package, name: "django", purl_type: "pypi",
-          other_licenses: [{ license_names: ["MIT"], versions: ["1.11.4"] }])
-        create(:pm_package, name: "pytz", purl_type: "pypi",
-          other_licenses: [{ license_names: ["BSD"], versions: ["2023.3"] }])
-        create(:pm_package, name: "github.com/google/uuid", purl_type: "golang",
-          other_licenses: [{ license_names: ["OLDAP-2.4"], versions: ["v1.3.0"] }])
-      end
-
-      it 'adds licenses to the dependencies' do
-        expect(dependencies_with_licenses).to match([
-          { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 1,
-            licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
-          { name: "non-matching-package", package_manager: "bundler", version: "1.2.3", id: 2,
-            licenses: [{ name: "unknown", url: nil }] },
-          { name: "acorn", package_manager: "yarn", version: "5.7.3", id: 3,
-            licenses: match_array([
-              { name: "Open LDAP Public License v2.1", url: "https://spdx.org/licenses/OLDAP-2.1.html" },
-              { name: "Open LDAP Public License v2.2", url: "https://spdx.org/licenses/OLDAP-2.2.html" }
-            ]) },
-          { name: "Django", package_manager: "pip", version: "1.11.4", id: 4,
-            licenses: [{ name: "MIT", url: "https://spdx.org/licenses/MIT.html" }] },
-          { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 5,
-            licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
-          { name: "jquery-ui", package_manager: "", version: "1.10.2", id: 6,
-            licenses: [{ name: "unknown", url: nil }] },
-          { name: "pytz", package_manager: "Python (python-pkg)", version: "2023.3", id: 7,
-            licenses: [{ name: "BSD-4-Clause", url: "https://spdx.org/licenses/BSD.html" }] },
-          { name: "github.com/google/uuid", package_manager: "analyzer (gobinary)", version: "v1.3.0", id: 8,
-            licenses: [{ name: "Open LDAP Public License v2.4", url: "https://spdx.org/licenses/OLDAP-2.4.html" }] },
-          { name: "adduser", package_manager: "debian:12.1 (apt)", version: "3.134", id: 9,
-            licenses: [{ name: "unknown", url: nil }] }
-        ])
-      end
+    before_all do
+      create(:pm_package, name: "activesupport", purl_type: "gem",
+        other_licenses: [{ license_names: ["OLDAP-2.3"], versions: ["5.1.4"] }])
+      create(:pm_package, name: "acorn", purl_type: "npm",
+        other_licenses: [{ license_names: ["OLDAP-2.1", "OLDAP-2.2"], versions: ["5.7.3"] }])
+      create(:pm_package, name: "django", purl_type: "pypi",
+        other_licenses: [{ license_names: ["MIT"], versions: ["1.11.4"] }])
+      create(:pm_package, name: "pytz", purl_type: "pypi",
+        other_licenses: [{ license_names: ["BSD"], versions: ["2023.3"] }])
+      create(:pm_package, name: "github.com/google/uuid", purl_type: "golang",
+        other_licenses: [{ license_names: ["OLDAP-2.4"], versions: ["v1.3.0"] }])
     end
 
-    context 'when querying uncompressed package metadata' do
-      before do
-        stub_feature_flags(compressed_package_metadata_query: false)
-      end
-
-      before_all do
-        create(:pm_package_version_license, :with_all_relations, name: "activesupport",
-          purl_type: "gem", version: "5.1.4", license_name: "OLDAP-2.3")
-        create(:pm_package_version_license, :with_all_relations, name: "acorn",
-          purl_type: "npm", version: "5.7.3", license_name: "OLDAP-2.1")
-        create(:pm_package_version_license, :with_all_relations, name: "acorn",
-          purl_type: "npm", version: "5.7.3", license_name: "OLDAP-2.2")
-        create(:pm_package_version_license, :with_all_relations, name: "django",
-          purl_type: "pypi", version: "1.11.4", license_name: "MIT")
-        create(:pm_package_version_license, :with_all_relations, name: "pytz",
-          purl_type: "pypi", version: "2023.3", license_name: "BSD")
-        create(:pm_package_version_license, :with_all_relations, name: "github.com/google/uuid",
-          purl_type: "golang", version: "v1.3.0", license_name: "OLDAP-2.4")
-      end
-
-      it 'adds licenses to the dependencies' do
-        expect(dependencies_with_licenses).to match([
-          { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 1,
-            licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
-          { name: "non-matching-package", package_manager: "bundler", version: "1.2.3", id: 2,
-            licenses: [{ name: "unknown", url: nil }] },
-          { name: "acorn", package_manager: "yarn", version: "5.7.3", id: 3,
-            licenses: match_array([
-              { name: "Open LDAP Public License v2.1", url: "https://spdx.org/licenses/OLDAP-2.1.html" },
-              { name: "Open LDAP Public License v2.2", url: "https://spdx.org/licenses/OLDAP-2.2.html" }
-            ]) },
-          { name: "Django", package_manager: "pip", version: "1.11.4", id: 4,
-            licenses: [{ name: "MIT", url: "https://spdx.org/licenses/MIT.html" }] },
-          { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 5,
-            licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
-          { name: "jquery-ui", package_manager: "", version: "1.10.2", id: 6,
-            licenses: [{ name: "unknown", url: nil }] },
-          { name: "pytz", package_manager: "Python (python-pkg)", version: "2023.3", id: 7,
-            licenses: [{ name: "BSD-4-Clause", url: "https://spdx.org/licenses/BSD.html" }] },
-          { name: "github.com/google/uuid", package_manager: "analyzer (gobinary)", version: "v1.3.0", id: 8,
-            licenses: [{ name: "Open LDAP Public License v2.4", url: "https://spdx.org/licenses/OLDAP-2.4.html" }] },
-          { name: "adduser", package_manager: "debian:12.1 (apt)", version: "3.134", id: 9,
-            licenses: [{ name: "unknown", url: nil }] }
-        ])
-      end
+    it 'adds licenses to the dependencies' do
+      expect(dependencies_with_licenses).to match([
+        { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 1,
+          licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
+        { name: "non-matching-package", package_manager: "bundler", version: "1.2.3", id: 2,
+          licenses: [{ name: "unknown", url: nil }] },
+        { name: "acorn", package_manager: "yarn", version: "5.7.3", id: 3,
+          licenses: match_array([
+            { name: "Open LDAP Public License v2.1", url: "https://spdx.org/licenses/OLDAP-2.1.html" },
+            { name: "Open LDAP Public License v2.2", url: "https://spdx.org/licenses/OLDAP-2.2.html" }
+          ]) },
+        { name: "Django", package_manager: "pip", version: "1.11.4", id: 4,
+          licenses: [{ name: "MIT", url: "https://spdx.org/licenses/MIT.html" }] },
+        { name: "activesupport", package_manager: "bundler", version: "5.1.4", id: 5,
+          licenses: [{ name: "Open LDAP Public License v2.3", url: "https://spdx.org/licenses/OLDAP-2.3.html" }] },
+        { name: "jquery-ui", package_manager: "", version: "1.10.2", id: 6,
+          licenses: [{ name: "unknown", url: nil }] },
+        { name: "pytz", package_manager: "Python (python-pkg)", version: "2023.3", id: 7,
+          licenses: [{ name: "BSD-4-Clause", url: "https://spdx.org/licenses/BSD.html" }] },
+        { name: "github.com/google/uuid", package_manager: "analyzer (gobinary)", version: "v1.3.0", id: 8,
+          licenses: [{ name: "Open LDAP Public License v2.4", url: "https://spdx.org/licenses/OLDAP-2.4.html" }] },
+        { name: "adduser", package_manager: "debian:12.1 (apt)", version: "3.134", id: 9,
+          licenses: [{ name: "unknown", url: nil }] }
+      ])
     end
   end
 end

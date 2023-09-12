@@ -67,36 +67,17 @@ RSpec.describe API::Dependencies, feature_category: :dependency_management do
         end
 
         context 'with cyclonedx report' do
-          context 'when querying uncompressed package metadata' do
-            before_all do
-              stub_feature_flags(compressed_package_metadata_query: false)
-
-              create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline)
-              create(:pm_package_version_license, :with_all_relations, name: 'nokogiri',
-                purl_type: 'gem', version: '1.8.0', license_name: 'MIT')
-            end
-
-            it 'include license information to response' do
-              license = json_response.find { |dep| dep['name'] == 'nokogiri' }['licenses'][0]
-
-              expect(license['name']).to eq('MIT')
-              expect(license['url']).to eq('https://spdx.org/licenses/MIT.html')
-            end
+          before_all do
+            create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline)
+            create(:pm_package, name: "nokogiri", purl_type: "gem",
+              other_licenses: [{ license_names: ["MIT"], versions: ["1.8.0"] }])
           end
 
-          context 'when querying compressed package metadata' do
-            before_all do
-              create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline)
-              create(:pm_package, name: "nokogiri", purl_type: "gem",
-                other_licenses: [{ license_names: ["MIT"], versions: ["1.8.0"] }])
-            end
+          it 'include license information to response' do
+            license = json_response.find { |dep| dep['name'] == 'nokogiri' }['licenses'][0]
 
-            it 'include license information to response' do
-              license = json_response.find { |dep| dep['name'] == 'nokogiri' }['licenses'][0]
-
-              expect(license['name']).to eq('MIT')
-              expect(license['url']).to eq('https://spdx.org/licenses/MIT.html')
-            end
+            expect(license['name']).to eq('MIT')
+            expect(license['url']).to eq('https://spdx.org/licenses/MIT.html')
           end
         end
 
