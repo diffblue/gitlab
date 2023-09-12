@@ -317,7 +317,7 @@ export default {
         const { error, message } = responseFromSuccess(response);
 
         if (error) {
-          this.showMemberErrors(message);
+          this.showErrors(message);
         } else {
           this.onInviteSuccess();
         }
@@ -327,9 +327,13 @@ export default {
         this.isLoading = false;
       }
     },
-    showMemberErrors(message) {
-      this.invalidMembers = message;
-      this.$refs.alerts.focus();
+    showErrors(message) {
+      if (isString(message)) {
+        this.invalidFeedbackMessage = message;
+      } else {
+        this.invalidMembers = message;
+        this.$refs.alerts.focus();
+      }
     },
     tokenName(username) {
       // initial token creation hits this and nothing is found... so safe navigation

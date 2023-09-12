@@ -39,7 +39,7 @@ RSpec.describe Members::InviteService, :aggregate_failures, :saas, feature_categ
         it 'limits the number of daily invites allowed' do
           expect { result }.not_to change(ProjectMember, :count)
           expect(result[:status]).to eq(:error)
-          expect(result[:message]).to eq("Invite limit of #{limit} per day exceeded")
+          expect(result[:message]).to eq("Invite limit of #{limit} per day exceeded.")
         end
       end
 

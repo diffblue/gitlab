@@ -624,6 +624,18 @@ describe('InviteMembersModal', () => {
           expect(membersFormGroupInvalidFeedback()).toBe('');
           expect(findMembersSelect().props('exceptionState')).not.toBe(false);
         });
+
+        it('displays invite limit error message', async () => {
+          mockInvitationsApi(HTTP_STATUS_CREATED, invitationsApiResponse.INVITE_LIMIT);
+
+          clickInviteButton();
+
+          await waitForPromises();
+
+          expect(membersFormGroupInvalidFeedback()).toBe(
+            invitationsApiResponse.INVITE_LIMIT.message,
+          );
+        });
       });
     });
 

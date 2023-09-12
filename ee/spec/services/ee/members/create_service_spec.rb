@@ -42,7 +42,7 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
     end
 
     shared_examples 'quota limit exceeded' do |limit|
-      it { expect(execute_service).to include(status: :error, message: "Invite limit of #{limit} per day exceeded") }
+      it { expect(execute_service).to include(status: :error, message: "Invite limit of #{limit} per day exceeded.") }
       it { expect { execute_service }.not_to change { Member.count } }
     end
 
