@@ -54,9 +54,8 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
 
         expect_to_see_company_form
         expect(page).to have_content 'Your GitLab Ultimate free trial lasts for 30 days.'
-        expect(page).to have_content 'Free 30-day trial'
+        expect(page).to have_content 'Start your 30-day free trial'
         expect(page).to have_content 'Invite unlimited colleagues'
-        expect(page).to have_content 'Used by more than 100,000'
 
         fill_in_company_form
         click_on 'Start GitLab Ultimate free trial'

@@ -55,7 +55,6 @@ RSpec.describe 'registrations/company/new', feature_category: :onboarding do
 
       expect(rendered).to have_content('About your company')
       expect(rendered).to have_content('Invite unlimited colleagues')
-      expect(rendered).to have_content('Used by more than 100,000 organizations from around the globe:')
     end
 
     context 'when a user is coming from a trial registration' do
