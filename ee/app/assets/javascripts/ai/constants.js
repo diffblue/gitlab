@@ -46,6 +46,8 @@ export const i18n = {
     s__('AI|generating'),
     s__('AI|producing'),
   ],
+  GENIE_CHAT_FEEDBACK_LINK: s__('AI|Give feedback to improve this answer.'),
+  GENIE_CHAT_FEEDBACK_THANKS: s__('AI|Thank you for your feedback.'),
 };
 export const GENIE_CHAT_LOADING_TRANSITION_DURATION = 7500;
 export const TOO_LONG_ERROR_TYPE = 'too-long';

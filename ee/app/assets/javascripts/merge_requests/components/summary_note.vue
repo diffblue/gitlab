@@ -61,15 +61,8 @@ export default {
       <template #feedback>
         <user-feedback
           event-name="proposed_changes_summary"
-          size="small"
-          icon-only
-          category="tertiary"
+          :feedback-link-text="__('Leave feedback')"
         />
-      </template>
-      <template #feedback-link>
-        <gl-link href="https://gitlab.com/gitlab-org/gitlab/-/issues/408726" target="_blank">
-          {{ __('Leave feedback') }}
-        </gl-link>
       </template>
     </summary-note-wrapper>
     <summary-note

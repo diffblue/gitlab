@@ -1,4 +1,6 @@
 .ai-genie-chat {
+  z-index: 999;
+
   .message-enter-active,
   .message-leave-active {
     transition: all 0.5s ease;
