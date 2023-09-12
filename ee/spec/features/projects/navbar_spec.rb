@@ -16,7 +16,6 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
     sign_in(user)
 
     stub_config(registry: { enabled: false })
-    stub_feature_flags(harbor_registry_integration: false)
     stub_feature_flags(ml_experiment_tracking: false)
     stub_feature_flags(remove_monitor_metrics: false)
     insert_package_nav(_('Deployments'))
@@ -147,8 +146,6 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
 
     before do
       project.update!(harbor_integration: harbor_integration)
-
-      stub_feature_flags(harbor_registry_integration: true)
 
       insert_harbor_registry_nav(_('Terraform modules'))
 
