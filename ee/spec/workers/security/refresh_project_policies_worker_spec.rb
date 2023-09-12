@@ -11,6 +11,11 @@ RSpec.describe ::Security::RefreshProjectPoliciesWorker, feature_category: :secu
 
   it_behaves_like 'subscribes to event' do
     let(:event) { project_member_changed_event }
+
+    it 'receives the event after some delay' do
+      expect(described_class).to receive(:perform_in).with(1.minute, any_args)
+      ::Gitlab::EventStore.publish(event)
+    end
   end
 
   it 'invokes ::Security::ScanResultPolicies::SyncProjectWorker with the project_id' do
