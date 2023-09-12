@@ -6,8 +6,7 @@
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
     %p
-      - duties_link_url = help_page_path('user/compliance/compliance_center/index', anchor: 'separation-of-duties')
-      - link = link_to('', duties_link_url, target: '_blank', rel: 'noopener noreferrer')
+      - link = link_to('', help_page_path('user/compliance/compliance_center/index', anchor: 'separation-of-duties'), target: '_blank', rel: 'noopener noreferrer')
       = safe_format(s_('MergeRequestApprovals|Enforce %{link_start}separation of duties%{link_end} for all projects.'), tag_pair(link, :link_start, :link_end))
       = link_to _("Learn more."), help_page_path("user/project/merge_requests/approvals/index.md"), target: '_blank', rel: 'noopener noreferrer'
 

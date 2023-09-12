@@ -19,15 +19,13 @@
       = f.label :max_pages_size, _('Maximum size of pages (MiB)'), class: 'label-bold'
       = f.number_field :max_pages_size, class: 'form-control gl-form-input'
       .form-text.text-muted
-        - pages_link_url = help_page_path('administration/pages/index', anchor: 'set-maximum-size-of-gitlab-pages-site-in-a-project')
-        - link = link_to('', pages_link_url, target: '_blank', rel: 'noopener noreferrer')
+        - link = link_to('', help_page_path('administration/pages/index', anchor: 'set-maximum-size-of-gitlab-pages-site-in-a-project'), target: '_blank', rel: 'noopener noreferrer')
         = safe_format(s_('AdminSettings|Set the maximum size of GitLab Pages per project (0 for unlimited). %{link_start}Learn more.%{link_end}'), tag_pair(link, :link_start, :link_end))
     .form-group
       = f.label :max_pages_custom_domains_per_project, s_('AdminSettings|Maximum number of custom domains per project'), class: 'label-bold'
       = f.number_field :max_pages_custom_domains_per_project, class: 'form-control gl-form-input'
       .form-text.text-muted
-        - pages_link_url = help_page_path('administration/pages/index', anchor: 'set-maximum-number-of-gitlab-pages-custom-domains-for-a-project')
-        - link = link_to('', pages_link_url, target: '_blank', rel: 'noopener noreferrer')
+        - link = link_to('', help_page_path('administration/pages/index', anchor: 'set-maximum-number-of-gitlab-pages-custom-domains-for-a-project'), target: '_blank', rel: 'noopener noreferrer')
         = safe_format(s_('AdminSettings|Set the maximum number of GitLab Pages custom domains per project (0 for unlimited). %{link_start}Learn more.%{link_end}'), tag_pair(link, :link_start, :link_end))
     %h5
       = s_("AdminSettings|Configure Let's Encrypt")
@@ -38,8 +36,7 @@
         = f.label :lets_encrypt_notification_email, s_("AdminSettings|Let's Encrypt email"), class: 'label-bold'
         = f.text_field :lets_encrypt_notification_email, class: 'form-control gl-form-input'
         .form-text.text-muted
-          - pages_link_url = help_page_path('administration/pages/index', anchor: 'lets-encrypt-integration')
-          - link = link_to('', pages_link_url, target: '_blank', rel: 'noopener noreferrer')
+          - link = link_to('', help_page_path('administration/pages/index', anchor: 'lets-encrypt-integration'), target: '_blank', rel: 'noopener noreferrer')
           = safe_format(s_("AdminSettings|A Let's Encrypt account will be configured for this GitLab instance using this email address. You will receive emails to warn of expiring certificates. %{link_start}Learn more.%{link_end}"), tag_pair(link, :link_start, :link_end))
       .form-group
         - terms_of_service_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: lets_encrypt_terms_of_service_admin_application_settings_path }

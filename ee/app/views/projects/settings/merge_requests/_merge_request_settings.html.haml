@@ -25,8 +25,7 @@
     %b= _('Default description template for merge requests')
     %p.text-secondary
       = s_('ProjectSettings|Used for every new merge request.')
-      - create_a_merge_request_template_help_link_url = help_page_path('user/project/description_templates', anchor: 'create-a-merge-request-template')
-      - link = link_to('', create_a_merge_request_template_help_link_url, target: '_blank', rel: 'noopener noreferrer')
+      - link = link_to('', help_page_path('user/project/description_templates', anchor: 'create-a-merge-request-template'), target: '_blank', rel: 'noopener noreferrer')
       = safe_format(s_('ProjectSettings|%{link_start}What are description templates?%{link_end}'), tag_pair(link, :link_start, :link_end))
 
     = form.text_area :merge_requests_template, class: "form-control", rows: 3, data: { qa_selector: 'default_merge_request_template_field' }

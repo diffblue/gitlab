@@ -18,8 +18,7 @@
       = _('Project access token creation is disabled in this group.')
       - root_group = @project.group.root_ancestor
       - if current_user.can?(:admin_group, root_group)
-        - group_settings_link = edit_group_path(root_group)
-        - link = link_to('', group_settings_link, target: '_blank', rel: 'noopener noreferrer')
+        - link = link_to('', edit_group_path(root_group), target: '_blank', rel: 'noopener noreferrer')
         = safe_format(_('You can enable project access token creation in %{link_start}group settings%{link_end}.'), tag_pair(link, :link_start, :link_end))
       = html_escape(_('You can still use and manage existing tokens. %{link_start}Learn more.%{link_end}')) % { link_start: help_link_start, link_end: '</a>'.html_safe }
 
