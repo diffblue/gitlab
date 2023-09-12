@@ -68,11 +68,16 @@ RSpec.describe Namespaces::FreeUserCap::RootSize, :saas, feature_category: :meas
 
     context 'with cached values', :use_clean_rails_memory_store_caching do
       it 'caches the value' do
-        key = described_class::LIMIT_CACHE_NAME
+        key = [
+          namespace.actual_limits.cache_key_with_version,
+          'namespaces',
+          namespace.id,
+          described_class::LIMIT_CACHE_NAME
+        ]
 
         subject
 
-        expect(Rails.cache.read(['namespaces', namespace.id, key])).to eq(100.megabytes)
+        expect(Rails.cache.read(key)).to eq(100.megabytes)
       end
     end
   end
