@@ -17,6 +17,7 @@
     "labels_web_url",
     "epics_web_url",
     "new_epic_web_url",
+    "web_url",
     "scoped_labels",
     "start_date",
     "start_date_is_fixed",
@@ -45,6 +46,7 @@
         "null"
       ],
       "required": [
+        "id",
         "name",
         "url",
         "username",
@@ -119,6 +121,9 @@
       "type": "string"
     },
     "new_epic_web_url": {
+      "type": "string"
+    },
+    "web_url": {
       "type": "string"
     },
     "scoped_labels": {

@@ -7,11 +7,26 @@ module EE
   # and be prepended in the `AbuseReport` model
   module AbuseReport
     extend ActiveSupport::Concern
+    extend ::Gitlab::Utils::Override
 
     prepended do
       include AfterCommitQueue
 
       after_create :run_abuse_report_worker
+    end
+
+    override :report_type
+    def report_type
+      return super unless route_hash[:controller] == 'groups/epics'
+
+      :epic
+    end
+
+    override :reported_content
+    def reported_content
+      return super unless report_type == :epic
+
+      group.epics.iid_in(route_hash[:id]).pick(:description_html)
     end
 
     private

@@ -1,24 +1,43 @@
 import { GlDisclosureDropdown } from '@gitlab/ui';
+import Vue from 'vue';
+// eslint-disable-next-line no-restricted-imports
+import Vuex from 'vuex';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import EpicHeaderActions from 'ee/epic/components/epic_header_actions.vue';
-import createStore from 'ee/epic/store';
+import { getStoreConfig } from 'ee/epic/store';
 import { STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 import DeleteIssueModal from '~/issues/show/components/delete_issue_modal.vue';
 import issuesEventHub from '~/issues/show/event_hub';
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
-import { mockEpicData } from '../mock_data';
+import AbuseCategorySelector from '~/abuse_reports/components/abuse_category_selector.vue';
+import { mockEpicMeta, mockEpicData } from '../mock_data';
 
+Vue.use(Vuex);
 jest.mock('~/issues/show/event_hub', () => ({ $emit: jest.fn() }));
 
 describe('EpicHeaderActions component', () => {
   let wrapper;
+  let store;
+
+  const getterSpies = {
+    isEpicAuthor: jest.fn(() => false),
+  };
 
   const createComponent = ({
     isLoggedIn = true,
     isMoveSidebarEnabled = false,
     state = {},
   } = {}) => {
-    const store = createStore();
+    const { getters, ...storeConfig } = getStoreConfig();
+    store = new Vuex.Store({
+      ...storeConfig,
+      getters: {
+        ...getters,
+        ...getterSpies,
+      },
+    });
+
+    store.dispatch('setEpicMeta', mockEpicMeta);
     store.dispatch('setEpicData', { ...mockEpicData, ...state });
 
     if (isLoggedIn) {
@@ -30,6 +49,7 @@ describe('EpicHeaderActions component', () => {
       provide: {
         fullPath: 'mock-path',
         iid: 'mock-iid',
+        reportAbusePath: '/report/abuse/path',
         glFeatures: {
           movedMrSidebar: isMoveSidebarEnabled,
         },
@@ -49,8 +69,13 @@ describe('EpicHeaderActions component', () => {
   const findNewEpicButton = () => wrapper.findByRole('link', { name: 'New epic' });
   const findNotificationToggle = () => wrapper.findComponent(SidebarSubscriptionsWidget);
   const findReopenEpicButton = () => wrapper.findByRole('button', { name: 'Reopen epic' });
+
   const findActionsDropdownMobile = () => wrapper.findByTestId('actions-dropdown-mobile');
   const findActionsDropdownDesktop = () => wrapper.findByTestId('actions-dropdown-desktop');
+
+  const findReportAbuseButton = () =>
+    wrapper.findByRole('button', { name: 'Report abuse to administrator' });
+  const findAbuseCategorySelector = () => wrapper.findComponent(AbuseCategorySelector);
 
   describe('edit button', () => {
     beforeEach(() => {
@@ -208,6 +233,51 @@ describe('EpicHeaderActions component', () => {
         issueType: 'epic',
         modalId,
         title: 'Delete epic',
+      });
+    });
+  });
+
+  describe('report abuse to admin button', () => {
+    describe('when the logged in user is not the epic author', () => {
+      beforeEach(() => {
+        getterSpies.isEpicAuthor = jest.fn(() => false);
+
+        createComponent();
+      });
+
+      it('renders the button but not the abuse category drawer', () => {
+        expect(findReportAbuseButton().exists()).toBe(true);
+        expect(findAbuseCategorySelector().exists()).toEqual(false);
+      });
+
+      it('opens the abuse category drawer', async () => {
+        await findReportAbuseButton().trigger('click');
+
+        expect(findAbuseCategorySelector().props()).toMatchObject({
+          showDrawer: true,
+          reportedUserId: mockEpicMeta.author.id,
+          reportedFromUrl: mockEpicMeta.webUrl,
+        });
+      });
+
+      it('closes the abuse category drawer', async () => {
+        await findReportAbuseButton().trigger('click');
+        expect(findAbuseCategorySelector().exists()).toEqual(true);
+
+        await findAbuseCategorySelector().vm.$emit('close-drawer');
+        expect(findAbuseCategorySelector().exists()).toEqual(false);
+      });
+    });
+
+    describe('when the logged in user is the epic author', () => {
+      beforeEach(() => {
+        getterSpies.isEpicAuthor = jest.fn(() => true);
+
+        createComponent();
+      });
+
+      it('does not render the button', () => {
+        expect(findReportAbuseButton().exists()).toBe(false);
       });
     });
   });
