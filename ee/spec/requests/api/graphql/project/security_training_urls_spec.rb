@@ -77,7 +77,7 @@ RSpec.describe "Query.project(fullPath).securityTrainingUrls", :sidekiq_inline, 
             headers: {
               "Accept" => "*/*",
               "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
-              "Authorization" => "Bearer #{Security::TrainingProviders::KontraUrlFinder::BEARER_TOKEN}",
+              "Authorization" => "Bearer #{Security::TrainingProviders::KontraUrlService::BEARER_TOKEN}",
               "User-Agent" => "Ruby"
             }
           ).to_return(

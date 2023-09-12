@@ -2,19 +2,21 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::TrainingProviders::BaseUrlFinder do
+RSpec.describe Security::TrainingProviders::BaseUrlService, feature_category: :vulnerability_management do
   let_it_be(:provider_name) { 'Kontra' }
   let_it_be(:provider) { create(:security_training_provider, name: provider_name) }
   let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'cwe', external_id: 2, name: 'cwe-2') }
   let_it_be(:dummy_url) { 'http://test.host/test' }
   let_it_be(:language) { "ruby" }
-  let_it_be(:identifier_external_id) { "[#{identifier.external_type}]-[#{identifier.external_id}]-[#{identifier.name}]" }
+  let_it_be(:identifier_external_id) do
+    "[#{identifier.external_type}]-[#{identifier.external_id}]-[#{identifier.name}]"
+  end
 
-  let(:finder) { described_class.new(identifier.project, provider, identifier_external_id) }
+  let(:service) { described_class.new(identifier.project, provider, identifier_external_id) }
 
   describe '#execute' do
     it 'raises an error if allowed_identifier_list is not implemented' do
-      expect { finder.execute }.to raise_error(
+      expect { service.execute }.to raise_error(
         'allowed_identifier_list must be overwritten to return training url'
       )
     end
@@ -28,21 +30,26 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
       end
 
       it 'returns a nil url with status pending' do
-        expect(finder.execute).to eq({ name: provider.name, url: nil, status: 'pending' })
+        expect(service.execute).to eq({ name: provider.name, url: nil, status: 'pending' })
       end
 
-      context 'when a language is used on the finder' do
+      context 'when a language is used on the service' do
         it 'returns a nil url with status pending' do
-          expect(finder.execute).to eq({ name: provider.name, url: nil, status: 'pending' })
+          expect(service.execute).to eq({ name: provider.name, url: nil, status: 'pending' })
         end
       end
 
       context "when external_type is not present in allowed list" do
-        let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'owasp', external_id: "A1", name: "A1. Injection") }
-        let_it_be(:identifier_external_id) { "[#{identifier.external_type}]-[#{identifier.external_id}]-[#{identifier.name}]" }
+        let_it_be(:identifier) do
+          create(:vulnerabilities_identifier, external_type: 'owasp', external_id: "A1", name: "A1. Injection")
+        end
+
+        let_it_be(:identifier_external_id) do
+          "[#{identifier.external_type}]-[#{identifier.external_id}]-[#{identifier.name}]"
+        end
 
         it 'returns nil' do
-          expect(finder.execute).to be_nil
+          expect(service.execute).to be_nil
         end
       end
     end
@@ -56,14 +63,16 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
       end
 
       it 'returns a url with status completed' do
-        expect(finder.execute).to eq({ name: provider.name, url: dummy_url, status: 'completed', identifier: identifier.name })
+        expect(service.execute).to eq({ name: provider.name, url: dummy_url, status: 'completed',
+identifier: identifier.name })
       end
 
-      context 'when a language is used on the finder' do
-        let(:finder) { described_class.new(identifier.project, provider, identifier_external_id, language) }
+      context 'when a language is used on the service' do
+        let(:service) { described_class.new(identifier.project, provider, identifier_external_id, language) }
 
         it 'returns a url with status completed' do
-          expect(finder.execute).to eq({ name: provider.name, url: dummy_url, status: 'completed', identifier: identifier.name })
+          expect(service.execute).to eq({ name: provider.name, url: dummy_url, status: 'completed',
+identifier: identifier.name })
         end
       end
     end
@@ -80,11 +89,11 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
         expect(described_class.new(identifier.project, provider, identifier_external_id).execute).to be_nil
       end
 
-      context 'when a language is used on the finder' do
-        let(:finder) { described_class.new(identifier.project, provider, identifier_external_id, language) }
+      context 'when a language is used on the service' do
+        let(:service) { described_class.new(identifier.project, provider, identifier_external_id, language) }
 
         it 'returns nil' do
-          expect(finder.execute).to be_nil
+          expect(service.execute).to be_nil
         end
       end
     end
@@ -93,17 +102,19 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
   describe '.from_cache' do
     subject { described_class.from_cache("#{identifier.project.id}--#{provider.id}--#{identifier.external_id}") }
 
-    it 'returns instance of finder object with expected attributes' do
+    it 'returns instance of service object with expected attributes' do
       expect(subject).to be_an_instance_of(described_class)
       expect(subject.send(:project)).to eq(identifier.project)
       expect(subject.send(:provider)).to eq(provider)
       expect(subject.send(:identifier_external_id)).to eq(identifier.external_id)
     end
 
-    context 'when a language is used on the finder' do
-      subject { described_class.from_cache("#{identifier.project.id}--#{provider.id}--#{identifier_external_id}--#{language}") }
+    context 'when a language is used on the service' do
+      subject do
+        described_class.from_cache("#{identifier.project.id}--#{provider.id}--#{identifier_external_id}--#{language}")
+      end
 
-      it 'returns instance of finder object with expected attributes' do
+      it 'returns instance of service object with expected attributes' do
         expect(subject).to be_an_instance_of(described_class)
         expect(subject.send(:project)).to eq(identifier.project)
         expect(subject.send(:provider)).to eq(provider)
@@ -126,29 +137,29 @@ RSpec.describe Security::TrainingProviders::BaseUrlFinder do
       end
     end
 
-    subject(:finder) { implementation.new(identifier.project, provider, identifier_external_id) }
+    subject(:service) { implementation.new(identifier.project, provider, identifier_external_id) }
 
     it 'returns provider url with encoded query params' do
-      expect(finder.full_url).to eq("#{provider.url}?a=%3F&b=123&c=a%3Dc%26b")
+      expect(service.full_url).to eq("#{provider.url}?a=%3F&b=123&c=a%3Dc%26b")
     end
 
     context 'when query_params is not implemented' do
       let(:implementation) { described_class }
 
       it 'returns the provider url' do
-        expect(finder.full_url).to eq(provider.url)
+        expect(service.full_url).to eq(provider.url)
       end
     end
   end
 
-  context "private" do
+  describe "private methods" do
     describe '#id' do
       it 'returns a cache key for ReactiveCaching specific to the request trainign urls' do
-        expect(finder.send(:id))
+        expect(service.send(:id))
           .to eq("#{identifier.project.id}--#{provider.id}--#{identifier_external_id}")
       end
 
-      context 'when a language is used on the finder' do
+      context 'when a language is used on the service' do
         it 'returns a cache key for ReactiveCaching specific to the request trainign urls and language' do
           expect(described_class.new(identifier.project, provider, identifier_external_id, language).send(:id))
             .to eq("#{identifier.project.id}--#{provider.id}--#{identifier_external_id}--#{language}")

@@ -2,11 +2,11 @@
 
 module Security
   module TrainingProviders
-    class KontraUrlFinder < BaseUrlFinder
+    class KontraUrlService < BaseUrlService
       extend ::Gitlab::Utils::Override
 
-      self.reactive_cache_key = ->(finder) { finder.full_url }
-      self.reactive_cache_worker_finder = ->(id, *args) { from_cache(id) }
+      self.reactive_cache_key = ->(service) { service.full_url }
+      self.reactive_cache_worker_finder = ->(id, *_args) { from_cache(id) }
 
       ALLOWED_IDENTIFIER_LIST = %w[CWE cwe].freeze
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::TrainingProviders::KontraUrlFinder, feature_category: :vulnerability_management do
+RSpec.describe Security::TrainingProviders::KontraUrlService, feature_category: :vulnerability_management do
   include ReactiveCachingHelpers
 
   let_it_be(:provider_name) { 'Kontra' }
@@ -12,12 +12,12 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder, feature_category: :
 
   let(:identifier_attributes) { { type: 'cwe', id: 2, name: 'cwe-2' } }
   let(:identifier_external_id) { format('[%{type}]-[%{id}]-[%{name}]', identifier_attributes) }
-  let(:finder) { described_class.new(project, provider, identifier_external_id) }
+  let(:service) { described_class.new(project, provider, identifier_external_id) }
 
   describe '#calculate_reactive_cache' do
     context 'when request fails' do
       before do
-        synchronous_reactive_cache(finder)
+        synchronous_reactive_cache(service)
         stub_request(:get, dummy_url)
           .with(
             headers: {
@@ -27,23 +27,27 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder, feature_category: :
       end
 
       it 'returns nil' do
-        expect(finder.calculate_reactive_cache(dummy_url)).to be_nil
+        expect(service.calculate_reactive_cache(dummy_url)).to be_nil
       end
     end
 
     context 'when response is 404' do
       before do
-        synchronous_reactive_cache(finder)
+        synchronous_reactive_cache(service)
         stub_request(:get, dummy_url)
           .with(
             headers: {
               'Authorization' => "Bearer #{described_class::BEARER_TOKEN}"
             })
-          .to_return(status: 404, body: '{"error":"Exercise not found"}', headers: { 'Content-Type' => 'application/json' })
+          .to_return(
+            status: 404,
+            body: '{"error":"Exercise not found"}',
+            headers: { 'Content-Type' => 'application/json' }
+          )
       end
 
       it 'returns hash with nil url' do
-        expect(finder.calculate_reactive_cache(dummy_url)).to eq({ url: nil })
+        expect(service.calculate_reactive_cache(dummy_url)).to eq({ url: nil })
       end
     end
 
@@ -51,7 +55,7 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder, feature_category: :
       let_it_be(:response) { { 'link' => dummy_url } }
 
       before do
-        synchronous_reactive_cache(finder)
+        synchronous_reactive_cache(service)
         stub_request(:get, dummy_url)
           .with(
             headers: {
@@ -61,7 +65,7 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder, feature_category: :
       end
 
       it 'returns content url hash' do
-        expect(finder.calculate_reactive_cache(dummy_url)).to eq({ url: dummy_url })
+        expect(service.calculate_reactive_cache(dummy_url)).to eq({ url: dummy_url })
       end
     end
 
@@ -69,7 +73,7 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder, feature_category: :
       let(:identifier_attributes) { { type: 'invalid type', id: 'A1', name: 'A1. Injection' } }
 
       it 'returns nil' do
-        expect(finder.execute).to be_nil
+        expect(service.execute).to be_nil
       end
     end
   end
@@ -78,7 +82,7 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder, feature_category: :
     context "when external_type is present in allowed list" do
       context "when identifier contains cwe-{number} format" do
         it 'returns full url path with proper mapping key' do
-          expect(finder.full_url).to eq('https://example.com?cwe=2')
+          expect(service.full_url).to eq('https://example.com?cwe=2')
         end
       end
 
@@ -86,7 +90,7 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder, feature_category: :
         let(:identifier_attributes) { { type: 'CWE', id: 2, name: 'CWE-2' } }
 
         it 'returns full url path with proper mapping key' do
-          expect(finder.full_url).to eq('https://example.com?cwe=2')
+          expect(service.full_url).to eq('https://example.com?cwe=2')
         end
       end
 
@@ -103,7 +107,7 @@ RSpec.describe Security::TrainingProviders::KontraUrlFinder, feature_category: :
 
     describe '#allowed_identifier_list' do
       it 'returns allowed identifiers' do
-        expect(finder.allowed_identifier_list).to match_array(%w[CWE cwe])
+        expect(service.allowed_identifier_list).to match_array(%w[CWE cwe])
       end
     end
   end
