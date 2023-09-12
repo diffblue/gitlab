@@ -116,6 +116,11 @@ module EE
               alpha: { milestone: '16.1' },
               description: 'A single CI/CD Catalog resource visible to an authorized user',
               resolver: ::Resolvers::Ci::Catalog::ResourceResolver
+        field :instance_google_cloud_logging_configurations,
+              ::Types::AuditEvents::Instance::GoogleCloudLoggingConfigurationType.connection_type,
+              null: true,
+              description: 'Instance level google cloud logging configurations.',
+              resolver: ::Resolvers::AuditEvents::Instance::GoogleCloudLoggingConfigurationsResolver
       end
 
       def vulnerability(id:)
