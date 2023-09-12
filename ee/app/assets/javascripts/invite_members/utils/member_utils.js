@@ -1,5 +1,4 @@
 import eventHub from '~/invite_members/event_hub';
-import { qualifiesForTasksToBeDone as qualifiesForTasksToBeDoneCe } from '~/invite_members/utils/member_utils';
 import { LEARN_GITLAB } from '../constants';
 
 export { memberName } from '~/invite_members/utils/member_utils';
@@ -18,5 +17,5 @@ export function triggerExternalAlert(source) {
 }
 
 export function qualifiesForTasksToBeDone(source) {
-  return qualifiesForTasksToBeDoneCe() || isOnLearnGitlab(source);
+  return isOnLearnGitlab(source);
 }

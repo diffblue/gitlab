@@ -243,10 +243,6 @@ export default {
     eventHub.$on('openModal', (options) => {
       this.openModal(options);
     });
-
-    if (this.tasksToBeDoneEnabled) {
-      this.openModal({ source: 'in_product_marketing_email' });
-    }
   },
   methods: {
     showInvalidFeedbackMessage(response) {
