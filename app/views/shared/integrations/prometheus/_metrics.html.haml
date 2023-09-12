@@ -7,7 +7,7 @@
     = s_('PrometheusService|Common metrics are automatically monitored based on a library of metrics from popular exporters.')
 
 .col-lg-9
-  = render Pajamas::CardComponent.new(body_options: { class: 'gl-p-0' }, card_options: { class: 'gl-mb-5 js-panel-monitored-metrics', data: { active_metrics: active_common_project_prometheus_metrics_path(project, :json), metrics_help_path: help_page_path('user/project/integrations/prometheus_library/index') }}) do |c|
+  = render Pajamas::CardComponent.new(body_options: { class: 'gl-p-0' }, card_options: { class: 'gl-mb-5 js-panel-monitored-metrics', data: { active_metrics: active_common_project_prometheus_metrics_path(project, :json) }}) do |c|
     - c.with_header do
       %strong
         = s_('PrometheusService|Common metrics')
