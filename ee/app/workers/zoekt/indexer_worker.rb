@@ -3,6 +3,7 @@
 module Zoekt
   class IndexerWorker
     TIMEOUT = 2.hours
+    MAX_JOBS_PER_HOUR = 3600
 
     include ApplicationWorker
 
