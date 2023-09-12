@@ -62,7 +62,7 @@ export default {
             variant: 'confirm',
             loading: this.loading,
             disabled: !this.isFormValid,
-            'data-qa-selector': 'add_schedule_button',
+            'data-testid': 'add-schedule-button',
           },
         },
         cancel: {

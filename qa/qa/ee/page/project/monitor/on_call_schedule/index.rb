@@ -12,8 +12,8 @@ module QA
 
               # rubocop:disable Layout/LineLength
               view 'ee/app/assets/javascripts/oncall_schedules/components/rotations/components/add_edit_rotation_form.vue' do
-                element :rotation_name_field
-                element :state_date_field
+                element 'rotation-name-field'
+                element 'state-date-field'
               end
               # rubocop:enable Layout/LineLength
 
@@ -22,7 +22,7 @@ module QA
               end
 
               def set_rotation_name(name: Faker::Lorem.word)
-                fill_element(:rotation_name_field, name)
+                fill_element('rotation-name-field', name)
               end
 
               def select_participant(username: nil)
@@ -31,8 +31,8 @@ module QA
               end
 
               def set_start_date
-                fill_element(:state_date_field, current_date_yyyy_mm_dd)
-                send_keys_to_element(:state_date_field, :enter)
+                fill_element('state-date-field', current_date_yyyy_mm_dd)
+                send_keys_to_element('state-date-field', :enter)
               end
 
               def save_new_rotation

@@ -181,7 +181,7 @@ export default {
         <gl-button
           v-gl-modal="$options.addScheduleModalId"
           variant="confirm"
-          data-qa-selector="add_on_call_schedule_button"
+          data-testid="add-on-call-schedule-button"
         >
           {{ $options.i18n.add.button }}
         </gl-button>

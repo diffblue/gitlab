@@ -86,7 +86,7 @@ export default {
     >
       <gl-form-input
         id="schedule-name"
-        data-qa-selector="schedule_name_field"
+        data-testid="schedule-name-field"
         :value="form.name"
         @blur="$emit('update-schedule-form', { type: 'name', value: $event.target.value })"
       />
@@ -111,7 +111,7 @@ export default {
       :description="$options.i18n.fields.timezone.description"
       :state="validationState.timezone"
       :invalid-feedback="$options.i18n.fields.timezone.validation.empty"
-      data-qa-selector="schedule_timezone_container"
+      data-testid="schedule-timezone-container"
       required
     >
       <timezone-dropdown

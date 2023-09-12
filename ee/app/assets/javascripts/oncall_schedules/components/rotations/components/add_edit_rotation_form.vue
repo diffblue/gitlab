@@ -122,7 +122,7 @@ export default {
       >
         <gl-form-input
           id="rotation-name"
-          data-qa-selector="rotation_name_field"
+          data-testid="rotation-name-field"
           :value="form.name"
           @change="$emit('update-rotation-form', { type: 'name', value: $event })"
         />
@@ -204,7 +204,7 @@ export default {
             <template #default="{ formattedDate }">
               <gl-form-input
                 class="gl-w-full"
-                data-qa-selector="state_date_field"
+                data-testid="state-date-field"
                 :value="formattedDate"
                 :placeholder="__(`YYYY-MM-DD`)"
               />
