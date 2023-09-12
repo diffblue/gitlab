@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, feature_category: :package_registry do
   using RSpec::Parameterized::TableSyntax
   include HttpBasicAuthHelpers
+  include WorkhorseHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be_with_reload(:project) { create(:project, :public) }
@@ -125,8 +126,6 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
       end
 
       shared_examples 'a user pulling files' do
-        let(:headers) { { 'Private-Token' => personal_access_token.token } }
-
         shared_examples 'returning a workhorse sendurl response' do
           it 'returns a workhorse sendurl response' do
             subject
@@ -136,6 +135,34 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
             expect(response.headers['Content-Type']).to eq('application/octet-stream')
             expect(response.headers['Content-Length'].to_i).to eq(0)
             expect(response.body).to eq('')
+
+            send_data_type, send_data = workhorse_send_data
+            url, allow_redirect = send_data.values_at('URL', 'AllowRedirects')
+
+            expect(send_data_type).to eq('send-url')
+            expect(url).to be_present
+            expect(allow_redirect).to be_truthy
+          end
+        end
+
+        shared_examples 'returning a workhorse senddependency response' do
+          it 'returns a workhorse senddependency response' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(response.headers[Gitlab::Workhorse::SEND_DATA_HEADER]).to start_with('send-dependency:')
+            expect(response.headers['Content-Type']).to eq('application/octet-stream')
+            expect(response.headers['Content-Length'].to_i).to eq(0)
+            expect(response.body).to eq('')
+
+            send_data_type, send_data = workhorse_send_data
+            headers, url, upload_config = send_data.values_at('Headers', 'Url', 'UploadConfig')
+
+            expect(send_data_type).to eq('send-dependency')
+            expect(url).to be_present
+            expect(headers).to be_blank
+            expect(upload_config['Method']).to eq('PUT')
+            expect(upload_config['Url']).to be_present
           end
         end
 
@@ -148,12 +175,16 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
           context 'when pulling a pom file' do
             let(:file_name) { package_file.file_name }
 
-            expected_status_for_wrong_etag = can_destroy_package_files ? :accepted : :workhorse_send_url
+            wrong_etag_shared_example = if can_destroy_package_files
+                                          'returning a workhorse senddependency response'
+                                        else
+                                          'returning a workhorse sendurl response'
+                                        end
 
-            where(:etag_service_response, :expected_status) do
-              ServiceResponse.success                                          | :ok
-              ServiceResponse.error(message: '', reason: :response_error_code) | :ok
-              ServiceResponse.error(message: '', reason: :wrong_etag)          | expected_status_for_wrong_etag
+            where(:etag_service_response, :expected_status, :shared_example) do
+              ServiceResponse.success                                          | :ok | nil
+              ServiceResponse.error(message: '', reason: :response_error_code) | :ok | nil
+              ServiceResponse.error(message: '', reason: :wrong_etag)          | nil | wrong_etag_shared_example
             end
 
             with_them do
@@ -163,11 +194,8 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
                 end
               end
 
-              if params[:expected_status] == :workhorse_send_url
-                it_behaves_like 'returning a workhorse sendurl response'
-              else
-                it_behaves_like 'returning response status', params[:expected_status]
-              end
+              it_behaves_like 'returning response status', params[:expected_status] if params[:expected_status]
+              it_behaves_like params[:shared_example] if params[:shared_example]
             end
           end
 
@@ -185,17 +213,51 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
           end
         end
 
+        shared_examples 'pulling non existing files' do |can_write_package_files: true|
+          context 'with file test.pom' do
+            let(:file_name) { 'test.pom' }
+
+            if can_write_package_files
+              it_behaves_like 'returning a workhorse senddependency response'
+            else
+              it_behaves_like 'returning a workhorse sendurl response'
+            end
+          end
+
+          context 'with file test.md5' do
+            let(:file_name) { 'test.md5' }
+
+            it_behaves_like 'returning a workhorse sendurl response'
+          end
+
+          context 'with file test.sha1' do
+            let(:file_name) { 'test.sha1' }
+
+            it_behaves_like 'returning a workhorse sendurl response'
+          end
+        end
+
+        shared_context 'with custom headers' do
+          let(:headers) { { 'Private-Token' => personal_access_token.token } }
+        end
+
+        shared_context 'with basic auth' do
+          let(:headers) { basic_auth_header(user.username, personal_access_token.token) }
+        end
+
         context 'with a reporter pulling files' do
           before_all do
             project.add_reporter(user)
           end
 
-          it_behaves_like 'pulling existing files'
+          include_context 'with custom headers' do
+            it_behaves_like 'pulling existing files'
+            it_behaves_like 'pulling non existing files', can_write_package_files: false
+          end
 
-          context 'with non existing package file' do
-            let(:file_name) { 'test.pom' }
-
-            it_behaves_like 'returning a workhorse sendurl response'
+          include_context 'with basic auth' do
+            it_behaves_like 'pulling existing files'
+            it_behaves_like 'pulling non existing files', can_write_package_files: false
           end
         end
 
@@ -204,12 +266,14 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
             project.add_developer(user)
           end
 
-          it_behaves_like 'pulling existing files'
+          include_context 'with custom headers' do
+            it_behaves_like 'pulling existing files'
+            it_behaves_like 'pulling non existing files'
+          end
 
-          context 'with non existing package file' do
-            let(:file_name) { 'test.pom' }
-
-            it_behaves_like 'returning response status', :accepted
+          include_context 'with basic auth' do
+            it_behaves_like 'pulling existing files'
+            it_behaves_like 'pulling non existing files'
           end
         end
 
@@ -218,12 +282,46 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
             project.add_maintainer(user)
           end
 
-          it_behaves_like 'pulling existing files', can_destroy_package_files: true
+          include_context 'with custom headers' do
+            it_behaves_like 'pulling existing files', can_destroy_package_files: true
+            it_behaves_like 'pulling non existing files'
+          end
 
-          context 'with non existing package file' do
-            let(:file_name) { 'test.pom' }
+          include_context 'with basic auth' do
+            it_behaves_like 'pulling existing files', can_destroy_package_files: true
+            it_behaves_like 'pulling non existing files'
+          end
 
-            it_behaves_like 'returning response status', :accepted
+          context 'with a ci job token' do
+            context 'with custom headers' do
+              let(:headers) { { 'Job-Token' => job.token } }
+
+              it_behaves_like 'pulling existing files', can_destroy_package_files: true
+              it_behaves_like 'pulling non existing files'
+            end
+
+            context 'with basic auth' do
+              let(:headers) { basic_auth_header(::Gitlab::Auth::CI_JOB_USER, job.token) }
+
+              it_behaves_like 'pulling existing files', can_destroy_package_files: true
+              it_behaves_like 'pulling non existing files'
+            end
+          end
+        end
+
+        context 'with a deploy token' do
+          context 'with custom headers' do
+            let(:headers) { { 'Deploy-Token' => deploy_token.token } }
+
+            it_behaves_like 'pulling existing files', can_destroy_package_files: true
+            it_behaves_like 'pulling non existing files'
+          end
+
+          context 'with basic auth' do
+            let(:headers) { basic_auth_header(deploy_token.username, deploy_token.token) }
+
+            it_behaves_like 'pulling existing files', can_destroy_package_files: true
+            it_behaves_like 'pulling non existing files'
           end
         end
       end
@@ -239,11 +337,11 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
           context 'with a public project' do
             it_behaves_like 'handling different token types',
               personal_access_token_cases: [
-                [:anonymous, nil,   nil,            :forbidden],
-                [:guest,     true,  :custom_header, :ok],
-                [:guest,     true,  :basic_auth,    :ok],
-                [:guest,     false, :custom_header, :unauthorized],
-                [:guest,     false, :basic_auth,    :unauthorized]
+                [:anonymous,     nil,   nil,            :forbidden],
+                [:guest,         true,  :custom_header, :ok],
+                [:guest,         true,  :basic_auth,    :ok],
+                [:guest,         false, :custom_header, :unauthorized],
+                [:guest,         false, :basic_auth,    :unauthorized]
               ]
             it_behaves_like 'a user pulling files'
           end
@@ -255,11 +353,11 @@ RSpec.describe API::DependencyProxy::Packages::Maven, :aggregate_failures, featu
 
             it_behaves_like 'handling different token types',
               personal_access_token_cases: [
-                [:anonymous, nil,   nil,            :unauthorized],
-                [:guest,     true,  :custom_header, :ok],
-                [:guest,     true,  :basic_auth,    :ok],
-                [:guest,     false, :custom_header, :unauthorized],
-                [:guest,     false, :basic_auth,    :unauthorized]
+                [:anonymous,     nil,   nil,            :unauthorized],
+                [:guest,         true,  :custom_header, :ok],
+                [:guest,         true,  :basic_auth,    :ok],
+                [:guest,         false, :custom_header, :unauthorized],
+                [:guest,         false, :basic_auth,    :unauthorized]
               ]
             it_behaves_like 'a user pulling files'
           end

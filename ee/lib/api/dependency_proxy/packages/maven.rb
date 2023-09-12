@@ -8,6 +8,7 @@ module API
         helpers ::API::Helpers::PackagesHelpers
         helpers ::API::Helpers::Packages::Maven
         helpers ::API::Helpers::Packages::Maven::BasicAuthHelpers
+        helpers ::API::Helpers::RelatedResourcesHelpers
 
         feature_category :package_registry
         urgency :low
@@ -72,7 +73,7 @@ module API
                 can?(current_user, :create_package, dependency_proxy_setting)
               destroy_package_file(package_file) if package_file
 
-              send_and_upload_remote_url
+              send_and_upload_remote_url(format: format)
             else
               send_remote_url(remote_package_file_url)
             end
@@ -85,9 +86,57 @@ module API
             body ''
           end
 
-          def send_and_upload_remote_url
-            # TODO: Not implemented yet. See https://gitlab.com/gitlab-org/gitlab/-/issues/410719.
-            accepted!
+          def send_dependency(headers, url, upload_config: {})
+            header(*Gitlab::Workhorse.send_dependency(headers, url, upload_config: upload_config))
+            env['api.format'] = :binary
+            status :ok
+            body ''
+          end
+
+          def send_and_upload_remote_url(format:)
+            if format == 'md5' || format == 'sha1'
+              # We don't store those formats. Fall back to sending the file from the remote registry.
+              return send_remote_url(remote_package_file_url)
+            end
+
+            upload_config = {
+              method: 'PUT',
+              url: upload_url,
+              headers: upload_headers
+            }
+
+            send_dependency({}, remote_package_file_url, upload_config: upload_config)
+          end
+
+          def upload_url
+            url = api_v4_projects_packages_maven_path_path(
+              {
+                id: dependency_proxy_setting.project_id,
+                path: declared_params[:path],
+                file_name: declared_params[:file_name]
+              },
+              true
+            )
+            expose_url(url)
+          end
+
+          # if the endpoint was accessed by custom http headers: nothing to do.
+          # if basic auth was used: transpose credentials from basic auth to custom http headers
+          def upload_headers
+            return {} unless has_basic_credentials?(current_request)
+
+            header_name = case token_from_namespace_inheritable
+                          when PersonalAccessToken
+                            'Private-Token'
+                          when DeployToken
+                            'Deploy-Token'
+                          when ::Ci::Build
+                            ::Gitlab::Auth::CI_JOB_USER
+                          end
+            return {} unless header_name
+
+            _, token = user_name_and_password(current_request)
+            { header_name => token }
           end
         end
 
@@ -142,7 +191,7 @@ module API
             if package && package_file
               respond_with(package_file: package_file, format: format)
             elsif can?(current_user, :create_package, dependency_proxy_setting)
-              send_and_upload_remote_url
+              send_and_upload_remote_url(format: format)
             else
               send_remote_url(remote_package_file_url)
             end
