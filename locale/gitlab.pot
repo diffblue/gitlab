@@ -27103,6 +27103,9 @@ msgstr ""
 msgid "Keep divergent refs"
 msgstr ""
 
+msgid "Keep sidebar visible"
+msgstr ""
+
 msgid "Kerberos access denied"
 msgstr ""
 
@@ -44072,9 +44075,6 @@ msgid "Show password"
 msgstr ""
 
 msgid "Show project milestones"
-msgstr ""
-
-msgid "Show sidebar"
 msgstr ""
 
 msgid "Show sub-group milestones"
