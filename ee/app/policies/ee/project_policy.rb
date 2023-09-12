@@ -287,6 +287,17 @@ module EE
           @subject.licensed_feature_available?(:pages_multiple_versions)
       end
 
+      condition(:merge_requests_is_a_private_feature) do
+        project.project_feature&.private?(:merge_requests)
+      end
+
+      # We are overriding the already defined condition in CE version
+      # to allow Guest users with member roles to access the merge requests.
+      condition(:merge_requests_disabled) do
+        !(access_allowed_to?(:merge_requests) ||
+          (custom_roles_allowed? && merge_requests_is_a_private_feature? && role_enables_admin_merge_request?))
+      end
+
       rule { visual_review_bot }.policy do
         prevent :read_note
         enable :create_note
