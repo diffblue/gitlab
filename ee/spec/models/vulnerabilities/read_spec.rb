@@ -31,7 +31,9 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     it { is_expected.to validate_uniqueness_of(:uuid).case_insensitive }
 
     it { is_expected.to allow_value(true, false).for(:has_issues) }
+    it { is_expected.to allow_value(true, false).for(:has_merge_request) }
     it { is_expected.not_to allow_value(nil).for(:has_issues) }
+    it { is_expected.not_to allow_value(nil).for(:has_merge_request) }
 
     it { is_expected.to allow_value(true, false).for(:resolved_on_default_branch) }
     it { is_expected.not_to allow_value(nil).for(:resolved_on_default_branch) }
@@ -439,6 +441,33 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
         let(:with_issues) { false }
 
         it { is_expected.to match_array([vulnerability_without_issues.vulnerability_read]) }
+      end
+    end
+  end
+
+  describe '.with_merge_request' do
+    let_it_be(:vulnerability_with_merge_request) { create(:vulnerability, :with_finding, :with_merge_request_links) }
+    let_it_be(:vulnerability_without_merge_request) { create(:vulnerability, :with_finding) }
+
+    subject { described_class.with_merge_request(with_merge_request) }
+
+    context 'when no argument is provided' do
+      subject { described_class.with_merge_request }
+
+      it { is_expected.to match_array([vulnerability_with_merge_request.vulnerability_read]) }
+    end
+
+    context 'when the argument is provided' do
+      context 'when the given argument is `true`' do
+        let(:with_merge_request) { true }
+
+        it { is_expected.to match_array([vulnerability_with_merge_request.vulnerability_read]) }
+      end
+
+      context 'when the given argument is `false`' do
+        let(:with_merge_request) { false }
+
+        it { is_expected.to match_array([vulnerability_without_merge_request.vulnerability_read]) }
       end
     end
   end
