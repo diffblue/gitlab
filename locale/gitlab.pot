@@ -3294,9 +3294,6 @@ msgstr ""
 msgid "AdminArea|Sign up for the GitLab newsletter"
 msgstr ""
 
-msgid "AdminArea|Stop all jobs"
-msgstr ""
-
 msgid "AdminArea|Total Billable users"
 msgstr ""
 
