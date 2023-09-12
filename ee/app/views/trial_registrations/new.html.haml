@@ -13,12 +13,12 @@
 .row.gl-align-items-center
   .col-lg-6.gl-display-none.gl-lg-display-flex.gl-flex-direction-column.gl-align-items-center.gl-justify-content-start
     %div
-      = render 'reassurances'
+      = render 'shared/trial_reassurances'
   .col-md-6.offset-md-3.offset-lg-0
     %h2.gl-lg-display-none.gl-mb-3.gl-mt-0.gl-text-gray-800
-      = s_('InProductMarketing|Free 30-day trial')
+      = s_('InProductMarketing|Start your 30-day free trial')
     %p.gl-lg-display-none.gl-font-lg.gl-text-gray-800
-      = s_('InProductMarketing|No credit card required.')
+      = s_('InProductMarketing|No credit card required')
 
     .signup-page
       = render 'devise/shared/signup_box',

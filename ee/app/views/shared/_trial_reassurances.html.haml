@@ -1,0 +1,18 @@
+- ultimate_trial_value_props = [s_('InProductMarketing|Invite unlimited colleagues'),
+  s_('InProductMarketing|Free guest users'),
+  s_('InProductMarketing|Ensure compliance'),
+  s_('InProductMarketing|Built-in security')]
+
+.col-md-4.gl-display-flex.gl-flex-direction-column.gl-align-items-center.gl-justify-content-start
+  .gl-w-28
+    .gl-mb-6
+      = image_tag 'illustrations/saas-trial-illustration.svg'
+
+    %h3.gl-mb-2.gl-text-center.gl-text-black-normal= s_('InProductMarketing|Start your 30-day free trial')
+    %p.gl-mb-6.gl-text-center.gl-text-black-normal= s_('InProductMarketing|No credit card required')
+
+    %ul.gl-pl-0.gl-mb-6.gl-pl-0.gl-mb-6x.gl-text-black-normal.gl-font-sm
+      - ultimate_trial_value_props.each do |value_prop|
+        %li.gl-display-flex.gl-mb-5
+          %span.gl-mr-3.gl-text-green-400= sprite_icon 'check-circle', css_class: 'gl-icon'
+          = value_prop
