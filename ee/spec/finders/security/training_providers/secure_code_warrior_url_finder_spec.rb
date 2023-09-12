@@ -7,11 +7,12 @@ RSpec.describe Security::TrainingProviders::SecureCodeWarriorUrlFinder, feature_
 
   let_it_be(:provider_name) { 'Secure Code Warrior' }
   let_it_be(:provider) { create(:security_training_provider, name: provider_name) }
-  let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'cwe', external_id: 2, name: "cwe-2") }
+  let_it_be(:project) { build_stubbed(:project) }
   let_it_be(:dummy_url) { 'http://test.host/test' }
 
-  let(:identifier_external_id) { "[#{identifier.external_type}]-[#{identifier.external_id}]-[#{identifier.name}]" }
-  let(:finder) { described_class.new(identifier.project, provider, identifier_external_id) }
+  let(:identifier_attributes) { { type: 'cwe', id: 2, name: 'cwe-2' } }
+  let(:identifier_external_id) { format('[%{type}]-[%{id}]-[%{name}]', identifier_attributes) }
+  let(:finder) { described_class.new(project, provider, identifier_external_id) }
 
   describe '#execute' do
     context "when external_type is present in allowed list" do
@@ -58,7 +59,7 @@ RSpec.describe Security::TrainingProviders::SecureCodeWarriorUrlFinder, feature_
     end
 
     context "when external_type is not present in allowed list" do
-      let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'invalid type', external_id: "A1", name: "A1. Injection") }
+      let(:identifier_attributes) { { type: 'invalid type', id: 'A1', name: 'A1. Injection' } }
 
       it 'returns nil' do
         expect(finder.execute).to be_nil
@@ -67,18 +68,22 @@ RSpec.describe Security::TrainingProviders::SecureCodeWarriorUrlFinder, feature_
   end
 
   describe '#full_url' do
-    it 'returns full url path' do
-      expect(finder.full_url).to eq('https://example.com?Id=gitlab&MappingKey=2&MappingList=cwe')
+    context "when identifier contains cwe-{number} format" do
+      it 'returns full url path with proper mapping key' do
+        expect(finder.full_url).to eq('https://example.com?Id=gitlab&MappingKey=2&MappingList=cwe')
+      end
     end
 
     context "when identifier contains CWE-{number} format" do
+      let(:identifier_attributes) { { type: 'CWE', id: 2, name: 'CWE-2' } }
+
       it 'returns full url path with proper mapping key' do
         expect(finder.full_url).to eq('https://example.com?Id=gitlab&MappingKey=2&MappingList=cwe')
       end
     end
 
     context "when identifier contains owasp identifier" do
-      let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'owasp', external_id: "A1", name: "A1. Injection") }
+      let(:identifier_attributes) { { type: 'owasp', id: 'A1', name: 'A1. Injection' } }
 
       it 'returns full url path with proper mapping key' do
         expect(finder.full_url).to eq("https://example.com?Id=gitlab&MappingKey=A1&MappingList=owasp-web-2017")
@@ -90,7 +95,7 @@ RSpec.describe Security::TrainingProviders::SecureCodeWarriorUrlFinder, feature_
 
       it 'returns full url path with the language parameter mapped' do
         expect(
-          described_class.new(identifier.project, provider, identifier_external_id, language).full_url
+          described_class.new(project, provider, identifier_external_id, language).full_url
         ).to eq("https://example.com?Id=gitlab&LanguageKey=#{language}&MappingKey=2&MappingList=cwe")
       end
     end
@@ -98,29 +103,24 @@ RSpec.describe Security::TrainingProviders::SecureCodeWarriorUrlFinder, feature_
 
   describe '#mapping_key' do
     context 'when owasp' do
-      let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'owasp', external_id: "A1", name: "A1. Injection") }
+      let(:identifier_attributes) { { type: 'owasp', id: 'A1', name: 'A1. Injection' } }
 
       it 'returns external_id' do
-        expect(finder.mapping_key).to eq(identifier.external_id)
+        expect(finder.mapping_key).to eq('A1')
       end
     end
 
     context 'when cwe' do
-      let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'cwe', external_id: 2, name: 'cwe-2') }
-
       it 'returns parsed identifier name' do
-        expect(finder.mapping_key).to eq(identifier.name.split('-').last)
+        expect(finder.mapping_key).to eq('2')
       end
     end
   end
 
   describe '#mapping_list' do
     context 'when owasp' do
-      let(:identifier) { create(:vulnerabilities_identifier, external_type: 'owasp', external_id: external_id, name: name) }
-
       context 'when owasp-web-2017' do
-        let(:external_id) { "A1" }
-        let(:name) { "A1. Injection" }
+        let(:identifier_attributes) { { type: 'owasp', id: 'A1', name: 'A1. Injection' } }
 
         it 'returns proper owasp category' do
           expect(finder.mapping_list).to eq("owasp-web-2017")
@@ -128,8 +128,7 @@ RSpec.describe Security::TrainingProviders::SecureCodeWarriorUrlFinder, feature_
       end
 
       context 'when owasp-api-2019' do
-        let(:external_id) { "API1" }
-        let(:name) { "API1. Broken Object Level Authorization" }
+        let(:identifier_attributes) { { type: 'owasp', id: 'API1', name: 'API1. Broken Object Level Authorization' } }
 
         it 'returns proper owasp category' do
           expect(finder.mapping_list).to eq("owasp-api-2019")
@@ -138,17 +137,15 @@ RSpec.describe Security::TrainingProviders::SecureCodeWarriorUrlFinder, feature_
     end
 
     context 'when cwe' do
-      let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'cwe', external_id: 2, name: 'cwe-2') }
-
       it 'returns parsed identifier name' do
-        expect(finder.mapping_list).to eq(identifier.external_type)
+        expect(finder.mapping_list).to eq('cwe')
       end
     end
   end
 
   describe '#allowed_identifier_list' do
     it 'returns allowed identifiers' do
-      expect(finder.allowed_identifier_list).to match_array(%w[cwe owasp])
+      expect(finder.allowed_identifier_list).to match_array(%w[CWE cwe owasp])
     end
   end
 end

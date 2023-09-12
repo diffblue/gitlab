@@ -7,16 +7,15 @@ RSpec.describe Security::TrainingProviders::SecureFlagUrlFinder, feature_categor
 
   let_it_be(:provider_name) { 'SecureFlag' }
   let_it_be(:provider) { create(:security_training_provider, name: provider_name) }
-  let_it_be(:identifier) { create(:vulnerabilities_identifier, external_type: 'cwe', external_id: 2, name: "cwe-2") }
+  let_it_be(:project) { build_stubbed(:project) }
   let_it_be(:dummy_url) { 'http://test.host/test' }
 
-  let(:identifier_external_id) { "[#{identifier.external_type}]-[#{identifier.external_id}]-[#{identifier.name}]" }
-  let(:finder) { described_class.new(identifier.project, provider, identifier_external_id) }
+  let(:identifier_attributes) { { type: 'cwe', id: 2, name: 'cwe-2' } }
+  let(:identifier_external_id) { format('[%{type}]-[%{id}]-[%{name}]', identifier_attributes) }
+  let(:finder) { described_class.new(project, provider, identifier_external_id) }
 
   describe '#calculate_reactive_cache' do
     context 'when request fails' do
-      let_it_be(:finder) { described_class.new(identifier.project, provider, identifier.external_id) }
-
       before do
         synchronous_reactive_cache(finder)
         stub_request(:get, dummy_url).and_raise(SocketError)
@@ -62,9 +61,7 @@ RSpec.describe Security::TrainingProviders::SecureFlagUrlFinder, feature_categor
     end
 
     context "when external_type is not present in allowed list" do
-      let_it_be(:identifier) do
-        create(:vulnerabilities_identifier, external_type: 'invalid type', external_id: "A1", name: "A1. Injection")
-      end
+      let(:identifier_attributes) { { type: 'invalid type', id: 'A1', name: 'A1. Injection' } }
 
       it 'returns nil' do
         expect(finder.execute).to be_nil
@@ -74,11 +71,15 @@ RSpec.describe Security::TrainingProviders::SecureFlagUrlFinder, feature_categor
 
   describe '#full_url' do
     context "when external_type is present in allowed list" do
-      it 'returns full url path' do
-        expect(finder.full_url).to eq('https://example.com?cwe=2')
+      context "when identifier contains cwe-{number} format" do
+        it 'returns full url path with proper mapping key' do
+          expect(finder.full_url).to eq('https://example.com?cwe=2')
+        end
       end
 
       context "when identifier contains CWE-{number} format" do
+        let(:identifier_attributes) { { type: 'CWE', id: 2, name: 'CWE-2' } }
+
         it 'returns full url path with proper mapping key' do
           expect(finder.full_url).to eq('https://example.com?cwe=2')
         end
@@ -88,7 +89,7 @@ RSpec.describe Security::TrainingProviders::SecureFlagUrlFinder, feature_categor
         let_it_be(:language) { 'ruby' }
 
         it 'returns full url path with the language parameter mapped' do
-          expect(described_class.new(identifier.project,
+          expect(described_class.new(project,
             provider,
             identifier_external_id,
             language).full_url).to eq("https://example.com?cwe=2&language=#{language}")
@@ -98,7 +99,7 @@ RSpec.describe Security::TrainingProviders::SecureFlagUrlFinder, feature_categor
 
     describe '#allowed_identifier_list' do
       it 'returns allowed identifiers' do
-        expect(finder.allowed_identifier_list).to match_array(['cwe'])
+        expect(finder.allowed_identifier_list).to match_array(%w[CWE cwe])
       end
     end
   end

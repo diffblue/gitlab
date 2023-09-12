@@ -8,7 +8,7 @@ module Security
       self.reactive_cache_key = ->(finder) { finder.full_url }
       self.reactive_cache_worker_finder = ->(id, *args) { from_cache(id) }
 
-      ALLOWED_IDENTIFIER_LIST = %w[cwe owasp].freeze
+      ALLOWED_IDENTIFIER_LIST = %w[CWE cwe owasp].freeze
       OWASP_WEB_2017 = %w[A1 A2 A3 A4 A5 A6 A7 A8 A9 A10].freeze
       OWASP_API_2019 = %w[API1 API2 API3 API4 API5 API6 API7 API8 API9 API10].freeze
 
@@ -29,7 +29,7 @@ module Security
       end
 
       def mapping_list
-        case external_type
+        case external_type.downcase
         when "cwe"
           "cwe"
         when "owasp"
@@ -42,7 +42,7 @@ module Security
       end
 
       def mapping_key
-        case external_type
+        case external_type.downcase
         when "cwe"
           identifier.split('-').last
         when "owasp"
