@@ -204,6 +204,24 @@ Returns [`CiStage`](#cistage).
 | ---- | ---- | ----------- |
 | <a id="querycipipelinestageid"></a>`id` | [`CiStageID!`](#cistageid) | Global ID of the CI stage. |
 
+### `Query.ciQueueingHistory`
+
+Time it took for ci job to be picked up by runner in percentiles.
+
+WARNING:
+**Introduced** in 16.4.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Returns [`QueueingDelayHistory`](#queueingdelayhistory).
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="queryciqueueinghistoryfromtime"></a>`fromTime` | [`Time`](#time) | Start of the requested time frame. Defaults to 3 hours ago. |
+| <a id="queryciqueueinghistoryrunnertype"></a>`runnerType` | [`CiRunnerType`](#cirunnertype) | Filter jobs by the type of runner that executed them. |
+| <a id="queryciqueueinghistorytotime"></a>`toTime` | [`Time`](#time) | End of the requested time frame. Defaults to current time. |
+
 ### `Query.ciVariables`
 
 List of the instance's CI/CD variables.
@@ -23199,6 +23217,31 @@ Pypi metadata.
 | ---- | ---- | ----------- |
 | <a id="querycomplexitylimit"></a>`limit` | [`Int`](#int) | GraphQL query complexity limit. See [GitLab documentation on this limit](https://docs.gitlab.com/ee/api/graphql/index.html#max-query-complexity). |
 | <a id="querycomplexityscore"></a>`score` | [`Int`](#int) | GraphQL query complexity score. |
+
+### `QueueingDelayHistory`
+
+Aggregated statistics about queueing times for CI jobs.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="queueingdelayhistorytimeseries"></a>`timeSeries` | [`[QueueingHistoryTimeSeries!]`](#queueinghistorytimeseries) | Time series. |
+
+### `QueueingHistoryTimeSeries`
+
+The amount of time for a job to be picked up by a runner, in percentiles.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="queueinghistorytimeseriesp25"></a>`p25` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in 16.4. This feature is an Experiment. It can be changed or removed at any time. 25th percentile. 25% of the durations are lower than this value. |
+| <a id="queueinghistorytimeseriesp50"></a>`p50` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in 16.4. This feature is an Experiment. It can be changed or removed at any time. 50th percentile. 50% of the durations are lower than this value. |
+| <a id="queueinghistorytimeseriesp90"></a>`p90` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in 16.4. This feature is an Experiment. It can be changed or removed at any time. 90th percentile. 90% of the durations are lower than this value. |
+| <a id="queueinghistorytimeseriesp95"></a>`p95` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in 16.4. This feature is an Experiment. It can be changed or removed at any time. 95th percentile. 95% of the durations are lower than this value. |
+| <a id="queueinghistorytimeseriesp99"></a>`p99` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in 16.4. This feature is an Experiment. It can be changed or removed at any time. 99th percentile. 99% of the durations are lower than this value. |
+| <a id="queueinghistorytimeseriestime"></a>`time` | [`Time!`](#time) | Start of the time interval. |
 
 ### `RecentFailures`
 

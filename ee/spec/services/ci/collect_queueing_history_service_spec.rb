@@ -202,6 +202,46 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
     ])
   end
 
+  context 'when from_time and to_time are not specified' do
+    let(:from_time) { nil }
+    let(:to_time) { nil }
+
+    around do |example|
+      travel_to(starting_time + 3.hours) do
+        example.run
+      end
+    end
+
+    it 'defaults time frame to the last 3 hours' do
+      from_time_default = starting_time
+      to_time_default = starting_time + 3.hours
+      builds = [from_time_default - 1.second,
+        from_time_default,
+        to_time_default,
+        to_time_default + 5.minutes + 1.second].map do |started_at|
+        build(:ci_build,
+          :success,
+          created_at: started_at - 1.minute,
+          queued_at: started_at - 1.minute,
+          started_at: started_at,
+          finished_at: started_at + 10.minutes,
+          runner: instance_runner,
+          runner_manager: instance_runner.runner_managers.first)
+      end
+
+      insert_ci_builds_to_click_house(builds)
+
+      expect(result.success?).to eq(true)
+
+      expect(result.payload).to eq([
+        { "p25" => 1.minute, "p50" => 1.minute, "p90" => 1.minute, "p95" => 1.minute, "p99" => 1.minute,
+          "time" => from_time_default },
+        { "p25" => 1.minute, "p50" => 1.minute, "p90" => 1.minute, "p95" => 1.minute, "p99" => 1.minute,
+          "time" => to_time_default }
+      ])
+    end
+  end
+
   context "when requesting more that TIME_BUCKETS_LIMIT" do
     let(:to_time) { starting_time + 190.minutes }
 

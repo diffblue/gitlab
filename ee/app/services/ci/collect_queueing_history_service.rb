@@ -9,8 +9,8 @@ module Ci
       @current_user = current_user
       @percentiles = percentiles
       @runner_type = runner_type
-      @from_time = from_time
-      @to_time = to_time
+      @from_time = from_time || 3.hours.ago.utc
+      @to_time = to_time || Time.now.utc
     end
 
     def execute
