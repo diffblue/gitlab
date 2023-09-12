@@ -20,7 +20,7 @@ module Dora
 
       def process
         env_id = deployment.environment_id
-        refresh_date = deployment.finished_at.strftime("%Y-%m-%d")
+        refresh_date = deployment.finished_at.to_date.iso8601
 
         deployment.run_after_commit_or_now do
           # Schedule to refresh the DORA daily metrics.

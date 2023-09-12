@@ -35,7 +35,7 @@ module Dora
       private
 
       def schedule_metrics_refresh_job
-        date = refresh_date.strftime("%Y-%m-%d")
+        date = refresh_date.to_date.iso8601
         env_id = production_env_id
 
         issue.run_after_commit_or_now do

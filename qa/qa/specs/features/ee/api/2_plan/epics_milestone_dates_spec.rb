@@ -6,10 +6,10 @@ module QA
   RSpec.describe 'Plan', product_group: :product_planning do
     # TODO: Convert back to reliable once proved to be stable. Related issue: https://gitlab.com/gitlab-org/gitlab/-/issues/219495
     describe 'Epics milestone dates API' do
-      let(:milestone_start_date) { (Date.today.to_date + 100).strftime("%Y-%m-%d") }
-      let(:milestone_due_date) { (Date.today.to_date + 120).strftime("%Y-%m-%d") }
-      let(:fixed_start_date) { Date.today.to_date.strftime("%Y-%m-%d") }
-      let(:fixed_due_date) { (Date.today.to_date + 90).strftime("%Y-%m-%d") }
+      let(:milestone_start_date) { (Date.today + 100).iso8601 }
+      let(:milestone_due_date) { (Date.today + 120).iso8601 }
+      let(:fixed_start_date) { Date.today.iso8601 }
+      let(:fixed_due_date) { (Date.today + 90).iso8601 }
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
       let(:group) { create(:group, path: "epic-milestone-group-#{SecureRandom.hex(8)}") }
       let(:project) do
@@ -21,8 +21,8 @@ module QA
 
       it 'updates epic dates when updating milestones', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347958' do
         epic, milestone = create_epic_issue_milestone
-        new_milestone_start_date = (Date.today.to_date + 20).strftime("%Y-%m-%d")
-        new_milestone_due_date = (Date.today.to_date + 30).strftime("%Y-%m-%d")
+        new_milestone_start_date = (Date.today + 20).iso8601
+        new_milestone_due_date = (Date.today + 30).iso8601
 
         # Update Milestone to different dates and see it reflecting in the epics
         request = create_request("/projects/#{project.id}/milestones/#{milestone.id}")
@@ -39,8 +39,8 @@ module QA
 
       it 'updates epic dates when adding another issue', :reliable, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347955' do
         epic = create_epic_issue_milestone[0]
-        new_milestone_start_date = Date.today.to_date.strftime("%Y-%m-%d")
-        new_milestone_due_date = (Date.today.to_date + 150).strftime("%Y-%m-%d")
+        new_milestone_start_date = Date.today.iso8601
+        new_milestone_due_date = (Date.today + 150).iso8601
 
         # Add another Issue and milestone
         second_milestone = create_milestone(new_milestone_start_date, new_milestone_due_date)
