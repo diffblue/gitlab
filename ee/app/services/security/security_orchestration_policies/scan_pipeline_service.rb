@@ -69,7 +69,7 @@ module Security
 
         ::Security::SecurityOrchestrationPolicies::CiConfigurationService
           .new
-          .execute(action, action_variables.merge(scan_variables(action)), index)
+          .execute(action, scan_variables(action).merge(action_variables), index)
           .deep_symbolize_keys
       end
 
