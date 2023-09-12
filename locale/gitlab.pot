@@ -32821,6 +32821,9 @@ msgstr ""
 msgid "Organizations"
 msgstr ""
 
+msgid "Organization|A group is a collection of several projects. If you organize your projects under a group, it works like a folder."
+msgstr ""
+
 msgid "Organization|An error occurred loading the groups. Please refresh the page to try again."
 msgstr ""
 
@@ -32858,6 +32861,12 @@ msgid "Organization|Search or filter list"
 msgstr ""
 
 msgid "Organization|View all"
+msgstr ""
+
+msgid "Organization|You don't have any groups yet."
+msgstr ""
+
+msgid "Organization|You don't have any projects yet."
 msgstr ""
 
 msgid "Orphaned member"
