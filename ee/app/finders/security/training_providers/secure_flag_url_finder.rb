@@ -8,7 +8,7 @@ module Security
       self.reactive_cache_key = ->(finder) { finder.full_url }
       self.reactive_cache_worker_finder = ->(id, *_args) { from_cache(id) }
 
-      ALLOWED_IDENTIFIER_LIST = %w[cwe].freeze
+      ALLOWED_IDENTIFIER_LIST = %w[CWE cwe].freeze
 
       def calculate_reactive_cache(full_url)
         response = Gitlab::HTTP.try_get(full_url)

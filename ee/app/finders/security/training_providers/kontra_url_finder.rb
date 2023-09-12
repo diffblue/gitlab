@@ -8,7 +8,7 @@ module Security
       self.reactive_cache_key = ->(finder) { finder.full_url }
       self.reactive_cache_worker_finder = ->(id, *args) { from_cache(id) }
 
-      ALLOWED_IDENTIFIER_LIST = %w[cwe].freeze
+      ALLOWED_IDENTIFIER_LIST = %w[CWE cwe].freeze
 
       # To improve the authentication/integration
       # https://gitlab.com/gitlab-org/gitlab/-/issues/354070
