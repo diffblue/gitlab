@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Sbom::MergeReportsService, feature_category: :dependency_management do
-  let(:project) { build(:project) }
   let(:uuid) { 'aec33827-20ae-40d0-ae83-18ee846364d2' }
   let(:metadata_1) { build(:ci_reports_sbom_metadata) }
   let(:metadata_2) { build(:ci_reports_sbom_metadata) }
@@ -90,17 +89,17 @@ RSpec.describe Sbom::MergeReportsService, feature_category: :dependency_manageme
 
   before do
     allow(Gitlab::LicenseScanning::PackageLicenses).to receive(:new).with(
-      project: project, components: components_3).and_return(package_license_3)
+      components: components_3).and_return(package_license_3)
     allow(Gitlab::LicenseScanning::PackageLicenses).to receive(:new).with(
-      project: project, components: components_2).and_return(package_license_2)
+      components: components_2).and_return(package_license_2)
     allow(Gitlab::LicenseScanning::PackageLicenses).to receive(:new).with(
-      project: project, components: components_1).and_return(package_license_1)
+      components: components_1).and_return(package_license_1)
 
     allow(SecureRandom).to receive(:uuid).and_return(uuid)
   end
 
   describe '#execute' do
-    subject(:execute) { described_class.new(reports, project).execute }
+    subject(:execute) { described_class.new(reports).execute }
 
     it { is_expected.to have_json_attributes }
 

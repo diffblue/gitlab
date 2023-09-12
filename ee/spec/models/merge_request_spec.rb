@@ -288,26 +288,12 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
           before do
             project.software_license_policies << denied_policy
             synchronous_reactive_cache(merge_request)
+
+            create(:pm_package, name: "nokogiri", purl_type: "gem",
+              other_licenses: [{ license_names: ["Apache-2.0"], versions: ["1.8.0"] }])
           end
 
-          context 'when querying uncompressed package metadata' do
-            before do
-              stub_feature_flags(compressed_package_metadata_query: false)
-              create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
-                version: "1.8.0", license_name: "Apache-2.0")
-            end
-
-            it { is_expected.to be_truthy }
-          end
-
-          context 'when querying compressed package metadata' do
-            before do
-              create(:pm_package, name: "nokogiri", purl_type: "gem",
-                other_licenses: [{ license_names: ["Apache-2.0"], versions: ["1.8.0"] }])
-            end
-
-            it { is_expected.to be_truthy }
-          end
+          it { is_expected.to be_truthy }
 
           context 'with disabled licensed feature' do
             before do
@@ -326,28 +312,14 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
               before do
                 allow_any_instance_of(ApprovalWrappedRule).to receive(:approved?).and_return(false)
+
+                create(
+                  :pm_package, name: "nokogiri", purl_type: "gem",
+                  other_licenses: [{ license_names: ["Apache-2.0"], versions: ["1.8.0"] }]
+                )
               end
 
-              context 'when querying uncompressed package metadata' do
-                before do
-                  stub_feature_flags(compressed_package_metadata_query: false)
-                  create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
-                    version: "1.8.0", license_name: "Apache-2.0")
-                end
-
-                it { is_expected.to be_truthy }
-              end
-
-              context 'when querying compressed package metadata' do
-                before do
-                  create(
-                    :pm_package, name: "nokogiri", purl_type: "gem",
-                    other_licenses: [{ license_names: ["Apache-2.0"], versions: ["1.8.0"] }]
-                  )
-                end
-
-                it { is_expected.to be_truthy }
-              end
+              it { is_expected.to be_truthy }
             end
 
             context 'when rule is approved' do

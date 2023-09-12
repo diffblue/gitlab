@@ -50,31 +50,15 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
         let!(:base_pipeline) { nil }
         let!(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
 
-        context 'when querying uncompressed package metadata' do
-          before do
-            stub_feature_flags(compressed_package_metadata_query: false)
-
-            create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "BSD")
-          end
-
-          it 'reports new licenses' do
-            expect(subject[:status]).to eq(:parsed)
-            expect(subject[:data]['new_licenses']).to match_array([a_hash_including('name' => 'BSD-4-Clause'),
-              a_hash_including('name' => 'unknown')])
-          end
+        before do
+          create(:pm_package, name: "nokogiri", purl_type: "gem",
+            other_licenses: [{ license_names: ["BSD"], versions: ["1.8.0"] }])
         end
 
-        context 'when querying compressed package metadata' do
-          before do
-            create(:pm_package, name: "nokogiri", purl_type: "gem",
-              other_licenses: [{ license_names: ["BSD"], versions: ["1.8.0"] }])
-          end
-
-          it 'reports new licenses' do
-            expect(subject[:status]).to eq(:parsed)
-            expect(subject[:data]['new_licenses']).to match_array([a_hash_including('name' => 'BSD-4-Clause'),
-              a_hash_including('name' => 'unknown')])
-          end
+        it 'reports new licenses' do
+          expect(subject[:status]).to eq(:parsed)
+          expect(subject[:data]['new_licenses']).to match_array([a_hash_including('name' => 'BSD-4-Clause'),
+            a_hash_including('name' => 'unknown')])
         end
       end
     end
@@ -83,6 +67,9 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
       before do
         project.add_maintainer(maintainer)
         project.add_developer(contributor)
+
+        create(:pm_package, name: "nokogiri", purl_type: "gem",
+          other_licenses: [{ license_names: ["BSD"], versions: ["1.8.0"] }])
       end
 
       let(:service) { described_class.new(project, maintainer) }
@@ -93,29 +80,9 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
       let(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: forked_project, user: contributor) }
       let(:forked_project) { fork_project(project, contributor, namespace: contributor.namespace) }
 
-      context 'when querying uncompressed package metadata' do
-        before do
-          stub_feature_flags(compressed_package_metadata_query: false)
-
-          create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "BSD")
-        end
-
-        it 'reports new licenses' do
-          expect(subject[:status]).to eq(:parsed)
-          expect(subject[:data]['new_licenses'].count).to eq(2)
-        end
-      end
-
-      context 'when querying compressed package metadata' do
-        before do
-          create(:pm_package, name: "nokogiri", purl_type: "gem",
-            other_licenses: [{ license_names: ["BSD"], versions: ["1.8.0"] }])
-        end
-
-        it 'reports new licenses' do
-          expect(subject[:status]).to eq(:parsed)
-          expect(subject[:data]['new_licenses'].count).to eq(2)
-        end
+      it 'reports new licenses' do
+        expect(subject[:status]).to eq(:parsed)
+        expect(subject[:data]['new_licenses'].count).to eq(2)
       end
     end
 
@@ -139,61 +106,30 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
         let!(:base_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
         let!(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_pypi_only, project: project) }
 
-        context 'when querying uncompressed package metadata' do
-          before do
-            stub_feature_flags(compressed_package_metadata_query: false)
+        before do
+          create(:pm_package, name: "nokogiri", purl_type: "gem",
+            other_licenses: [{ license_names: %w[BSD MIT], versions: ["1.8.0"] }])
 
-            create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "BSD")
-            create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "MIT")
-            create(:pm_package_version_license, :with_all_relations, name: "django", purl_type: "pypi", version: "1.11.4", license_name: "BSD")
-            create(:pm_package_version_license, :with_all_relations, name: "django", purl_type: "pypi", version: "1.11.4", license_name: "Apache-2.0")
-          end
-
-          it 'reports status as parsed' do
-            expect(subject[:status]).to eq(:parsed)
-          end
-
-          it 'reports new licenses' do
-            expect(subject[:data]['new_licenses']).to match([a_hash_including('name' => 'Apache 2.0 License')])
-          end
-
-          it 'reports existing licenses' do
-            expect(subject[:data]['existing_licenses']).to match(
-              [a_hash_including('name' => 'BSD-4-Clause'), a_hash_including('name' => 'unknown')]
-            )
-          end
-
-          it 'reports removed licenses' do
-            expect(subject[:data]['removed_licenses']).to match([a_hash_including('name' => 'MIT')])
-          end
+          create(:pm_package, name: "django", purl_type: "pypi",
+            other_licenses: [{ license_names: ["BSD", "Apache-2.0"], versions: ["1.11.4"] }])
         end
 
-        context 'when querying compressed package metadata' do
-          before do
-            create(:pm_package, name: "nokogiri", purl_type: "gem",
-              other_licenses: [{ license_names: %w[BSD MIT], versions: ["1.8.0"] }])
+        it 'reports status as parsed' do
+          expect(subject[:status]).to eq(:parsed)
+        end
 
-            create(:pm_package, name: "django", purl_type: "pypi",
-              other_licenses: [{ license_names: ["BSD", "Apache-2.0"], versions: ["1.11.4"] }])
-          end
+        it 'reports new licenses' do
+          expect(subject[:data]['new_licenses']).to match([a_hash_including('name' => 'Apache 2.0 License')])
+        end
 
-          it 'reports status as parsed' do
-            expect(subject[:status]).to eq(:parsed)
-          end
+        it 'reports existing licenses' do
+          expect(subject[:data]['existing_licenses']).to match(
+            [a_hash_including('name' => 'BSD-4-Clause'), a_hash_including('name' => 'unknown')]
+          )
+        end
 
-          it 'reports new licenses' do
-            expect(subject[:data]['new_licenses']).to match([a_hash_including('name' => 'Apache 2.0 License')])
-          end
-
-          it 'reports existing licenses' do
-            expect(subject[:data]['existing_licenses']).to match(
-              [a_hash_including('name' => 'BSD-4-Clause'), a_hash_including('name' => 'unknown')]
-            )
-          end
-
-          it 'reports removed licenses' do
-            expect(subject[:data]['removed_licenses']).to match([a_hash_including('name' => 'MIT')])
-          end
+        it 'reports removed licenses' do
+          expect(subject[:data]['removed_licenses']).to match([a_hash_including('name' => 'MIT')])
         end
       end
     end

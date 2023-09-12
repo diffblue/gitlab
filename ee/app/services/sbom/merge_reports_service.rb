@@ -2,13 +2,12 @@
 
 module Sbom
   class MergeReportsService
-    attr_reader :merged_report, :reports, :project
+    attr_reader :merged_report, :reports
 
-    def initialize(reports, project)
+    def initialize(reports)
       @reports = reports
 
       @merged_report = ::Gitlab::Ci::Reports::Sbom::Report.new
-      @project = project
 
       @all_tools = {}
       @all_authors = {}
@@ -45,9 +44,7 @@ module Sbom
     end
 
     def component_with_licenses_for(report)
-      ::Gitlab::LicenseScanning::PackageLicenses.new(
-        project: project, components: report.components
-      ).fetch
+      ::Gitlab::LicenseScanning::PackageLicenses.new(components: report.components).fetch
     end
   end
 end
