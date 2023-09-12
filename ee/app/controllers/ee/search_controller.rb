@@ -42,6 +42,10 @@ module EE
         push_frontend_feature_flag(:search_issue_label_aggregation, current_user)
       end
 
+      before_action only: :show do
+        push_frontend_feature_flag(:search_issues_hide_archived_projects, current_user)
+      end
+
       after_action :run_index_integrity_worker, only: :show, if: :no_results_for_group_or_project_blobs_advanced_search?
     end
 
