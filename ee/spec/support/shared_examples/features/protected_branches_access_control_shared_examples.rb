@@ -119,7 +119,7 @@ RSpec.shared_examples "protected branches > access control > EE" do
               expect(page).to have_selector('.dropdown-header', text: header)
             end
 
-            find(".dropdown-input-field").set(users.last.name) # Find a user that is not loaded
+            find(".gl-search-box-by-type-input", visible: true).set(users.last.name) # Find a user that is not loaded
             wait_for_requests
 
             click_on users.last.name
@@ -130,7 +130,10 @@ RSpec.shared_examples "protected branches > access control > EE" do
           within_select(".js-allowed-to-#{git_operation}") do
             wait_for_requests
             # Verify the user is appended in the dropdown
-            expect(page).to have_selector '.dropdown-content .is-active', text: users.last.name
+            user_item = find('.dropdown-menu.show .gl-dropdown-item', text: users.last.name)
+            within user_item do
+              has_css?('.dropdown-item-checkbox')
+            end
           end
         end
 
