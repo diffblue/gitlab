@@ -31337,9 +31337,6 @@ msgstr ""
 msgid "NorthstarNavigation|New navigation"
 msgstr ""
 
-msgid "NorthstarNavigation|Provide feedback"
-msgstr ""
-
 msgid "NorthstarNavigation|Toggle new navigation"
 msgstr ""
 
