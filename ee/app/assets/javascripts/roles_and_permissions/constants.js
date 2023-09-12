@@ -67,6 +67,7 @@ export const I18N_DELETE_ROLE = s__('MemberRoles|Delete role');
 export const I18N_DELETION_ERROR = s__('MemberRoles|Failed to delete the role.');
 export const I18N_DELETION_SUCCESS = s__('MemberRoles|Role successfully deleted.');
 export const I18N_EMPTY_TITLE = s__('MemberRoles|No custom roles for this group');
+export const I18N_EMPTY_TEXT_SAAS = s__("MemberRoles|To add a new role select 'Add new role'.");
 export const I18N_EMPTY_TEXT_SELF_MANAGED = s__(
   "MemberRoles|To add a new role select a group and then 'Add new role'.",
 );
