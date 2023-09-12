@@ -381,7 +381,7 @@ module EE
       end
 
       # If licensed but not reporter+, prevent access
-      rule { ~reporter & licensed_cycle_analytics_available }.policy do
+      rule { (~reporter & ~auditor & ~admin) & licensed_cycle_analytics_available }.policy do
         prevent :read_cycle_analytics
       end
 
