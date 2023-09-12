@@ -195,12 +195,12 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
               end
 
               it 'has a nice subject' do
-                expect(subject).to include("Your #{plan_name.capitalize} subscription will expire on #{expired_date.strftime("%Y-%m-%d")}")
+                expect(subject).to include("Your #{plan_name.capitalize} subscription will expire on #{expired_date.iso8601}")
               end
 
               context 'without namespace' do
                 it 'has an expiration blocking message' do
-                  expect(message).to include("If you don\'t renew by #{block_changes_date.strftime("%Y-%m-%d")} your instance will become read-only, and you won't be able to create issues or merge requests. You will also lose access to your paid features and support entitlement. How do I renew my subscription?")
+                  expect(message).to include("If you don\'t renew by #{block_changes_date.iso8601} your instance will become read-only, and you won't be able to create issues or merge requests. You will also lose access to your paid features and support entitlement. How do I renew my subscription?")
                 end
               end
 

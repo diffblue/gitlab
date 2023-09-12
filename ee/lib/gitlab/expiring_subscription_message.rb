@@ -56,7 +56,7 @@ module Gitlab
     def expiring_subject
       _('Your %{plan_name} subscription will expire on %{expires_on}') %
         {
-          expires_on: subscribable.expires_at.strftime("%Y-%m-%d"),
+          expires_on: subscribable.expires_at.iso8601,
           plan_name: plan_name
         }
     end
@@ -89,7 +89,7 @@ module Gitlab
       if auto_renew
         support_link = '<a href="https://support.gitlab.com">support.gitlab.com</a>'.html_safe
 
-        _('We tried to automatically renew your subscription for %{strong}%{namespace_name}%{strong_close} on %{expires_on} but something went wrong so your subscription was downgraded to the free plan. Don\'t worry, your data is safe. We suggest you check your payment method and get in touch with our support team (%{support_link}). They\'ll gladly help with your subscription renewal.') % { strong: strong, strong_close: strong_close, namespace_name: namespace.name, support_link: support_link, expires_on: subscribable.expires_at.strftime("%Y-%m-%d") }
+        _('We tried to automatically renew your subscription for %{strong}%{namespace_name}%{strong_close} on %{expires_on} but something went wrong so your subscription was downgraded to the free plan. Don\'t worry, your data is safe. We suggest you check your payment method and get in touch with our support team (%{support_link}). They\'ll gladly help with your subscription renewal.') % { strong: strong, strong_close: strong_close, namespace_name: namespace.name, support_link: support_link, expires_on: subscribable.expires_at.iso8601 }
       else
         pricing_url = 'https://about.gitlab.com/pricing/'
         pricing_link_start = '<a href="%{url}">'.html_safe % { url: pricing_url }
@@ -104,8 +104,8 @@ module Gitlab
 
       _("If you don't renew by %{strong}%{downgrades_on}%{strong_close} your instance will become read-only, and you won't be able to create issues or merge requests. You will also lose access to your paid features and support entitlement. %{learn_more_link}") %
         {
-          expires_on: subscribable.expires_at.strftime("%Y-%m-%d"),
-          downgrades_on: subscribable.block_changes_at.strftime("%Y-%m-%d"),
+          expires_on: subscribable.expires_at.iso8601,
+          downgrades_on: subscribable.block_changes_at.iso8601,
           learn_more_url: help_page_path('subscriptions/self_managed/index', anchor: 'renew-your-subscription'), target: '_blank', rel: 'noopener noreferrer',
           learn_more_link: '<a href="%{learn_more_url}">How do I renew my subscription?</a>',
           plan_name: plan_name,
@@ -117,7 +117,7 @@ module Gitlab
     def namespace_expiring_message
       message = []
 
-      message << _('Your %{strong}%{plan_name}%{strong_close} subscription for %{strong}%{namespace_name}%{strong_close} will expire on %{strong}%{expires_on}%{strong_close}.') % { expires_on: subscribable.expires_at.strftime("%Y-%m-%d"), plan_name: plan_name, strong: strong, strong_close: strong_close, namespace_name: namespace.name }
+      message << _('Your %{strong}%{plan_name}%{strong_close} subscription for %{strong}%{namespace_name}%{strong_close} will expire on %{strong}%{expires_on}%{strong_close}.') % { expires_on: subscribable.expires_at.iso8601, plan_name: plan_name, strong: strong, strong_close: strong_close, namespace_name: namespace.name }
 
       message << expiring_features_message
 
@@ -127,7 +127,7 @@ module Gitlab
     def expiring_features_message
       _("If you do not renew by %{strong}%{downgrades_on}%{strong_close}, you can't use merge approvals, %{end_message}") %
         {
-          downgrades_on: subscribable.block_changes_at.strftime("%Y-%m-%d"),
+          downgrades_on: subscribable.block_changes_at.iso8601,
           end_message: end_message,
           strong: strong,
           strong_close: strong_close

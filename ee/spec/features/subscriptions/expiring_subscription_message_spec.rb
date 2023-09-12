@@ -43,7 +43,7 @@ RSpec.describe 'Expiring Subscription Message', :js, :freeze_time, feature_categ
         let(:expires_at) { Date.current + 15.days }
 
         it 'notifies the admin of a soon expiring subscription' do
-          expect(page).to have_content("Your Ultimate subscription will expire on #{expires_at.strftime("%Y-%m-%d")}")
+          expect(page).to have_content("Your Ultimate subscription will expire on #{expires_at.iso8601}")
         end
       end
 
@@ -145,7 +145,7 @@ RSpec.describe 'Expiring Subscription Message', :js, :freeze_time, feature_categ
         let(:end_date) { Date.current + 14.days }
 
         it 'notifies the group owner of a soon expiring subscription' do
-          expect(page).to have_content("Your Ultimate subscription will expire on #{end_date.strftime("%Y-%m-%d")}")
+          expect(page).to have_content("Your Ultimate subscription will expire on #{end_date.iso8601}")
         end
       end
 

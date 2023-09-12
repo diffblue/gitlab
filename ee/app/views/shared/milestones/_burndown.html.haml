@@ -3,8 +3,8 @@
 
 - if can_generate_chart?(milestone)
   - add_page_startup_graphql_call('burndown_chart/burnup', { id: milestone.to_global_id.to_s, isIteration: false, weight: false })
-  .burndown-chart.mb-2{ data: { start_date: milestone.start_date.strftime("%Y-%m-%d"),
-    due_date: milestone.due_date.strftime("%Y-%m-%d"),
+  .burndown-chart.mb-2{ data: { start_date: milestone.start_date.iso8601,
+    due_date: milestone.due_date.iso8601,
     milestone_id: milestone.to_global_id,
     is_legacy: legacy_milestone?(milestone),
     burndown_events_path: expose_url(burndown_endpoint) } }
