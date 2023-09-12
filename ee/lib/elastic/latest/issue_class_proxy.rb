@@ -52,9 +52,7 @@ module Elastic
             query_hash = context.name(:hidden) { hidden_filter(query_hash) }
           end
 
-          if Feature.enabled?(:search_issues_hide_archived_projects) && ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_on_work_items)
-            query_hash = context.name(:archived) { archived_filter(query_hash) } unless options[:include_archived]
-          end
+          query_hash = context.name(:archived) { archived_filter(query_hash) } if archived_filter_applicable?(options)
         end
 
         return apply_aggregation(query_hash) if options[:aggregation]
@@ -183,6 +181,12 @@ module Elastic
           }
         }
         query_hash
+      end
+
+      def archived_filter_applicable?(options)
+        !options[:include_archived] && options[:search_scope] != 'project' &&
+          Feature.enabled?(:search_issues_hide_archived_projects, options[:current_user]) &&
+          ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_on_work_items)
       end
     end
   end
