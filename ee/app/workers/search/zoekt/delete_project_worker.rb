@@ -7,6 +7,7 @@ module Search
       include Gitlab::ExclusiveLeaseHelpers
 
       TIMEOUT = 1.minute
+      MAX_JOBS_PER_HOUR = 3600
 
       data_consistency :delayed
 
