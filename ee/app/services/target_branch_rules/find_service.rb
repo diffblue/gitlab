@@ -13,7 +13,7 @@ module TargetBranchRules
     end
 
     def authorized?
-      can?(current_user, :read_target_branch_rules, project)
+      can?(current_user, :read_target_branch_rule, project)
     end
 
     private

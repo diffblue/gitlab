@@ -15,7 +15,7 @@ module TargetBranchRules
     private
 
     def authorized?
-      can?(current_user, :create_target_branch_rule, project)
+      can?(current_user, :admin_target_branch_rule, project)
     end
 
     def error_no_permissions

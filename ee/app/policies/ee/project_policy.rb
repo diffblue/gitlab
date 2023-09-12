@@ -678,13 +678,13 @@ module EE
         ai_features_enabled & generate_description_enabled & can?(:create_issue)
       end.enable :generate_description
 
-      rule do
-        target_branch_rules_enabled & target_branch_rules_available & maintainer
-      end.enable :create_target_branch_rule
+      rule { target_branch_rules_enabled & target_branch_rules_available & maintainer }.policy do
+        enable :admin_target_branch_rule
+      end
 
       rule do
         target_branch_rules_enabled & target_branch_rules_available
-      end.enable :read_target_branch_rules
+      end.enable :read_target_branch_rule
 
       rule do
         (maintainer | owner | admin) & pages_multiple_versions_available

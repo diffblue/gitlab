@@ -1,4 +1,4 @@
-- return unless can?(current_user, :read_target_branch_rules, @project)
+- return unless can?(current_user, :read_target_branch_rule, @project)
 
 %section.settings.merge-requests-feature.no-animate#target-branch-rules.expanded
   .settings-header
@@ -13,14 +13,14 @@
             .gl-new-card-count
               = sprite_icon('branch', css_class: 'gl-mr-2')
               %span= @target_branch_rules&.total_count
-          - if can?(current_user, :create_target_branch_rule, @project)
+          - if can?(current_user, :admin_target_branch_rule, @project)
             .gl-new-card-actions
               = render Pajamas::ButtonComponent.new(size: :small, button_options: { class: 'js-toggle-button js-toggle-content' }) do
                 = _('Add target branch rule')
         .gl-new-card-description.gl-mt-2.gl-sm-mt-0
           = _('Create rules for target branches in merge requests.')
       - c.with_body do
-        - if can?(current_user, :create_target_branch_rule, @project)
+        - if can?(current_user, :admin_target_branch_rule, @project)
           .gl-new-card-add-form.gl-m-3.gl-display-none.js-toggle-content
             = gitlab_ui_form_for @project.target_branch_rules.new, url: project_target_branch_rules_path(@project) do |f|
               %h4.gl-mt-0= _("Target branch rule")

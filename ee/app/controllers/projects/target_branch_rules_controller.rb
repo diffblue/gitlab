@@ -6,7 +6,7 @@ module Projects
     urgency :low
 
     before_action do
-      render_404 unless can?(current_user, :read_target_branch_rules, @project)
+      render_404 unless can?(current_user, :read_target_branch_rule, @project)
     end
 
     def create
