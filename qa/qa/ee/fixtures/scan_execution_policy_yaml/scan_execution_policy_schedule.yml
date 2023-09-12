@@ -1,0 +1,10 @@
+type: scan_execution_policy
+name: greyhound
+description: yyy
+enabled: true
+rules:
+  - type: pipeline
+    branches:
+      - main
+actions:
+  - scan: secret_detection

@@ -24,7 +24,7 @@ module QA
       end
 
       let!(:scan_result_policy_project) do
-        QA::EE::Resource::ScanResultPolicyProject.fabricate_via_api! do |commit|
+        EE::Resource::SecurityScanPolicyProject.fabricate_via_api! do |commit|
           commit.project_path = project.full_path
         end
       end
@@ -47,7 +47,7 @@ module QA
       end
 
       let(:scan_result_policy_commit) do
-        QA::EE::Resource::ScanResultPolicyCommit.fabricate_via_api! do |commit|
+        EE::Resource::ScanResultPolicyCommit.fabricate_via_api! do |commit|
           commit.policy_name = scan_result_policy_name
           commit.project_path = project.full_path
           commit.mode = :APPEND

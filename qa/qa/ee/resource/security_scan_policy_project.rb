@@ -3,7 +3,7 @@
 module QA
   module EE
     module Resource
-      class ScanResultPolicyProject < QA::Resource::Base
+      class SecurityScanPolicyProject < QA::Resource::Base
         attributes :project_path
 
         def resource_web_url(resource)
