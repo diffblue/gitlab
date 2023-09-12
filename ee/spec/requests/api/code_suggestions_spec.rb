@@ -281,6 +281,34 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             })
           end
         end
+
+        context 'when code_generation_no_comment_prefix feature flag enabled' do
+          before do
+            stub_feature_flags(code_generation_no_comment_prefix: current_user)
+          end
+
+          it 'passes skip_generate_comment_prefix: true into TaskSelector.task' do
+            expect(::CodeSuggestions::TaskSelector).to receive(:task)
+              .with(skip_generate_comment_prefix: true, params: kind_of(Hash))
+              .and_call_original
+
+            post_api
+          end
+        end
+
+        context 'when code_generation_no_comment_prefix feature flag disabled' do
+          before do
+            stub_feature_flags(code_generation_no_comment_prefix: false)
+          end
+
+          it 'passes skip_generate_comment_prefix: false into TaskSelector.task' do
+            expect(::CodeSuggestions::TaskSelector).to receive(:task)
+              .with(skip_generate_comment_prefix: false, params: kind_of(Hash))
+              .and_call_original
+
+            post_api
+          end
+        end
       end
     end
 
@@ -322,7 +350,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           let(:prefix) do
             <<~PREFIX
               def is_even(n: int) ->
-              # Gitlab Duo Generate: #{instruction}
+              # #{instruction}
             PREFIX
           end
 

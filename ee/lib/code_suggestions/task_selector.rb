@@ -10,11 +10,16 @@ module CodeSuggestions
     # of a text block and an optional line break.
     GENERATE_COMMENT_PREFIX =
       %r{(?<prefix>.*)(?<comment>--|#|//)[ \t]?GitLab Duo Generate:[ \t]*(?<instruction>[^\r\n]{10,})\s*\Z}im
+    GENERATE_COMMENT_NO_PREFIX =
+      %r{(?<prefix>.*)(?<comment>--|#|//)[ \t]?[ \t]*(?<instruction>[^\r\n]{10,})\s*\Z}im
     PREFIX_MAX_SIZE = 100_000
 
-    def self.task(params:)
+    # TODO: Remove `skip_generate_comment_prefix` when `code_suggestions_no_comment_prefix` feature flag
+    # is removed https://gitlab.com/gitlab-org/gitlab/-/issues/424879
+    def self.task(skip_generate_comment_prefix:, params:)
       prefix = params.dig('current_file', 'content_above_cursor')
-      match = comment_match(prefix)
+      prefix_regex = skip_generate_comment_prefix ? GENERATE_COMMENT_NO_PREFIX : GENERATE_COMMENT_PREFIX
+      match = comment_match(prefix, prefix_regex)
 
       return CodeSuggestions::Tasks::CodeCompletion.new(params.merge(prefix: prefix)) unless match
 
@@ -26,7 +31,7 @@ module CodeSuggestions
       )
     end
 
-    def self.comment_match(prefix)
+    def self.comment_match(prefix, prefix_regex)
       return unless prefix
       # This is a short-term fix for avoiding processing too long strings,
       # but we should rather define proper set of input parameters for REST API
@@ -34,7 +39,7 @@ module CodeSuggestions
       # https://gitlab.com/gitlab-org/gitlab/-/issues/424724
       return if prefix.size > PREFIX_MAX_SIZE
 
-      prefix&.match(GENERATE_COMMENT_PREFIX)
+      prefix&.match(prefix_regex)
     end
     private_class_method :comment_match
   end

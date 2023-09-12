@@ -114,6 +114,7 @@ module API
           end
 
           task = ::CodeSuggestions::TaskSelector.task(
+            skip_generate_comment_prefix: Feature.enabled?(:code_generation_no_comment_prefix, current_user),
             params: params.except(:private_token)
           )
 
