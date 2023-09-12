@@ -17,7 +17,7 @@ module EE
 
         raise ::Members::CreateService::TooManyInvitesError,
               format(
-                s_("AddMember|Invite limit of %{daily_invites} per day exceeded"),
+                s_("AddMember|Invite limit of %{daily_invites} per day exceeded."),
                 daily_invites: source.actual_limits.daily_invites
               )
       end
