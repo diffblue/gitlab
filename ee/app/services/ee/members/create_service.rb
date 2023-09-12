@@ -49,7 +49,7 @@ module EE
           author: current_user || ::Gitlab::Audit::UnauthenticatedAuthor.new(name: '(System)'),
           scope: member.source,
           target: member.user || ::Gitlab::Audit::NullTarget.new,
-          target_details: member.user ? member.user.name : 'Deleted User',
+          target_details: member.user&.name || 'Created Member',
           message: 'Membership created',
           additional_details: {
             add: 'user_access',
