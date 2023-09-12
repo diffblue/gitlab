@@ -8,29 +8,11 @@ module Types
                   'used for generating access tokens.'
       authorize :admin_external_audit_events
 
+      implements GoogleCloudLoggingConfigurationInterface
+
       field :group, ::Types::GroupType,
         null: false,
         description: 'Group the configuration belongs to.'
-
-      field :id, GraphQL::Types::ID,
-        null: false,
-        description: 'ID of the configuration.'
-
-      field :google_project_id_name, GraphQL::Types::String,
-        null: false,
-        description: 'Google project ID.'
-
-      field :client_email, GraphQL::Types::String,
-        null: false,
-        description: 'Client email.'
-
-      field :log_id_name, GraphQL::Types::String,
-        null: false,
-        description: 'Log ID.'
-
-      field :name, GraphQL::Types::String,
-        null: false,
-        description: 'Name of the external destination to send audit events to.'
     end
   end
 end
