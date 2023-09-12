@@ -13,7 +13,7 @@ module EE
               push_licensed_feature(:security_orchestration_policies)
             end
 
-            if can?(current_user, :read_target_branch_rules, @project)
+            if can?(current_user, :read_target_branch_rule, @project)
               @target_branch_rules = @project.target_branch_rules.page(params[:page])
             end
           end
