@@ -13,7 +13,7 @@ module Security
     feature_category :security_policy_management
 
     def handle_event(event)
-      ::Security::ScanResultPolicies::SyncProjectWorker.perform_async(event.data[:project_id])
+      ::Security::ScanResultPolicies::SyncProjectWorker.new.perform(event.data[:project_id])
     end
   end
 end
