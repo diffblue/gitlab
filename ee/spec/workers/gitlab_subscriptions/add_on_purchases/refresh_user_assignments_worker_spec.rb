@@ -74,7 +74,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
     it 'logs an info about assignments refreshed' do
       expect(Gitlab::AppLogger).to receive(:info).with(
         message: 'AddOnPurchase user assignments refreshed in bulk',
-        batch: 1,
+        deleted_assignments_count: 2,
         add_on: add_on_purchase.add_on.name,
         namespace: namespace.path
       )

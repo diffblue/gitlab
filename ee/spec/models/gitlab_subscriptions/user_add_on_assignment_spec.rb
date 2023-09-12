@@ -120,12 +120,4 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignment, feature_category: :seat
       end
     end
   end
-
-  describe '.pluck_user_ids' do
-    it 'returns user_ids' do
-      assignment = create(:gitlab_subscription_user_add_on_assignment)
-
-      expect(described_class.pluck_user_ids).to match_array([assignment.user_id])
-    end
-  end
 end

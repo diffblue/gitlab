@@ -5,7 +5,7 @@ module GitlabSubscriptions
     class RefreshUserAssignmentsWorker
       include ::ApplicationWorker
 
-      BATCH_SIZE = 500
+      BATCH_SIZE = 50
 
       feature_category :seat_cost_management
 
@@ -20,13 +20,16 @@ module GitlabSubscriptions
 
         return unless root_namespace && add_on_purchase
 
-        add_on_purchase.assigned_users.each_batch(of: BATCH_SIZE) do |batch, index|
-          ineligible_user_ids = filter_ineligible_user_ids(batch.pluck_user_ids)
+        deleted_assignments_count = 0
+        add_on_purchase.assigned_users.each_batch(of: BATCH_SIZE) do |batch|
+          ineligible_user_ids = filter_ineligible_user_ids(batch.select(:user_id))
 
           batch.for_user_ids(ineligible_user_ids).delete_all
 
-          log_event(index)
+          deleted_assignments_count += ineligible_user_ids.count
         end
+
+        log_event(deleted_assignments_count)
       end
 
       private
@@ -46,10 +49,10 @@ module GitlabSubscriptions
         root_namespace.filter_ineligible_user_ids_for_code_suggestions(user_ids)
       end
 
-      def log_event(batch)
+      def log_event(deleted_count)
         Gitlab::AppLogger.info(
           message: 'AddOnPurchase user assignments refreshed in bulk',
-          batch: batch,
+          deleted_assignments_count: deleted_count,
           add_on: add_on_purchase.add_on.name,
           namespace: root_namespace.path
         )

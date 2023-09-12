@@ -1722,19 +1722,24 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     let_it_be(:group) { create(:group) }
     let_it_be(:sub_group) { create(:group, parent: group) }
     let_it_be(:project) { create(:project, namespace: sub_group) }
+    let_it_be(:other_group) { create(:group) }
     let_it_be(:eligible_user) { create(:user) }
     let_it_be(:ineligible_user) { create(:user) }
 
     let(:user_ids) { [eligible_user.id, ineligible_user.id] }
-    let(:exepcted_result) { [ineligible_user.id] }
-    let(:subject) { group.filter_ineligible_user_ids_for_code_suggestions(user_ids) }
+    let(:expected_result) { [ineligible_user.id] }
+    let(:subject) { group.filter_ineligible_user_ids_for_code_suggestions(Member.where(user_id: user_ids).select(:user_id)) }
+
+    before do
+      other_group.add_guest(ineligible_user)
+    end
 
     context 'when eligible_user has non-minimal access via group' do
       before do
         sub_group.add_guest(eligible_user)
       end
 
-      it { is_expected.to match_array(exepcted_result) }
+      it { is_expected.to match_array(expected_result) }
     end
 
     context 'when eligible_user has non-minimal access via project' do
@@ -1742,7 +1747,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
         project.add_guest(eligible_user)
       end
 
-      it { is_expected.to match_array(exepcted_result) }
+      it { is_expected.to match_array(expected_result) }
     end
 
     context 'with group invite' do
@@ -1757,7 +1762,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
           create(:group_group_link, shared_with_group: invited_group, shared_group: sub_group)
         end
 
-        it { is_expected.to match_array(exepcted_result) }
+        it { is_expected.to match_array(expected_result) }
       end
 
       context 'when eligible_user has non-minimal access being invited to a project' do
@@ -1765,7 +1770,17 @@ RSpec.describe Group, feature_category: :groups_and_projects do
           create(:project_group_link, project: project, group: invited_group)
         end
 
-        it { is_expected.to match_array(exepcted_result) }
+        it { is_expected.to match_array(expected_result) }
+      end
+    end
+
+    context 'when user_ids is supplied as an Array' do
+      let(:subject) { group.filter_ineligible_user_ids_for_code_suggestions(user_ids) }
+
+      it 'returns correct ineligble user_ids' do
+        sub_group.add_guest(eligible_user)
+
+        expect(subject).to eq(expected_result)
       end
     end
   end

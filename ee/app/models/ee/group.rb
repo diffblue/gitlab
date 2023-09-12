@@ -837,9 +837,11 @@ module EE
         billed_project_users.where(id: user_ids).pluck(:id) +
         billed_shared_group_users.where(id: user_ids).pluck(:id) +
         billed_invited_group_to_project_users.where(id: user_ids).pluck(:id)
-      )
+      ).to_a
 
-      user_ids - eligible_user_ids.to_a
+      plucked_user_ids = user_ids.is_a?(Array) ? user_ids : user_ids.pluck(:user_id)
+
+      plucked_user_ids - eligible_user_ids
     end
 
     def parent_epic_ids_in_ancestor_groups
