@@ -29,6 +29,10 @@ module Types
         null: false,
         description: 'Content of the review summary.'
 
+      field :content_html, GraphQL::Types::String,
+        null: false,
+        description: 'HTML content of the review summary, converted from Markdown.', method: :content_html
+
       field :created_at, Types::TimeType,
         null: false,
         description: 'Timestamp of when the review summary was created.'

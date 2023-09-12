@@ -2,6 +2,10 @@
 # frozen_string_literal: true
 
 class MergeRequest::ReviewLlmSummary < ApplicationRecord
+  include CacheMarkdownField
+
+  cache_markdown_field :content, issuable_reference_expansion_enabled: true
+
   belongs_to :review
   belongs_to :merge_request_diff
   belongs_to :user, optional: true
