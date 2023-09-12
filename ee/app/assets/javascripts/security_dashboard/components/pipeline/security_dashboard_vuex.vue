@@ -1,7 +1,6 @@
 <script>
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState, mapGetters } from 'vuex';
-import IssueModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import VulnerabilityFindingModal from 'ee/security_dashboard/components/pipeline/vulnerability_finding_modal.vue';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { vulnerabilityModalMixin } from 'ee/vue_shared/security_reports/mixins/vulnerability_modal_mixin';
@@ -16,7 +15,6 @@ import SecurityDashboardTable from './security_dashboard_table.vue';
 export default {
   components: {
     Filters,
-    IssueModal,
     VulnerabilityFindingModal,
     VulnerabilityReportLayout,
     SecurityDashboardTable,
@@ -85,15 +83,11 @@ export default {
     this.setVulnerabilitiesEndpoint(this.vulnerabilitiesEndpoint);
     this.fetchPipelineJobs();
 
-    if (this.glFeatures.standaloneFindingModal) {
-      // the click on a report row will trigger the BV_SHOW_MODAL event
-      this.$root.$on(BV_SHOW_MODAL, this.showModal);
-    }
+    // the click on a report row will trigger the BV_SHOW_MODAL event
+    this.$root.$on(BV_SHOW_MODAL, this.showModal);
   },
   beforeDestroy() {
-    if (this.glFeatures.standaloneFindingModal) {
-      this.$root.$off(BV_SHOW_MODAL, this.showModal);
-    }
+    this.$root.$off(BV_SHOW_MODAL, this.showModal);
   },
   methods: {
     ...mapActions('vulnerabilities', [
@@ -141,34 +135,13 @@ export default {
       </vulnerability-report-layout>
 
       <vulnerability-finding-modal
-        v-if="glFeatures.standaloneFindingModal && shouldShowModal"
+        v-if="shouldShowModal"
         :finding-uuid="vulnerability.uuid"
         :pipeline-iid="pipeline.iid"
         :project-full-path="projectFullPath"
         @dismissed="reFetchVulnerabilitiesAfterDismissal({ vulnerability })"
         @detected="reFetchVulnerabilitiesAfterDismissal({ vulnerability, showToast: false })"
         @hidden="shouldShowModal = false"
-      />
-      <issue-modal
-        v-if="!glFeatures.standaloneFindingModal"
-        :modal="modal"
-        :can-create-issue="canCreateIssue"
-        :can-dismiss-vulnerability="canDismissVulnerability"
-        :is-creating-issue="isCreatingIssue"
-        :is-dismissing-vulnerability="isDismissingVulnerability"
-        :is-creating-merge-request="isCreatingMergeRequest"
-        @addDismissalComment="handleAddDismissalComment({ vulnerability, comment: $event })"
-        @editVulnerabilityDismissalComment="openDismissalCommentBox"
-        @showDismissalDeleteButtons="showDismissalDeleteButtons"
-        @hideDismissalDeleteButtons="hideDismissalDeleteButtons"
-        @deleteDismissalComment="handleDeleteDismissalComment({ vulnerability })"
-        @closeDismissalCommentBox="closeDismissalCommentBox"
-        @createMergeRequest="createMergeRequest({ vulnerability })"
-        @createNewIssue="createIssue({ vulnerability })"
-        @dismissVulnerability="handleDismissVulnerability({ vulnerability, comment: $event })"
-        @openDismissalCommentBox="openDismissalCommentBox"
-        @revertDismissVulnerability="handleRevertDismissVulnerability({ vulnerability })"
-        @downloadPatch="downloadPatch({ vulnerability })"
       />
     </template>
   </section>
