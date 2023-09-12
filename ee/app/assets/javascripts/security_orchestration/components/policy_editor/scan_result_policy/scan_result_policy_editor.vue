@@ -19,11 +19,13 @@ import {
 import EditorLayout from '../editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
-import SettingsSection from './settings_section.vue';
+import SettingsSection from './settings/settings_section.vue';
 import PolicyActionBuilder from './policy_action_builder.vue';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
 
 import {
+  ANY_MERGE_REQUEST,
+  buildSettingsList,
   createPolicyObject,
   DEFAULT_SCAN_RESULT_POLICY,
   SCAN_RESULT_POLICY_SETTINGS_POLICY,
@@ -121,6 +123,12 @@ export default {
     };
   },
   computed: {
+    settings() {
+      return buildSettingsList({
+        approvalSettings: this.policy.approval_settings,
+        hasAnyMergeRequestRule: this.hasMergeRequestRule,
+      });
+    },
     originalName() {
       return this.existingPolicy?.name;
     },
@@ -134,6 +142,9 @@ export default {
     },
     hasEmptyRules() {
       return this.policy.rules?.length === 0 || this.policy.rules?.at(0)?.type === '';
+    },
+    hasMergeRequestRule() {
+      return this.policy.rules?.some(({ type }) => type === ANY_MERGE_REQUEST);
     },
     isActiveRuleMode() {
       return this.mode === EDITOR_MODE_RULE && !this.hasParsingError;
@@ -166,7 +177,7 @@ export default {
       this.$set(this.errors, 'action', []);
       this.updateYamlEditorValue(this.policy);
     },
-    updateApprovalSettings(values) {
+    updateSettings(values) {
       this.policy.approval_settings = values;
       this.updateYamlEditorValue(this.policy);
     },
@@ -178,8 +189,9 @@ export default {
       this.policy.rules.splice(ruleIndex, 1);
       this.updateYamlEditorValue(this.policy);
     },
-    updateRule(ruleIndex, values) {
-      this.policy.rules.splice(ruleIndex, 1, values);
+    updateRule(ruleIndex, rule) {
+      this.policy.rules.splice(ruleIndex, 1, rule);
+      this.updateSettings(this.settings);
       this.updateYamlEditorValue(this.policy);
     },
     handleError(error) {
@@ -385,7 +397,7 @@ export default {
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <settings-section :settings="policy.approval_settings" @changed="updateApprovalSettings" />
+        <settings-section :settings="settings" @changed="updateSettings" />
       </dim-disable-container>
     </template>
   </editor-layout>

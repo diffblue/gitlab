@@ -1,7 +1,7 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import SettingsSection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/settings_section.vue';
+import SettingsSection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/settings/settings_section.vue';
 import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
 import {
   DEFAULT_SCAN_RESULT_POLICY,
@@ -21,6 +21,10 @@ import {
 } from 'ee_jest/security_orchestration/mocks/mock_scan_result_policy_data';
 import { unsupportedManifest } from 'ee_jest/security_orchestration/mocks/mock_data';
 import { visitUrl } from '~/lib/utils/url_utility';
+import {
+  mergeRequestConfiguration,
+  protectedBranchesConfiguration,
+} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/settings';
 
 import { modifyPolicy } from 'ee/security_orchestration/components/policy_editor/utils';
 import {
@@ -28,6 +32,8 @@ import {
   EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
   PARSING_ERROR_MESSAGE,
+  ALL_PROTECTED_BRANCHES,
+  ANY_COMMIT,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
 import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_builder.vue';
@@ -493,6 +499,7 @@ describe('ScanResultPolicyEditor', () => {
         factory({ glFeatures: { scanResultPolicySettings: true } });
 
         expect(findSettingsSection().exists()).toBe(true);
+        expect(findSettingsSection().props('settings')).toEqual(protectedBranchesConfiguration);
       });
 
       it('updates the policy when a change is emitted', async () => {
@@ -508,6 +515,38 @@ describe('ScanResultPolicyEditor', () => {
           `block_protected_branch_modification:
     enabled: false`,
         );
+      });
+
+      it('has merge request approval settings for merge request rule', async () => {
+        factory({ glFeatures: { scanResultPolicySettings: true } });
+
+        const scanRule = {
+          type: 'scan_finding',
+          branches: [],
+          scanners: [],
+          vulnerabilities_allowed: 1,
+          severity_levels: [],
+          vulnerability_states: [],
+        };
+
+        await findAllRuleBuilders().at(0).vm.$emit('changed', scanRule);
+
+        expect(findSettingsSection().props('settings')).toEqual({
+          ...protectedBranchesConfiguration,
+        });
+
+        const anyMergeRequestRule = {
+          type: 'any_merge_request',
+          branch_type: ALL_PROTECTED_BRANCHES.value,
+          commits: ANY_COMMIT,
+        };
+
+        await findAllRuleBuilders().at(0).vm.$emit('changed', anyMergeRequestRule);
+
+        expect(findSettingsSection().props('settings')).toEqual({
+          ...protectedBranchesConfiguration,
+          ...mergeRequestConfiguration,
+        });
       });
     });
   });
