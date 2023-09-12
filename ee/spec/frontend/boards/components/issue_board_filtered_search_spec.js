@@ -29,20 +29,17 @@ describe('IssueBoardFilter', () => {
 
   let fetchUsersSpy;
   let fetchLabelsSpy;
-  let fetchMilestonesSpy;
   let fetchIterationsSpy;
   let fetchIterationCadencesSpy;
   beforeEach(() => {
     fetchUsersSpy = jest.fn();
     fetchLabelsSpy = jest.fn();
-    fetchMilestonesSpy = jest.fn();
     fetchIterationsSpy = jest.fn();
     fetchIterationCadencesSpy = jest.fn();
 
     issueBoardFilters.mockReturnValue({
       fetchUsers: fetchUsersSpy,
       fetchLabels: fetchLabelsSpy,
-      fetchMilestones: fetchMilestonesSpy,
       fetchIterations: fetchIterationsSpy,
       fetchIterationCadences: fetchIterationCadencesSpy,
     });
@@ -61,7 +58,6 @@ describe('IssueBoardFilter', () => {
       const tokens = mockTokens(
         fetchLabelsSpy,
         fetchUsersSpy,
-        fetchMilestonesSpy,
         fetchIterationsSpy,
         fetchIterationCadencesSpy,
       );
