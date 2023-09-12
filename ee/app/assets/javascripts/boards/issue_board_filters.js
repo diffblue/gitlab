@@ -48,16 +48,11 @@ export default function issueBoardFilters(apollo, fullPath, isGroupBoard) {
       });
   };
 
-  const { fetchUsers, fetchLabels, fetchMilestones } = issueBoardFiltersCE(
-    apollo,
-    fullPath,
-    isGroupBoard,
-  );
+  const { fetchUsers, fetchLabels } = issueBoardFiltersCE(apollo, fullPath, isGroupBoard);
 
   return {
     fetchLabels,
     fetchUsers,
-    fetchMilestones,
     fetchIterations,
     fetchIterationCadences,
   };
