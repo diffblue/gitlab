@@ -26891,6 +26891,9 @@ msgstr ""
 msgid "Job|Erase job log and artifacts"
 msgstr ""
 
+msgid "Job|External links"
+msgstr ""
+
 msgid "Job|Failed"
 msgstr ""
 
