@@ -17882,6 +17882,22 @@ Returns [`VulnerabilitySeveritiesCount`](#vulnerabilityseveritiescount).
 | <a id="groupvulnerabilityseveritiescountseverity"></a>`severity` | [`[VulnerabilitySeverity!]`](#vulnerabilityseverity) | Filter vulnerabilities by severity. |
 | <a id="groupvulnerabilityseveritiescountstate"></a>`state` | [`[VulnerabilityState!]`](#vulnerabilitystate) | Filter vulnerabilities by state. |
 
+##### `Group.workItem`
+
+Find a work item by IID directly associated with the group. Returns `null` if the `namespace_level_work_items` feature flag is disabled.
+
+WARNING:
+**Introduced** in 16.4.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Returns [`WorkItem`](#workitem).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="groupworkitemiid"></a>`iid` | [`String!`](#string) | IID of the work item. |
+
 ##### `Group.workItemTypes`
 
 Work item types available to the group.
