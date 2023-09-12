@@ -49,6 +49,8 @@ export const DEFAULT_SEARCH_DELAY = 500;
 export const ACTION_TYPES = {
   RESYNC: 'resync',
   REVERIFY: 'reverify',
+  RESYNC_ALL: 'resync_all',
+  REVERIFY_ALL: 'reverify_all',
 };
 
 export const PREV = 'prev';
@@ -57,7 +59,7 @@ export const NEXT = 'next';
 
 export const DEFAULT_PAGE_SIZE = 20;
 
-export const RESYNC_MODAL_ID = 'resync-all-geo';
+export const GEO_BULK_ACTION_MODAL_ID = 'geo-bulk-action';
 
 export const GEO_TROUBLESHOOTING_LINK = helpPagePath(
   'administration/geo/replication/troubleshooting.md',

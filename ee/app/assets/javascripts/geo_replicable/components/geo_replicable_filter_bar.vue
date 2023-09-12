@@ -10,12 +10,14 @@ import {
 } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState, mapGetters } from 'vuex';
-import { s__, __, sprintf } from '~/locale';
+import { s__, sprintf } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import {
   DEFAULT_SEARCH_DELAY,
   ACTION_TYPES,
   FILTER_STATES,
-  RESYNC_MODAL_ID,
+  GEO_BULK_ACTION_MODAL_ID,
   FILTER_OPTIONS,
 } from '../constants';
 
@@ -23,11 +25,12 @@ export default {
   name: 'GeoReplicableFilterBar',
   i18n: {
     resyncAll: s__('Geo|Resync all'),
-    resyncAllReplicables: s__('Geo|Resync all %{total}%{replicableType}'),
+    reverifyAll: s__('Geo|Reverify all'),
+    modalTitle: s__('Geo|%{action} %{replicableType}'),
     dropdownTitle: s__('Geo|Filter by status'),
     searchPlaceholder: s__('Geo|Filter by name'),
     modalBody: s__(
-      'Geo|This will resync all %{replicableType}. It may take some time to complete. Are you sure you want to continue?',
+      'Geo|This will %{action} %{replicableType}. It may take some time to complete. Are you sure you want to continue?',
     ),
   },
   components: {
@@ -41,8 +44,20 @@ export default {
   directives: {
     GlModalDirective,
   },
+  mixins: [glFeatureFlagMixin()],
+  data() {
+    return {
+      modalAction: null,
+    };
+  },
   computed: {
-    ...mapState(['statusFilter', 'searchFilter', 'paginationData', 'useGraphQl']),
+    ...mapState([
+      'statusFilter',
+      'searchFilter',
+      'useGraphQl',
+      'replicableItems',
+      'verificationEnabled',
+    ]),
     ...mapGetters(['replicableTypeName']),
     search: {
       get() {
@@ -53,14 +68,24 @@ export default {
         this.fetchReplicableItems();
       },
     },
-    showResyncAction() {
-      return !this.useGraphQl && this.paginationData.total > 0;
+    hasReplicableItems() {
+      return this.replicableItems.length > 0;
     },
-    resyncText() {
-      return sprintf(this.$options.i18n.resyncAllReplicables, {
-        replicableType: this.replicableTypeName,
-        total: this.paginationData.total > 1 ? `${this.paginationData.total} ` : null,
-      });
+    showResyncAllAction() {
+      if (!this.hasReplicableItems) {
+        return false;
+      }
+
+      return !this.useGraphQl || this.glFeatures.geoRegistriesUpdateMutation;
+    },
+    showReverifyAllAction() {
+      if (!this.hasReplicableItems) {
+        return false;
+      }
+
+      return (
+        this.useGraphQl && this.verificationEnabled && this.glFeatures.geoRegistriesUpdateMutation
+      );
     },
     filterOptions() {
       if (this.useGraphQl) {
@@ -70,29 +95,35 @@ export default {
       // Non-GraphQL endpoint does not support `started` as a filter
       return FILTER_OPTIONS.filter((option) => option.value !== FILTER_STATES.STARTED.value);
     },
+    modalTitle() {
+      return sprintf(this.$options.i18n.modalTitle, {
+        action: this.readableModalAction && capitalizeFirstCharacter(this.readableModalAction),
+        replicableType: this.replicableTypeName,
+      });
+    },
+    readableModalAction() {
+      return this.modalAction?.replace('_', ' ');
+    },
   },
   methods: {
     ...mapActions([
       'setStatusFilter',
       'setSearch',
       'fetchReplicableItems',
-      'initiateAllReplicableSyncs',
+      'initiateAllReplicableAction',
     ]),
     filterChange(filter) {
       this.setStatusFilter(filter);
       this.fetchReplicableItems();
     },
+    setModalData(action) {
+      this.modalAction = action;
+    },
   },
   actionTypes: ACTION_TYPES,
   filterStates: FILTER_STATES,
   debounce: DEFAULT_SEARCH_DELAY,
-  MODAL_PRIMARY_ACTION: {
-    text: s__('Geo|Resync all'),
-  },
-  MODAL_CANCEL_ACTION: {
-    text: __('Cancel'),
-  },
-  RESYNC_MODAL_ID,
+  GEO_BULK_ACTION_MODAL_ID,
 };
 </script>
 
@@ -126,22 +157,31 @@ export default {
           :placeholder="$options.i18n.searchPlaceholder"
         />
       </div>
-      <gl-button
-        v-if="showResyncAction"
-        v-gl-modal-directive="$options.RESYNC_MODAL_ID"
-        class="gl-ml-auto"
-        >{{ $options.i18n.resyncAll }}</gl-button
-      >
+      <div v-if="showResyncAllAction || showReverifyAllAction" class="gl-ml-auto">
+        <gl-button
+          v-if="showResyncAllAction"
+          v-gl-modal-directive="$options.GEO_BULK_ACTION_MODAL_ID"
+          data-testid="geo-resync-all"
+          @click="setModalData($options.actionTypes.RESYNC_ALL)"
+          >{{ $options.i18n.resyncAll }}</gl-button
+        >
+        <gl-button
+          v-if="showReverifyAllAction"
+          v-gl-modal-directive="$options.GEO_BULK_ACTION_MODAL_ID"
+          data-testid="geo-reverify-all"
+          @click="setModalData($options.actionTypes.REVERIFY_ALL)"
+          >{{ $options.i18n.reverifyAll }}</gl-button
+        >
+      </div>
     </div>
     <gl-modal
-      :modal-id="$options.RESYNC_MODAL_ID"
-      :title="resyncText"
-      :action-primary="$options.MODAL_PRIMARY_ACTION"
-      :action-cancel="$options.MODAL_CANCEL_ACTION"
+      :modal-id="$options.GEO_BULK_ACTION_MODAL_ID"
+      :title="modalTitle"
       size="sm"
-      @primary="initiateAllReplicableSyncs($options.actionTypes.RESYNC)"
+      @primary="initiateAllReplicableAction({ action: modalAction })"
     >
       <gl-sprintf :message="$options.i18n.modalBody">
+        <template #action>{{ readableModalAction }}</template>
         <template #replicableType>{{ replicableTypeName }}</template>
       </gl-sprintf>
     </gl-modal>

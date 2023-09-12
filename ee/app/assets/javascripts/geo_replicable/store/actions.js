@@ -5,11 +5,12 @@ import {
   normalizeHeaders,
   convertObjectPropsToCamelCase,
 } from '~/lib/utils/common_utils';
-import { __, sprintf } from '~/locale';
+import { s__, __, sprintf } from '~/locale';
 import toast from '~/vue_shared/plugins/global_toast';
 import { FILTER_STATES, PREV, NEXT, DEFAULT_PAGE_SIZE } from '../constants';
 import buildReplicableTypeQuery from '../graphql/replicable_type_query_builder';
 import replicableTypeUpdateMutation from '../graphql/replicable_type_update_mutation.graphql';
+import replicableTypeBulkUpdateMutation from '../graphql/replicable_type_bulk_update_mutation.graphql';
 import { getGraphqlClient } from '../utils';
 import * as types from './mutation_types';
 
@@ -102,42 +103,69 @@ export const fetchReplicableItemsRestful = ({ state, dispatch }) => {
     });
 };
 
-// Initiate All Replicable Syncs
-export const requestInitiateAllReplicableSyncs = ({ commit }) =>
-  commit(types.REQUEST_INITIATE_ALL_REPLICABLE_SYNCS);
-export const receiveInitiateAllReplicableSyncsSuccess = (
-  { state, commit, dispatch },
+// Initiate All Replicable Action
+export const requestInitiateAllReplicableAction = ({ commit }) =>
+  commit(types.REQUEST_INITIATE_ALL_REPLICABLE_ACTION);
+export const receiveInitiateAllReplicableActionSuccess = (
+  { getters, commit, dispatch },
   { action },
 ) => {
   toast(
-    sprintf(__('All %{replicableType} are being scheduled for %{action}'), {
-      replicableType: state.replicableType,
-      action,
+    sprintf(s__('Geo|All %{replicableType} are being scheduled for %{action}'), {
+      replicableType: getters.replicableTypeName,
+      action: action.replace('_', ' '),
     }),
   );
-  commit(types.RECEIVE_INITIATE_ALL_REPLICABLE_SYNCS_SUCCESS);
+  commit(types.RECEIVE_INITIATE_ALL_REPLICABLE_ACTION_SUCCESS);
   dispatch('fetchReplicableItems');
 };
-export const receiveInitiateAllReplicableSyncsError = ({ state, commit }) => {
+export const receiveInitiateAllReplicableActionError = ({ getters, commit }, { action }) => {
   createAlert({
-    message: sprintf(__('There was an error syncing the %{replicableType}'), {
-      replicableType: state.replicableType,
-    }),
+    message: sprintf(
+      s__('Geo|There was an error scheduling action %{action} for %{replicableType}'),
+      {
+        replicableType: getters.replicableTypeName,
+        action: action.replace('_', ' '),
+      },
+    ),
   });
-  commit(types.RECEIVE_INITIATE_ALL_REPLICABLE_SYNCS_ERROR);
+  commit(types.RECEIVE_INITIATE_ALL_REPLICABLE_ACTION_ERROR);
 };
 
-export const initiateAllReplicableSyncs = ({ state, dispatch }, action) => {
-  dispatch('requestInitiateAllReplicableSyncs');
+export const initiateAllReplicableAction = ({ state, dispatch }, { action }) => {
+  dispatch('requestInitiateAllReplicableAction');
 
-  Api.initiateAllGeoReplicableSyncs(state.replicableType, action)
-    .then(() => dispatch('receiveInitiateAllReplicableSyncsSuccess', { action }))
+  return state.useGraphQl
+    ? dispatch('initiateAllReplicableActionGraphQl', { action })
+    : dispatch('initiateAllReplicableActionRestful', { action });
+};
+
+export const initiateAllReplicableActionGraphQl = ({ state, dispatch }, { action }) => {
+  const client = getGraphqlClient(state.geoCurrentSiteId, state.geoTargetSiteId);
+
+  client
+    .mutate({
+      mutation: replicableTypeBulkUpdateMutation,
+      variables: {
+        action: action.toUpperCase(),
+        registryClass: state.graphqlMutationRegistryClass,
+      },
+    })
+    .then(() => dispatch('receiveInitiateAllReplicableActionSuccess', { action }))
     .catch(() => {
-      dispatch('receiveInitiateAllReplicableSyncsError');
+      dispatch('receiveInitiateAllReplicableActionError', { action });
     });
 };
 
-// Initiate Replicable Sync
+export const initiateAllReplicableActionRestful = ({ state, dispatch }, { action }) => {
+  Api.initiateAllGeoReplicableSyncs(state.replicableType, action)
+    .then(() => dispatch('receiveInitiateAllReplicableActionSuccess', { action }))
+    .catch(() => {
+      dispatch('receiveInitiateAllReplicableActionError', { action });
+    });
+};
+
+// Initiate Replicable Action
 export const requestInitiateReplicableAction = ({ commit }) =>
   commit(types.REQUEST_INITIATE_REPLICABLE_ACTION);
 export const receiveInitiateReplicableActionSuccess = ({ commit, dispatch }, { name, action }) => {

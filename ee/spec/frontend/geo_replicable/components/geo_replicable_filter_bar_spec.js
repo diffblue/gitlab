@@ -1,21 +1,17 @@
-import { GlDropdown, GlDropdownItem, GlSearchBoxByType, GlButton, GlModal } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { GlDropdown, GlDropdownItem, GlSearchBoxByType, GlModal, GlSprintf } from '@gitlab/ui';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoReplicableFilterBar from 'ee/geo_replicable/components/geo_replicable_filter_bar.vue';
 import {
   DEFAULT_SEARCH_DELAY,
-  RESYNC_MODAL_ID,
   FILTER_OPTIONS,
   FILTER_STATES,
+  ACTION_TYPES,
 } from 'ee/geo_replicable/constants';
-import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
-import {
-  MOCK_REPLICABLE_TYPE,
-  MOCK_RESTFUL_PAGINATION_DATA,
-  MOCK_GRAPHQL_PAGINATION_DATA,
-} from '../mock_data';
+import { createMockDirective } from 'helpers/vue_mock_directive';
+import { MOCK_REPLICABLE_TYPE, MOCK_BASIC_FETCH_RESPONSE } from '../mock_data';
 
 Vue.use(Vuex);
 
@@ -26,23 +22,31 @@ describe('GeoReplicableFilterBar', () => {
     setSearch: jest.fn(),
     setStatusFilter: jest.fn(),
     fetchReplicableItems: jest.fn(),
-    initiateAllReplicableSyncs: jest.fn(),
+    initiateAllReplicableAction: jest.fn(),
   };
 
-  const createComponent = (initialState) => {
+  const defaultState = {
+    useGraphQl: true,
+    replicableItems: MOCK_BASIC_FETCH_RESPONSE.data,
+    verificationEnabled: true,
+  };
+
+  const createComponent = (initialState = {}, featureFlags = {}) => {
     const store = new Vuex.Store({
-      state: { ...initialState },
+      state: { ...defaultState, ...initialState },
       actions: actionSpies,
       getters: {
         replicableTypeName: () => MOCK_REPLICABLE_TYPE,
       },
     });
 
-    wrapper = shallowMount(GeoReplicableFilterBar, {
+    wrapper = shallowMountExtended(GeoReplicableFilterBar, {
       store,
       directives: {
         GlModalDirective: createMockDirective('gl-modal-directive'),
       },
+      provide: { glFeatures: { ...featureFlags } },
+      stubs: { GlModal, GlSprintf },
     });
   };
 
@@ -51,7 +55,8 @@ describe('GeoReplicableFilterBar', () => {
   const findGlDropdownItems = () => findNavContainer().findAllComponents(GlDropdownItem);
   const findDropdownItemsText = () => findGlDropdownItems().wrappers.map((w) => w.text());
   const findGlSearchBox = () => findNavContainer().findComponent(GlSearchBoxByType);
-  const findGlButton = () => findNavContainer().findComponent(GlButton);
+  const findResyncAllButton = () => wrapper.findByTestId('geo-resync-all');
+  const findReverifyAllButton = () => wrapper.findByTestId('geo-reverify-all');
   const findGlModal = () => findNavContainer().findComponent(GlModal);
 
   const legacyFilterOptions = FILTER_OPTIONS.filter(
@@ -71,7 +76,7 @@ describe('GeoReplicableFilterBar', () => {
   describe('template', () => {
     describe('when useGraphQl is false', () => {
       beforeEach(() => {
-        createComponent({ useGraphQL: false, paginationData: MOCK_RESTFUL_PAGINATION_DATA });
+        createComponent({ useGraphQl: false });
       });
 
       it('renders the nav container', () => {
@@ -90,18 +95,11 @@ describe('GeoReplicableFilterBar', () => {
         expect(findGlSearchBox().exists()).toBe(true);
         expect(findGlSearchBox().attributes('debounce')).toBe(DEFAULT_SEARCH_DELAY.toString());
       });
-
-      it('does render Re-sync all button that is bound to GlModal', () => {
-        expect(findGlButton().exists()).toBe(true);
-        expect(getBinding(findGlButton().element, 'gl-modal-directive').value).toBe(
-          RESYNC_MODAL_ID,
-        );
-      });
     });
 
     describe('when useGraphQl is true', () => {
       beforeEach(() => {
-        createComponent({ useGraphQl: true, paginationData: MOCK_GRAPHQL_PAGINATION_DATA });
+        createComponent({ useGraphQl: true });
       });
 
       it('renders the nav container', () => {
@@ -119,16 +117,57 @@ describe('GeoReplicableFilterBar', () => {
       it('does not render search box', () => {
         expect(findGlSearchBox().exists()).toBe(false);
       });
-
-      it('does not render Re-sync all button', () => {
-        expect(findGlButton().exists()).toBe(false);
-      });
     });
+
+    describe.each`
+      useGraphQl | featureFlag | replicableItems                   | verificationEnabled | showResyncAll | showReverifyAll
+      ${false}   | ${false}    | ${[]}                             | ${false}            | ${false}      | ${false}
+      ${false}   | ${false}    | ${[]}                             | ${true}             | ${false}      | ${false}
+      ${false}   | ${false}    | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${false}            | ${true}       | ${false}
+      ${false}   | ${false}    | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${true}             | ${true}       | ${false}
+      ${false}   | ${true}     | ${[]}                             | ${false}            | ${false}      | ${false}
+      ${false}   | ${true}     | ${[]}                             | ${true}             | ${false}      | ${false}
+      ${false}   | ${true}     | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${false}            | ${true}       | ${false}
+      ${false}   | ${true}     | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${true}             | ${true}       | ${false}
+      ${true}    | ${false}    | ${[]}                             | ${false}            | ${false}      | ${false}
+      ${true}    | ${false}    | ${[]}                             | ${true}             | ${false}      | ${false}
+      ${true}    | ${false}    | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${false}            | ${false}      | ${false}
+      ${true}    | ${false}    | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${true}             | ${false}      | ${false}
+      ${true}    | ${true}     | ${[]}                             | ${false}            | ${false}      | ${false}
+      ${true}    | ${true}     | ${[]}                             | ${true}             | ${false}      | ${false}
+      ${true}    | ${true}     | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${false}            | ${true}       | ${false}
+      ${true}    | ${true}     | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${true}             | ${true}       | ${true}
+    `(
+      'Bulk Actions when useGraphQl is $useGraphQl and geoRegistriesUpdateMutation FF is $featureFlag',
+      ({
+        useGraphQl,
+        featureFlag,
+        replicableItems,
+        verificationEnabled,
+        showResyncAll,
+        showReverifyAll,
+      }) => {
+        beforeEach(() => {
+          createComponent(
+            { useGraphQl, replicableItems, verificationEnabled },
+            { geoRegistriesUpdateMutation: featureFlag },
+          );
+        });
+
+        it(`does ${showResyncAll ? '' : 'not '}render Resync All Button`, () => {
+          expect(findResyncAllButton().exists()).toBe(showResyncAll);
+        });
+
+        it(`does ${showReverifyAll ? '' : 'not '}render Reverify All Button`, () => {
+          expect(findReverifyAllButton().exists()).toBe(showReverifyAll);
+        });
+      },
+    );
   });
 
   describe('Status filter actions', () => {
     beforeEach(() => {
-      createComponent({ useGraphQl: true, paginationData: MOCK_GRAPHQL_PAGINATION_DATA });
+      createComponent({ useGraphQl: true });
     });
 
     it('clicking a filter item calls setStatusFilter with value and fetchReplicableItems', () => {
@@ -145,7 +184,7 @@ describe('GeoReplicableFilterBar', () => {
 
   describe('Search box actions', () => {
     beforeEach(() => {
-      createComponent({ useGraphQl: false, paginationData: MOCK_RESTFUL_PAGINATION_DATA });
+      createComponent({ useGraphQl: false });
     });
 
     it('searching calls setSearch with search and fetchReplicableItems', () => {
@@ -157,30 +196,44 @@ describe('GeoReplicableFilterBar', () => {
     });
   });
 
-  describe('GlModal', () => {
-    describe.each`
-      total | title
-      ${1}  | ${`Resync all ${MOCK_REPLICABLE_TYPE}`}
-      ${15} | ${`Resync all 15 ${MOCK_REPLICABLE_TYPE}`}
-    `(`template when total is $total`, ({ total, title }) => {
+  describe('Bulk actions modal', () => {
+    describe('Resync All', () => {
       beforeEach(() => {
-        createComponent({ useGraphQl: false, paginationData: { total } });
+        createComponent({}, { geoRegistriesUpdateMutation: true });
+        findResyncAllButton().vm.$emit('click');
       });
 
-      it(`sets the title to ${title}`, () => {
-        expect(findGlModal().props('title')).toBe(title);
+      it('properly populates the modal data', () => {
+        expect(findGlModal().props('title')).toBe(`Resync all ${MOCK_REPLICABLE_TYPE}`);
+        expect(findGlModal().text()).toContain(`This will resync all ${MOCK_REPLICABLE_TYPE}.`);
+      });
+
+      it('dispatches initiateAllReplicableAction when confirmed', () => {
+        findGlModal().vm.$emit('primary');
+
+        expect(actionSpies.initiateAllReplicableAction).toHaveBeenCalledWith(expect.any(Object), {
+          action: ACTION_TYPES.RESYNC_ALL,
+        });
       });
     });
 
-    describe('actions', () => {
+    describe('Reverify All', () => {
       beforeEach(() => {
-        createComponent({ useGraphQl: false, paginationData: MOCK_RESTFUL_PAGINATION_DATA });
+        createComponent({}, { geoRegistriesUpdateMutation: true });
+        findReverifyAllButton().vm.$emit('click');
       });
 
-      it('calls initiateAllReplicableSyncs when primary action is emitted', () => {
+      it('properly populates the modal data', () => {
+        expect(findGlModal().props('title')).toBe(`Reverify all ${MOCK_REPLICABLE_TYPE}`);
+        expect(findGlModal().text()).toContain(`This will reverify all ${MOCK_REPLICABLE_TYPE}.`);
+      });
+
+      it('dispatches initiateAllReplicableAction when confirmed', () => {
         findGlModal().vm.$emit('primary');
 
-        expect(actionSpies.initiateAllReplicableSyncs).toHaveBeenCalled();
+        expect(actionSpies.initiateAllReplicableAction).toHaveBeenCalledWith(expect.any(Object), {
+          action: ACTION_TYPES.REVERIFY_ALL,
+        });
       });
     });
   });
