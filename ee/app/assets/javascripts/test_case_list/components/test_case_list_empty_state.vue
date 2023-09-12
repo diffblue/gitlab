@@ -36,7 +36,7 @@ export default {
 
 <template>
   <div class="test-cases-empty-state-container">
-    <gl-empty-state :svg-path="emptyStatePath" :title="emptyStateTitle">
+    <gl-empty-state :svg-path="emptyStatePath" :svg-height="150" :title="emptyStateTitle">
       <template v-if="showDescription" #description>
         {{
           __(
