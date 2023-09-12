@@ -299,6 +299,28 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
             it_behaves_like 'does not update approvals_required'
           end
         end
+
+        context 'when the approval rules had approvals removed' do
+          let_it_be(:approval_project_rule) do
+            create(:approval_project_rule, :scan_finding, project: project, approvals_required: 2)
+          end
+
+          let!(:report_approver_rule) do
+            create(:report_approver_rule, :scan_finding,
+              approval_project_rule: approval_project_rule,
+              merge_request: merge_request,
+              approvals_required: 0,
+              scanners: scanners,
+              vulnerabilities_allowed: vulnerabilities_allowed,
+              severity_levels: severity_levels,
+              vulnerability_states: vulnerability_states
+            )
+          end
+
+          it 'resets the required approvals' do
+            expect { execute }.to change { report_approver_rule.reload.approvals_required }.to(2)
+          end
+        end
       end
     end
 

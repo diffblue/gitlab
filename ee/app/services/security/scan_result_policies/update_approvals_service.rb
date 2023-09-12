@@ -23,13 +23,21 @@ module Security
 
         violated_rules, unviolated_rules = partition_rules(approval_rules)
 
-        ApprovalMergeRequestRule.remove_required_approved(unviolated_rules) if unviolated_rules.any?
+        update_required_approvals(violated_rules, unviolated_rules)
         generate_policy_bot_comment(violated_rules.any?)
       end
 
       private
 
       delegate :project, to: :pipeline
+
+      def update_required_approvals(violated_rules, unviolated_rules)
+        # Ensure we require approvals for violated rules
+        # in case the approvals had been removed before and the pipeline has found violations after re-run
+        merge_request.reset_required_approvals(violated_rules)
+
+        ApprovalMergeRequestRule.remove_required_approved(unviolated_rules) if unviolated_rules.any?
+      end
 
       def partition_rules(approval_rules)
         approval_rules.partition do |approval_rule|

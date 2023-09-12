@@ -76,6 +76,40 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
 
       it_behaves_like 'triggers policy bot comment', :license_scanning, false
 
+      context 'with violations' do
+        let(:license) { create(:software_license, name: 'GPL v3') }
+        let(:target_branch_report) { create(:ci_reports_license_scanning_report) }
+        let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
+
+        before do
+          pipeline_report.add_license(id: nil, name: 'GPL v3').add_dependency(name: 'A')
+
+          create(:software_license_policy, :denied, project: project, software_license: license,
+            scan_result_policy_read: scan_result_policy_read)
+
+          allow(service).to receive(:report).and_return(pipeline_report)
+          allow(service).to receive(:target_branch_report).and_return(target_branch_report)
+        end
+
+        it_behaves_like 'triggers policy bot comment', :license_scanning, true
+
+        context 'when the approval rules had approvals previously removed and rules are violated' do
+          let_it_be(:approval_project_rule) do
+            create(:approval_project_rule, :license_scanning, project: project, approvals_required: 2)
+          end
+
+          let!(:license_finding_rule) do
+            create(:report_approver_rule, :license_scanning, merge_request: merge_request,
+              approval_project_rule: approval_project_rule, approvals_required: 0,
+              scan_result_policy_read: scan_result_policy_read)
+          end
+
+          it 'resets the required approvals' do
+            expect { execute }.to change { license_finding_rule.reload.approvals_required }.to(2)
+          end
+        end
+      end
+
       using RSpec::Parameterized::TableSyntax
 
       where(:target_branch, :pipeline_branch, :states, :policy_license, :policy_state, :result) do
@@ -124,7 +158,7 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
           allow(service).to receive(:target_branch_report).and_return(target_branch_report)
         end
 
-        it 'sync approvals_required' do
+        it 'syncs approvals_required' do
           if result
             expect { execute }.not_to change { license_finding_rule.reload.approvals_required }
           else

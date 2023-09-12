@@ -1543,6 +1543,73 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
   end
 
+  describe '#reset_required_approvals' do
+    subject(:execute) { merge_request.reset_required_approvals(approval_rules) }
+
+    let_it_be(:merge_request) { create(:ee_merge_request, source_project: project) }
+    let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
+    let_it_be(:scan_finding_project_rule) do
+      create(:approval_project_rule, :scan_finding, project: project, scanners: %w[sast], approvals_required: 2,
+        security_orchestration_policy_configuration: policy_configuration)
+    end
+
+    let_it_be(:license_project_rule) do
+      create(:approval_project_rule, :license_scanning, project: project, approvals_required: 2,
+        security_orchestration_policy_configuration: policy_configuration)
+    end
+
+    let_it_be(:other_project_rule) do
+      create(:approval_project_rule, :scan_finding, project: project, scanners: %w[sast], approvals_required: 2,
+        security_orchestration_policy_configuration: policy_configuration)
+    end
+
+    context 'when report_approver_rule has a project source' do
+      let_it_be(:approval_rules) do
+        [
+          create(:report_approver_rule, :scan_finding, merge_request: merge_request, approvals_required: 0,
+            approval_project_rule: scan_finding_project_rule),
+          create(:report_approver_rule, :license_scanning, merge_request: merge_request, approvals_required: 0,
+            approval_project_rule: license_project_rule)
+        ]
+      end
+
+      let_it_be(:other_approval_rule_with_project_source) do
+        create(:report_approver_rule, :scan_finding, merge_request: merge_request, approvals_required: 0,
+          approval_project_rule: other_project_rule)
+      end
+
+      it 'resets the approvals_required for the provided approval_rules to match the project rules' do
+        expect { execute }.to change { approval_rules.first.reload.approvals_required }.from(0).to(2)
+          .and change { approval_rules.second.reload.approvals_required }.from(0).to(2)
+      end
+
+      it 'does not reset other approval rules' do
+        expect { execute }.not_to change { other_approval_rule_with_project_source.reload.approvals_required }
+      end
+
+      context 'when merge request is already merged' do
+        before do
+          merge_request.update!(state: 'merged')
+        end
+
+        it 'does not update the approval rules' do
+          expect { execute }.to not_change { approval_rules.first.reload.approvals_required }
+            .and not_change { approval_rules.second.reload.approvals_required }
+        end
+      end
+    end
+
+    context "when report_approver_rule doesn't have a project source" do
+      let_it_be(:approval_rules) do
+        [create(:report_approver_rule, :scan_finding, merge_request: merge_request, approvals_required: 0)]
+      end
+
+      it "doesn't reset the approval_rules" do
+        expect { execute }.not_to change { approval_rules.first.reload }
+      end
+    end
+  end
+
   context 'scopes' do
     let_it_be(:merge_request) { create(:ee_merge_request) }
     let_it_be(:merge_request_with_head_pipeline) { create(:ee_merge_request, :with_metrics_reports) }

@@ -46,9 +46,15 @@ module Security
       violated_rules, unviolated_rules = license_approval_rules.partition do |rule|
         violates_policy?(merge_request, rule)
       end
-      ApprovalMergeRequestRule.remove_required_approved(unviolated_rules)
+
+      update_required_approvals(merge_request, violated_rules, unviolated_rules)
       generate_policy_bot_comment(merge_request, violated_rules.any?)
       log_violated_rules(merge_request, violated_rules)
+    end
+
+    def update_required_approvals(merge_request, violated_rules, unviolated_rules)
+      merge_request.reset_required_approvals(violated_rules)
+      ApprovalMergeRequestRule.remove_required_approved(unviolated_rules)
     end
 
     ## Checks if a policy rule violates the following conditions:

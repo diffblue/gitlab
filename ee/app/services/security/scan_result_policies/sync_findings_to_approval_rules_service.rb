@@ -18,7 +18,7 @@ module Security
       def sync_scan_finding
         return if pipeline.security_findings.empty? && !pipeline.complete?
 
-        remove_required_approvals_for_scan_finding
+        update_required_approvals_for_scan_finding
       end
 
       def merge_requests_for_pipeline
@@ -27,7 +27,7 @@ module Security
         pipeline.all_merge_requests.opened
       end
 
-      def remove_required_approvals_for_scan_finding
+      def update_required_approvals_for_scan_finding
         merge_requests_for_pipeline.each do |merge_request|
           UpdateApprovalsService.new(merge_request: merge_request, pipeline: pipeline).execute
         end

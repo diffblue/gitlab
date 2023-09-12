@@ -355,6 +355,14 @@ module EE
       end
     end
 
+    def reset_required_approvals(approval_rules)
+      return if merged?
+
+      approval_rules.filter_map(&:source_rule).each do |rule|
+        rule.apply_report_approver_rules_to(self)
+      end
+    end
+
     def applicable_approval_rules_for_user(user_id)
       wrapped_approval_rules.select do |rule|
         rule.approvers.pluck(:id).include?(user_id)
