@@ -186,6 +186,8 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
       let(:key) do
         [
           namespace.root_storage_statistics.cache_key_with_version,
+          'namespaces',
+          namespace.id,
           'root_storage_current_size'
         ]
       end
@@ -278,7 +280,14 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
     end
 
     context 'with cached values', :use_clean_rails_memory_store_caching do
-      let(:key) { 'root_storage_size_limit' }
+      let(:key) do
+        [
+          namespace.actual_limits.cache_key_with_version,
+          'namespaces',
+          namespace.id,
+          'root_storage_size_limit'
+        ]
+      end
 
       before do
         set_enforcement_limit(namespace, megabytes: 70_000)
@@ -288,7 +297,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumab
       it 'caches the value' do
         subject
 
-        expect(Rails.cache.read(['namespaces', namespace.id, key])).to eq(104_000.megabytes)
+        expect(Rails.cache.read(key)).to eq(104_000.megabytes)
       end
     end
   end

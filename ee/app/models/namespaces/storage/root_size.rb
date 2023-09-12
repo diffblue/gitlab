@@ -87,17 +87,21 @@ module Namespaces
       delegate :gitlab_subscription, :root_storage_statistics, to: :root_namespace
 
       def current_size_cache_key
-        version = root_storage_statistics&.cache_key_with_version
-
         [
+          root_storage_statistics&.cache_key_with_version,
+          'namespaces',
+          root_namespace.id,
           CURRENT_SIZE_CACHE_KEY
-        ].tap do |key|
-          version ? key.prepend(version) : key.prepend('namespaces', root_namespace.id)
-        end
+        ].compact
       end
 
       def limit_cache_key
-        ['namespaces', root_namespace.id, limit_cache_name]
+        [
+          root_namespace.actual_limits.cache_key_with_version,
+          'namespaces',
+          root_namespace.id,
+          limit_cache_name
+        ]
       end
 
       def enforceable_storage_limit
