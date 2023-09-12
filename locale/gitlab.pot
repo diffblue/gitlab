@@ -21862,6 +21862,9 @@ msgstr ""
 msgid "GlobalSearch|Fetching aggregations error."
 msgstr ""
 
+msgid "GlobalSearch|Filters"
+msgstr ""
+
 msgid "GlobalSearch|Group"
 msgstr ""
 
