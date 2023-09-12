@@ -172,7 +172,7 @@ export default {
     v-if="!isHidden"
     id="chat-component"
     ref="drawer"
-    class="markdown-code-block gl-drawer gl-drawer-default gl-max-h-full gl-bottom-0 gl-z-index-9999 gl-shadow-none gl-border-l gl-border-t ai-genie-chat"
+    class="markdown-code-block gl-drawer gl-drawer-default gl-max-h-full gl-bottom-0 gl-shadow-none gl-border-l gl-border-t ai-genie-chat"
     :class="{ 'gl-h-auto': !fullScreen }"
     role="complementary"
     data-testid="chat-component"

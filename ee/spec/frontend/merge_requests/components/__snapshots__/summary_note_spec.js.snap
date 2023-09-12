@@ -34,23 +34,14 @@ exports[`Merge request summary note component renders review note 1`] = `
       class="gl--flex-center gl-border-t gl-px-4 gl-py-3"
     >
       <user-feedback-stub
-        category="tertiary"
         eventextradata="[object Object]"
         eventname="proposed_changes_summary"
-        icononly="true"
+        feedbacklinktext="Leave feedback"
         promptlocation=""
-        size="small"
       />
       <div
         class="gl-ml-auto"
-      >
-        <gl-link-stub
-          href="https://gitlab.com/gitlab-org/gitlab/-/issues/408726"
-          target="_blank"
-        >
-          Leave feedback
-        </gl-link-stub>
-      </div>
+      />
     </footer>
   </article>
   <summary-note-stub
@@ -94,23 +85,14 @@ exports[`Merge request summary note component renders summary note 1`] = `
       class="gl--flex-center gl-border-t gl-px-4 gl-py-3"
     >
       <user-feedback-stub
-        category="tertiary"
         eventextradata="[object Object]"
         eventname="proposed_changes_summary"
-        icononly="true"
+        feedbacklinktext="Leave feedback"
         promptlocation=""
-        size="small"
       />
       <div
         class="gl-ml-auto"
-      >
-        <gl-link-stub
-          href="https://gitlab.com/gitlab-org/gitlab/-/issues/408726"
-          target="_blank"
-        >
-          Leave feedback
-        </gl-link-stub>
-      </div>
+      />
     </footer>
   </article>
 </div>

@@ -82,7 +82,7 @@ export default {
 </script>
 <template>
   <div
-    class="gl-py-3 gl-mb-4 gl-px-4 gl-rounded-lg gl-line-height-20 gl-word-break-word ai-genie-chat-message"
+    class="gl-p-4 gl-mb-4 gl-rounded-lg gl-line-height-20 gl-word-break-word ai-genie-chat-message"
     :class="{
       'gl-ml-auto gl-bg-blue-100 gl-text-blue-900 gl-rounded-bottom-right-none': isUserMessage,
       'gl-rounded-bottom-left-none gl-text-gray-900 gl-bg-white gl-border-1 gl-border-solid gl-border-gray-50': isAssistantMessage,

@@ -1,7 +1,8 @@
-import { GlButton } from '@gitlab/ui';
 import { nextTick } from 'vue';
+import { GlButton } from '@gitlab/ui';
+import DuoChatFeedbackModal from 'ee/ai/components/duo_chat_feedback_modal.vue';
 import Tracking from '~/tracking';
-import { FEEDBACK_OPTIONS, EXPLAIN_CODE_TRACKING_EVENT_NAME } from 'ee/ai/constants';
+import { EXPLAIN_CODE_TRACKING_EVENT_NAME, i18n } from 'ee/ai/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
 
@@ -9,8 +10,11 @@ describe('UserFeedback', () => {
   let wrapper;
 
   const promptLocation = 'before_content';
-  const createComponent = (props = {}) => {
+  const createComponent = ({ props, data = {} } = {}) => {
     wrapper = shallowMountExtended(UserFeedback, {
+      data() {
+        return data;
+      },
       propsData: {
         eventName: EXPLAIN_CODE_TRACKING_EVENT_NAME,
         promptLocation,
@@ -21,41 +25,62 @@ describe('UserFeedback', () => {
 
   const findButtons = () => wrapper.findAllComponents(GlButton);
   const firstButton = () => wrapper.findAllComponents(GlButton).at(0);
+  const findModal = () => wrapper.findComponent(DuoChatFeedbackModal);
 
   beforeEach(() => {
     jest.spyOn(Tracking, 'event');
-  });
-
-  it('renders buttons based on provideed options', () => {
     createComponent();
-
-    expect(findButtons()).toHaveLength(FEEDBACK_OPTIONS.length);
   });
 
-  describe('button', () => {
-    beforeEach(() => {
-      createComponent();
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  describe('rendering with no feedback registered', () => {
+    it('renders a button to provide feedback', () => {
+      expect(firstButton().exists()).toBe(true);
     });
 
-    it('has correct text', () => {
-      expect(firstButton().text()).toBe(FEEDBACK_OPTIONS[0].title);
-    });
-
-    it('receives correct icon prop', () => {
-      expect(firstButton().props('icon')).toBe(FEEDBACK_OPTIONS[0].icon);
+    it('renders the feedback modal', () => {
+      expect(findModal().exists()).toBe(true);
     });
   });
 
   describe('tracking', () => {
-    beforeEach(() => {
-      createComponent();
+    const passedfeedback = { feedbackOptions: ['helpful'], extendedFeedback: 'Foo bar' };
+
+    it('passes the feedback options to tracking when the modal emits', () => {
+      findModal().vm.$emit('feedback-submitted', passedfeedback);
+      expect(Tracking.event).toHaveBeenCalledWith(
+        undefined,
+        EXPLAIN_CODE_TRACKING_EVENT_NAME,
+        expect.objectContaining({
+          property: passedfeedback.feedbackOptions,
+          extra: expect.objectContaining({
+            extendedFeedback: passedfeedback.extendedFeedback,
+          }),
+        }),
+      );
+    });
+
+    it('renders the thank you text instead of a button', async () => {
+      findModal().vm.$emit('feedback-submitted', passedfeedback);
+      await nextTick();
+      expect(findButtons().length).toBe(0);
+      expect(wrapper.text()).toContain(i18n.GENIE_CHAT_FEEDBACK_THANKS);
+    });
+
+    it('does not render the modal', async () => {
+      findModal().vm.$emit('feedback-submitted', passedfeedback);
+      await nextTick();
+      expect(findModal().exists()).toBe(false);
     });
 
     it('fires tracking event with extra data passed from prop', () => {
       const eventExtraData = { foo: 'bar' };
 
-      createComponent({ eventName: EXPLAIN_CODE_TRACKING_EVENT_NAME, eventExtraData });
-      firstButton().vm.$emit('click');
+      createComponent({ props: { eventName: EXPLAIN_CODE_TRACKING_EVENT_NAME, eventExtraData } });
+      findModal().vm.$emit('feedback-submitted', passedfeedback);
 
       expect(Tracking.event).toHaveBeenCalledWith(
         undefined,
@@ -64,61 +89,6 @@ describe('UserFeedback', () => {
           extra: expect.objectContaining(eventExtraData),
         }),
       );
-    });
-
-    it('fires tracking event  when component is destroyed if button was clicked', () => {
-      firstButton().vm.$emit('click');
-
-      expect(Tracking.event).toHaveBeenCalledWith(undefined, EXPLAIN_CODE_TRACKING_EVENT_NAME, {
-        action: 'click_button',
-        extra: { prompt_location: 'before_content' },
-        label: 'response_feedback',
-        property: FEEDBACK_OPTIONS[0].value,
-      });
-    });
-
-    it('fires tracking event when the window is closed', () => {
-      firstButton().vm.$emit('click');
-
-      expect(Tracking.event).toHaveBeenCalledWith(undefined, EXPLAIN_CODE_TRACKING_EVENT_NAME, {
-        action: 'click_button',
-        extra: { prompt_location: 'before_content' },
-        label: 'response_feedback',
-        property: FEEDBACK_OPTIONS[0].value,
-      });
-    });
-
-    it('shows only selected option with disabled state once feedback is provided', async () => {
-      const selectedButtonIndex = 2;
-      findButtons().at(selectedButtonIndex).vm.$emit('click');
-      await nextTick();
-      expect(findButtons()).toHaveLength(1);
-      expect(firstButton().attributes('disabled')).toBeDefined();
-      expect(firstButton().text()).toBe(FEEDBACK_OPTIONS[selectedButtonIndex].title);
-    });
-  });
-
-  describe('icon only', () => {
-    it('does not render button with text', () => {
-      createComponent({
-        eventName: EXPLAIN_CODE_TRACKING_EVENT_NAME,
-        promptLocation,
-        iconOnly: true,
-      });
-
-      expect(firstButton().classes()).toContain('btn-icon');
-      expect(firstButton().text()).not.toBe(FEEDBACK_OPTIONS[0].title);
-    });
-
-    it('renders text after click', async () => {
-      createComponent({ iconOnly: true });
-
-      findButtons().at(0).vm.$emit('click');
-
-      await nextTick();
-
-      expect(firstButton().classes()).not.toContain('btn-icon');
-      expect(firstButton().text()).toBe(FEEDBACK_OPTIONS[0].title);
     });
   });
 });
