@@ -2,9 +2,9 @@
 import { GlTooltipDirective } from '@gitlab/ui';
 import getIncidentStateQuery from 'ee/graphql_shared/queries/get_incident_state.query.graphql';
 import { STATUS_CLOSED } from '~/issues/constants';
+import { isValidDateString } from '~/lib/utils/datetime_range';
 import { formatTime, calculateRemainingMilliseconds } from '~/lib/utils/datetime_utility';
 import { s__, sprintf } from '~/locale';
-import { isValidSlaDueAt } from './utils';
 
 export default {
   i18n: {
@@ -67,7 +67,7 @@ export default {
       return this.clientRemainingTime ?? calculateRemainingMilliseconds(this.slaDueAt);
     },
     shouldShow() {
-      return isValidSlaDueAt(this.slaDueAt);
+      return isValidDateString(this.slaDueAt);
     },
     hasNoTimeRemainingText() {
       if (this.isClosed) {
