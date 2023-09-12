@@ -4,9 +4,11 @@ require 'spec_helper'
 
 RSpec.describe Dora::AggregateScoresService, feature_category: :value_stream_management do
   let_it_be(:group) { create(:group) }
-  let_it_be(:project_1) { create(:project, group: group) }
-  let_it_be(:project_2) { create(:project, group: group) }
-  let_it_be(:project_3) { create(:project, group: group) }
+  let_it_be(:topic1) { create(:topic, name: "topic1") }
+  let_it_be(:topic2) { create(:topic, name: "topic2") }
+  let_it_be(:project_1) { create(:project, group: group, topics: [topic1]) }
+  let_it_be(:project_2) { create(:project, group: group, topics: [topic2]) }
+  let_it_be(:project_3) { create(:project, group: group, topics: [topic1, topic2]) }
   let_it_be(:project_4) { create(:project, group: group, name: "Project with no data ever") }
   let_it_be(:maintainer) { create(:user) }
   let_it_be(:guest) { create(:user) }
@@ -14,11 +16,13 @@ RSpec.describe Dora::AggregateScoresService, feature_category: :value_stream_man
   let(:service) do
     described_class.new(
       container: container,
-      current_user: current_user)
+      current_user: current_user,
+      params: params)
   end
 
   let(:container) { group }
   let(:current_user) { maintainer }
+  let(:params) { {} }
 
   around do |example|
     freeze_time do
@@ -121,6 +125,38 @@ RSpec.describe Dora::AggregateScoresService, feature_category: :value_stream_man
           counts_by_metric(:time_to_restore_service, low: 0, med: 1, high: 3, no_data: 0),
           counts_by_metric(:change_failure_rate, low: 1, med: 0, high: 3, no_data: 0)
         ])
+      end
+
+      context 'when filtering by topic' do
+        context 'when single topic' do
+          let(:params) { { topic: topic1.name } }
+
+          it 'returns the aggregated data' do
+            expect(subject[:status]).to eq(:success)
+
+            expect(subject.payload[:aggregations]).to match_array([
+              counts_by_metric(:deployment_frequency, low: 1, med: 0, high: 1, no_data: 0),
+              counts_by_metric(:lead_time_for_changes, low: 0, med: 1, high: 1, no_data: 0),
+              counts_by_metric(:time_to_restore_service, low: 0, med: 1, high: 1, no_data: 0),
+              counts_by_metric(:change_failure_rate, low: 1, med: 0, high: 1, no_data: 0)
+            ])
+          end
+        end
+
+        context 'when multiple topics' do
+          let(:params) { { topic: [topic1, topic2].map(&:name) } }
+
+          it 'returns the aggregated data' do
+            expect(subject[:status]).to eq(:success)
+
+            expect(subject.payload[:aggregations]).to match_array([
+              counts_by_metric(:deployment_frequency, low: 1, med: 0, high: 0, no_data: 0),
+              counts_by_metric(:lead_time_for_changes, low: 0, med: 1, high: 0, no_data: 0),
+              counts_by_metric(:time_to_restore_service, low: 0, med: 0, high: 1, no_data: 0),
+              counts_by_metric(:change_failure_rate, low: 0, med: 0, high: 1, no_data: 0)
+            ])
+          end
+        end
       end
     end
 
