@@ -649,53 +649,6 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#move_dir' do
-    context 'when running on a primary node' do
-      let_it_be(:primary) { create(:geo_node, :primary) }
-      let_it_be(:secondary) { create(:geo_node) }
-
-      let(:gitlab_shell) { Gitlab::Shell.new }
-      let(:parent_group) { create(:group) }
-      let(:child_group) { create(:group, name: 'child', path: 'child', parent: parent_group) }
-      let!(:project_legacy) { create(:project_empty_repo, :legacy_storage, namespace: parent_group) }
-      let!(:project_child_hashed) { create(:project, namespace: child_group) }
-      let!(:project_child_legacy) { create(:project_empty_repo, :legacy_storage, namespace: child_group) }
-      let!(:full_path_before_last_save) { "#{parent_group.full_path}_old" }
-
-      before do
-        new_path = parent_group.full_path
-
-        allow(parent_group).to receive(:gitlab_shell).and_return(gitlab_shell)
-        allow(parent_group).to receive(:path_changed?).and_return(true)
-        allow(parent_group).to receive(:full_path_before_last_save).and_return(full_path_before_last_save)
-        allow(parent_group).to receive(:full_path).and_return(new_path)
-
-        allow(gitlab_shell).to receive(:mv_namespace)
-          .with(project_legacy.repository_storage, full_path_before_last_save, new_path)
-          .and_return(true)
-
-        stub_current_geo_node(primary)
-      end
-
-      it 'logs the Geo::RepositoryRenamedEvent for each project inside namespace' do
-        expect { parent_group.move_dir }.to change(Geo::RepositoryRenamedEvent, :count).by(3)
-      end
-
-      it 'properly builds old_path_with_namespace' do
-        parent_group.move_dir
-
-        actual = Geo::RepositoryRenamedEvent.last(3).map(&:old_path_with_namespace)
-        expected = %W[
-          #{full_path_before_last_save}/#{project_legacy.path}
-          #{full_path_before_last_save}/child/#{project_child_hashed.path}
-          #{full_path_before_last_save}/child/#{project_child_legacy.path}
-        ]
-
-        expect(actual).to match_array(expected)
-      end
-    end
-  end
-
   shared_examples 'feature available' do
     let(:hosted_plan) { create(:bronze_plan) }
     let(:group) { create(:group) }
