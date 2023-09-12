@@ -22,7 +22,7 @@ describe('Convert description', () => {
   let aiResponseSubscriptionHandler;
   const userId = 123;
   const resourceId = 'gid://gitlab/Issue/1';
-  const content = 'My issue descirption';
+  const content = 'My issue description';
   const LONGER_THAN_MAX_REQUEST_TIMEOUT = 1000 * 31;
 
   const findModal = () => wrapper.findComponent(GlModal);
@@ -132,7 +132,7 @@ describe('Convert description', () => {
       aiResponseSubscriptionHandler.next({
         data: {
           aiCompletionResponse: {
-            responseBody: 'yay',
+            content: 'yay',
           },
         },
       });

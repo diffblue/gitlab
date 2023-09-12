@@ -38,6 +38,7 @@ const subscriptionResponsePartial = {
   timestamp: '2021-05-26T14:00:00.000Z',
   type: null,
   chunkId: null,
+  extras: null,
 };
 
 describe('Generate test file drawer component', () => {
@@ -49,11 +50,12 @@ describe('Generate test file drawer component', () => {
     subscriptionHandlerMock = jest.fn().mockResolvedValue({
       data: {
         aiCompletionResponse: {
-          responseBody: `
+          content: `
             \`\`\`
             puts "This is test code"
             \`\`\`
           `,
+          contentHtml: `<pre><code>puts "This is test code"</code></pre>`,
           errors: [],
           ...subscriptionResponsePartial,
         },
@@ -110,7 +112,8 @@ describe('Generate test file drawer component', () => {
     subscriptionHandlerMock = jest.fn().mockResolvedValue({
       data: {
         aiCompletionResponse: {
-          responseBody: 'As the file does not contain any code',
+          content: 'As the file does not contain any code',
+          contentHtml: 'As the file does not contain any code',
           errors: [],
           ...subscriptionResponsePartial,
         },

@@ -160,21 +160,21 @@ describe('AI actions dropdown component', () => {
     });
 
     it('emits response from action', async () => {
-      const responseBody = 'FooBar';
+      const content = 'FooBar';
 
       await clickAction();
 
       aiResponseSubscriptionHandler.next({
         data: {
           aiCompletionResponse: {
-            responseBody,
+            content,
           },
         },
       });
 
       await waitForPromises();
 
-      expect(wrapper.emitted('input')).toStrictEqual([[responseBody]]);
+      expect(wrapper.emitted('input')).toStrictEqual([[content]]);
     });
 
     it('shows an error when the AI action mutation response contains errors', async () => {

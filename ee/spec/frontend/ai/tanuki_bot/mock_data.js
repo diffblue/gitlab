@@ -24,20 +24,27 @@ export const MOCK_SOURCE_TYPES = {
 export const MOCK_SOURCES = Object.values(MOCK_SOURCE_TYPES);
 
 export const MOCK_TANUKI_MESSAGE = {
+  id: '123',
   content: 'Tanuki Bot message',
+  contentHtml: '<p>Tanuki Bot message</p>',
   role: MESSAGE_TYPES.TANUKI,
-  sources: MOCK_SOURCES,
+  extras: {
+    sources: MOCK_SOURCES,
+  },
   requestId: '987',
   errors: [],
   timestamp: '2021-04-21T12:00:00.000Z',
 };
 
 export const MOCK_USER_MESSAGE = {
+  id: '456',
   content: 'User message',
+  contentHtml: '<p>User message</p>',
   role: MESSAGE_TYPES.USER,
   requestId: '987',
   errors: [],
   timestamp: '2021-04-21T12:00:00.000Z',
+  extras: null,
 };
 
 export const MOCK_CHUNK_MESSAGE = {
@@ -54,13 +61,15 @@ export const GENERATE_MOCK_TANUKI_RES = (body = JSON.stringify(MOCK_TANUKI_MESSA
     data: {
       aiCompletionResponse: {
         id: '123',
-        responseBody: body,
+        content: body,
+        contentHtml: `<p>${body}</p>`,
         errors: [],
         requestId: '987',
         role: MOCK_TANUKI_MESSAGE.role,
         timestamp: '2021-04-21T12:00:00.000Z',
         type: null,
         chunkId: null,
+        extras: null,
       },
     },
   };
@@ -72,7 +81,9 @@ export const MOCK_TANUKI_ERROR_RES = (body = JSON.stringify(MOCK_TANUKI_MESSAGE)
   return {
     data: {
       aiCompletionResponse: {
-        responseBody: body,
+        id: '123',
+        content: body,
+        contentHtml: body,
         errors: ['error'],
       },
     },

@@ -23,14 +23,14 @@ export default {
           return !this.loading;
         },
         result({ data }) {
-          const responseBody = data.aiCompletionResponse?.responseBody;
+          const content = data.aiCompletionResponse?.content;
           const errors = data.aiCompletionResponse?.errors;
 
           if (errors?.length) {
             createAlert({ message: errors[0] });
             this.loading = false;
-          } else if (responseBody) {
-            this.$emit('input', responseBody);
+          } else if (content) {
+            this.$emit('input', content);
 
             this.loading = false;
           }

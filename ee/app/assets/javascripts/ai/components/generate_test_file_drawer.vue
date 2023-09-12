@@ -23,11 +23,11 @@ export default {
           return !this.opened;
         },
         result({ data }) {
-          const responseBody = data.aiCompletionResponse?.responseBody;
+          const content = data.aiCompletionResponse?.contentHtml;
 
-          if (responseBody) {
-            const codeBlockRegex = /```(.*)```/gm;
-            const codeBlock = codeBlockRegex.exec(responseBody.replaceAll('\n', '\\n'));
+          if (content) {
+            const codeBlockRegex = /<pre(.*)><code>(.*)<\/code><\/pre>/gm;
+            const codeBlock = codeBlockRegex.exec(content.replaceAll('\n', '\\n'));
 
             if (codeBlock) {
               this.generatedTest = codeBlock[0].replaceAll('\\n', '\n');

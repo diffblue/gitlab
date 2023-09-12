@@ -10,11 +10,15 @@ subscription aiCompletionResponse(
   ) {
     id
     requestId
-    responseBody
+    content
+    contentHtml
     errors
     role
     timestamp
     type
     chunkId
+    extras {
+      sources
+    }
   }
 }

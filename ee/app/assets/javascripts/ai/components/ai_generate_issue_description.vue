@@ -55,19 +55,19 @@ export default {
           };
         },
         async result({ data }) {
-          const { errors = [], responseBody } = data.aiCompletionResponse || {};
+          const { errors = [], content } = data.aiCompletionResponse || {};
 
           if (errors.length > 0) {
             this.handleError(errors[0].message);
           }
 
-          if (!responseBody) {
+          if (!content) {
             return;
           }
 
           clearTimeout(this.timeout);
 
-          const description = `${responseBody}\n\n***\n_Description was generated using AI_`;
+          const description = `${content}\n\n***\n_Description was generated using AI_`;
 
           this.$emit('contentGenerated', description);
           this.visible = false;

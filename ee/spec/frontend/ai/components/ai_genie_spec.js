@@ -37,7 +37,7 @@ Vue.use(VueApollo);
 const aiResponse = 'AI response';
 const explainCodeMutationResponse = { data: { aiAction: { errors: [] } } };
 const explainCodeSubscriptionResponse = {
-  data: { aiCompletionResponse: { responseBody: aiResponse, errors: [] } },
+  data: { aiCompletionResponse: { content: aiResponse, errors: [] } },
 };
 
 const SELECTION_START_POSITION = 50;
@@ -360,7 +360,7 @@ describe('AiGenie', () => {
       });
 
       it('if the subscription is successful, but the subscription receives an error in GraphQL response, an error message is displayed', async () => {
-        const responseWithError = { responseBody: aiResponse, errors: ['Some error'] };
+        const responseWithError = { content: aiResponse, errors: ['Some error'] };
         subscriptionHandlerMock = jest.fn().mockResolvedValue({
           data: { aiCompletionResponse: responseWithError },
         });

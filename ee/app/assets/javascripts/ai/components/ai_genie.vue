@@ -60,16 +60,16 @@ export default {
         },
         result({ data }) {
           // When we first subscribe, we will receive a null aiCompletionResponse. We do nothing in this case.
-          const { errors = [], responseBody } = data.aiCompletionResponse || {};
+          const { errors = [], content } = data.aiCompletionResponse || {};
 
           if (errors.length) {
             this.isLoading = false;
             this.codeExplanationError = this.$options.i18n.REQUEST_ERROR;
-          } else if (responseBody) {
+          } else if (content) {
             this.isLoading = false;
             this.messages.push({
               role: GENIE_CHAT_MODEL_ROLES.assistant,
-              content: responseBody,
+              content,
             });
           }
         },

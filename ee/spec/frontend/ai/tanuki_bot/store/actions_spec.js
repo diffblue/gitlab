@@ -19,34 +19,26 @@ describe('TanukiBot Store Actions', () => {
   describe('addDuoChatMessage', () => {
     describe('with content', () => {
       const content = 'AI foo';
-      const sources = { foo: 'bar' };
-      const stringifiedResponse = JSON.stringify({ content, sources });
+      const extras = { sources: [{ foo: 'bar' }] };
 
-      const aiResponseBodyResponse = {
-        responseBody: content,
-      };
       const aiContentResponse = {
         content,
       };
-      const aiComboResponse = {
-        content: `Content ${content}`,
-        responseBody: `RespBody ${content}`,
+      const oldDocumentationResponse = {
+        content: JSON.stringify({ content, sources: extras.sources }),
+        extras,
       };
-      const aiDocumentationResponse = {
-        responseBody: stringifiedResponse,
-      };
-      const cacheDocumentationResponse = {
-        content: stringifiedResponse,
+      const newDocumentationResponse = {
+        content,
+        extras,
       };
 
       it.each`
-        messageData                                                              | expectedPayload
-        ${aiResponseBodyResponse}                                                | ${{ content, role: GENIE_CHAT_MODEL_ROLES.user }}
-        ${{ ...aiResponseBodyResponse, role: GENIE_CHAT_MODEL_ROLES.assistant }} | ${{ content, role: GENIE_CHAT_MODEL_ROLES.assistant }}
-        ${aiContentResponse}                                                     | ${{ content, role: GENIE_CHAT_MODEL_ROLES.user }}
-        ${aiComboResponse}                                                       | ${{ content: `Content ${content}`, role: GENIE_CHAT_MODEL_ROLES.user }}
-        ${aiDocumentationResponse}                                               | ${{ content, sources, role: GENIE_CHAT_MODEL_ROLES.user }}
-        ${cacheDocumentationResponse}                                            | ${{ content, sources, role: GENIE_CHAT_MODEL_ROLES.user }}
+        messageData                                                         | expectedPayload
+        ${aiContentResponse}                                                | ${{ content, role: GENIE_CHAT_MODEL_ROLES.user }}
+        ${{ ...aiContentResponse, role: GENIE_CHAT_MODEL_ROLES.assistant }} | ${{ content, role: GENIE_CHAT_MODEL_ROLES.assistant }}
+        ${oldDocumentationResponse}                                         | ${{ content, extras, role: GENIE_CHAT_MODEL_ROLES.user }}
+        ${newDocumentationResponse}                                         | ${{ content, extras, role: GENIE_CHAT_MODEL_ROLES.user }}
       `(
         'should commit the correct mutations for "$messageData" response',
         ({ messageData, expectedPayload }) => {
@@ -71,7 +63,7 @@ describe('TanukiBot Store Actions', () => {
       it('should commit the correct mutation for a number as content', () => {
         return testAction({
           action: actions.addDuoChatMessage,
-          payload: { responseBody: '1', role: GENIE_CHAT_MODEL_ROLES.assistant },
+          payload: { content: '1', role: GENIE_CHAT_MODEL_ROLES.assistant },
           state,
           expectedMutations: [
             {
@@ -85,7 +77,7 @@ describe('TanukiBot Store Actions', () => {
       it('should commit the correct mutation for a boolean as content', () => {
         return testAction({
           action: actions.addDuoChatMessage,
-          payload: { responseBody: 'true', role: GENIE_CHAT_MODEL_ROLES.assistant },
+          payload: { content: 'true', role: GENIE_CHAT_MODEL_ROLES.assistant },
           state,
           expectedMutations: [
             {
