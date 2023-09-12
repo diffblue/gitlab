@@ -1,13 +1,22 @@
 <script>
-import { GlFormCheckbox, GlLink, GlSprintf } from '@gitlab/ui';
+import { GlFormCheckbox, GlTooltipDirective, GlLink, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { getBaseURL, joinPaths } from '~/lib/utils/url_utility';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
+import {
+  SETTINGS_HUMANISED_STRINGS,
+  SETTINGS_TOOLTIP,
+} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/settings';
+
 export default {
+  SETTINGS_HUMANISED_STRINGS,
+  SETTINGS_TOOLTIP,
   i18n: {
-    preventBranchModification: s__('ScanResultPolicy|Prevent branch protection modification'),
     protectedBranchesHeader: s__('ScanResultPolicy|Protected branch settings'),
+    blockUnprotectingBranches: s__(
+      'ScanResultPolicy|Block users from modifying protected branches',
+    ),
     protectedBranchesDescription: s__(
       'ScanResultPolicy|If selected, the following choices will overwrite %{linkStart}project settings%{linkEnd} but only affect the branches selected in the policy.',
     ),
@@ -16,6 +25,9 @@ export default {
     GlFormCheckbox,
     GlLink,
     GlSprintf,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   inject: ['namespacePath', 'namespaceType'],
   props: {
@@ -32,16 +44,13 @@ export default {
     protectedBranchesDescriptionLink() {
       return joinPaths(getBaseURL(), this.namespacePath, '-', 'settings/repository');
     },
-    preventBranchModification() {
-      return this.settings?.block_protected_branch_modification?.enabled || false;
-    },
   },
   methods: {
-    updatePreventBranchModification(value) {
-      const updates = { block_protected_branch_modification: { enabled: value } };
+    updateSetting(key, value) {
+      const updates = { [key]: { enabled: value } };
       this.updatePolicy(updates);
     },
-    updatePolicy(updates) {
+    updatePolicy(updates = {}) {
       this.$emit('changed', { ...this.settings, ...updates });
     },
   },
@@ -66,11 +75,16 @@ export default {
         </template>
       </gl-sprintf>
     </p>
+
     <gl-form-checkbox
-      :checked="preventBranchModification"
-      @change="updatePreventBranchModification"
+      v-for="({ enabled }, key) in settings"
+      :key="key"
+      :checked="enabled"
+      @change="updateSetting(key, $event)"
     >
-      {{ $options.i18n.preventBranchModification }}
+      <span v-gl-tooltip.viewport.right :title="$options.SETTINGS_TOOLTIP[key]">
+        {{ $options.SETTINGS_HUMANISED_STRINGS[key] }}
+      </span>
     </gl-form-checkbox>
   </div>
 </template>

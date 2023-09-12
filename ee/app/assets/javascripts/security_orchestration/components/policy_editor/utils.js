@@ -152,6 +152,16 @@ export const hasConflictingKeys = (rule) => {
 };
 
 /**
+ * Check if object has invalid keys in structure
+ * @param object
+ * @param allowedValues list of allowed values
+ * @returns {boolean} true if object is invalid
+ */
+export const hasInvalidKey = (object, allowedValues) => {
+  return !Object.keys(object).every((item) => allowedValues.includes(item));
+};
+
+/**
  * Checks for parameters unsupported by the policy "Rule Mode"
  * @param {Object} policy policy converted from YAML
  * @param {Array} primaryKeys list of primary policy keys
@@ -165,10 +175,6 @@ export const isValidPolicy = ({
   rulesKeys = [],
   actionsKeys = [],
 }) => {
-  const hasInvalidKey = (object, allowedValues) => {
-    return !Object.keys(object).every((item) => allowedValues.includes(item));
-  };
-
   return !(
     hasInvalidKey(policy, primaryKeys) ||
     policy.rules?.some((rule) => hasInvalidKey(rule, rulesKeys)) ||
