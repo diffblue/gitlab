@@ -4,6 +4,7 @@ module GitlabSubscriptions
   module AddOnPurchases
     class RefreshUserAssignmentsWorker
       include ::ApplicationWorker
+      include Gitlab::ExclusiveLeaseHelpers
 
       BATCH_SIZE = 50
 
@@ -22,14 +23,12 @@ module GitlabSubscriptions
 
         deleted_assignments_count = 0
         add_on_purchase.assigned_users.each_batch(of: BATCH_SIZE) do |batch|
-          ineligible_user_ids = filter_ineligible_user_ids(batch.select(:user_id))
+          user_ids_to_unassign = ineligible_user_ids(batch.select(:user_id))
 
-          batch.for_user_ids(ineligible_user_ids).delete_all
-
-          deleted_assignments_count += ineligible_user_ids.count
+          deleted_assignments_count += batch.for_user_ids(user_ids_to_unassign).delete_all
         end
 
-        log_event(deleted_assignments_count)
+        log_event(deleted_assignments_count) if deleted_assignments_count.positive? # rubocop:disable Style/NumericPredicate
       end
 
       private
@@ -44,9 +43,8 @@ module GitlabSubscriptions
         @add_on_purchase ||= root_namespace.subscription_add_on_purchases.for_code_suggestions.first
       end
 
-      # returns user_ids that are not eligible
-      def filter_ineligible_user_ids(user_ids)
-        root_namespace.filter_ineligible_user_ids_for_code_suggestions(user_ids)
+      def ineligible_user_ids(user_ids)
+        root_namespace.ineligible_user_ids_for_code_suggestions(user_ids)
       end
 
       def log_event(deleted_count)

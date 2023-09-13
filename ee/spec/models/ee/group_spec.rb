@@ -1718,7 +1718,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
-  describe '#filter_ineligible_user_ids_for_code_suggestions' do
+  describe '#ineligible_user_ids_for_code_suggestions' do
     let_it_be(:group) { create(:group) }
     let_it_be(:sub_group) { create(:group, parent: group) }
     let_it_be(:project) { create(:project, namespace: sub_group) }
@@ -1728,7 +1728,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
 
     let(:user_ids) { [eligible_user.id, ineligible_user.id] }
     let(:expected_result) { [ineligible_user.id] }
-    let(:subject) { group.filter_ineligible_user_ids_for_code_suggestions(Member.where(user_id: user_ids).select(:user_id)) }
+    let(:subject) { group.ineligible_user_ids_for_code_suggestions(Member.where(user_id: user_ids).select(:user_id)) }
 
     before do
       other_group.add_guest(ineligible_user)
@@ -1771,16 +1771,6 @@ RSpec.describe Group, feature_category: :groups_and_projects do
         end
 
         it { is_expected.to match_array(expected_result) }
-      end
-    end
-
-    context 'when user_ids is supplied as an Array' do
-      let(:subject) { group.filter_ineligible_user_ids_for_code_suggestions(user_ids) }
-
-      it 'returns correct ineligble user_ids' do
-        sub_group.add_guest(eligible_user)
-
-        expect(subject).to eq(expected_result)
       end
     end
   end

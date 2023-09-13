@@ -81,5 +81,18 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
 
       subject.perform(root_namespace_id)
     end
+
+    context 'when no assignments were deleted' do
+      before_all do
+        namespace.add_guest(user_1)
+        namespace.add_guest(user_2)
+      end
+
+      it 'does not log any info about assignments refreshed' do
+        expect(Gitlab::AppLogger).not_to receive(:info)
+
+        subject.perform(root_namespace_id)
+      end
+    end
   end
 end
