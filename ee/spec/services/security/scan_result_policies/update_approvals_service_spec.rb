@@ -126,7 +126,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
               message: 'Evaluating MR approval rules from scan result policies',
               pipeline_ids: [pipeline.id],
               target_pipeline_ids: [target_pipeline.id],
-              project_path: 'namespace1/project-1'
+              project_path: project.full_path
             ).and_call_original
 
           expect(::Gitlab::AppJsonLogger)
@@ -140,7 +140,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
               merge_request_iid: merge_request.iid,
               reason: 'Scanner removed by MR',
               missing_scans: ['dependency_scanning'],
-              project_path: 'namespace1/project-1'
+              project_path: project.full_path
             ).and_call_original
 
           execute
