@@ -1,5 +1,13 @@
 <script>
-import { GlEmptyState, GlIcon, GlLoadingIcon, GlSprintf, GlLink } from '@gitlab/ui';
+import {
+  GlButton,
+  GlEmptyState,
+  GlIcon,
+  GlLoadingIcon,
+  GlSprintf,
+  GlLink,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapGetters, mapState } from 'vuex';
 import { __, s__ } from '~/locale';
@@ -19,6 +27,7 @@ export default {
   name: 'DependenciesApp',
   components: {
     DependenciesActions,
+    GlButton,
     GlIcon,
     GlEmptyState,
     GlLoadingIcon,
@@ -27,6 +36,9 @@ export default {
     DependencyListIncompleteAlert,
     DependencyListJobFailedAlert,
     PaginatedDependenciesTable,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   inject: [
     'emptyStateSvgPath',
@@ -55,6 +67,14 @@ export default {
       'totals',
     ]),
     ...mapState(DEPENDENCY_LIST_TYPES.all.namespace, ['pageInfo']),
+    ...mapState({
+      fetchingInProgress(state) {
+        return state[this.currentList].fetchingInProgress;
+      },
+    }),
+    exportButtonIcon() {
+      return this.fetchingInProgress ? '' : 'export';
+    },
     currentListIndex: {
       get() {
         return this.listTypes.map(({ namespace }) => namespace).indexOf(this.currentList);
@@ -113,17 +133,16 @@ export default {
       'setSortField',
       'setCurrentList',
     ]),
+    ...mapActions({
+      fetchExport(dispatch) {
+        dispatch(`${this.currentList}/fetchExport`);
+      },
+    }),
     dismissIncompleteListAlert() {
       this.isIncompleteAlertDismissed = true;
     },
     dismissJobFailedAlert() {
       this.isJobFailedAlertDismissed = true;
-    },
-    isTabDisabled(namespace) {
-      return this.totals[namespace] <= 0;
-    },
-    qaCountSelector(label) {
-      return `dependency_list_${label.toLowerCase().replace(' ', '_')}_count`;
     },
   },
 };
@@ -158,9 +177,9 @@ export default {
       @dismiss="dismissJobFailedAlert"
     />
 
-    <header class="d-md-flex align-items-end my-3">
-      <div class="mr-auto">
-        <h2 class="h4 mb-1 mt-0 gl-display-flex gl-align-items-center">
+    <header class="gl-md-display-flex gl-align-items-flex-start gl-my-5 gl-overflow-auto">
+      <div class="gl-mr-auto">
+        <h2 class="h4 gl-mb-2 gl-mt-0 gl-display-flex gl-align-items-center">
           {{ __('Dependencies') }}
           <gl-link
             class="gl-ml-3"
@@ -171,7 +190,7 @@ export default {
             <gl-icon name="question-o" />
           </gl-link>
         </h2>
-        <p class="mb-0">
+        <p class="gl-mb-0">
           <gl-sprintf :message="message">
             <template #link="{ content }">
               <gl-link v-if="reportInfo.jobPath" ref="jobLink" :href="reportInfo.jobPath">{{
@@ -186,8 +205,20 @@ export default {
           </span>
         </p>
       </div>
-      <dependencies-actions class="mt-2" :namespace="currentList" />
+      <gl-button
+        v-gl-tooltip.hover
+        :title="s__('Dependencies|Export as JSON')"
+        class="gl-float-right gl-md-float-none gl-mt-3 gl-md-mt-0"
+        :icon="exportButtonIcon"
+        data-testid="export"
+        :loading="fetchingInProgress"
+        @click="fetchExport"
+      >
+        {{ __('Export') }}
+      </gl-button>
     </header>
+
+    <dependencies-actions class="gl-mt-3" :namespace="currentList" />
 
     <article>
       <paginated-dependencies-table :namespace="currentList" />
