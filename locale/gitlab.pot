@@ -47331,6 +47331,9 @@ msgstr ""
 msgid "The group_project_ids parameter is only allowed for a group"
 msgstr ""
 
+msgid "The hook URL has changed, and this log entry cannot be retried"
+msgstr ""
+
 msgid "The hostname of your PlantUML server."
 msgstr ""
 
