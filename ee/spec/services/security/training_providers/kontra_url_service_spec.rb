@@ -41,7 +41,7 @@ RSpec.describe Security::TrainingProviders::KontraUrlService, feature_category: 
             })
           .to_return(
             status: 404,
-            body: '{"error":"Exercise not found"}',
+            body: { error: 'Exercise not found' }.to_json,
             headers: { 'Content-Type' => 'application/json' }
           )
       end

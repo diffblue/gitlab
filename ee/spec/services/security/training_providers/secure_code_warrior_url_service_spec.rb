@@ -33,7 +33,11 @@ RSpec.describe Security::TrainingProviders::SecureCodeWarriorUrlService, feature
           stub_request(:get, dummy_url)
             .to_return(
               status: 404,
-              body: '{"name":"Not Found","message":"Mapping key not found","code":404}',
+              body: {
+                name: 'Not Found',
+                message: 'Mapping key not found',
+                code: 404
+              }.to_json,
               headers: { 'Content-Type' => 'application/json' }
             )
         end
