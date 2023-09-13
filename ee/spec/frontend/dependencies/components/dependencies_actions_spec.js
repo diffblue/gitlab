@@ -33,7 +33,6 @@ describe('DependenciesActions component', () => {
     });
   };
 
-  const findExportButton = () => wrapper.findByTestId('export');
   const findSorting = () => wrapper.findComponent(GlSorting);
 
   beforeEach(async () => {
@@ -111,27 +110,5 @@ describe('DependenciesActions component', () => {
   it('dispatches the toggleSortOrder action on clicking the sort order button', () => {
     findSorting().vm.$emit('sortDirectionChange');
     expect(store.dispatch).toHaveBeenCalledWith(`${namespace}/toggleSortOrder`);
-  });
-
-  it('has a button to perform an async export of the dependency list', () => {
-    expect(findExportButton().attributes('icon')).toBe('export');
-
-    findExportButton().vm.$emit('click');
-
-    expect(store.dispatch).toHaveBeenCalledWith(`${namespace}/fetchExport`);
-  });
-
-  describe('with fetching in progress', () => {
-    beforeEach(async () => {
-      store.state[namespace].fetchingInProgress = true;
-      await nextTick;
-    });
-
-    it('sets the icon to match the loading icon', () => {
-      const exportButton = findExportButton();
-
-      expect(exportButton.attributes('icon')).toBe('');
-      expect(exportButton.attributes('loading')).toBe('true');
-    });
   });
 });

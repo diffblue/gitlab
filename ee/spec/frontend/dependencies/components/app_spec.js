@@ -108,6 +108,7 @@ describe('DependenciesApp component', () => {
   const findDependenciesTables = () => wrapper.findAllComponents(PaginatedDependenciesTable);
 
   const findHeader = () => wrapper.find('section > header');
+  const findExportButton = () => wrapper.findByTestId('export');
   const findHeaderHelpLink = () => findHeader().findComponent(GlLink);
   const findHeaderJobLink = () => wrapper.findComponent({ ref: 'jobLink' });
   const findTimeAgoMessage = () => wrapper.findByTestId('time-ago-message');
@@ -212,6 +213,29 @@ describe('DependenciesApp component', () => {
       it('shows the dependencies table with the correct props', () => {
         expectHeader();
         expectDependenciesTable();
+      });
+
+      describe('export functionality', () => {
+        it('has a button to perform an async export of the dependency list', () => {
+          expect(findExportButton().attributes('icon')).toBe('export');
+
+          findExportButton().vm.$emit('click');
+
+          expect(store.dispatch).toHaveBeenCalledWith(`${allNamespace}/fetchExport`);
+        });
+
+        describe('with fetching in progress', () => {
+          beforeEach(() => {
+            store.state[allNamespace].fetchingInProgress = true;
+          });
+
+          it('sets the icon to match the loading icon', () => {
+            expect(findExportButton().attributes()).toMatchObject({
+              icon: '',
+              loading: 'true',
+            });
+          });
+        });
       });
 
       describe('with namespaceType set to group', () => {

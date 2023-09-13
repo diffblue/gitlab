@@ -1,9 +1,9 @@
 <script>
-import { GlButton, GlSorting, GlSortingItem, GlTooltipDirective } from '@gitlab/ui';
+import { GlSorting, GlSortingItem } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { omit } from 'lodash';
-import { __, s__ } from '~/locale';
+import { __ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NAMESPACE_PROJECT } from '../constants';
 import { DEPENDENCY_LIST_TYPES } from '../store/constants';
@@ -16,17 +16,12 @@ import {
 
 export default {
   i18n: {
-    exportAsJson: s__('Dependencies|Export as JSON'),
     sortDirectionLabel: __('Sort direction'),
   },
   name: 'DependenciesActions',
   components: {
-    GlButton,
     GlSorting,
     GlSortingItem,
-  },
-  directives: {
-    GlTooltip: GlTooltipDirective,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType'],
@@ -48,12 +43,6 @@ export default {
       },
       sortOrder(state) {
         return state[this.namespace].sortOrder;
-      },
-      buttonIcon() {
-        return this.fetchingInProgress ? '' : 'export';
-      },
-      fetchingInProgress(state) {
-        return state[this.namespace].fetchingInProgress;
       },
     }),
     sortFieldName() {
@@ -78,9 +67,6 @@ export default {
       toggleSortOrder(dispatch) {
         dispatch(`${this.namespace}/toggleSortOrder`);
       },
-      fetchExport(dispatch) {
-        dispatch(`${this.namespace}/fetchExport`);
-      },
     }),
     isCurrentSortField(field) {
       return field === this.sortField;
@@ -90,12 +76,14 @@ export default {
 </script>
 
 <template>
-  <div class="gl-display-flex">
+  <div
+    class="gl-display-flex gl-p-5 gl-bg-gray-10 gl-border-t-1 gl-border-t-solid gl-border-gray-100"
+  >
     <gl-sorting
       :text="sortFieldName"
       :is-ascending="isSortAscending"
       :sort-direction-tool-tip="$options.i18n.sortDirectionLabel"
-      class="gl-flex-grow-1"
+      class="gl-ml-auto"
       dropdown-class="gl-flex-grow-1"
       sort-direction-toggle-class="gl-flex-grow-0!"
       @sortDirectionChange="toggleSortOrder"
@@ -109,16 +97,5 @@ export default {
         {{ name }}
       </gl-sorting-item>
     </gl-sorting>
-    <gl-button
-      v-gl-tooltip.hover
-      :title="$options.i18n.exportAsJson"
-      class="gl-ml-3"
-      :icon="buttonIcon"
-      data-testid="export"
-      :loading="fetchingInProgress"
-      @click="fetchExport"
-    >
-      {{ __('Export') }}
-    </gl-button>
   </div>
 </template>
