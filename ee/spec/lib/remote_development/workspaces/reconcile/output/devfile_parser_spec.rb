@@ -32,12 +32,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
   let(:expected_workspace_resources) do
     YAML.load_stream(
       create_config_to_apply(
-        workspace_id: workspace.id,
-        workspace_name: workspace.name,
-        workspace_namespace: workspace.namespace,
+        workspace: workspace,
         workspace_variables_env_var: {},
         workspace_variables_file: {},
-        agent_id: workspace.agent.id,
         started: true,
         include_inventory: false,
         include_network_policy: false,

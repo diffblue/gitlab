@@ -8,38 +8,32 @@ RSpec.shared_context 'with remote development shared fixtures' do
   # noinspection RubyInstanceMethodNamingConvention, RubyLocalVariableNamingConvention, RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
   # rubocop:enable Layout/LineLength
   def create_workspace_agent_info_hash(
-    workspace_id:,
-    workspace_name:,
-    workspace_namespace:,
-    workspace_variables_env_var:,
-    workspace_variables_file:,
-    agent_id:,
-    resource_version:,
+    workspace:,
     # NOTE: previous_actual_state is the actual state of the workspace IMMEDIATELY prior to the current state. We don't
     # simulate the situation where there may have been multiple transitions between reconciliation polling intervals.
     previous_actual_state:,
     current_actual_state:,
     # NOTE: workspace_exists is whether the workspace exists in the cluster at the time of the current_actual_state.
     workspace_exists:,
+    workspace_variables_env_var: nil,
+    workspace_variables_file: nil,
+    resource_version: '1',
     dns_zone: 'workspaces.localdev.me',
     error_details: nil
   )
-    # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409787
-    #       Default some of the parameters which can be derived from others: workspace_namespace
-
     info = {
-      name: workspace_name,
-      namespace: workspace_namespace
+      name: workspace.name,
+      namespace: workspace.namespace
     }
 
     if current_actual_state == RemoteDevelopment::Workspaces::States::TERMINATED
       info[:termination_progress] =
-        RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator::TERMINATED
+        RemoteDevelopment::Workspaces::States::TERMINATED
     end
 
     if current_actual_state == RemoteDevelopment::Workspaces::States::TERMINATING
       info[:termination_progress] =
-        RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator::TERMINATING
+        RemoteDevelopment::Workspaces::States::TERMINATING
     end
 
     if [
@@ -50,9 +44,14 @@ RSpec.shared_context 'with remote development shared fixtures' do
       return info
     end
 
-    spec_replicas = [ # rubocop:disable Style/MultilineTernaryOperator
-      RemoteDevelopment::Workspaces::States::STOPPED, RemoteDevelopment::Workspaces::States::STOPPING
-    ].include?(current_actual_state) ? 0 : 1
+    spec_replicas =
+      if [RemoteDevelopment::Workspaces::States::STOPPED, RemoteDevelopment::Workspaces::States::STOPPING]
+           .include?(current_actual_state)
+        0
+      else
+        1
+      end
+
     started = spec_replicas == 1
 
     # rubocop:disable Lint/DuplicateBranch
@@ -63,7 +62,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
           conditions:
           - lastTransitionTime: "2023-04-10T10:14:14Z"
             lastUpdateTime: "2023-04-10T10:14:14Z"
-            message: Created new replica set "#{workspace_name}-hash"
+            message: Created new replica set "#{workspace.name}-hash"
             reason: NewReplicaSetCreated
             status: "True"
             type: Progressing
@@ -79,7 +78,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
             type: Available
           - lastTransitionTime: "2023-04-10T10:14:14Z"
             lastUpdateTime: "2023-04-10T10:14:14Z"
-            message: ReplicaSet "#{workspace_name}-hash" is progressing.
+            message: ReplicaSet "#{workspace.name}-hash" is progressing.
             reason: ReplicaSetUpdated
             status: "True"
             type: Progressing
@@ -100,7 +99,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
             type: Available
           - lastTransitionTime: "2023-03-06T14:36:31Z"
             lastUpdateTime: "2023-03-06T14:36:36Z"
-            message: ReplicaSet "#{workspace_name}-hash" has successfully progressed.
+            message: ReplicaSet "#{workspace.name}-hash" has successfully progressed.
             reason: NewReplicaSetAvailable
             status: "True"
             type: Progressing
@@ -126,7 +125,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
             type: Available
           - lastTransitionTime: "2023-04-10T10:40:24Z"
             lastUpdateTime: "2023-04-10T10:40:35Z"
-            message: ReplicaSet "#{workspace_name}-hash" has successfully progressed.
+            message: ReplicaSet "#{workspace.name}-hash" has successfully progressed.
             reason: NewReplicaSetAvailable
             status: "True"
             type: Progressing
@@ -146,7 +145,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
             type: Available
           - lastTransitionTime: "2023-04-10T10:40:24Z"
             lastUpdateTime: "2023-04-10T10:40:35Z"
-            message: ReplicaSet "#{workspace_name}-hash" has successfully progressed.
+            message: ReplicaSet "#{workspace.name}-hash" has successfully progressed.
             reason: NewReplicaSetAvailable
             status: "True"
             type: Progressing
@@ -161,7 +160,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
           conditions:
           - lastTransitionTime: "2023-04-10T10:40:24Z"
             lastUpdateTime: "2023-04-10T10:40:35Z"
-            message: ReplicaSet "#{workspace_name}-hash" has successfully progressed.
+            message: ReplicaSet "#{workspace.name}-hash" has successfully progressed.
             reason: NewReplicaSetAvailable
             status: "True"
             type: Progressing
@@ -184,7 +183,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
           conditions:
           - lastTransitionTime: "2023-04-10T10:40:24Z"
             lastUpdateTime: "2023-04-10T10:40:35Z"
-            message: ReplicaSet "#{workspace_name}-hash" has successfully progressed.
+            message: ReplicaSet "#{workspace.name}-hash" has successfully progressed.
             reason: NewReplicaSetAvailable
             status: "True"
             type: Progressing
@@ -205,7 +204,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
           conditions:
           - lastTransitionTime: "2023-04-10T10:40:24Z"
             lastUpdateTime: "2023-04-10T10:40:35Z"
-            message: ReplicaSet "#{workspace_name}-hash" has successfully progressed.
+            message: ReplicaSet "#{workspace.name}-hash" has successfully progressed.
             reason: NewReplicaSetAvailable
             status: "True"
             type: Progressing
@@ -232,7 +231,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
         #   conditions:
         #     - lastTransitionTime: "2023-03-06T14:36:31Z"
         #       lastUpdateTime: "2023-03-08T11:16:35Z"
-        #       message: ReplicaSet "#{workspace_name}-hash" has successfully progressed.
+        #       message: ReplicaSet "#{workspace.name}-hash" has successfully progressed.
         #       reason: NewReplicaSetAvailable
         #       status: "True"
         #       type: Progressing
@@ -247,27 +246,25 @@ RSpec.shared_context 'with remote development shared fixtures' do
         #     updatedReplicas: 1
         # STATUS_YAML
       else
-        msg = 'Unsupported state transition passed for create_workspace_agent_info_hash fixture creation: ' \
-              "actual_state: #{previous_actual_state} -> #{current_actual_state}, " \
-              "existing_workspace: #{workspace_exists}"
+        msg =
+          'Unsupported state transition passed for create_workspace_agent_info_hash fixture creation: ' \
+            "actual_state: #{previous_actual_state} -> #{current_actual_state}, " \
+            "existing_workspace: #{workspace_exists}"
         raise RemoteDevelopment::AgentInfoStatusFixtureNotImplementedError, msg
       end
     # rubocop:enable Lint/DuplicateBranch
 
-    config_to_apply = create_config_to_apply(
-      workspace_id: workspace_id,
-      workspace_name: workspace_name,
-      workspace_namespace: workspace_namespace,
+    config_to_apply_yaml = create_config_to_apply(
+      workspace: workspace,
       workspace_variables_env_var: workspace_variables_env_var,
       workspace_variables_file: workspace_variables_file,
-      agent_id: agent_id,
       started: started,
       include_inventory: false,
       include_network_policy: false,
       include_secrets: false,
       dns_zone: dns_zone
     )
-    config_to_apply = YAML.load_stream(config_to_apply)
+    config_to_apply = YAML.load_stream(config_to_apply_yaml)
     latest_k8s_deployment_info = config_to_apply.detect { |config| config.fetch('kind') == 'Deployment' }
     latest_k8s_deployment_info['metadata']['resourceVersion'] = resource_version
     latest_k8s_deployment_info['status'] = YAML.safe_load(status)
@@ -302,83 +299,85 @@ RSpec.shared_context 'with remote development shared fixtures' do
 
   # rubocop:disable Metrics/ParameterLists
   # noinspection RubyLocalVariableNamingConvention,RubyParameterNamingConvention - See https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/code-inspection/why-are-there-noinspection-comments/
+  # rubocop:disable Metrics/AbcSize
   def create_config_to_apply(
-    workspace_id:,
-    workspace_name:,
-    workspace_namespace:,
-    workspace_variables_env_var:,
-    workspace_variables_file:,
-    agent_id:,
+    workspace:,
     started:,
+    workspace_variables_env_var: nil,
+    workspace_variables_file: nil,
     include_inventory: true,
     include_network_policy: true,
     include_secrets: false,
     dns_zone: 'workspaces.localdev.me'
   )
     spec_replicas = started == true ? 1 : 0
-    host_template_annotation = get_workspace_host_template_annotation(workspace_name, dns_zone)
+    host_template_annotation = get_workspace_host_template_annotation(workspace.name, dns_zone)
 
     workspace_inventory = workspace_inventory(
-      workspace_name: workspace_name,
-      workspace_namespace: workspace_namespace,
-      agent_id: agent_id
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      agent_id: workspace.agent.id
     )
 
     workspace_deployment = workspace_deployment(
-      workspace_id: workspace_id,
-      workspace_name: workspace_name,
-      workspace_namespace: workspace_namespace,
-      agent_id: agent_id,
+      workspace_id: workspace.id,
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      agent_id: workspace.agent.id,
       spec_replicas: spec_replicas,
       host_template_annotation: host_template_annotation
     )
 
     workspace_service = workspace_service(
-      workspace_id: workspace_id,
-      workspace_name: workspace_name,
-      workspace_namespace: workspace_namespace,
-      agent_id: agent_id,
+      workspace_id: workspace.id,
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      agent_id: agent.id,
       host_template_annotation: host_template_annotation
     )
 
     workspace_pvc = workspace_pvc(
-      workspace_id: workspace_id,
-      workspace_name: workspace_name,
-      workspace_namespace: workspace_namespace,
-      agent_id: agent_id,
+      workspace_id: workspace.id,
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      agent_id: workspace.agent.id,
       host_template_annotation: host_template_annotation
     )
 
     workspace_network_policy = workspace_network_policy(
-      workspace_id: workspace_id,
-      workspace_name: workspace_name,
-      workspace_namespace: workspace_namespace,
-      agent_id: agent_id,
+      workspace_id: workspace.id,
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      agent_id: agent.id,
       host_template_annotation: host_template_annotation
     )
 
     workspace_secrets_inventory = workspace_secrets_inventory(
-      workspace_name: workspace_name,
-      workspace_namespace: workspace_namespace,
-      agent_id: agent_id
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      agent_id: agent.id
     )
 
     workspace_secret_env_var = workspace_secret_env_var(
-      workspace_id: workspace_id,
-      workspace_name: workspace_name,
-      workspace_namespace: workspace_namespace,
-      agent_id: agent_id,
+      workspace_id: workspace.id,
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      agent_id: agent.id,
       host_template_annotation: host_template_annotation,
-      workspace_variables_env_var: workspace_variables_env_var
+      workspace_variables_env_var: workspace_variables_env_var || get_workspace_variables_env_var(
+        workspace_variables: workspace.workspace_variables
+      )
     )
 
     workspace_secret_file = workspace_secret_file(
-      workspace_id: workspace_id,
-      workspace_name: workspace_name,
-      workspace_namespace: workspace_namespace,
-      agent_id: agent_id,
+      workspace_id: workspace.id,
+      workspace_name: workspace.name,
+      workspace_namespace: workspace.namespace,
+      agent_id: agent.id,
       host_template_annotation: host_template_annotation,
-      workspace_variables_file: workspace_variables_file
+      workspace_variables_file: workspace_variables_file || get_workspace_variables_file(
+        workspace_variables: workspace.workspace_variables
+      )
     )
 
     resources = []
@@ -395,6 +394,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
       YAML.dump(resource.deep_stringify_keys)
     end.join
   end
+  # rubocop:enable Metrics/AbcSize
 
   def create_config_to_apply_prev1(
     workspace_id:,
@@ -465,6 +465,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
       YAML.dump(resource.deep_stringify_keys)
     end.join
   end
+
   # rubocop:enable Metrics/ParameterLists
 
   def workspace_inventory(
@@ -1008,6 +1009,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
       status: {}
     }
   end
+
   # rubocop:enable Metrics/ParameterLists
 
   def workspace_service(

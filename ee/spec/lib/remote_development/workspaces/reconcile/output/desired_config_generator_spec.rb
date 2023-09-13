@@ -27,23 +27,10 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGe
       )
     end
 
-    let(:workspace_variables_env_var) do
-      get_workspace_variables_env_var(workspace_variables: workspace.workspace_variables)
-    end
-
-    let(:workspace_variables_file) do
-      get_workspace_variables_file(workspace_variables: workspace.workspace_variables)
-    end
-
     let(:expected_config) do
       YAML.load_stream(
         create_config_to_apply(
-          workspace_id: workspace.id,
-          workspace_name: workspace.name,
-          workspace_namespace: workspace.namespace,
-          workspace_variables_env_var: workspace_variables_env_var,
-          workspace_variables_file: workspace_variables_file,
-          agent_id: workspace.agent.id,
+          workspace: workspace,
           started: started,
           include_network_policy: network_policy_enabled,
           include_secrets: include_secrets
