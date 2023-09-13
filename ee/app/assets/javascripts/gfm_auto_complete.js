@@ -124,6 +124,7 @@ class GfmAutoCompleteEE extends GfmAutoComplete {
       at: '[vulnerability:',
       suffix: ']',
       alias: VULNERABILITIES_ALIAS,
+      delay: 500,
       searchKey: 'search',
       displayTpl(value) {
         let tmpl = GfmAutoComplete.Loading.template;
