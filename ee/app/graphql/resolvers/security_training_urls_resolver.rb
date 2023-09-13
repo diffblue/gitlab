@@ -22,7 +22,7 @@ module Resolvers
     alias_method :project, :object
 
     def resolve(**args)
-      ::Security::TrainingUrlsFinder.new(
+      ::Security::TrainingUrlsService.new(
         project,
         args[:identifier_external_ids],
         args[:filename]

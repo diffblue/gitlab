@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::TrainingUrlsFinder do
+RSpec.describe Security::TrainingUrlsService, feature_category: :vulnerability_management do
   let_it_be(:project) { create(:project) }
   let_it_be(:filename) { nil }
   let_it_be(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
@@ -21,7 +21,7 @@ RSpec.describe Security::TrainingUrlsFinder do
 
   subject { described_class.new(project, identifier_external_ids, filename).execute }
 
-  context 'no identifier with cwe external type' do
+  context 'when there is no identifier with cwe external type' do
     let(:identifier_external_ids) { [] }
 
     it 'returns empty list' do
@@ -29,7 +29,7 @@ RSpec.describe Security::TrainingUrlsFinder do
     end
   end
 
-  context 'identifiers with cwe external type' do
+  context 'with identifiers with cwe external type' do
     let(:identifier_external_ids) { [identifier_external_id] }
 
     context 'when there is no training provider enabled for project' do
@@ -66,7 +66,7 @@ RSpec.describe Security::TrainingUrlsFinder do
           )
         end
 
-        ::Security::TrainingUrlsFinder::EXTENSION_LANGUAGE_MAP.each do |extension, language|
+        ::Security::TrainingUrlsService::EXTENSION_LANGUAGE_MAP.each do |extension, language|
           context "when a filename with extension .#{extension} is provided" do
             let_it_be(:filename) { "code.#{extension}" }
             let_it_be(:training_provider) do

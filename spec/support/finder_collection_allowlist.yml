@@ -62,7 +62,6 @@
 - Security::PipelineVulnerabilitiesFinder
 - Security::ScanExecutionPoliciesFinder
 - Security::ScanResultPoliciesFinder
-- Security::TrainingUrlsFinder
 - SentryIssueFinder
 - ServerlessDomainFinder
 - TagsFinder

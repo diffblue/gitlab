@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Security
-  class TrainingUrlsFinder
+  class TrainingUrlsService
     EXTENSION_LANGUAGE_MAP = {
       'jsp' => 'java',
       'jspx' => 'java',
