@@ -1,0 +1,3 @@
+%p{ style: 'font-size:18px; text-align:center;  line-height:30px;' }
+  - group_link = link_to(@group.name, group_url(@group), style: "display:block;")
+  = s_("ComplianceViolations|Your Compliance Violations CSV export for the group %{group_link} has been attached to this email.").html_safe % { group_link: group_link }

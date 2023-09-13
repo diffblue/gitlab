@@ -340,6 +340,21 @@ RSpec.describe Notify, feature_category: :not_owned do # rubocop:disable RSpec/I
       end
     end
 
+    describe 'for compliance violations' do
+      subject do
+        described_class.compliance_violations_csv_email(
+          user: current_user,
+          group: group,
+          attachment: 'csv_data',
+          filename: 'filename.csv'
+        )
+      end
+
+      it_behaves_like 'an email sent from GitLab'
+      it { have_subject "#{group.name} | Compliance Violations Export" }
+      it { is_expected.to have_body_text('Your Compliance Violations CSV export for the group') }
+    end
+
     describe 'for compliance frameworks' do
       let_it_be(:fedramp) { create :compliance_framework, name: 'FedRamp', namespace: group }
 
