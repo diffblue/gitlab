@@ -302,7 +302,8 @@ RSpec.describe EE::NamespacesHelper, feature_category: :groups_and_projects do
           namespace_plan_storage_included: expected_storage_included,
           purchase_storage_url: more_storage_url,
           buy_addon_target_attr: '_blank',
-          enforcement_type: enforcement_type
+          enforcement_type: enforcement_type,
+          total_repository_size_excess: 0
         })
       end
     end

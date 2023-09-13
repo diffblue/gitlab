@@ -43,7 +43,7 @@ const createTemplate = (config = {}) => {
       purchaseStorageUrl: '//purchase-storage-url',
       buyAddonTargetAttr: 'buyAddonTargetAttr',
       enforcementType: 'namespace_storage_limit',
-      isNamespaceUnderProjectLimits: false,
+      isUsingProjectEnforcement: false,
       helpLinks,
       ...provide,
     },
@@ -60,7 +60,7 @@ export const ProjectTypeStorageLimits = {
   render: createTemplate({
     provide: {
       enforcementType: 'project_repository_limit',
-      isNamespaceUnderProjectLimits: true,
+      isUsingProjectEnforcement: true,
     },
   }),
 };

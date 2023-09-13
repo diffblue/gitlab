@@ -84,60 +84,101 @@ describe('StorageStatisticsCard', () => {
   });
 
   describe('When under namespace enforcement', () => {
+    it('only renders usedStorage if totalStorage is 0', () => {
+      const usedStorage = 1000;
+
+      createComponent({
+        props: { totalStorage: 0, usedStorage },
+        provide: { isUsingProjectEnforcement: false },
+      });
+
+      const componentText = wrapper.text().replace(/[\s\n]+/g, ' ');
+      expect(componentText).toContain(numberToHumanSize(usedStorage));
+      expect(componentText).not.toContain('/');
+    });
+
     describe.each`
-      totalStorage | usedStorage  | percentageUsage | percentageRemaining
-      ${10}        | ${3}         | ${30}           | ${70}
-      ${10}        | ${0}         | ${0}            | ${100}
-      ${10}        | ${-1}        | ${0}            | ${100}
-      ${10}        | ${undefined} | ${false}        | ${false}
-      ${10}        | ${null}      | ${false}        | ${false}
-      ${3}         | ${10}        | ${100}          | ${0}
-      ${0}         | ${10}        | ${false}        | ${false}
-      ${-1}        | ${10}        | ${0}            | ${100}
+      usedStorage | totalStorage
+      ${0}        | ${0}
+      ${10}       | ${0}
     `(
-      'UI behavior when totalStorage: $totalStorage, usedStorage: $usedStorage',
-      ({ totalStorage, usedStorage, percentageUsage, percentageRemaining }) => {
+      'UI behavior related to percentage usage when totalStorage: $totalStorage, usedStorage: $usedStorage',
+      ({ totalStorage, usedStorage }) => {
         beforeEach(() => {
           createComponent({
             props: { totalStorage, usedStorage },
-            provide: { isNamespaceUnderProjectLimits: false },
+            provide: { isUsingProjectEnforcement: false },
+          });
+        });
+
+        it('does not render percentage progress bar', () => {
+          expect(findProgressBar().exists()).toBe(false);
+        });
+
+        it('does not render percentage remaining block', () => {
+          expect(findPercentageRemaining().exists()).toBe(false);
+        });
+      },
+    );
+
+    describe.each`
+      usedStorage | totalStorage | percentageUsage | percentageRemaining
+      ${3}        | ${10}        | ${30}           | ${70}
+      ${-1}       | ${10}        | ${0}            | ${100}
+      ${10}       | ${3}         | ${100}          | ${0}
+      ${10}       | ${-1}        | ${0}            | ${100}
+    `(
+      'UI behavior when usedStorage: $usedStorage, totalStorage: $totalStorage',
+      ({ usedStorage, totalStorage, percentageUsage, percentageRemaining }) => {
+        beforeEach(() => {
+          createComponent({
+            props: { totalStorage, usedStorage },
+            provide: { isUsingProjectEnforcement: false },
           });
         });
 
         it('renders the used and total storage block', () => {
-          const usedStorageFormatted =
-            usedStorage === 0 || typeof usedStorage !== 'number'
-              ? '0'
-              : numberToHumanSize(usedStorage);
-
           const componentText = wrapper.text().replace(/[\s\n]+/g, ' ');
 
-          if (totalStorage === 0) {
-            expect(componentText).toContain(` ${usedStorageFormatted}`);
-            expect(componentText).not.toContain('/');
-          } else {
-            expect(componentText).toContain(
-              ` ${usedStorageFormatted} / ${numberToHumanSize(totalStorage)}`,
-            );
-          }
+          expect(componentText).toContain(
+            ` ${numberToHumanSize(usedStorage)} / ${numberToHumanSize(totalStorage)}`,
+          );
         });
 
         it(`renders the progress bar as ${percentageUsage}`, () => {
-          if (percentageUsage === false) {
-            expect(findProgressBar().exists()).toBe(false);
-          } else {
-            expect(findProgressBar().attributes('value')).toBe(String(percentageUsage));
-          }
+          expect(findProgressBar().attributes('value')).toBe(String(percentageUsage));
         });
 
         it(`renders the percentage remaining as ${percentageRemaining}`, () => {
-          if (percentageRemaining === false) {
-            expect(findPercentageRemaining().exists()).toBe(false);
-          } else {
-            expect(findPercentageRemaining().text()).toContain(String(percentageRemaining));
-          }
+          expect(findPercentageRemaining().text()).toContain(String(percentageRemaining));
         });
       },
     );
+
+    describe('when usedStorage is 0 and totalStorage is bigger than 0', () => {
+      const totalStorage = 10;
+      const usedStorage = 0;
+
+      beforeEach(() => {
+        createComponent({
+          props: { totalStorage, usedStorage },
+          provide: { isUsingProjectEnforcement: false },
+        });
+      });
+
+      it('renders the used and total storage block', () => {
+        const componentText = wrapper.text().replace(/[\s\n]+/g, ' ');
+
+        expect(componentText).toContain(` 0 / ${numberToHumanSize(totalStorage)}`);
+      });
+
+      it('renders the progress bar correctly', () => {
+        expect(findProgressBar().attributes('value')).toBe('0');
+      });
+
+      it('renders the percentage remaining correctly', () => {
+        expect(findPercentageRemaining().text()).toContain('100');
+      });
+    });
   });
 });

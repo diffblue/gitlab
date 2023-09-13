@@ -20,7 +20,7 @@ export default {
     StorageTypeHelpLink,
     StorageTypeWarning,
   },
-  inject: ['isNamespaceUnderProjectLimits'],
+  inject: ['isUsingProjectEnforcement'],
   props: {
     projects: {
       type: Array,
@@ -48,7 +48,7 @@ export default {
   created() {
     this.fields = [
       { key: 'name', label: __('Project') },
-      { key: 'storage', label: __('Total'), sortable: !this.isNamespaceUnderProjectLimits },
+      { key: 'storage', label: __('Total'), sortable: !this.isUsingProjectEnforcement },
       { key: 'repository', label: __('Repository') },
       { key: 'snippets', label: __('Snippets') },
       { key: 'buildArtifacts', label: __('Jobs') },

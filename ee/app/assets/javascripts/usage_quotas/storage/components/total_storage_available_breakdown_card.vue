@@ -8,6 +8,15 @@ import {
 } from '../constants';
 import NumberToHumanSize from './number_to_human_size.vue';
 
+/**
+ * TotalStorageAvailableBreakdownCard
+ *
+ * This card is used on Namespace Usage Quotas
+ * when the namespace has Namespace-level storage limits
+ * https://docs.gitlab.com/ee/user/usage_quotas#namespace-storage-limit
+ * It breaks down the storage available: included in the plan & purchased storage
+ */
+
 export default {
   name: 'TotalStorageAvailableBreakdownCard',
   components: { GlIcon, GlLink, GlCard, GlSkeletonLoader, NumberToHumanSize },

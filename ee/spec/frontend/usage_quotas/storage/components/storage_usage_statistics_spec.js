@@ -1,6 +1,7 @@
 import { GlButton, GlLink, GlSprintf, GlProgressBar } from '@gitlab/ui';
 import StorageStatisticsCard from 'ee/usage_quotas/storage/components/storage_statistics_card.vue';
 import TotalStorageAvailableBreakdownCard from 'ee/usage_quotas/storage/components/total_storage_available_breakdown_card.vue';
+import ExcessStorageBreakdownCard from 'ee/usage_quotas/storage/components/excess_storage_breakdown_card.vue';
 import NumberToHumanSize from 'ee/usage_quotas/storage/components/number_to_human_size.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { NAMESPACE_STORAGE_OVERVIEW_SUBTITLE } from 'ee/usage_quotas/storage/constants';
@@ -37,6 +38,7 @@ describe('StorageUsageStatistics', () => {
   const findNamespaceStorageCard = () => wrapper.findComponent(StorageStatisticsCard);
   const findTotalStorageAvailableBreakdownCard = () =>
     wrapper.findComponent(TotalStorageAvailableBreakdownCard);
+  const findExcessStorageBreakdownCard = () => wrapper.findComponent(ExcessStorageBreakdownCard);
   const findOverviewSubtitle = () => wrapper.findByTestId('overview-subtitle');
 
   describe('namespace overview section', () => {
@@ -48,14 +50,27 @@ describe('StorageUsageStatistics', () => {
       expect(findOverviewSubtitle().text()).toBe(NAMESPACE_STORAGE_OVERVIEW_SUBTITLE);
     });
 
-    describe('purchase more storage button', () => {
+    describe('purchase more storage button when namespace is using project enforcement', () => {
+      it('does not render the button', () => {
+        createComponent();
+        expect(wrapper.findComponent(GlButton).exists()).toBe(false);
+      });
+    });
+
+    describe('purchase more storage button when namespace is NOT using project enforcement', () => {
       it('renders the button if purchaseStorageUrl is provided', () => {
+        createComponent({
+          provide: {
+            isUsingProjectEnforcement: false,
+          },
+        });
         expect(wrapper.findComponent(GlButton).exists()).toBe(true);
       });
 
       it('does not render the button if purchaseStorageUrl is not provided', () => {
         createComponent({
           provide: {
+            isUsingProjectEnforcement: false,
             purchaseStorageUrl: undefined,
           },
         });
@@ -76,7 +91,7 @@ describe('StorageUsageStatistics', () => {
         // More about namespace storage limit at https://docs.gitlab.com/ee/user/usage_quotas#namespace-storage-limit
         createComponent({
           provide: {
-            isNamespaceUnderProjectLimits: false,
+            isUsingProjectEnforcement: false,
           },
         });
 
@@ -103,11 +118,20 @@ describe('StorageUsageStatistics', () => {
   });
 
   describe('TotalStorageAvailableBreakdownCard', () => {
-    it('passes the correct props to TotalStorageAvailableBreakdownCard', () => {
+    it('does not render TotalStorageAvailableBreakdownCard when namespace is using project enforcement', () => {
       createComponent();
+      expect(findTotalStorageAvailableBreakdownCard().exists()).toBe(false);
+    });
+
+    it('passes the correct props to TotalStorageAvailableBreakdownCard when namespace is NOT using project enforcement', () => {
+      createComponent({
+        provide: {
+          isUsingProjectEnforcement: false,
+        },
+      });
 
       expect(findTotalStorageAvailableBreakdownCard().props()).toEqual({
-        planStorageDescription: 'Storage per project included in Free subscription',
+        planStorageDescription: 'Included in Free subscription',
         includedStorage: withRootStorageStatistics.actualRepositorySizeLimit,
         purchasedStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
         totalStorage:
@@ -117,16 +141,44 @@ describe('StorageUsageStatistics', () => {
       });
     });
 
-    describe('when GitLab instance has no Plan attatched to namespace', () => {
-      it('does not render storage card if there is no plan information', () => {
-        createComponent({
-          provide: {
-            namespacePlanName: null,
-          },
-        });
-
-        expect(findTotalStorageAvailableBreakdownCard().exists()).toBe(false);
+    it('does not render storage card if there is no plan information', () => {
+      createComponent({
+        provide: {
+          namespacePlanName: null,
+        },
       });
+
+      expect(findTotalStorageAvailableBreakdownCard().exists()).toBe(false);
+    });
+  });
+
+  describe('ExcessStorageBreakdownCard', () => {
+    it('does not render ExcessStorageBreakdownCard when namespace is NOT using project enforcement', () => {
+      createComponent({
+        provide: {
+          isUsingProjectEnforcement: false,
+        },
+      });
+      expect(findExcessStorageBreakdownCard().exists()).toBe(false);
+    });
+
+    it('passes the correct props to ExcessStorageBreakdownCard when namespace is using project enforcement', () => {
+      createComponent();
+
+      expect(findExcessStorageBreakdownCard().props()).toEqual({
+        purchasedStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
+        loading: false,
+      });
+    });
+
+    it('does not render storage card if there is no plan information', () => {
+      createComponent({
+        provide: {
+          namespacePlanName: null,
+        },
+      });
+
+      expect(findExcessStorageBreakdownCard().exists()).toBe(false);
     });
   });
 });

@@ -72,7 +72,8 @@ module EE
         namespace_plan_storage_included: namespace_plan_storage_included(namespace),
         purchase_storage_url: buy_storage_path(namespace),
         buy_addon_target_attr: buy_addon_target_attr(namespace),
-        enforcement_type: namespace.root_storage_size.enforcement_type
+        enforcement_type: namespace.root_storage_size.enforcement_type,
+        total_repository_size_excess: namespace.total_repository_size_excess
       })
     end
 
