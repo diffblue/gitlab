@@ -28,7 +28,7 @@ module GitlabSubscriptions
           deleted_assignments_count += batch.for_user_ids(user_ids_to_unassign).delete_all
         end
 
-        log_event(deleted_assignments_count) if deleted_assignments_count.positive? # rubocop:disable Style/NumericPredicate
+        log_event(deleted_assignments_count) if deleted_assignments_count > 0
       end
 
       private
