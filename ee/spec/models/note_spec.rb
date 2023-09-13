@@ -13,6 +13,33 @@ RSpec.describe Note, feature_category: :team_planning do
     let(:set_mentionable_text) { ->(txt) { subject.note = txt } }
   end
 
+  describe '#ensure_namespace_id' do
+    context 'for an epic note' do
+      let_it_be(:epic) { create(:epic) }
+
+      it 'copies the group_id of the epic' do
+        note = build(:note, noteable: epic, project: nil)
+
+        note.valid?
+
+        expect(note.namespace_id).to eq(epic.group_id)
+      end
+
+      context 'when noteable is changed' do
+        let_it_be(:another_epic) { create(:epic) }
+
+        it 'updates the namespace_id' do
+          note = create(:note, noteable: epic, project: nil)
+
+          note.noteable = another_epic
+          note.valid?
+
+          expect(note.namespace_id).to eq(another_epic.group_id)
+        end
+      end
+    end
+  end
+
   describe '#readable_by?' do
     let(:owner) { create(:group_member, :owner, group: group, user: create(:user)).user }
     let(:guest) { create(:group_member, :guest, group: group, user: create(:user)).user }

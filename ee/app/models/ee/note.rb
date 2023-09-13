@@ -109,6 +109,14 @@ module EE
 
     private
 
+    override :ensure_namespace_id
+    def ensure_namespace_id
+      return super unless for_epic?
+      return if namespace_id.present? && !noteable_changed?
+
+      self.namespace_id = noteable&.group_id
+    end
+
     def system_note_for_epic?
       system? && for_epic?
     end
