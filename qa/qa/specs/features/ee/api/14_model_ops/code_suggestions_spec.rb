@@ -24,8 +24,8 @@ module QA
           project_id: 278964,
           current_file: {
             file_name: 'main.py',
-            content_above_cursor: '\"\"\"\nTest the code suggestions API\"\"\"\n',
-            content_below_cursor: '# auth'
+            content_above_cursor: 'def reverse_string(s):\n    return s[::-1]\ndef test_empty_input_string()',
+            content_below_cursor: ''
           }
         }
       end
