@@ -14,11 +14,10 @@ module SaasRegistrationHelpers
     'onboardinguser@example.com'
   end
 
-  def user_signs_in
-    new_password = User.random_password
-    user.update!(password: new_password)
+  def user_signs_in(password: User.random_password)
+    user.update!(password: password)
 
-    fill_in 'Password', with: new_password
+    fill_in 'Password', with: password
 
     wait_for_all_requests
 
@@ -30,19 +29,32 @@ module SaasRegistrationHelpers
     expect(page).to have_content('Please check your email')
   end
 
+  def expect_to_see_welcome_form_for_invites
+    expect(page).to have_content('Welcome to GitLab, Registering!')
+
+    page.within(welcome_form_selector) do
+      expect(page).not_to have_content('What would you like to do?')
+    end
+  end
+
+  def expect_to_be_on_activity_page_for(group)
+    expect(page).to have_current_path(activity_group_path(group), ignore_query: true)
+    expect(page).to have_content('You have been granted Developer access to group Test Group')
+  end
+
   def confirm_account
     token = user.confirmation_token
     visit user_confirmation_path(confirmation_token: token)
   end
 
-  def regular_sign_up(params = {})
+  def regular_sign_up(params = {}, password: User.random_password)
     user_signs_up(params)
 
     expect_to_see_account_confirmation_page
 
     confirm_account
 
-    user_signs_in
+    user_signs_in(password: password)
   end
 
   def subscription_regular_sign_up

@@ -109,6 +109,10 @@ module EE
 
       def eligible_for_iterable_trigger?
         return false if trial?
+        # The invite check coming first matters now in the case of a welcome form with company params
+        # being received when the user is really an invite.
+        # This covers the case for user being added to a group after they register, but
+        # before they finish the welcome step.
         return true if invite?
         # skip company page because it already sends request to CustomersDot
         return false if redirect_to_company_form?

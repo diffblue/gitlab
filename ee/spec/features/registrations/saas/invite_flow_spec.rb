@@ -9,7 +9,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
 
     registers_from_invite(user: new_user, group: group)
 
-    ensure_onboarding { expect_to_see_welcome_form_without_join_project_question }
+    ensure_onboarding { expect_to_see_welcome_form_for_invites }
     expect_to_send_iterable_request(invite: true)
 
     fill_in_welcome_form
@@ -33,7 +33,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
 
     registers_from_invite(user: new_user, group: group)
 
-    ensure_onboarding { expect_to_see_welcome_form_without_join_project_question }
+    ensure_onboarding { expect_to_see_welcome_form_for_invites }
     expect_to_send_iterable_request(invite: true)
 
     fill_in_welcome_form
@@ -50,7 +50,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     allow_task_to_be_done
     registers_from_invite(user: new_user, group: group, tasks_to_be_done: [:ci, :code])
 
-    ensure_onboarding { expect_to_see_welcome_form_without_join_project_question }
+    ensure_onboarding { expect_to_see_welcome_form_for_invites }
     expect_to_send_iterable_request(invite: true)
 
     fill_in_welcome_form
@@ -97,19 +97,6 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
 
   def allow_task_to_be_done
     allow(TasksToBeDone::CreateWorker).to receive(:perform_async)
-  end
-
-  def expect_to_see_welcome_form_without_join_project_question
-    expect(page).to have_content('Welcome to GitLab, Registering!')
-
-    page.within(welcome_form_selector) do
-      expect(page).not_to have_content('What would you like to do?')
-    end
-  end
-
-  def expect_to_be_on_activity_page_for(group)
-    expect(page).to have_current_path(activity_group_path(group), ignore_query: true)
-    expect(page).to have_content('You have been granted Developer access to group Test Group')
   end
 
   def expect_to_be_on_issues_dashboard_page_for(user)
