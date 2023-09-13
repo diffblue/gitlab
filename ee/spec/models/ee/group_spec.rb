@@ -319,6 +319,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     it { is_expected.to delegate_method(:code_suggestions=).to(:namespace_settings).with_arguments(true).allow_nil }
     it { is_expected.to delegate_method(:wiki_access_level).to(:group_feature) }
     it { is_expected.to delegate_method(:wiki_access_level=).to(:group_feature).with_arguments(:args) }
+    it { is_expected.to delegate_method(:experiment_settings_allowed?).to(:namespace_settings) }
   end
 
   describe 'states' do

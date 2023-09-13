@@ -82,6 +82,12 @@ module EE
           namespace.root?
       end
 
+      def experiment_settings_allowed?
+        namespace.root? &&
+          ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
+          namespace.feature_available?(:experimental_features)
+      end
+
       def ai_assist_ui_enabled?
         ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
           ::Feature.enabled?(:ai_assist_ui) &&
