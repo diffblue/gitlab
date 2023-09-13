@@ -4833,7 +4833,7 @@ msgstr ""
 msgid "Allow users to extend their session"
 msgstr ""
 
-msgid "Allow users to register any application to use GitLab as an OAuth provider"
+msgid "Allow users to register any application to use GitLab as an OAuth provider. This setting does not affect group-level OAuth applications."
 msgstr ""
 
 msgid "Allowed"
