@@ -135,10 +135,11 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::SelfManaged::ProvisionCodeSu
 
         expect { result }.not_to change { GitlabSubscriptions::AddOnPurchase.count }
 
+        expect(current_license.block_changes_at).to eq(current_license.expires_at + 14.days)
         expect(result[:status]).to eq(:success)
         expect(result[:add_on_purchase]).to have_attributes(
           id: existing_add_on_purchase.id,
-          expires_on: current_license.expires_at,
+          expires_on: current_license.block_changes_at,
           quantity: purchased_add_on_quantity,
           purchase_xid: subscription_name
         )
@@ -149,14 +150,39 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::SelfManaged::ProvisionCodeSu
       it_behaves_like 'handle error', GitlabSubscriptions::AddOnPurchases::CreateService
     end
 
+    context 'when the license has no block_changes_at set' do
+      let!(:current_license) do
+        create_current_license(
+          block_changes_at: nil,
+          cloud_licensing_enabled: true,
+          restrictions: { code_suggestions_seat_count: purchased_add_on_quantity, subscription_name: subscription_name }
+        )
+      end
+
+      it 'creates a new add-on purchase' do
+        expect(GitlabSubscriptions::AddOnPurchases::CreateService).to receive(:new).and_call_original
+
+        expect { result }.to change { GitlabSubscriptions::AddOnPurchase.count }.by(1)
+
+        expect(current_license.block_changes_at).to eq(nil)
+        expect(result[:status]).to eq(:success)
+        expect(result[:add_on_purchase]).to have_attributes(
+          expires_on: current_license.expires_at,
+          quantity: purchased_add_on_quantity,
+          purchase_xid: subscription_name
+        )
+      end
+    end
+
     it 'creates a new add-on purchase' do
       expect(GitlabSubscriptions::AddOnPurchases::CreateService).to receive(:new).and_call_original
 
       expect { result }.to change { GitlabSubscriptions::AddOnPurchase.count }.by(1)
 
+      expect(current_license.block_changes_at).to eq(current_license.expires_at + 14.days)
       expect(result[:status]).to eq(:success)
       expect(result[:add_on_purchase]).to have_attributes(
-        expires_on: current_license.expires_at,
+        expires_on: current_license.block_changes_at,
         quantity: purchased_add_on_quantity,
         purchase_xid: subscription_name
       )
