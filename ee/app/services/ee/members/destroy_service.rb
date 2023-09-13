@@ -3,6 +3,8 @@
 module EE
   module Members
     module DestroyService
+      extend ::Gitlab::Utils::Override
+
       def after_execute(member:, skip_saml_identity: false)
         super
 
@@ -102,6 +104,24 @@ module EE
         return unless member.user && member.user.security_policy_bot?
 
         ::Security::OrchestrationPolicyConfiguration.for_bot_user(member.user).update_all(bot_user_id: nil)
+      end
+
+      override :enqueue_cleanup_jobs_once_per_heirarchy
+      def enqueue_cleanup_jobs_once_per_heirarchy(member, unassign_issuables)
+        super
+
+        enqueue_cleanup_add_on_seat_assignments(member)
+      end
+
+      def enqueue_cleanup_add_on_seat_assignments(member)
+        return unless ::Feature.enabled?(:hamilton_seat_management)
+
+        member.run_after_commit_or_now do
+          GitlabSubscriptions::AddOnPurchases::CleanupUserAddOnAssignmentWorker.perform_async(
+            member.source.root_ancestor.id,
+            member.user_id
+          )
+        end
       end
     end
   end

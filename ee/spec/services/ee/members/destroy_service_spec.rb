@@ -208,6 +208,53 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
         expect { destroy_service.execute(member) }.to change { security_orchestration_policy_configuration.reload.bot_user_id }.to(nil)
       end
     end
+
+    context 'user add-on seat assignments' do
+      let(:worker_class) { GitlabSubscriptions::AddOnPurchases::CleanupUserAddOnAssignmentWorker }
+
+      it 'enqueues the CleanupUserAddOnAssignmentWorker with correct arguments' do
+        expect(worker_class).to receive(:perform_async).with(group.id, member_user.id).and_call_original
+
+        destroy_service.execute(member)
+      end
+
+      context 'when project member is removed' do
+        let!(:project_member) { create(:project_member, source: create(:project, group: group), user: member_user) }
+
+        it 'enqueues the CleanupUserAddOnAssignmentWorker with correct arguments' do
+          expect(worker_class).to receive(:perform_async).with(group.id, member_user.id).and_call_original
+
+          destroy_service.execute(project_member)
+        end
+      end
+
+      context 'when recursive call is made to remove inherited membership' do
+        let(:sub_group) { create(:group, parent: group) }
+        let!(:sub_member) { create(:group_member, source: sub_group, user: member_user) }
+
+        it 'enqueues the worker only once' do
+          expect(Member.where(user: member_user).count).to eq(2)
+
+          expect(worker_class).to receive(:perform_async).with(group.id, member_user.id).and_call_original
+
+          expect do
+            destroy_service.execute(member)
+          end.to change { Member.where(user: member_user).count }.by(-2)
+        end
+      end
+
+      context 'when the feature flag is not enabled' do
+        before do
+          stub_feature_flags(hamilton_seat_management: false)
+        end
+
+        it 'does not enqueue CleanupUserAddOnAssignmentWorker worker' do
+          expect(worker_class).not_to receive(:perform_async)
+
+          destroy_service.execute(member)
+        end
+      end
+    end
   end
 
   context 'when current user is not present' do # ie, when the system initiates the destroy
