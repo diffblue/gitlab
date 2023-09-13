@@ -114,6 +114,44 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
     let(:work_item) { objective }
 
+    it 'assigns to multiple users' do
+      find('[data-testid="work-item-assignees-input"]').fill_in(with: user.username)
+      wait_for_requests
+
+      send_keys(:enter)
+      find("body").click
+      wait_for_requests
+
+      find('[data-testid="work-item-assignees-input"]').fill_in(with: user2.username)
+      wait_for_requests
+
+      send_keys(:enter)
+      find("body").click
+      wait_for_requests
+
+      expect(work_item.reload.assignees).to include(user)
+      expect(work_item.reload.assignees).to include(user2)
+    end
+
+    it 'updates the assignee in real-time' do
+      Capybara::Session.new(:other_session)
+
+      using_session :other_session do
+        visit project_work_items_path(project, work_items_path: objective.iid)
+        expect(work_item.reload.assignees).not_to include(user)
+      end
+
+      find('[data-testid="work-item-assignees-input"]').hover
+      find('[data-testid="assign-self"]').click
+      wait_for_requests
+
+      expect(work_item.reload.assignees).to include(user)
+
+      using_session :other_session do
+        expect(work_item.reload.assignees).to include(user)
+      end
+    end
+
     it_behaves_like 'work items toggle status button'
     it_behaves_like 'work items assignees'
     it_behaves_like 'work items labels'
@@ -309,6 +347,25 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     end
 
     let(:work_item) { key_result }
+
+    it 'assigns to multiple users' do
+      find('[data-testid="work-item-assignees-input"]').fill_in(with: user.username)
+      wait_for_requests
+
+      send_keys(:enter)
+      find("body").click
+      wait_for_requests
+
+      find('[data-testid="work-item-assignees-input"]').fill_in(with: user2.username)
+      wait_for_requests
+
+      send_keys(:enter)
+      find("body").click
+      wait_for_requests
+
+      expect(work_item.reload.assignees).to include(user)
+      expect(work_item.reload.assignees).to include(user2)
+    end
 
     it_behaves_like 'work items toggle status button'
     it_behaves_like 'work items assignees'
