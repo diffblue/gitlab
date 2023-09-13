@@ -35,7 +35,8 @@ module EE
             if: -> (_) { ::Gitlab::CurrentSettings.elasticsearch_indexing? }
           store.subscribe ::PackageMetadata::AdvisoryScanWorker, to: ::PackageMetadata::IngestedAdvisoryEvent
           store.subscribe ::Security::RefreshProjectPoliciesWorker,
-            to: ::ProjectAuthorizations::AuthorizationsChangedEvent
+            to: ::ProjectAuthorizations::AuthorizationsChangedEvent,
+            delay: 1.minute
         end
       end
     end
