@@ -11,7 +11,7 @@ module IncidentManagement
     enum link_type: { general: 0, zoom: 1, slack: 2, pagerduty: 3 } # 'general' is the default type
 
     validates :issue, presence: true
-    validates :link, presence: true, length: { maximum: 2200 }, addressable_url: { schemes: %w(http https) }
+    validates :link, presence: true, length: { maximum: 2200 }, addressable_url: { schemes: %w[http https] }
     validates :link_text, length: { maximum: 255 }
 
     scope :order_by_created_at_asc, -> { reorder(created_at: :asc) }

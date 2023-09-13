@@ -3,7 +3,7 @@
 module Security
   module Configuration
     class SaveAutoFixService
-      SUPPORTED_SCANNERS = %w(container_scanning dependency_scanning all).freeze
+      SUPPORTED_SCANNERS = %w[container_scanning dependency_scanning all].freeze
 
       # @param project [Project]
       # @param ['dependency_scanning', 'container_scanning', 'all'] feature Type of scanner to apply auto_fix

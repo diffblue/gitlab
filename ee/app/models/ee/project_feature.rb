@@ -5,18 +5,18 @@ module EE
     extend ActiveSupport::Concern
 
     # When updating this array, make sure to update rubocop/cop/gitlab/feature_available_usage.rb as well.
-    EE_FEATURES = %i(requirements).freeze
-    NOTES_PERMISSION_TRACKED_FIELDS = %w(
+    EE_FEATURES = %i[requirements].freeze
+    NOTES_PERMISSION_TRACKED_FIELDS = %w[
       issues_access_level
       repository_access_level
       merge_requests_access_level
       snippets_access_level
-    ).freeze
+    ].freeze
 
-    MILESTONE_PERMISSION_TRACKED_FIELDS = %w(
+    MILESTONE_PERMISSION_TRACKED_FIELDS = %w[
       issues_access_level
       merge_requests_access_level
-    ).freeze
+    ].freeze
 
     prepended do
       set_available_features(EE_FEATURES)

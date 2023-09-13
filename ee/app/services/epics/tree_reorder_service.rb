@@ -93,7 +93,7 @@ module Epics
     end
 
     def valid_relative_position?
-      %w(before after).include?(params[:relative_position])
+      %w[before after].include?(params[:relative_position])
     end
 
     def different_epic_parent?

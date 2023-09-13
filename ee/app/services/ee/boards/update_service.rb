@@ -20,7 +20,7 @@ module EE
         permitted = super
 
         if parent.feature_available?(:scoped_issue_board)
-          permitted += %i(milestone_id iteration_id iteration_cadence_id assignee_id weight labels label_ids)
+          permitted += %i[milestone_id iteration_id iteration_cadence_id assignee_id weight labels label_ids]
         end
 
         permitted

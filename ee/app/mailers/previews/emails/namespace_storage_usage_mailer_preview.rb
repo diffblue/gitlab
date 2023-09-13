@@ -5,7 +5,7 @@ module Emails
     def out_of_storage
       ::Emails::NamespaceStorageUsageMailer.notify_out_of_storage(
         namespace: Group.last,
-        recipients: %w(bob@example.com),
+        recipients: %w[bob@example.com],
         usage_values: {
           current_size: 101.megabytes,
           limit: 100.megabytes,
@@ -16,7 +16,7 @@ module Emails
     def limit_warning
       ::Emails::NamespaceStorageUsageMailer.notify_limit_warning(
         namespace: Group.last,
-        recipients: %w(bob@example.com),
+        recipients: %w[bob@example.com],
         usage_values: {
           current_size: 74.megabytes,
           limit: 100.megabytes,

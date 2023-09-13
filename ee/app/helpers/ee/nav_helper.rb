@@ -11,7 +11,7 @@ module EE
 
     override :admin_monitoring_nav_links
     def admin_monitoring_nav_links
-      controllers = %w(audit_logs)
+      controllers = %w[audit_logs]
       super.concat(controllers)
     end
   end

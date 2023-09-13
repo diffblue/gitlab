@@ -60,7 +60,7 @@ module ApprovalRules
     end
 
     def approvers_present?
-      %i(user_ids group_ids users groups usernames).any? { |key| @params[key].present? }
+      %i[user_ids group_ids users groups usernames].any? { |key| @params[key].present? }
     end
 
     def track_onboarding_progress

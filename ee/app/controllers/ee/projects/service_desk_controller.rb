@@ -9,7 +9,7 @@ module EE
 
       override :allowed_update_attributes
       def allowed_update_attributes
-        super + %i(file_template_project_id)
+        super + %i[file_template_project_id]
       end
 
       override :service_desk_attributes

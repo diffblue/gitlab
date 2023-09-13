@@ -20,11 +20,11 @@ module Boards
         permitted = PERMITTED_PARAMS
 
         if parent.feature_available?(:scoped_issue_board)
-          permitted += %i(labels label_ids)
+          permitted += %i[labels label_ids]
         end
 
         if Feature.enabled?(:epic_color_highlight, parent)
-          permitted += %i(display_colors)
+          permitted += %i[display_colors]
         end
 
         permitted

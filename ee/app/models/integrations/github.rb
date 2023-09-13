@@ -69,7 +69,7 @@ module Integrations
     end
 
     def self.supported_events
-      %w(pipeline)
+      %w[pipeline]
     end
 
     def testable?

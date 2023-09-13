@@ -7,7 +7,7 @@ module EE
       include ::Search::Elasticsearchable
       include ::Search::ZoektSearchable
 
-      SCOPES_THAT_SUPPORT_BRANCHES = %w(wiki_blobs commits blobs).freeze
+      SCOPES_THAT_SUPPORT_BRANCHES = %w[wiki_blobs commits blobs].freeze
 
       override :execute
       def execute

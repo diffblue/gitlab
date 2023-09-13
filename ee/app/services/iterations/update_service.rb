@@ -4,7 +4,7 @@ module Iterations
   class UpdateService
     include Gitlab::Allowable
 
-    IGNORED_KEYS = %i(group_path id state_enum state).freeze
+    IGNORED_KEYS = %i[group_path id state_enum state].freeze
 
     attr_accessor :parent, :current_user, :params
 

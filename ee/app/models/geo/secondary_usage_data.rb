@@ -14,12 +14,12 @@ class Geo::SecondaryUsageData < Geo::TrackingBase
   # from the metric yaml files that include something
   # like `run_on_secondary: true`, but for now we'll
   # just enumerate them.
-  PAYLOAD_COUNT_FIELDS = %w(
+  PAYLOAD_COUNT_FIELDS = %w[
     git_fetch_event_count_weekly
     git_push_event_count_weekly
     proxy_remote_requests_event_count_weekly
     proxy_local_requests_event_count_weekly
-  ).freeze
+  ].freeze
 
   store_accessor :payload, *PAYLOAD_COUNT_FIELDS
   validate :payload_schema_is_valid

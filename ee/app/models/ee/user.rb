@@ -250,7 +250,7 @@ module EE
 
     def access_level=(new_level)
       new_level = new_level.to_s
-      return unless %w(admin auditor regular).include?(new_level)
+      return unless %w[admin auditor regular].include?(new_level)
 
       self.admin = (new_level == 'admin')
       self.auditor = (new_level == 'auditor')
