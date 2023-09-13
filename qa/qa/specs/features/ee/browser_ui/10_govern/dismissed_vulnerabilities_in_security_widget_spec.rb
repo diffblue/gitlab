@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Govern', :runner, product_group: :threat_insights do
-    describe 'Dismissed vulnerabilities in MR security widget' do
+    describe 'MR security widget' do
       let(:secret_detection_report) { "gl-secret-detection-report.json" }
       let(:secret_detection_report_mr) { "gl-secret-detection-report-mr.json" }
 
@@ -65,7 +65,7 @@ module QA
         runner.remove_via_api!
       end
 
-      it 'checks that dismissed vulnerabilities do not show up in MR security widget', :reliable,
+      it 'checks that dismissed vulnerabilities do not show up', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415291' do
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
