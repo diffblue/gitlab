@@ -25024,7 +25024,7 @@ msgstr ""
 msgid "Integrations"
 msgstr ""
 
-msgid "Integrations|%{integrationTitle}: active"
+msgid "Integrations|%{integrationTitle}: %{status}"
 msgstr ""
 
 msgid "Integrations|%{integration} settings saved and active."
