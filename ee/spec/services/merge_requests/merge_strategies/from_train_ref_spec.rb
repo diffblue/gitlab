@@ -9,13 +9,16 @@ RSpec.describe MergeRequests::MergeStrategies::FromTrainRef, feature_category: :
   let(:merge_request) { create(:merge_request, :simple, author: user2, assignees: [user2], squash: squash_on_merge) }
   let(:squash_on_merge) { false }
   let(:project) { merge_request.project }
-  let!(:merge_train_car) { create(:merge_train_car, merge_request: merge_request, target_project: project) }
+  let(:merge_train_car) { create(:merge_train_car, merge_request: merge_request, target_project: project) }
+  let(:source_sha) { merge_train_car&.pipeline&.sha }
   let(:mergeable) { true }
+  let(:train_ref_merge_params) { { 'commit_sha' => source_sha } }
 
   subject(:strategy) { described_class.new(merge_request, user) }
 
   before do
     allow(merge_request).to receive(:mergeable?).and_return(mergeable)
+    merge_request.update!(merge_params: { 'train_ref' => train_ref_merge_params })
     project.add_maintainer(user)
   end
 
@@ -32,13 +35,22 @@ RSpec.describe MergeRequests::MergeStrategies::FromTrainRef, feature_category: :
     end
 
     context 'when merge request should be squashed but is not' do
-      before do
-        merge_request.target_project.project_setting.squash_always!
-        merge_request.update!(squash: false)
-      end
+      let(:squash_on_merge) { true }
 
       it 'raises squashing error' do
-        error_message = 'This project requires squashing commits when merge requests are accepted.'
+        error_message = 'Outdated merge train: Squash commit SHA missing.'
+
+        expect { strategy.validate! }
+          .to raise_exception(MergeRequests::MergeStrategies::StrategyError, error_message)
+      end
+    end
+
+    context 'when merge request should not be squashed but it is' do
+      let(:squash_on_merge) { false }
+      let(:train_ref_merge_params) { { 'commit_sha' => source_sha, 'squash_commit_sha' => 'the squash commit sha' } }
+
+      it 'raises squashing error' do
+        error_message = 'Outdated merge train: Unexpected commit SHA in train ref parameters.'
 
         expect { strategy.validate! }
           .to raise_exception(MergeRequests::MergeStrategies::StrategyError, error_message)
@@ -55,7 +67,7 @@ RSpec.describe MergeRequests::MergeStrategies::FromTrainRef, feature_category: :
       end
 
       it 'raises outdated merge source error' do
-        error_message = 'Merge source out-of-date.'
+        error_message = 'Outdated merge train: Merge source out-of-date.'
 
         expect { strategy.validate! }
           .to raise_exception(MergeRequests::MergeStrategies::StrategyError, error_message)
@@ -82,57 +94,9 @@ RSpec.describe MergeRequests::MergeStrategies::FromTrainRef, feature_category: :
       expect(result[:commit_sha]).to eq(project.commit(merge_request.target_branch).sha)
     end
 
-    describe 'result by merge method' do
-      before do
-        project.merge_method = merge_method
-        project.save!
-      end
-
-      context 'when there is a merge commit' do
-        where(:merge_method) { [:merge, :rebase_merge] }
-
-        with_them do
-          it 'has commit_sha and merge_commit_sha', :aggregate_failures do
-            expect(result[:commit_sha]).to eq(project.commit(merge_request.target_branch).sha)
-            expect(result[:squash_commit_sha]).to be_nil
-            expect(result[:merge_commit_sha]).to eq(result[:commit_sha])
-          end
-
-          context 'when squashed' do
-            let(:squash_on_merge) { true }
-
-            it 'has commit_sha, squash_commit_sha and merge_commit_sha', :aggregate_failures do
-              result
-
-              target_branch_commit = project.commit(merge_request.target_branch)
-
-              expect(result[:commit_sha]).to eq(target_branch_commit.sha)
-              expect(result[:squash_commit_sha]).to eq(target_branch_commit.parents[1].sha)
-              expect(result[:merge_commit_sha]).to eq(result[:commit_sha])
-            end
-          end
-        end
-      end
-
-      context 'when fast-forward only' do
-        let(:merge_method) { :ff }
-
-        it 'has commit_sha', :aggregate_failures do
-          expect(result[:commit_sha]).to eq(project.commit(merge_request.target_branch).sha)
-          expect(result[:squash_commit_sha]).to be_nil
-          expect(result[:merge_commit_sha]).to be_nil
-        end
-
-        context 'when squashed' do
-          let(:squash_on_merge) { true }
-
-          it 'has commit_sha and squash_commit_sha', :aggregate_failures do
-            expect(result[:commit_sha]).to eq(project.commit(merge_request.target_branch).sha)
-            expect(result[:squash_commit_sha]).to eq(result[:commit_sha])
-            expect(result[:merge_commit_sha]).to be_nil
-          end
-        end
-      end
+    it 'returns the symbolized train ref merge params', :aggregate_failures do
+      merge_request.update!(merge_params: { 'train_ref' => train_ref_merge_params.merge('some_key' => 'some value') })
+      expect(result).to eq train_ref_merge_params.symbolize_keys.merge(some_key: 'some value')
     end
   end
 end
