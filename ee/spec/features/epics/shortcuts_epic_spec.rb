@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Epic shortcuts', :js, feature_category: :portfolio_management do
+  include ContentEditorHelpers
+
   let(:user) { create(:user) }
   let(:group) { create(:group, :public) }
   let(:label) { create(:group_label, group: group, title: 'bug') }
@@ -24,6 +26,9 @@ RSpec.describe 'Epic shortcuts', :js, feature_category: :portfolio_management do
     sign_in(user)
 
     visit group_epic_path(group, epic)
+
+    # Ensure that the shortcuts code has initialized
+    find('.js-awards-block')
   end
 
   describe 'pressing "l"' do
@@ -38,19 +43,28 @@ RSpec.describe 'Epic shortcuts', :js, feature_category: :portfolio_management do
     before do
       create(:note, noteable: epic, note: note_text)
       visit group_epic_path(group, epic)
-      wait_for_requests
+
+      # Wait again for shortcuts code to be initialize
+      find('.js-awards-block')
     end
 
-    it "quotes the selected text", quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/11057' do
-      select_element('.note-text')
+    it "quotes the selected text" do
+      close_rich_text_promo_popover_if_present
+
+      # This functionality now requires that the reply component has already been opened.
+      click_on('Reply to comment')
+
+      note = find('.note-text')
+      highlight_content(note)
+
       find('body').native.send_key('r')
 
-      expect(find('.js-main-target-form .js-vue-comment-form').value).to include(note_text)
+      expect(page).to have_field('note_note', with: "> #{note_text}\n\n", type: 'textarea')
     end
   end
 
   describe 'pressing "e"' do
-    it "starts editing mode for epic", quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/299523' do
+    it "starts editing mode for epic" do
       find('body').native.send_key('e')
 
       expect(find('.detail-page-description')).to have_selector('form input#issuable-title')
