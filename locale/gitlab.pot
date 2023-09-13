@@ -44337,6 +44337,27 @@ msgstr ""
 msgid "Signing in using your %{label} account without a pre-existing GitLab account is not allowed."
 msgstr ""
 
+msgid "SilentMode|All outbound communications are blocked. %{link_start}Learn more%{link_end}."
+msgstr ""
+
+msgid "SilentMode|Enable silent mode"
+msgstr ""
+
+msgid "SilentMode|Silent mode"
+msgstr ""
+
+msgid "SilentMode|Silent mode %{status}"
+msgstr ""
+
+msgid "SilentMode|Silent mode is enabled"
+msgstr ""
+
+msgid "SilentMode|Suppress outbound communication, such as emails, from GitLab."
+msgstr ""
+
+msgid "SilentMode|There was an error updating the Silent Mode Settings."
+msgstr ""
+
 msgid "Similar issues"
 msgstr ""
 
