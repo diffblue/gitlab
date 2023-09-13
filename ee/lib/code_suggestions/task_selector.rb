@@ -9,9 +9,9 @@ module CodeSuggestions
     # It searches for the last instance of a match by looking for the end
     # of a text block and an optional line break.
     GENERATE_COMMENT_PREFIX =
-      %r{(?<prefix>.*)(?<comment>--|#|//)[ \t]?GitLab Duo Generate:[ \t]*(?<instruction>[^\r\n]{10,})\s*\Z}im
+      %r{(?<comment>--|#|//)[ \t]?GitLab Duo Generate:[ \t]*(?<instruction>[^\r\n]{10,})\s*\Z}im
     GENERATE_COMMENT_NO_PREFIX =
-      %r{(?<prefix>.*)(?<comment>--|#|//)[ \t]?[ \t]*(?<instruction>[^\r\n]{10,})\s*\Z}im
+      %r{(?<comment>--|#|//)[ \t]?[ \t]*(?<instruction>[^\r\n]{10,})\s*\Z}im
     PREFIX_MAX_SIZE = 100_000
 
     # TODO: Remove `skip_generate_comment_prefix` when `code_suggestions_no_comment_prefix` feature flag
@@ -25,7 +25,7 @@ module CodeSuggestions
 
       CodeSuggestions::Tasks::CodeGeneration::FromComment.new(
         params.merge(
-          prefix: match[:prefix].chomp,
+          prefix: match.pre_match.chomp,
           instruction: match[:instruction]
         )
       )
