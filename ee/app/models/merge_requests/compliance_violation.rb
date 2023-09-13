@@ -12,7 +12,7 @@ module MergeRequests
     enum severity_level: ::Enums::MergeRequests::ComplianceViolation.severity_levels
 
     scope :with_violating_user, -> { preload(:violating_user) }
-    scope :with_merge_requests, -> { preload(merge_request: [{ target_project: :namespace }, :metrics]) }
+    scope :with_merge_requests, -> { preload(merge_request: [{ target_project: :namespace }, { metrics: :merged_by }]) }
     scope :join_merge_requests, -> { with_merge_requests.joins(:merge_request) }
     scope :join_projects, -> { with_merge_requests.joins(merge_request: { target_project: :namespace }) }
     scope :join_metrics, -> { with_merge_requests.joins(merge_request: :metrics) }
@@ -67,6 +67,10 @@ module MergeRequests
       when 'MERGED_AT_DESC' then reorder(merged_at: :desc, id: :desc)
       else reorder(severity_level: :desc, id: :desc) # rubocop: disable Lint/DuplicateBranch
       end
+    end
+
+    def project
+      merge_request.target_project
     end
   end
 end

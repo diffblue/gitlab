@@ -12331,6 +12331,15 @@ msgstr ""
 msgid "ComplianceStandardsAdherence|View details"
 msgstr ""
 
+msgid "ComplianceViolations|Compliance Violations Export"
+msgstr ""
+
+msgid "ComplianceViolations|Your Compliance Violations CSV export for the group \"%{group_name}\" has been attached to this email."
+msgstr ""
+
+msgid "ComplianceViolations|Your Compliance Violations CSV export for the group %{group_link} has been attached to this email."
+msgstr ""
+
 msgid "Component"
 msgstr ""
 
