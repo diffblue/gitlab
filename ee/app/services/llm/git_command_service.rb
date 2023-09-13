@@ -4,7 +4,7 @@ module Llm
   class GitCommandService < BaseService
     TEMPERATURE = 0.4
     INPUT_CONTENT_LIMIT = 300
-    MAX_RESPONSE_TOKENS = 200
+    MAX_RESPONSE_TOKENS = 300
     OPENAI = 'openai'
     VERTEXAI = 'vertexai'
 
@@ -40,6 +40,18 @@ module Llm
     def prompt
       <<~TEMPLATE
       Provide the appropriate git commands for: #{options[:prompt]}.
+
+      Respond with git commands wrapped in separate ``` blocks.
+      Provide explanation for each command in a separate block.
+
+      ##
+      Example:
+
+      ```
+      git log -10
+      ```
+
+      This command will list the last 10 commits in the current branch.
       TEMPLATE
     end
 

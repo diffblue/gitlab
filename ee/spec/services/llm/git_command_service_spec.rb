@@ -53,7 +53,11 @@ RSpec.describe Llm::GitCommandService, feature_category: :source_code_management
 
         expect(::Gitlab::Json.parse(response.payload[:body])['instances'][0]['messages']).to eq([{
           'author' => 'content',
-          'content' => "Provide the appropriate git commands for: list 10 commit titles.\n"
+          'content' => "Provide the appropriate git commands for: list 10 commit titles.\n\n" \
+                       "Respond with git commands wrapped in separate ``` blocks.\n" \
+                       "Provide explanation for each command in a separate block.\n\n##\n" \
+                       "Example:\n\n```\ngit log -10\n```\n\n" \
+                       "This command will list the last 10 commits in the current branch.\n"
         }])
       end
 
@@ -81,7 +85,7 @@ RSpec.describe Llm::GitCommandService, feature_category: :source_code_management
 
           expect(response).to be_success
           expect(response.payload).to include({
-            max_tokens: 200,
+            max_tokens: 300,
             model: "gpt-3.5-turbo",
             temperature: 0.4
           })
