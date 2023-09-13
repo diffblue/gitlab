@@ -43,31 +43,13 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     ensure_onboarding_is_finished
   end
 
-  it 'registers the user and sends them to the tasks to be done page' do
-    new_user = build(:user, name: 'Registering User', email: user_email)
-    group = create(:group, name: 'Test Group')
-
-    allow_task_to_be_done
-    registers_from_invite(user: new_user, group: group, tasks_to_be_done: [:ci, :code])
-
-    ensure_onboarding { expect_to_see_welcome_form_for_invites }
-    expect_to_send_iterable_request(invite: true)
-
-    fill_in_welcome_form
-    click_on 'Get started!'
-
-    expect_to_be_on_issues_dashboard_page_for(new_user)
-    ensure_onboarding_is_finished
-  end
-
-  def registers_from_invite(user:, group:, tasks_to_be_done: [])
+  def registers_from_invite(user:, group:)
     invitation = create(
       :group_member,
       :invited,
       :developer,
       invite_email: user.email,
-      source: group,
-      tasks_to_be_done: tasks_to_be_done
+      source: group
     )
 
     visit invite_path(invitation.raw_invite_token, invite_type: Emails::Members::INITIAL_INVITE)
@@ -79,14 +61,5 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     select 'Software Developer', from: 'user_role'
     select 'A different reason', from: 'user_registration_objective'
     fill_in 'Why are you signing up? (optional)', with: 'My reason'
-  end
-
-  def allow_task_to_be_done
-    allow(TasksToBeDone::CreateWorker).to receive(:perform_async)
-  end
-
-  def expect_to_be_on_issues_dashboard_page_for(user)
-    expect(page).to have_current_path(issues_dashboard_path, ignore_query: true)
-    expect(page).to have_content("Assignee = #{user.name}")
   end
 end
