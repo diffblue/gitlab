@@ -37,6 +37,18 @@ RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_m
       let(:expected_params) do
         expected_content = <<~PROMPT
         Provide the appropriate git commands for: list 10 commit titles.
+
+        Respond with git commands wrapped in separate ``` blocks.
+        Provide explanation for each command in a separate block.
+
+        ##
+        Example:
+
+        ```
+        git log -10
+        ```
+
+        This command will list the last 10 commits in the current branch.
         PROMPT
 
         {
@@ -98,7 +110,7 @@ RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_m
                 content: expected_content
               }],
               temperature: 0.4,
-              max_tokens: 200
+              max_tokens: 300
             }.to_json
           }
         end
