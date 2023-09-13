@@ -10,10 +10,12 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
 
   let(:prompt_class) { Gitlab::Llm::Templates::SummarizeMergeRequest }
   let(:diff_id) { mr_diff.id }
+  let(:tracking_context) { { action: 'summarize_merge_request', request_id: 'uuid' } }
   let(:options) do
     {
       diff_id: diff_id,
-      request_id: 'uuid'
+      request_id: 'uuid',
+      action: 'summarize_merge_request'
     }
   end
 
@@ -54,7 +56,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
       end
 
       before do
-        allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |client|
+        allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |client|
           allow(client).to receive(:text).and_return(example_response.to_json)
         end
       end
@@ -78,7 +80,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::SummarizeMergeRequest, featur
       let(:error) { { error: { message: 'Error' } } }
 
       before do
-        allow_next_instance_of(Gitlab::Llm::VertexAi::Client) do |client|
+        allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |client|
           allow(client).to receive(:text).and_return(error.to_json)
         end
       end
