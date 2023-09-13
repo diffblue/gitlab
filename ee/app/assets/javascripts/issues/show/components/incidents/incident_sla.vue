@@ -1,8 +1,8 @@
 <script>
 import { GlIcon } from '@gitlab/ui';
-import { isValidSlaDueAt } from 'ee/vue_shared/components/incidents/utils';
 import ServiceLevelAgreement from 'ee_component/vue_shared/components/incidents/service_level_agreement.vue';
 import { createAlert } from '~/alert';
+import { isValidDateString } from '~/lib/utils/datetime_range';
 import { s__ } from '~/locale';
 import getSlaIncidentDataQuery from './graphql/queries/get_sla_due_at.query.graphql';
 
@@ -23,7 +23,7 @@ export default {
       },
       result({ data }) {
         const issue = data?.project?.issue;
-        const isValidSla = isValidSlaDueAt(issue?.slaDueAt);
+        const isValidSla = isValidDateString(issue?.slaDueAt);
 
         // Render component
         this.hasData = isValidSla;
