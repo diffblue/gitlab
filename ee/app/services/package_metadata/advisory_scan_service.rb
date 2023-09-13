@@ -2,8 +2,8 @@
 
 module PackageMetadata
   class AdvisoryScanService
-    def self.execute(_advisory)
-      raise NoMethodError, 'To be implemented in https://gitlab.com/gitlab-org/gitlab/-/issues/371065'
+    def self.execute(advisory)
+      ::Gitlab::VulnerabilityScanning::AdvisoryScanner.scan_projects_for(advisory)
     end
   end
 end
