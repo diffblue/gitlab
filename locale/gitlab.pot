@@ -23893,6 +23893,9 @@ msgstr ""
 msgid "IdentityVerification|Your verification code expires after %{expires_in_minutes} minutes."
 msgstr ""
 
+msgid "Identity|Active"
+msgstr ""
+
 msgid "Identity|Provider ID"
 msgstr ""
 

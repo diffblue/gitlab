@@ -27,21 +27,21 @@ RSpec.describe 'admin/identities/index.html.haml', :aggregate_failures do
     it 'shows information text' do
       render
 
-      expect(rendered).to include('<td colspan="5">').exactly(1)
+      expect(rendered).to include('<td colspan="6">').exactly(1)
       expect(rendered).to include(_('This user has no identities'))
     end
   end
 
   context 'with SCIM identities' do
     before_all do
-      create(:scim_identity, group: group, extern_uid: 'scim-uid', user: saml_user)
+      create(:scim_identity, group: group, extern_uid: 'scim-uid', user: saml_user, active: true)
       assign(:identities, [])
     end
 
-    it 'shows exactly 5 columns' do
+    it 'shows exactly 6 columns' do
       render
 
-      expect(rendered).to include('</td>').exactly(5)
+      expect(rendered).to include('</td>').exactly(6)
     end
 
     it 'shows identity without provider ID' do
@@ -55,6 +55,8 @@ RSpec.describe 'admin/identities/index.html.haml', :aggregate_failures do
       expect(rendered).to include("<a href=\"/#{group.path}\">#{group.path}</a>")
       # Identifier
       expect(rendered).to include('scim-uid')
+      # Active
+      expect(rendered.delete("\n")).to include('<td>true</td>')
     end
 
     it 'shows no edit or delete identity buttons' do
@@ -70,10 +72,10 @@ RSpec.describe 'admin/identities/index.html.haml', :aggregate_failures do
       assign(:identities, saml_identity)
     end
 
-    it 'shows exactly 5 columns' do
+    it 'shows exactly 6 columns' do
       render
 
-      expect(rendered).to include('</td>').exactly(5)
+      expect(rendered).to include('</td>').exactly(6)
     end
 
     it 'shows identity with provider ID or group' do
@@ -87,6 +89,8 @@ RSpec.describe 'admin/identities/index.html.haml', :aggregate_failures do
       expect(rendered).to include("<a href=\"/#{group.path}\">#{group.path}</a>")
       # Identifier
       expect(rendered).to include('saml-uid')
+      # Active
+      expect(rendered.delete("\n")).to include('<td>-</td>')
     end
 
     it 'shows edit and delete identity buttons' do
