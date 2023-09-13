@@ -47,7 +47,7 @@ export default {
       size="small"
       @click="onClick"
     />
-    <gl-tooltip ref="tooltip" :target="buttonId" placement="top" triggers="hover" noninteractive>
+    <gl-tooltip ref="tooltip" :target="buttonId" placement="top" triggers="hover">
       {{ label }}
     </gl-tooltip>
   </span>
