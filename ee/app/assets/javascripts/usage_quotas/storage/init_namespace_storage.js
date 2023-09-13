@@ -25,6 +25,7 @@ export default () => {
     purchaseStorageUrl,
     buyAddonTargetAttr,
     enforcementType,
+    totalRepositorySizeExcess,
   } = el.dataset;
 
   const apolloProvider = new VueApollo({
@@ -45,7 +46,8 @@ export default () => {
       purchaseStorageUrl,
       buyAddonTargetAttr,
       enforcementType,
-      isNamespaceUnderProjectLimits: enforcementType === PROJECT_ENFORCEMENT_TYPE,
+      totalRepositorySizeExcess: totalRepositorySizeExcess && Number(totalRepositorySizeExcess),
+      isUsingProjectEnforcement: enforcementType === PROJECT_ENFORCEMENT_TYPE,
       helpLinks,
     },
     render(createElement) {

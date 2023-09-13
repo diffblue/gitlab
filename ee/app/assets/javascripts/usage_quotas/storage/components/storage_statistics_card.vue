@@ -20,7 +20,7 @@ export default {
     GlLink,
     NumberToHumanSize,
   },
-  inject: ['isNamespaceUnderProjectLimits', 'namespacePlanStorageIncluded'],
+  inject: ['isUsingProjectEnforcement', 'namespacePlanStorageIncluded'],
   props: {
     planStorageDescription: {
       type: String,
@@ -79,7 +79,7 @@ export default {
       <rect width="340" height="10" x="5" y="54" rx="4" />
     </gl-skeleton-loader>
 
-    <div v-else-if="isNamespaceUnderProjectLimits">
+    <div v-else-if="isUsingProjectEnforcement">
       <div class="gl-font-weight-bold" data-testid="namespace-storage-card-title">
         {{ $options.i18n.STORAGE_STATISTICS_NAMESPACE_STORAGE_USED }}
 

@@ -15,7 +15,7 @@ let wrapper;
 const createComponent = ({ provide = {}, props = {}, stubs } = {}) => {
   wrapper = mountExtended(ProjectList, {
     provide: {
-      isNamespaceUnderProjectLimits: false,
+      isUsingProjectEnforcement: false,
       ...provide,
     },
     propsData: {
@@ -123,7 +123,7 @@ describe('ProjectList', () => {
     // https://docs.gitlab.com/ee/user/usage_quotas#project-storage-limit
     describe('Namespace under Project type storage enforcement', () => {
       it('will disable sorting by storage field', () => {
-        createComponentWithTableStub({ provide: { isNamespaceUnderProjectLimits: true } });
+        createComponentWithTableStub({ provide: { isUsingProjectEnforcement: true } });
         expect(findTable().props('fields')).toEqual(
           expect.arrayContaining([expect.objectContaining({ key: 'storage', sortable: false })]),
         );

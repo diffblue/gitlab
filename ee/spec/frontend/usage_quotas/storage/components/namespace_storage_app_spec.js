@@ -138,7 +138,7 @@ describe('NamespaceStorageApp', () => {
     beforeEach(() => {
       createComponent({
         provide: {
-          isNamespaceUnderProjectLimits: false,
+          isUsingProjectEnforcement: false,
         },
       });
     });
