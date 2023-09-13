@@ -313,7 +313,9 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
   end
 
   describe '#eligible_for_iterable_trigger?' do
-    let(:instance) { described_class.new(nil, nil, nil) }
+    let(:params) { {} }
+    let(:current_user) { nil }
+    let(:instance) { described_class.new(params, nil, current_user) }
 
     subject { instance.eligible_for_iterable_trigger? }
 
@@ -337,6 +339,13 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
       end
 
       it { is_expected.to eq(expected_result) }
+    end
+
+    context 'when setup_for_company is true and a user is a member already' do
+      let(:params) { { user: { setup_for_company: true } } }
+      let(:current_user) { user }
+
+      it { is_expected.to eq(true) }
     end
   end
 

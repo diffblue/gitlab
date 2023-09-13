@@ -8,7 +8,7 @@ RSpec.describe ApplicationController, type: :request, feature_category: :shared 
     let(:should_check_namespace_plan) { true }
 
     let(:user) do
-      create(:user, onboarding_in_progress: onboarding_in_progress).tap do |record|
+      create(:user, role: nil, onboarding_in_progress: onboarding_in_progress).tap do |record|
         create(:user_detail, user: record, onboarding_step_url: url)
       end
     end
@@ -25,6 +25,16 @@ RSpec.describe ApplicationController, type: :request, feature_category: :shared 
         expect(response).to redirect_to(url)
       end
 
+      context 'when qualifying for 2fa' do
+        it 'redirects to the onboarding step' do
+          create_two_factor_group_with_user(user)
+
+          get root_path
+
+          expect(response).to redirect_to(url)
+        end
+      end
+
       context 'when onboarding is disabled' do
         let(:onboarding_in_progress) { false }
 
@@ -32,6 +42,16 @@ RSpec.describe ApplicationController, type: :request, feature_category: :shared 
           get root_path
 
           expect(response).not_to be_redirect
+        end
+
+        context 'when qualifying for 2fa' do
+          it 'redirects to 2fa setup' do
+            create_two_factor_group_with_user(user)
+
+            get root_path
+
+            expect(response).to redirect_to(profile_two_factor_auth_path)
+          end
         end
       end
 
@@ -61,6 +81,23 @@ RSpec.describe ApplicationController, type: :request, feature_category: :shared 
         get root_path
 
         expect(response).not_to be_redirect
+      end
+
+      context 'when qualifying for 2fa' do
+        it 'redirects to 2fa setup' do
+          create_two_factor_group_with_user(user)
+
+          get root_path
+
+          expect(response).to redirect_to(profile_two_factor_auth_path)
+        end
+      end
+    end
+
+    def create_two_factor_group_with_user(user)
+      create(:group, require_two_factor_authentication: true).tap do |g|
+        g.add_developer(user)
+        user.reset
       end
     end
   end
