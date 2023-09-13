@@ -42,18 +42,20 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
       end
 
       with_them do
+        let(:agent) { instance_double("Clusters::Agent", id: 1) }
+
+        let(:workspace) do
+          instance_double("RemoteDevelopment::Workspace", id: 1, name: 'name', namespace: 'namespace', agent: agent)
+        end
+
         let(:latest_k8s_deployment_info) do
           workspace_agent_info_hash = create_workspace_agent_info_hash(
-            workspace_id: 1,
-            workspace_name: 'name',
-            workspace_namespace: 'namespace',
-            workspace_variables_env_var: {},
-            workspace_variables_file: {},
-            agent_id: 1,
-            resource_version: 1,
+            workspace: workspace,
             previous_actual_state: previous_actual_state,
             current_actual_state: current_actual_state,
-            workspace_exists: workspace_exists
+            workspace_exists: workspace_exists,
+            workspace_variables_env_var: {},
+            workspace_variables_file: {}
           )
           workspace_agent_info_hash.fetch(:latest_k8s_deployment_info)
         end
@@ -66,9 +68,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
             )
           rescue RemoteDevelopment::AgentInfoStatusFixtureNotImplementedError
             skip 'TODO: Properly implement the agent info status fixture for ' \
-                 "previous_actual_state: #{previous_actual_state}, " \
-                 "current_actual_state: #{current_actual_state}, " \
-                 "workspace_exists: #{workspace_exists}"
+              "previous_actual_state: #{previous_actual_state}, " \
+              "current_actual_state: #{current_actual_state}, " \
+              "workspace_exists: #{workspace_exists}"
           end
           expect(calculated_actual_state).to be(current_actual_state) if calculated_actual_state
         end

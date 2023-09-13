@@ -13,6 +13,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, 'Partial Update S
   let(:logger) { instance_double(::Logger) }
   let_it_be(:user) { create(:user) }
 
+  let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
+
   before do
     allow(logger).to receive(:debug)
   end
@@ -164,6 +166,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, 'Partial Update S
       if initial_db_state
         workspace = create(
           :workspace,
+          agent: agent,
           desired_state: initial_db_state[0].to_s.camelize,
           actual_state: initial_db_state[1].to_s.camelize,
           deployment_resource_version: initial_resource_version
@@ -182,7 +185,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, 'Partial Update S
           # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31544
           workspace.update!(desired_state: user_desired_state_update.to_s.camelize)
         else
-          workspace = create(:workspace, :unprovisioned)
+          workspace = create(:workspace, :unprovisioned, agent: agent)
         end
 
         # assert on the workspace state in the db after user desired state update
@@ -206,24 +209,13 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, 'Partial Update S
             current_actual_state = actual_state_update_fixture_args[1].to_s.camelize
             workspace_exists = actual_state_update_fixture_args[2]
             deployment_resource_version_from_agent = (deployment_resource_version_from_agent.to_i + 1).to_s
-            workspace_variables_env_var = get_workspace_variables_env_var(
-              workspace_variables: workspace.workspace_variables
-            )
-            workspace_variables_file = get_workspace_variables_file(
-              workspace_variables: workspace.workspace_variables
-            )
             [
               create_workspace_agent_info_hash(
-                workspace_id: workspace.id,
-                workspace_name: workspace.name,
-                workspace_namespace: workspace.namespace,
-                workspace_variables_env_var: workspace_variables_env_var,
-                workspace_variables_file: workspace_variables_file,
-                agent_id: workspace.agent.id,
-                resource_version: deployment_resource_version_from_agent,
+                workspace: workspace,
                 current_actual_state: current_actual_state,
                 previous_actual_state: previous_actual_state,
-                workspace_exists: workspace_exists
+                workspace_exists: workspace_exists,
+                resource_version: deployment_resource_version_from_agent
               )
             ]
           else

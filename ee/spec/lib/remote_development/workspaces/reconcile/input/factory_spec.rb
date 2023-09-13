@@ -9,26 +9,15 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::Factory, feature
   let(:user) { instance_double("User", name: "name", email: "name@example.com") }
   let(:workspace) { create(:workspace) }
   let(:namespace) { workspace.namespace }
-  let(:workspace_variables_env_var) do
-    get_workspace_variables_env_var(workspace_variables: workspace.workspace_variables)
-  end
-
-  let(:workspace_variables_file) do
-    get_workspace_variables_file(workspace_variables: workspace.workspace_variables)
-  end
 
   let(:workspace_agent_info_hash) do
     create_workspace_agent_info_hash(
-      workspace_id: workspace.id,
-      workspace_name: workspace.name,
-      workspace_namespace: namespace,
-      workspace_variables_env_var: workspace_variables_env_var,
-      workspace_variables_file: workspace_variables_file,
-      agent_id: workspace.agent.id,
-      resource_version: "1",
+      workspace: workspace,
       previous_actual_state: previous_actual_state,
       current_actual_state: current_actual_state,
-      workspace_exists: false
+      workspace_exists: false,
+      workspace_variables_env_var: {},
+      workspace_variables_file: {}
     )
   end
 
@@ -97,13 +86,19 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::Factory, feature
       end
     end
 
-    # TODO: Should this case even be possible? See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/126127#note_1492911475
+    # TODO: Should this case even be possible? See
+    # - https://gitlab.com/gitlab-org/gitlab/-/merge_requests/126127#note_1492911475
+    # - https://gitlab.com/gitlab-org/gitlab/-/issues/420709
     context "when namespace is missing in the payload" do
       let(:previous_actual_state) { ::RemoteDevelopment::Workspaces::States::STARTING }
       let(:current_actual_state) { ::RemoteDevelopment::Workspaces::States::RUNNING }
       let(:termination_progress) { nil }
       let(:namespace) { nil }
       let(:expected_namespace) { nil }
+
+      before do
+        allow(workspace).to receive(:namespace).and_return(nil)
+      end
 
       it 'returns an AgentInfo object without namespace populated' do
         expect(subject).to eq(expected_agent_info)
