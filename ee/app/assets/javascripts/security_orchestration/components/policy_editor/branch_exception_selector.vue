@@ -41,6 +41,10 @@ export default {
   methods: {
     setExceptionType(type) {
       this.selectedExceptionType = type;
+
+      if (type === NO_EXCEPTION_KEY) {
+        this.$emit('remove');
+      }
     },
     selectExceptions(value) {
       this.$emit('select', { branch_exceptions: value });

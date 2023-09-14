@@ -3,6 +3,7 @@ import { GlButton, GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__, n__ } from '~/locale';
 import {
   ALL_PROTECTED_BRANCHES,
+  BRANCH_EXCEPTIONS_KEY,
   SPECIFIC_BRANCHES,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -142,6 +143,14 @@ export default {
 
       this.$emit('changed', updatedRule);
     },
+    removeExceptions() {
+      const rule = { ...this.initRule };
+      if (BRANCH_EXCEPTIONS_KEY in rule) {
+        delete rule[BRANCH_EXCEPTIONS_KEY];
+      }
+
+      this.$emit('changed', rule);
+    },
     setBranchException(value) {
       this.$emit('changed', { ...this.initRule, ...value });
     },
@@ -190,6 +199,7 @@ export default {
             <branch-exception-selector
               v-if="isProject && glFeatures.securityPoliciesBranchExceptions"
               :selected-exceptions="branchExceptions"
+              @remove="removeExceptions"
               @select="setBranchException"
             />
           </template>
