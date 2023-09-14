@@ -32,6 +32,12 @@ RSpec.shared_examples 'member validations' do
           expect(member).to be_valid
         end
 
+        it 'allows adding a service account as a member' do
+          member = entity.add_member(create(:service_account, provisioned_by_group: group), Member::DEVELOPER)
+
+          expect(member).to be_valid
+        end
+
         context 'subgroups' do
           let!(:subgroup) { create(:group, parent: group) }
 

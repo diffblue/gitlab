@@ -38,4 +38,20 @@ RSpec.describe Gitlab::Auth::GroupSaml::MembershipEnforcer, feature_category: :s
 
     expect(described_class.new(group).can_add_user?(project_bot)).to be_truthy
   end
+
+  context 'when the user is a service account' do
+    let_it_be(:service_account) { create(:service_account) }
+
+    it 'allows adding a service account provisioned by the root group' do
+      service_account.update!(provisioned_by_group: group)
+
+      expect(described_class.new(group).can_add_user?(service_account)).to be_truthy
+    end
+
+    it 'does not allow adding a service account provisioned by another root group' do
+      service_account.update!(provisioned_by_group: create(:group))
+
+      expect(described_class.new(group).can_add_user?(service_account)).to be_falsey
+    end
+  end
 end
