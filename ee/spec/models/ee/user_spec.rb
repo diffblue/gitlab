@@ -907,24 +907,37 @@ RSpec.describe User, feature_category: :system_access do
   describe '.limit_to_saml_provider' do
     let_it_be(:user1) { create(:user) }
     let_it_be(:user2) { create(:user) }
+    let_it_be(:service_account) { create(:service_account) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:saml_provider) { create(:saml_provider, group: group) }
 
     it 'returns all users when SAML provider is nil' do
       rel = described_class.limit_to_saml_provider(nil)
 
-      expect(rel).to include(user1, user2)
+      expect(rel).to include(user1, user2, service_account)
     end
 
-    it 'returns only the users who have an identity that belongs to the given SAML provider' do
-      create(:user)
-      group = create(:group)
-      saml_provider = create(:saml_provider, group: group)
-      create(:identity, saml_provider: saml_provider, user: user1)
-      create(:identity, saml_provider: saml_provider, user: user2)
-      create(:identity, user: create(:user))
+    context 'when users have an identity belonging to the given SAML provider' do
+      before_all do
+        create(:user)
+        create(:identity, saml_provider: saml_provider, user: user1)
+        create(:identity, saml_provider: saml_provider, user: user2)
+        create(:identity, user: create(:user))
+      end
 
-      rel = described_class.limit_to_saml_provider(saml_provider.id)
+      it 'does not return service accounts not provisioned by the group' do
+        rel = described_class.limit_to_saml_provider(saml_provider.id)
 
-      expect(rel).to contain_exactly(user1, user2)
+        expect(rel).to contain_exactly(user1, user2)
+      end
+
+      it 'returns only the users who have an identity that belongs to the given SAML provider and service accounts' do
+        service_account.update!(provisioned_by_group: group)
+
+        rel = described_class.limit_to_saml_provider(saml_provider.id)
+
+        expect(rel).to contain_exactly(user1, user2, service_account)
+      end
     end
   end
 

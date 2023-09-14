@@ -31,21 +31,32 @@ RSpec.describe UsersFinder do
         let_it_be(:saml_provider) { create(:saml_provider, group: group, enabled: true, enforced_sso: true) }
         let_it_be(:saml_user) { create(:user) }
         let_it_be(:non_saml_user) { create(:user) }
+        let_it_be(:instance_service_account) { create(:service_account) }
+        let_it_be(:service_account) { create(:service_account, provisioned_by_group: group) }
+        let_it_be(:other_service_account) { create(:service_account, provisioned_by_group: create(:group)) }
 
         before do
           create(:identity, provider: 'group_saml1', saml_provider_id: saml_provider.id, user: saml_user)
         end
 
-        it 'returns all users by default' do
+        it 'returns all users' do
           users = described_class.new(user).execute
 
-          expect(users).to contain_exactly(saml_user, non_saml_user, *normal_users, *users_visible_to_admin)
+          expect(users).to contain_exactly(
+            saml_user,
+            non_saml_user,
+            instance_service_account,
+            service_account,
+            other_service_account,
+            *normal_users,
+            *users_visible_to_admin
+          )
         end
 
-        it 'returns only saml users from the provided saml_provider_id' do
+        it 'returns saml users and service accounts for the SAML provider and associated group' do
           users = described_class.new(user, saml_provider_id: saml_provider.id).execute
 
-          expect(users).to contain_exactly(saml_user)
+          expect(users).to contain_exactly(saml_user, service_account)
         end
       end
 
