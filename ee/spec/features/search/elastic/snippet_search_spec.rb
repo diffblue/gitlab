@@ -14,6 +14,7 @@ RSpec.describe 'Snippet elastic search', :js, :clean_gitlab_redis_rate_limiting,
   end
 
   before do
+    stub_feature_flags(super_sidebar_logged_out: false)
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
 
     create_snippets

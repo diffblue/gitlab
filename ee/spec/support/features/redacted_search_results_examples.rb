@@ -7,6 +7,7 @@ RSpec.shared_examples 'a redacted search results page' do |include_anonymous: tr
   let(:user_not_in_project) { create(:user, :no_super_sidebar) }
 
   before do
+    stub_feature_flags(super_sidebar_logged_out: false)
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
 
     Sidekiq::Testing.inline! do
