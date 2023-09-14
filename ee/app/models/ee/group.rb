@@ -18,6 +18,7 @@ module EE
       include ReactiveCaching
       include IssueParent
       include Elastic::MaintainElasticsearchOnGroupUpdate
+      include ProductAnalyticsHelpers
 
       ALLOWED_ACTIONS_TO_USE_FILTERING_OPTIMIZATION = [:read_epic, :read_confidential_epic].freeze
       EPIC_BATCH_SIZE = 500

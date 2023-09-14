@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_data_management do
   using RSpec::Parameterized::TableSyntax
 
-  let_it_be(:project) { create(:project, :with_product_analytics_dashboard) }
+  let_it_be_with_refind(:project) { create(:project) }
 
   describe '#product_analytics_enabled?' do
     subject { project.product_analytics_enabled? }
@@ -51,8 +51,9 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
         stub_licensed_features(product_analytics: true)
       end
 
-      it 'includes project dashboards' do
-        expect(project.product_analytics_dashboards).to contain_exactly(a_kind_of(::ProductAnalytics::Dashboard))
+      it 'includes built in dashboards' do
+        expect(project.product_analytics_dashboards.map(&:title))
+          .to match_array(%w[Audience Behavior])
       end
     end
   end
@@ -117,7 +118,8 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
           let(:slug) { 'dashboard_example_1' }
 
           it 'returns the dashboard with the given slug' do
-            expect(project.product_analytics_dashboard(slug).project).to eq(configuration_project)
+            expect(project.product_analytics_dashboard(slug).container).to eq(project)
+            expect(project.product_analytics_dashboard(slug).config_project).to eq(configuration_project)
           end
         end
 
@@ -127,22 +129,6 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
           it 'returns nil' do
             expect(project.product_analytics_dashboard(slug)).to be_nil
           end
-        end
-      end
-
-      context 'when the requested dashboard exists' do
-        let(:slug) { 'dashboard_example_1' }
-
-        it 'returns the dashboard with the given slug' do
-          expect(project.product_analytics_dashboard(slug).title).to eq 'Dashboard Example 1'
-        end
-      end
-
-      context 'when the requested dashboard does not exist' do
-        let(:slug) { 'Dashboard Example 1800' }
-
-        it 'returns nil' do
-          expect(project.product_analytics_dashboard(slug)).to be_nil
         end
       end
     end

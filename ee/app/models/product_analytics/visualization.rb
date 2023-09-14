@@ -64,10 +64,13 @@ module ProductAnalytics
     end
 
     def self.from_data(data:, project:)
-      config = project.repository.blob_data_at(
-        project.repository.root_ref_sha,
-        visualization_config_path(data)
-      )
+      config =
+        if project && !project.empty_repo?
+          project.repository.blob_data_at(
+            project.repository.root_ref_sha,
+            visualization_config_path(data)
+          )
+        end
 
       return new(config: config, slug: data) if config
 

@@ -170,6 +170,13 @@ module EE
           description: 'Aggregated usage counts within the group',
           authorize: :read_group_analytics_dashboards,
           alpha: { milestone: '16.4' }
+        field :customizable_dashboards,
+          ::Types::ProductAnalytics::DashboardType.connection_type,
+          description: 'Customizable dashboards for the group.',
+          null: true,
+          calls_gitaly: true,
+          alpha: { milestone: '16.4' },
+          resolver: ::Resolvers::ProductAnalytics::DashboardsResolver
 
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
