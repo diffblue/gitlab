@@ -17,7 +17,7 @@ module Security
 
       schedule_store_reports_worker
       schedule_scan_security_report_secrets_worker
-      sync_findings_to_approval_rules
+      sync_findings_to_approval_rules unless pipeline.default_branch?
     end
 
     private

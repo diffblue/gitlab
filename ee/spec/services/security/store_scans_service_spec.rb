@@ -189,6 +189,18 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
 
           store_group_of_artifacts
         end
+
+        context 'when the pipeline is for the default branch' do
+          before do
+            allow(pipeline).to receive(:default_branch?).and_return(true)
+          end
+
+          it 'does not call SyncFindingsToApprovalRulesWorker' do
+            expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).not_to receive(:perform_async)
+
+            store_group_of_artifacts
+          end
+        end
       end
     end
   end
