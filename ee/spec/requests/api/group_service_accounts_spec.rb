@@ -16,7 +16,10 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
     subject(:perform_request) { post api("/groups/#{group_id}/service_accounts", user) }
 
     context 'when the feature is licensed' do
+      let(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
+
       before do
+        allow(License).to receive(:current).and_return(license)
         stub_licensed_features(service_accounts: true)
       end
 
