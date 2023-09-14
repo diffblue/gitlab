@@ -15,6 +15,9 @@ module Mutations
         field :add_on_purchase, ::Types::GitlabSubscriptions::AddOnPurchaseType,
           null: true,
           description: 'AddOnPurchase state after mutation.'
+        field :user, ::Types::GitlabSubscriptions::AddOnUserType,
+          null: true,
+          description: 'User that the add-on was removed from.'
 
         authorize :admin_add_on_purchase
 
@@ -27,6 +30,7 @@ module Mutations
 
           {
             add_on_purchase: add_on_purchase,
+            user: user_to_be_removed,
             errors: []
           }
         end

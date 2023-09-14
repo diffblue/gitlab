@@ -20,7 +20,34 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
     }
   end
 
-  let(:mutation) { graphql_mutation(:user_add_on_assignment_remove, input) }
+  let(:queried_purchase_ids) { prepare_variables([add_on_purchase_id]) }
+
+  let(:requested_fields) do
+    <<-GQL
+    errors
+    addOnPurchase {
+      id
+      name
+      purchasedQuantity
+      assignedQuantity
+    }
+    user {
+      name
+      username
+
+       addOnAssignments(addOnPurchaseIds: #{queried_purchase_ids}) {
+        nodes {
+          addOnPurchase {
+            id
+            name
+          }
+        }
+      }
+    }
+    GQL
+  end
+
+  let(:mutation) { graphql_mutation(:user_add_on_assignment_remove, input, requested_fields) }
   let(:mutation_response) { graphql_mutation_response(:user_add_on_assignment_remove) }
   let(:expected_response) do
     {
@@ -54,6 +81,11 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
 
       expect(mutation_response['errors']).to eq([])
       expect(mutation_response['addOnPurchase']).to eq(expected_response)
+      expect(mutation_response["user"]).to include(
+        'name' => remove_user.name,
+        'username' => remove_user.username,
+        'addOnAssignments' => { 'nodes' => [] }
+      )
     end
   end
 
@@ -103,5 +135,47 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
     let(:user_id) { global_id_of(id: 666, model_name: '::User') }
 
     it_behaves_like 'empty response'
+  end
+
+  context 'when there are multiple add-on assignments for the user' do
+    let(:additional_purchase_1) { create(:gitlab_subscription_add_on_purchase, add_on: add_on_purchase.add_on) }
+    let(:additional_purchase_2) { create(:gitlab_subscription_add_on_purchase, add_on: add_on_purchase.add_on) }
+
+    let(:queried_purchase_ids) do
+      prepare_variables([
+        add_on_purchase_id,
+        global_id_of(additional_purchase_1),
+        global_id_of(additional_purchase_2)
+      ])
+    end
+
+    before do
+      additional_purchase_1.namespace.add_owner(current_user)
+      additional_purchase_2.namespace.add_owner(current_user)
+    end
+
+    it "avoids N+1 database queries", :request_store do
+      create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: additional_purchase_1, user: remove_user)
+
+      post_graphql_mutation(mutation, current_user: current_user)
+
+      expect(graphql_data_at(:user_add_on_assignment_remove, :user, :add_on_assignments, :nodes).count).to eq(1)
+
+      # recreate the destroyed assignment
+      create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase, user: remove_user)
+
+      control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+        post_graphql_mutation(mutation, current_user: current_user)
+      end
+
+      # recreate the destroyed assignment
+      create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase, user: remove_user)
+      # create an additional assignment
+      create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: additional_purchase_2, user: remove_user)
+
+      expect { post_graphql_mutation(mutation, current_user: current_user) }.to issue_same_number_of_queries_as(control)
+
+      expect(graphql_data_at(:user_add_on_assignment_remove, :user, :add_on_assignments, :nodes).count).to eq(2)
+    end
   end
 end
