@@ -3,12 +3,24 @@
 require 'spec_helper'
 
 RSpec.describe DraftNotes::PublishService, feature_category: :code_review_workflow do
-  let(:merge_request) { create(:merge_request) }
-  let(:project) { merge_request.target_project }
-  let(:user) { merge_request.author }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:merge_request) { create(:merge_request) }
+  let_it_be(:project) { merge_request.target_project }
 
   def publish
     DraftNotes::PublishService.new(merge_request, user).execute
+  end
+
+  before_all do
+    project.add_maintainer(user)
+  end
+
+  shared_examples 'does not execute Llm::SummarizeSubmittedReviewService' do
+    specify do
+      expect(Llm::SummarizeSubmittedReviewService).not_to receive(:new)
+
+      expect(publish[:status]).to eq(:success)
+    end
   end
 
   context 'when the review has more than 1 note' do
@@ -30,6 +42,12 @@ RSpec.describe DraftNotes::PublishService, feature_category: :code_review_workfl
 
       expect(publish[:status]).to eq(:success)
     end
+
+    context 'when review author is the merge request author' do
+      let_it_be(:user) { merge_request.author }
+
+      it_behaves_like 'does not execute Llm::SummarizeSubmittedReviewService'
+    end
   end
 
   context 'when the review has only 1 note' do
@@ -37,10 +55,6 @@ RSpec.describe DraftNotes::PublishService, feature_category: :code_review_workfl
       create(:draft_note_on_text_diff, merge_request: merge_request, author: user)
     end
 
-    it 'does not execute Llm::SummarizeSubmittedReviewService' do
-      expect(Llm::SummarizeSubmittedReviewService).not_to receive(:new)
-
-      expect(publish[:status]).to eq(:success)
-    end
+    it_behaves_like 'does not execute Llm::SummarizeSubmittedReviewService'
   end
 end

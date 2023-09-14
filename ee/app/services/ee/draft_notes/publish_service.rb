@@ -4,6 +4,7 @@ module EE
   module DraftNotes
     module PublishService
       def after_publish(review)
+        return if review.from_merge_request_author?
         return unless review.notes.count > 1
 
         Llm::SummarizeSubmittedReviewService
