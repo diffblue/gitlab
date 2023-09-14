@@ -100,7 +100,7 @@ RSpec.describe 'Update a compliance framework', feature_category: :compliance_ma
 
       context 'current_user is not permitted to update framework' do
         before do
-          namespace.update!(owners: [])
+          namespace.members.all_owners.delete_all
         end
 
         it_behaves_like 'a mutation that returns top-level errors',

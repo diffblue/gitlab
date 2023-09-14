@@ -44,7 +44,7 @@ RSpec.describe Mutations::ComplianceManagement::Frameworks::Update do
 
       context 'current_user is not authorized to update framework' do
         before do
-          namespace.update!(owners: [])
+          namespace.members.all_owners.delete_all
         end
 
         it 'raises an error' do

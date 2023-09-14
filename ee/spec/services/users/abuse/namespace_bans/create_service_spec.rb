@@ -3,8 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Users::Abuse::NamespaceBans::CreateService, feature_category: :insider_threat do
-  let(:user) { build(:user) }
-  let(:namespace) { build(:group) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:namespace) { create(:group) }
+
   let(:service) { described_class.new(user: user, namespace: namespace) }
 
   subject(:response) { service.execute }
