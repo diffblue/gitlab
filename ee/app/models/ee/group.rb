@@ -49,6 +49,9 @@ module EE
       has_many :google_cloud_logging_configurations, class_name: "AuditEvents::GoogleCloudLoggingConfiguration",
         foreign_key: 'namespace_id',
         inverse_of: :group
+      has_many :amazon_s3_configurations, class_name: "AuditEvents::AmazonS3Configuration",
+        foreign_key: 'namespace_id',
+        inverse_of: :group
 
       has_many :ldap_group_links, foreign_key: 'group_id', dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
       has_many :saml_group_links, foreign_key: 'group_id'
