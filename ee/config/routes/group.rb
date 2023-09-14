@@ -19,6 +19,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
         end
       end
       resource :merge_requests, only: [:update]
+      resources :roles_and_permissions, path: 'roles_and_permissions(/*vueroute)', action: :index
     end
 
     resources :group_members, only: [], concerns: :access_requestable do

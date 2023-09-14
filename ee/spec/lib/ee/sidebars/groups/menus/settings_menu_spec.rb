@@ -14,7 +14,8 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
   end
 
   let(:show_promotions) { false }
-  let(:context) { Sidebars::Groups::Context.new(current_user: user, container: group, show_promotions: show_promotions) }
+  let(:container) { group }
+  let(:context) { Sidebars::Groups::Context.new(current_user: user, container: container, show_promotions: show_promotions) }
   let(:menu) { described_class.new(context) }
 
   describe 'Menu Items' do
@@ -22,6 +23,44 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
       let(:user) { owner }
 
       subject { menu.renderable_items.find { |e| e.item_id == item_id } }
+
+      describe 'Roles and permissions menu', feature_category: :user_management do
+        let(:item_id) { :roles_and_permissions }
+
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        it { is_expected.to be_present }
+
+        context 'when `custom_roles_ui_saas` feature flag is disabled' do
+          before do
+            stub_feature_flags(custom_roles_ui_saas: false)
+          end
+
+          it { is_expected.not_to be_present }
+        end
+
+        context 'when it is not a root group' do
+          let_it_be_with_refind(:subgroup) do
+            create(:group, :private, parent: group).tap do |g|
+              g.add_owner(owner)
+            end
+          end
+
+          let(:container) { subgroup }
+
+          it { is_expected.not_to be_present }
+        end
+
+        context 'when custome_roles feature is not included in the license' do
+          before do
+            stub_licensed_features(custom_roles: false)
+          end
+
+          it { is_expected.not_to be_present }
+        end
+      end
 
       describe 'LDAP sync menu' do
         let(:item_id) { :ldap_sync }
@@ -213,6 +252,16 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
       let(:user) { auditor }
 
       subject { menu.renderable_items.find { |e| e.item_id == item_id } }
+
+      describe 'Roles and permissions menu', feature_category: :user_management do
+        let(:item_id) { :roles_and_permissions }
+
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        it { is_expected.not_to be_present }
+      end
 
       describe 'Billing menu item' do
         let(:item_id) { :billing }

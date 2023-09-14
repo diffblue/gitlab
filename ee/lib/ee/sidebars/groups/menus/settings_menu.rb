@@ -12,6 +12,7 @@ module EE
             return false unless super
 
             if can?(context.current_user, :admin_group, context.group)
+              insert_item_after(:general, roles_and_permissions_menu_item)
               insert_item_after(:integrations, webhooks_menu_item)
               add_item(ldap_sync_menu_item)
               add_item(saml_sso_menu_item)
@@ -35,6 +36,20 @@ module EE
           end
 
           private
+
+          def roles_and_permissions_menu_item
+            unless ::Feature.enabled?(:custom_roles_ui_saas, context.group) &&
+                context.group.root? && context.group.licensed_feature_available?(:custom_roles)
+              return ::Sidebars::NilMenuItem.new(item_id: :roles_and_permissions)
+            end
+
+            ::Sidebars::MenuItem.new(
+              title: _('Roles and Permissions'),
+              link: group_settings_roles_and_permissions_path(context.group),
+              active_routes: { path: 'roles_and_permissions#index' },
+              item_id: :roles_and_permissions
+            )
+          end
 
           def ldap_sync_menu_item
             unless ldap_sync_enabled?
