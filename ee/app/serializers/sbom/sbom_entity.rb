@@ -34,6 +34,7 @@ module Sbom
   end
 
   class SbomMetadataEntity < Grape::Entity
+    expose :timestamp, expose_nil: false
     expose :authors
     expose :properties
     expose :tools

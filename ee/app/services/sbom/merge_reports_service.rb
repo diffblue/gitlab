@@ -24,6 +24,7 @@ module Sbom
         add_sbom_components_for(report)
       end
 
+      merged_report.metadata.timestamp = Time.current.as_json
       merged_report.metadata.tools = @all_tools.keys
       merged_report.metadata.authors = @all_authors.keys
       merged_report.metadata.properties = @all_properties.keys

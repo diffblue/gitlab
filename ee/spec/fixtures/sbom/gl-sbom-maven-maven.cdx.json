@@ -4,6 +4,7 @@
   "serialNumber": "urn:uuid:aec33827-20ae-40d0-ae83-18ee846364d2",
   "version": 1,
   "metadata": {
+    "timestamp": "2020-04-13T20:20:39+00:00",
     "tools": [
       {
         "vendor": "Gitlab",

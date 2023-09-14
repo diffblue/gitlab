@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Sbom::MergeReportsService, feature_category: :dependency_management do
+RSpec.describe Sbom::MergeReportsService, :freeze_time, feature_category: :dependency_management do
   let(:uuid) { 'aec33827-20ae-40d0-ae83-18ee846364d2' }
   let(:metadata_1) { build(:ci_reports_sbom_metadata) }
   let(:metadata_2) { build(:ci_reports_sbom_metadata) }
@@ -79,7 +79,8 @@ RSpec.describe Sbom::MergeReportsService, feature_category: :dependency_manageme
         metadata: have_attributes(
           tools: expected_report.metadata.tools,
           authors: expected_report.metadata.authors,
-          properties: expected_report.metadata.properties
+          properties: expected_report.metadata.properties,
+          timestamp: Time.current.as_json
         ),
         sbom_attributes: expected_report.sbom_attributes,
         components: expected_report.components
