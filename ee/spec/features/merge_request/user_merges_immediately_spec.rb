@@ -42,7 +42,6 @@ RSpec.describe 'Merge requests > User merges immediately', :js, feature_category
       stub_feature_flags(disable_merge_trains: false)
       stub_licensed_features(merge_pipelines: true, merge_trains: true)
       stub_ci_pipeline_yaml_file(YAML.dump(ci_yaml))
-      stub_feature_flags(auto_merge_labels_mr_widget: true)
 
       sign_in(user)
       visit project_merge_request_path(project, merge_request)
