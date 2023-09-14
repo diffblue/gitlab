@@ -2,7 +2,6 @@
 import { GlLink, GlAlert, GlButton, GlSkeletonLoader } from '@gitlab/ui';
 import { InternalEvents } from '~/tracking';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
 import { createAlert } from '~/alert';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { VALUE_STREAMS_DASHBOARD_CONFIG } from 'ee/analytics/dashboards/constants';
@@ -48,6 +47,9 @@ export default {
     features: {
       type: Array,
       default: () => [],
+    },
+    analyticsSettingsPath: {
+      type: String,
     },
   },
   data() {
@@ -143,17 +145,6 @@ export default {
     routeToDashboard(dashboardId) {
       return this.$router.push(dashboardId);
     },
-    redirectToProjectPointerConfig() {
-      const url = joinPaths(
-        gon.relative_url_root || '/',
-        this.isProject ? '' : 'groups',
-        this.namespaceFullPath,
-        '-',
-        this.isProject ? 'settings/analytics' : 'edit',
-      );
-
-      visitUrl(`${url}#js-analytics-dashboards-settings`);
-    },
     onboardingComplete(feature) {
       this.requiresOnboarding = this.requiresOnboarding.filter((f) => f !== feature);
     },
@@ -205,9 +196,9 @@ export default {
       v-if="showCustomDashboardSetupBanner"
       :dismissible="false"
       :primary-button-text="s__('Analytics|Configure Dashboard Project')"
+      :primary-button-link="analyticsSettingsPath"
       :title="s__('Analytics|Custom dashboards')"
       class="gl-mt-3 gl-mb-6"
-      @primaryAction="redirectToProjectPointerConfig"
       >{{
         s__(
           'Analytics|To create your own dashboards, first configure a project to store your dashboards.',

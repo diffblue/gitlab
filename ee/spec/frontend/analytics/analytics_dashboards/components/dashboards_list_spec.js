@@ -10,7 +10,6 @@ import { VALUE_STREAMS_DASHBOARD_CONFIG } from 'ee/analytics/dashboards/constant
 import { InternalEvents } from '~/tracking';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { createAlert } from '~/alert';
-import { visitUrl } from '~/lib/utils/url_utility';
 import getAllProductAnalyticsDashboardsQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_product_analytics_dashboards.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -26,11 +25,6 @@ jest.mock('~/alert', () => ({
   createAlert: jest.fn().mockImplementation(() => ({
     dismiss: mockAlertDismiss,
   })),
-}));
-
-jest.mock('~/lib/utils/url_utility', () => ({
-  ...jest.requireActual('~/lib/utils/url_utility'),
-  visitUrl: jest.fn(),
 }));
 
 Vue.use(VueApollo);
@@ -49,8 +43,6 @@ describe('DashboardsList', () => {
   const findVisualizationDesignerButton = () =>
     wrapper.findByTestId('visualization-designer-button');
   const findConfigureAlert = () => wrapper.findComponent(GlAlert);
-
-  const clickConfigureButton = () => findConfigureAlert().vm.$emit('primaryAction');
 
   const $router = {
     push: jest.fn(),
@@ -80,6 +72,7 @@ describe('DashboardsList', () => {
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
         canConfigureDashboardsProject: true,
         namespaceFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        analyticsSettingsPath: '/test/-/settings#foo',
         ...provided,
       },
     });
@@ -178,28 +171,6 @@ describe('DashboardsList', () => {
         createWrapper({ customDashboardsProject: null, canConfigureDashboardsProject: true });
 
         expect(findConfigureAlert().exists()).toBe(true);
-      });
-
-      describe.each`
-        isProject | relativeUrlRoot | url
-        ${true}   | ${'/'}          | ${'/test/test-dashboards/-/settings/analytics#js-analytics-dashboards-settings'}
-        ${true}   | ${'/path'}      | ${'/path/test/test-dashboards/-/settings/analytics#js-analytics-dashboards-settings'}
-        ${false}  | ${'/'}          | ${'/groups/test/test-dashboards/-/edit#js-analytics-dashboards-settings'}
-        ${false}  | ${'/path'}      | ${'/path/groups/test/test-dashboards/-/edit#js-analytics-dashboards-settings'}
-      `('configure dashboard project button', ({ isProject, relativeUrlRoot, url }) => {
-        beforeEach(() => {
-          gon.relative_url_root = relativeUrlRoot;
-          createWrapper({
-            isProject,
-            customDashboardsProject: null,
-            canConfigureDashboardsProject: true,
-          });
-        });
-
-        it('redirects to the settings page', () => {
-          clickConfigureButton();
-          expect(visitUrl).toHaveBeenCalledWith(url);
-        });
       });
     });
 

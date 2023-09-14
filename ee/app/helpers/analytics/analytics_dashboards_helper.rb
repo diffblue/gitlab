@@ -15,6 +15,7 @@ module Analytics
         collector_host: can_read_product_analytics ? collector_host(namespace) : nil,
         chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
         dashboard_empty_state_illustration_path: image_path('illustrations/security-dashboard-empty-state.svg'),
+        analytics_settings_path: analytics_settings_path(namespace),
         namespace_name: namespace.name,
         namespace_full_path: namespace.full_path,
         features: is_project ? enabled_analytics_features(namespace).to_json : [].to_json,
@@ -81,6 +82,17 @@ module Analytics
       return project_analytics_dashboards_path(namespace) if project?(namespace)
 
       group_analytics_dashboards_path(namespace)
+    end
+
+    def analytics_settings_path(namespace)
+      settings_path =
+        if project?(namespace)
+          project_settings_analytics_path(namespace)
+        else
+          edit_group_path(namespace)
+        end
+
+      "#{settings_path}#js-analytics-dashboards-settings"
     end
   end
 end

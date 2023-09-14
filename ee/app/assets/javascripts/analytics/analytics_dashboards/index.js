@@ -61,6 +61,7 @@ export default () => {
     collectorHost,
     chartEmptyStateIllustrationPath,
     dashboardEmptyStateIllustrationPath,
+    analyticsSettingsPath,
     routerBase,
     features,
   } = el.dataset;
@@ -120,6 +121,7 @@ export default () => {
       collectorHost,
       chartEmptyStateIllustrationPath,
       dashboardEmptyStateIllustrationPath,
+      analyticsSettingsPath,
       features: convertArrayToCamelCase(JSON.parse(features)),
     },
     render(h) {
