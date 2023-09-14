@@ -338,6 +338,22 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
     end
   end
 
+  describe '#milestones' do
+    let!(:unarchived_project) { create(:project, :public, group: group) }
+    let!(:archived_project) { create(:project, :public, :archived, group: group) }
+    let!(:unarchived_result) { create(:milestone, project: unarchived_project, title: 'foo unarchived') }
+    let!(:archived_result) { create(:milestone, project: archived_project, title: 'foo archived') }
+    let(:query) { 'foo' }
+    let(:scope) { 'milestones' }
+
+    before do
+      set_elasticsearch_migration_to(:backfill_archived_on_milestones, including: true)
+      ensure_elasticsearch_index!
+    end
+
+    include_examples 'search results filtered by archived', 'search_milestones_hide_archived_projects', :backfill_archived_on_milestones
+  end
+
   context 'query performance' do
     include_examples 'does not hit Elasticsearch twice for objects and counts',
       %w[projects notes blobs wiki_blobs commits issues merge_requests epics milestones users]

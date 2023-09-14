@@ -308,7 +308,7 @@ module Gitlab
           # if any of the features is available for projects in ApplicationClassProxy#project_ids_query
           # Otherwise it will ignore project_ids and return milestones
           # from projects with milestones disabled.
-          base_options.merge(features: [:issues, :merge_requests])
+          base_options.merge({ features: [:issues, :merge_requests] }, filters.slice(:include_archived))
         when :users
           base_options.merge(admin: current_user&.admin?, routing_disabled: true) # rubocop:disable Cop/UserAdmin
         when :blobs
