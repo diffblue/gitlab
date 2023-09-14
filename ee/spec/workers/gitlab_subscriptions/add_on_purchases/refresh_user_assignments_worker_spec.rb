@@ -94,5 +94,31 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
         subject.perform(root_namespace_id)
       end
     end
+
+    context 'with exclusive lease' do
+      include ExclusiveLeaseHelpers
+
+      let(:lock_key) { "#{described_class.name.underscore}:#{root_namespace_id}" }
+      let(:timeout) { described_class::LEASE_TTL }
+
+      context 'when exclusive lease has not been taken' do
+        it 'obtains a new exclusive lease' do
+          expect_to_obtain_exclusive_lease(lock_key, timeout: timeout)
+
+          subject.perform(root_namespace_id)
+        end
+      end
+
+      context 'when exclusive lease has already been taken' do
+        before do
+          stub_exclusive_lease_taken(lock_key, timeout: timeout)
+        end
+
+        it 'raises an error' do
+          expect { subject.perform(root_namespace_id) }
+            .to raise_error(Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError)
+        end
+      end
+    end
   end
 end

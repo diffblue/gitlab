@@ -7,6 +7,7 @@ module GitlabSubscriptions
       include Gitlab::ExclusiveLeaseHelpers
 
       BATCH_SIZE = 50
+      LEASE_TTL = 1.minute
 
       feature_category :seat_cost_management
 
@@ -22,10 +23,13 @@ module GitlabSubscriptions
         return unless root_namespace && add_on_purchase
 
         deleted_assignments_count = 0
-        add_on_purchase.assigned_users.each_batch(of: BATCH_SIZE) do |batch|
-          ineligible_user_ids = batch.pluck_user_ids.to_set - eligible_user_ids
 
-          deleted_assignments_count += batch.for_user_ids(ineligible_user_ids).delete_all
+        in_lock(lock_key, ttl: LEASE_TTL) do
+          add_on_purchase.assigned_users.each_batch(of: BATCH_SIZE) do |batch|
+            ineligible_user_ids = batch.pluck_user_ids.to_set - eligible_user_ids
+
+            deleted_assignments_count += batch.for_user_ids(ineligible_user_ids).delete_all
+          end
         end
 
         log_event(deleted_assignments_count) if deleted_assignments_count > 0
@@ -45,6 +49,10 @@ module GitlabSubscriptions
 
       def eligible_user_ids
         @eligible_user_ids ||= root_namespace.code_suggestions_eligible_user_ids
+      end
+
+      def lock_key
+        "#{self.class.name.underscore}:#{root_namespace.id}"
       end
 
       def log_event(deleted_count)
