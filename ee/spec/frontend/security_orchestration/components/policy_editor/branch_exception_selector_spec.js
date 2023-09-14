@@ -63,4 +63,24 @@ describe('BranchExceptionSelector', () => {
       expect(wrapper.emitted('select')).toEqual([[{ branch_exceptions: MOCK_BRANCHES }]]);
     });
   });
+
+  describe('no exceptions', () => {
+    it('should reset exceptions when type is changed', () => {
+      createComponent({
+        propsData: { selectedExceptions: MOCK_BRANCHES },
+      });
+
+      findNamespaceTypeListbox().vm.$emit('select', NO_EXCEPTION_KEY);
+
+      expect(wrapper.emitted('remove')).toHaveLength(1);
+
+      findNamespaceTypeListbox().vm.$emit('select', EXCEPTION_KEY);
+
+      expect(wrapper.emitted('remove')).toHaveLength(1);
+
+      findNamespaceTypeListbox().vm.$emit('select', NO_EXCEPTION_KEY);
+
+      expect(wrapper.emitted('remove')).toHaveLength(2);
+    });
+  });
 });

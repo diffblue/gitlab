@@ -8,6 +8,7 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import BranchExceptionSelector from '../branch_exception_selector.vue';
 import {
   ANY_OPERATOR,
+  BRANCH_EXCEPTIONS_KEY,
   GREATER_THAN_OPERATOR,
   VULNERABILITIES_ALLOWED_OPERATORS,
   SCAN_RESULT_BRANCH_TYPE_OPTIONS,
@@ -301,6 +302,14 @@ export default {
       }
       this.vulnerabilityAge = { ...this.vulnerabilityAge, ...ageValues };
     },
+    removeExceptions() {
+      const rule = { ...this.initRule };
+      if (BRANCH_EXCEPTIONS_KEY in rule) {
+        delete rule[BRANCH_EXCEPTIONS_KEY];
+      }
+
+      this.$emit('changed', rule);
+    },
     shouldDisableFilterSelector(filter) {
       if (filter !== AGE) {
         return false;
@@ -369,6 +378,7 @@ export default {
                 <branch-exception-selector
                   v-if="isProject && glFeatures.securityPoliciesBranchExceptions"
                   :selected-exceptions="branchExceptions"
+                  @remove="removeExceptions"
                   @select="triggerChanged"
                 />
               </template>

@@ -146,4 +146,48 @@ describe('DefaultRuleBuilder', () => {
       ],
     ]);
   });
+
+  it('can remove branch exceptions', () => {
+    createComponent({
+      provide: {
+        glFeatures: {
+          securityPoliciesBranchExceptions: true,
+        },
+        namespaceType: NAMESPACE_TYPES.PROJECT,
+      },
+    });
+
+    findBranchExceptionSelector().vm.$emit('select', { branch_exceptions: ['main', 'test'] });
+
+    findScanTypeSelect().vm.$emit('select', SCAN_FINDING);
+
+    expect(wrapper.emitted('set-scan-type')).toEqual([
+      [
+        {
+          type: SCAN_FINDING,
+          scanners: [],
+          vulnerabilities_allowed: 0,
+          severity_levels: [],
+          vulnerability_states: [],
+          branch_type: 'protected',
+          branch_exceptions: ['main', 'test'],
+        },
+      ],
+    ]);
+
+    findBranchExceptionSelector().vm.$emit('remove');
+
+    findScanTypeSelect().vm.$emit('select', SCAN_FINDING);
+
+    expect(wrapper.emitted('set-scan-type')[1]).toEqual([
+      {
+        type: SCAN_FINDING,
+        scanners: [],
+        vulnerabilities_allowed: 0,
+        severity_levels: [],
+        vulnerability_states: [],
+        branch_type: 'protected',
+      },
+    ]);
+  });
 });

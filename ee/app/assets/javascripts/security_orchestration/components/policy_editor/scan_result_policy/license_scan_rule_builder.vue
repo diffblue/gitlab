@@ -5,7 +5,7 @@ import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import BranchExceptionSelector from '../branch_exception_selector.vue';
 import ScanFilterSelector from '../scan_filter_selector.vue';
-import { SCAN_RESULT_BRANCH_TYPE_OPTIONS } from '../constants';
+import { SCAN_RESULT_BRANCH_TYPE_OPTIONS, BRANCH_EXCEPTIONS_KEY } from '../constants';
 import RuleMultiSelect from '../rule_multi_select.vue';
 import SectionLayout from '../section_layout.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
@@ -77,6 +77,14 @@ export default {
     setBranchType(value) {
       this.$emit('changed', value);
     },
+    removeExceptions() {
+      const rule = { ...this.initRule };
+      if (BRANCH_EXCEPTIONS_KEY in rule) {
+        delete rule[BRANCH_EXCEPTIONS_KEY];
+      }
+
+      this.$emit('changed', rule);
+    },
   },
 };
 </script>
@@ -105,6 +113,7 @@ export default {
                 <branch-exception-selector
                   v-if="isProject && glFeatures.securityPoliciesBranchExceptions"
                   :selected-exceptions="branchExceptions"
+                  @remove="removeExceptions"
                   @select="triggerChanged"
                 />
               </template>

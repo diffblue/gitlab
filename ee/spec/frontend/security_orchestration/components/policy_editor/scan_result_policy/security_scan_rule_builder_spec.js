@@ -166,6 +166,25 @@ describe('SecurityScanRuleBuilder', () => {
         exceptions.branch_exceptions,
       );
     });
+
+    it('should remove selection from rule', () => {
+      factory({
+        initRule: {
+          ...securityScanBuildRule(),
+          ...exceptions,
+        },
+      });
+
+      findBranchExceptionSelector().vm.$emit('remove');
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [
+          {
+            ...securityScanBuildRule(),
+          },
+        ],
+      ]);
+    });
   });
 
   describe('when editing any attribute of the rule', () => {
