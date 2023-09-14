@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::TrainingUrlsFinder do
+RSpec.describe Security::TrainingUrlsService, feature_category: :vulnerability_management do
   let_it_be(:project) { create(:project) }
   let_it_be(:filename) { nil }
   let_it_be(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
@@ -21,7 +21,7 @@ RSpec.describe Security::TrainingUrlsFinder do
 
   subject { described_class.new(project, identifier_external_ids, filename).execute }
 
-  context 'no identifier with cwe external type' do
+  context 'when there is no identifier with cwe external type' do
     let(:identifier_external_ids) { [] }
 
     it 'returns empty list' do
@@ -29,7 +29,7 @@ RSpec.describe Security::TrainingUrlsFinder do
     end
   end
 
-  context 'identifiers with cwe external type' do
+  context 'with identifiers with cwe external type' do
     let(:identifier_external_ids) { [identifier_external_id] }
 
     context 'when there is no training provider enabled for project' do
@@ -45,9 +45,9 @@ RSpec.describe Security::TrainingUrlsFinder do
         create(:security_training, :primary, project: project, provider: security_training_provider)
       end
 
-      it 'calls Security::TrainingProviders::KontraUrlFinder#execute' do
-        expect_next_instance_of(::Security::TrainingProviders::KontraUrlFinder) do |finder|
-          expect(finder).to receive(:execute)
+      it 'calls Security::TrainingProviders::KontraUrlService#execute' do
+        expect_next_instance_of(::Security::TrainingProviders::KontraUrlService) do |service|
+          expect(service).to receive(:execute)
         end
 
         subject
@@ -55,8 +55,8 @@ RSpec.describe Security::TrainingUrlsFinder do
 
       context 'when training url has been reactively cached' do
         before do
-          allow_next_instance_of(::Security::TrainingProviders::KontraUrlFinder) do |finder|
-            allow(finder).to receive(:response_url).and_return(url: 'http://test.host/test')
+          allow_next_instance_of(::Security::TrainingProviders::KontraUrlService) do |service|
+            allow(service).to receive(:response_url).and_return(url: 'http://test.host/test')
           end
         end
 
@@ -66,15 +66,15 @@ RSpec.describe Security::TrainingUrlsFinder do
           )
         end
 
-        ::Security::TrainingUrlsFinder::EXTENSION_LANGUAGE_MAP.each do |extension, language|
+        ::Security::TrainingUrlsService::EXTENSION_LANGUAGE_MAP.each do |extension, language|
           context "when a filename with extension .#{extension} is provided" do
             let_it_be(:filename) { "code.#{extension}" }
             let_it_be(:training_provider) do
-              ::Security::TrainingProviders::KontraUrlFinder.new(project, identifier_external_id, language)
+              ::Security::TrainingProviders::KontraUrlService.new(project, identifier_external_id, language)
             end
 
             before do
-              allow(::Security::TrainingProviders::KontraUrlFinder).to receive(:new)
+              allow(::Security::TrainingProviders::KontraUrlService).to receive(:new)
                                                                         .with(project, identifier.external_id, language)
                                                                         .and_return(training_provider)
               allow(training_provider).to receive(:response_url).and_return(url: 'http://test.host/test')
@@ -97,8 +97,8 @@ RSpec.describe Security::TrainingUrlsFinder do
 
       context 'when training url has not yet been reactively cached' do
         before do
-          allow_next_instance_of(::Security::TrainingProviders::KontraUrlFinder) do |finder|
-            allow(finder).to receive(:response_url).and_return(nil)
+          allow_next_instance_of(::Security::TrainingProviders::KontraUrlService) do |service|
+            allow(service).to receive(:response_url).and_return(nil)
           end
         end
 
@@ -115,14 +115,14 @@ RSpec.describe Security::TrainingUrlsFinder do
         end
       end
 
-      context 'when training urls finder returns nil url' do
+      context 'when training urls service returns nil url' do
         before do
-          allow_next_instance_of(::Security::TrainingProviders::KontraUrlFinder) do |finder|
-            allow(finder).to receive(:response_url).and_return(url: nil)
+          allow_next_instance_of(::Security::TrainingProviders::KontraUrlService) do |service|
+            allow(service).to receive(:response_url).and_return(url: nil)
           end
         end
 
-        it 'returns empty list when training urls finder returns nil' do
+        it 'returns empty list when training urls service returns nil' do
           is_expected.to be_empty
         end
       end

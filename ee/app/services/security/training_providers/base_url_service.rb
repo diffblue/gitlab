@@ -2,7 +2,7 @@
 
 module Security
   module TrainingProviders
-    class BaseUrlFinder
+    class BaseUrlService
       include Gitlab::Utils::StrongMemoize
       include ReactiveCaching
 
@@ -54,10 +54,9 @@ module Security
         :identifier
 
       def response_url
-        strong_memoize(:response_url) do
-          with_reactive_cache(full_url) { |data| data }
-        end
+        with_reactive_cache(full_url) { |data| data }
       end
+      strong_memoize_attr :response_url
 
       def query_params
         {}
