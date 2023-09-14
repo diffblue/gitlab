@@ -51,7 +51,7 @@ module Security
       end
 
       def custom_scan?(action)
-        compliance_pipeline_in_policies_enabled? && action[:ci_configuration].present? && action[:scan] == 'custom'
+        custom_ci_yaml_enabled? && action[:ci_configuration].present? && action[:scan] == 'custom'
       end
 
       def prepare_on_demand_policy_configuration(actions)
@@ -77,7 +77,7 @@ module Security
         base_variables[action[:scan].to_sym].to_h
       end
 
-      def compliance_pipeline_in_policies_enabled?
+      def custom_ci_yaml_enabled?
         Feature.enabled?(:compliance_pipeline_in_policies, project)
       end
     end
