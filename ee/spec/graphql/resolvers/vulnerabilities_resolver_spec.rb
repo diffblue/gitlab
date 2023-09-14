@@ -12,7 +12,7 @@ RSpec.describe Resolvers::VulnerabilitiesResolver, feature_category: :vulnerabil
     let_it_be(:user) { create(:user, security_dashboard_projects: [project]) }
 
     let_it_be(:low_vulnerability) do
-      create(:vulnerability, :with_finding, :detected, :low, :dast, :with_issue_links, project: project)
+      create(:vulnerability, :with_finding, :detected, :low, :dast, :with_issue_links, :with_merge_request_links, project: project)
     end
 
     let_it_be(:critical_vulnerability) do
@@ -122,6 +122,26 @@ RSpec.describe Resolvers::VulnerabilitiesResolver, feature_category: :vulnerabil
         let(:has_issues) { false }
 
         it 'only returns vulnerabilities that does not have issues' do
+          is_expected.to contain_exactly(critical_vulnerability, high_vulnerability)
+        end
+      end
+    end
+
+    context 'when given value for hasMergeRequest argument' do
+      let(:params) { { has_merge_request: has_merge_request } }
+
+      context 'when has_merge_request is set to true' do
+        let(:has_merge_request) { true }
+
+        it 'only returns vulnerabilities that have merge_request' do
+          is_expected.to contain_exactly(low_vulnerability)
+        end
+      end
+
+      context 'when has_issues is set to false' do
+        let(:has_merge_request) { false }
+
+        it 'only returns vulnerabilities that does not have merge_request' do
           is_expected.to contain_exactly(critical_vulnerability, high_vulnerability)
         end
       end
