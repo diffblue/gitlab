@@ -2605,6 +2605,22 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
       it_behaves_like 'custom roles abilities'
 
+      context 'when the merge requests access level is set as private' do
+        before do
+          project.project_feature.update_column(:merge_requests_access_level, ProjectFeature::PRIVATE)
+        end
+
+        it_behaves_like 'custom roles abilities'
+      end
+
+      context 'when the merge requests access level is set as disabled' do
+        before do
+          project.project_feature.update_column(:merge_requests_access_level, ProjectFeature::DISABLED)
+        end
+
+        it { is_expected.to be_disallowed(:read_merge_request, :admin_merge_request, :download_code) }
+      end
+
       context 'with `admin_merge_request` feature disabled' do
         before do
           stub_feature_flags(admin_merge_request: false)

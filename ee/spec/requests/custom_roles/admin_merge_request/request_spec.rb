@@ -40,6 +40,15 @@ RSpec.describe 'User with admin_merge_request custom role', feature_category: :c
 
       context 'when the project is private' do
         it_behaves_like 'allows viewing the MR with custom role', project_visibility: Gitlab::VisibilityLevel::PRIVATE
+
+        context 'when the "Merge Requests" feature is set as private' do
+          before do
+            project.project_feature.update_column(:merge_requests_access_level, ProjectFeature::PRIVATE)
+          end
+
+          it_behaves_like 'allows viewing the MR with custom role',
+            project_visibility: Gitlab::VisibilityLevel::PRIVATE
+        end
       end
     end
   end
