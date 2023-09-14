@@ -181,23 +181,6 @@ module EE
       limit.presence || build_namespace_limit
     end
 
-    override :move_dir
-    def move_dir
-      succeeded = super
-
-      if succeeded
-        all_projects.each do |project|
-          ::Geo::RepositoryRenamedEventStore.new(
-            project,
-            old_path: project.path,
-            old_path_with_namespace: old_path_with_namespace_for(project)
-          ).create!
-        end
-      end
-
-      succeeded
-    end
-
     def old_path_with_namespace_for(project)
       project.full_path.sub(/\A#{Regexp.escape(full_path)}/, full_path_before_last_save)
     end
