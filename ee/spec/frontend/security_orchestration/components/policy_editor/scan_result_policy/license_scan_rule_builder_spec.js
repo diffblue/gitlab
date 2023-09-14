@@ -137,6 +137,30 @@ describe('LicenseScanRuleBuilder', () => {
         exceptions.branch_exceptions,
       );
     });
+
+    it('should remove selection from rule', () => {
+      factory({
+        props: {
+          initRule: {
+            ...licenseScanBuildRule(),
+            ...exceptions,
+          },
+        },
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+        },
+      });
+
+      findBranchExceptionSelector().vm.$emit('remove');
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [
+          {
+            ...licenseScanBuildRule(),
+          },
+        ],
+      ]);
+    });
   });
 
   describe('when editing any attribute of the rule', () => {

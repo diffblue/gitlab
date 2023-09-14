@@ -3,7 +3,12 @@ import { GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { ANY_COMMIT, ANY_UNSIGNED_COMMIT, SCAN_RESULT_BRANCH_TYPE_OPTIONS } from '../constants';
+import {
+  ANY_COMMIT,
+  ANY_UNSIGNED_COMMIT,
+  SCAN_RESULT_BRANCH_TYPE_OPTIONS,
+  BRANCH_EXCEPTIONS_KEY,
+} from '../constants';
 import BranchExceptionSelector from '../branch_exception_selector.vue';
 import SectionLayout from '../section_layout.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
@@ -70,6 +75,14 @@ export default {
     setCommitType(type) {
       this.triggerChanged({ commits: type });
     },
+    removeExceptions() {
+      const rule = { ...this.initRule };
+      if (BRANCH_EXCEPTIONS_KEY in rule) {
+        delete rule[BRANCH_EXCEPTIONS_KEY];
+      }
+
+      this.$emit('changed', rule);
+    },
     triggerChanged(value) {
       this.$emit('changed', { ...this.initRule, ...value });
     },
@@ -100,6 +113,7 @@ export default {
               <branch-exception-selector
                 v-if="isProject && glFeatures.securityPoliciesBranchExceptions"
                 :selected-exceptions="branchExceptions"
+                @remove="removeExceptions"
                 @select="triggerChanged"
               />
             </template>

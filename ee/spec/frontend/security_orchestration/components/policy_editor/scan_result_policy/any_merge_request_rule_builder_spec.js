@@ -165,5 +165,29 @@ describe('AnyMergeRequestRuleBuilder', () => {
         exceptions.branch_exceptions,
       );
     });
+
+    it('should remove selection from rule', () => {
+      createComponent({
+        props: {
+          initRule: {
+            ...anyMergeRequestBuildRule(),
+            ...exceptions,
+          },
+        },
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+        },
+      });
+
+      findBranchExceptionSelector().vm.$emit('remove');
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [
+          {
+            ...anyMergeRequestBuildRule(),
+          },
+        ],
+      ]);
+    });
   });
 });
