@@ -30812,6 +30812,9 @@ msgstr ""
 msgid "Navigation|Operate"
 msgstr ""
 
+msgid "Navigation|Pin %{title}"
+msgstr ""
+
 msgid "Navigation|Pin item"
 msgstr ""
 
@@ -30846,6 +30849,9 @@ msgid "Navigation|Switch context"
 msgstr ""
 
 msgid "Navigation|There was an error fetching search results."
+msgstr ""
+
+msgid "Navigation|Unpin %{title}"
 msgstr ""
 
 msgid "Navigation|Unpin item"
