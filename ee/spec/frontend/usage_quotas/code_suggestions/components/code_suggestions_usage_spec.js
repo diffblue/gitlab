@@ -4,6 +4,8 @@ import VueApollo from 'vue-apollo';
 import * as Sentry from '@sentry/browser';
 import addOnPurchaseQuery from 'ee/usage_quotas/add_on/graphql/get_add_on_purchase.query.graphql';
 import CodeSuggestionsIntro from 'ee/usage_quotas/code_suggestions/components/code_suggestions_intro.vue';
+import CodeSuggestionsInfo from 'ee/usage_quotas/code_suggestions/components/code_suggestions_info_card.vue';
+import CodeSuggestionsStatisticsCard from 'ee/usage_quotas/code_suggestions/components/code_suggestions_usage_statistics_card.vue';
 import CodeSuggestionsUsage from 'ee/usage_quotas/code_suggestions/components/code_suggestions_usage.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -34,6 +36,8 @@ describe('Code Suggestions Usage', () => {
     createMockApollo([[addOnPurchaseQuery, handler]]);
 
   const findCodeSuggestionsIntro = () => wrapper.findComponent(CodeSuggestionsIntro);
+  const findCodeSuggestionsInfo = () => wrapper.findComponent(CodeSuggestionsInfo);
+  const findCodeSuggestionsStatistics = () => wrapper.findComponent(CodeSuggestionsStatisticsCard);
 
   const createComponent = ({ handler } = {}) => {
     wrapper = shallowMount(CodeSuggestionsUsage, {
@@ -61,6 +65,14 @@ describe('Code Suggestions Usage', () => {
 
     it('does not render code suggestions intro', () => {
       expect(findCodeSuggestionsIntro().exists()).toBe(false);
+    });
+
+    it('renders code suggestions statistics card', () => {
+      expect(findCodeSuggestionsStatistics().props()).toEqual({ usageValue: 0, totalValue: 20 });
+    });
+
+    it('renders code suggestions info card', () => {
+      expect(findCodeSuggestionsInfo().exists()).toBe(true);
     });
   });
 
