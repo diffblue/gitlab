@@ -19,30 +19,42 @@ RSpec.describe Epics::RelatedEpicEntity, feature_category: :portfolio_management
     group.add_developer(user)
   end
 
-  describe '#to_json' do
-    context 'when user can admin_epic_relation on target epic' do
-      before do
-        group_2.add_guest(user)
-      end
-
-      it 'matches json schema' do
-        expect(entity.to_json).to match_schema('entities/related_epic', dir: 'ee')
-      end
-
-      it 'returns relation_path' do
-        path = Gitlab::Routing.url_helpers.group_epic_related_epic_link_path(source.group, source.iid, epic_link.id)
-
-        expect(entity.as_json[:relation_path]).to eq(path)
-      end
+  shared_examples 'response matching json schema' do
+    it 'matches json schema' do
+      expect(entity.to_json).to match_schema('entities/related_epic', dir: 'ee')
     end
 
-    context 'when user cannot admin_epic_relation on target epic' do
-      it 'matches json schema' do
-        expect(entity.to_json).to match_schema('entities/related_epic', dir: 'ee')
+    it 'returns relation_path' do
+      path = Gitlab::Routing.url_helpers.group_epic_related_epic_link_path(source.group, source.iid, epic_link.id)
+
+      expect(entity.as_json[:relation_path]).to eq(path)
+    end
+  end
+
+  describe '#to_json' do
+    it_behaves_like 'response matching json schema'
+
+    context 'when `epic_relations_for_non_members` feature flag is disabled' do
+      before do
+        stub_feature_flags(epic_relations_for_non_members: false)
       end
 
-      it 'returns null relation_path' do
-        expect(entity.as_json[:relation_path]).to eq(nil)
+      context 'when user can read_epic_link_relation on target epic' do
+        before do
+          group_2.add_guest(user)
+        end
+
+        it_behaves_like 'response matching json schema'
+      end
+
+      context 'when user cannot read_epic_link_relation on target epic' do
+        it 'matches json schema' do
+          expect(entity.to_json).to match_schema('entities/related_epic', dir: 'ee')
+        end
+
+        it 'returns null relation_path' do
+          expect(entity.as_json[:relation_path]).to eq(nil)
+        end
       end
     end
   end

@@ -31,7 +31,17 @@ RSpec.describe Epics::RelatedEpicLinks::ListService, feature_category: :portfoli
       end
 
       it 'returns JSON list of related epics visible to user excluding relation_path' do
-        expect(subject).to include(include(epic_response(public_epic)))
+        expect(subject).to include(include(epic_response(public_epic, relation_path1)))
+      end
+
+      context 'when epic_relations_for_non_members is disabled' do
+        before do
+          stub_feature_flags(epic_relations_for_non_members: false)
+        end
+
+        it 'returns JSON list of related epics visible to user excluding relation_path' do
+          expect(subject).to include(include(epic_response(public_epic)))
+        end
       end
 
       context 'when user is a guest in public group' do

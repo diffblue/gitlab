@@ -20,7 +20,9 @@ module Epics
       private
 
       def permission_to_remove_relation?
-        can?(current_user, :admin_epic_link_relation, source) && can?(current_user, :admin_epic_relation, target)
+        # Using the same policy for source and target because they could be inverted. The endpoint calling this service
+        # is responsible for checking :admin_epic_link_relation permissions for the source
+        can?(current_user, :read_epic_link_relation, source) && can?(current_user, :read_epic_link_relation, target)
       end
 
       def track_event

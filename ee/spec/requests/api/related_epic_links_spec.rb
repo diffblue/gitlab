@@ -64,30 +64,6 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
     end
   end
 
-  shared_examples 'insufficient permissions' do
-    context 'when user can not access source epic' do
-      before do
-        target_group.add_guest(user)
-      end
-
-      it_behaves_like 'not found resource', '404 Group Not Found'
-    end
-
-    context 'when user can only read source epic' do
-      let_it_be(:public_group) { create(:group, :public) }
-      let_it_be(:public_epic) { create(:epic, group: public_group) }
-
-      before do
-        target_group.add_guest(user)
-      end
-
-      it_behaves_like 'forbidden resource' do
-        let(:group) { public_group }
-        let(:epic) { public_epic }
-      end
-    end
-  end
-
   describe 'GET /groups/:id/related_epic_links' do
     let_it_be(:created_at) { Date.new(2021, 10, 14) }
     let_it_be(:updated_at) { Date.new(2021, 10, 14) }
@@ -330,14 +306,34 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
     end
 
     it_behaves_like 'unauthenticated resource'
-    it_behaves_like 'insufficient permissions'
 
-    context 'when user can only manage source epic' do
+    context 'when user can not access source epic' do
+      before do
+        target_group.add_guest(user)
+      end
+
+      it_behaves_like 'not found resource', '404 Group Not Found'
+    end
+
+    context 'when user can access source epic' do
       before do
         group.add_guest(user)
       end
 
-      it_behaves_like 'not found resource', '404 Group Not Found'
+      context 'when user cannot access target epic' do
+        # user is not a member of the private target group
+        it_behaves_like 'not found resource', '404 Group Not Found'
+
+        context 'when epic_relations_for_non_members is disabled' do
+          before do
+            # user is not a member of the public target group
+            target_group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+            stub_feature_flags(epic_relations_for_non_members: false)
+          end
+
+          it_behaves_like 'forbidden resource'
+        end
+      end
 
       context 'when user is guest in target group' do
         before do
@@ -402,14 +398,31 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
     end
 
     it_behaves_like 'unauthenticated resource'
-    it_behaves_like 'insufficient permissions'
 
-    context 'when user can manage source epic' do
+    context 'when user can not access source epic' do
+      before do
+        target_group.add_guest(user)
+      end
+
+      it_behaves_like 'not found resource', '404 Group Not Found'
+    end
+
+    context 'when user can access source epic' do
       before do
         group.add_guest(user)
       end
 
       it_behaves_like 'not found resource', 'No Related Epic Link found'
+
+      context 'when epic_relations_for_non_members is disabled' do
+        before do
+          # user is not a member of the public target group
+          target_group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+          stub_feature_flags(epic_relations_for_non_members: false)
+        end
+
+        it_behaves_like 'not found resource', 'No Related Epic Link found'
+      end
 
       context 'when user is guest in target group' do
         before do

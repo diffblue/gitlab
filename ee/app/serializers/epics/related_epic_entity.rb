@@ -31,7 +31,7 @@ module Epics
       user = request.current_user
 
       Ability.allowed?(user, :admin_epic_link_relation, issuable) &&
-        Ability.allowed?(user, :admin_epic_relation, epic)
+        Ability.allowed?(user, :read_epic_link_relation, epic)
     end
 
     def issuable
