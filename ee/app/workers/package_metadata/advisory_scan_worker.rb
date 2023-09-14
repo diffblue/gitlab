@@ -7,6 +7,7 @@ module PackageMetadata
     data_consistency :delayed
     feature_category :software_composition_analysis
     urgency :low
+    deduplicate :until_executed
     idempotent!
 
     def handle_event(event)
