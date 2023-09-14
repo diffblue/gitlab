@@ -434,6 +434,9 @@ can be converted to a CI/CD component:
    to be grouped with other components, or create and set up a new components repository.
 1. Create a YAML file in the components repository according to the expected [directory structure](index.md#directory-structure).
 1. Copy the content of the original template YAML file into the new component YAML file.
-1. Refactor the new component's configuration to follow the [best practices](index.md#best-practices) for components.
+1. Refactor the new component's configuration to:
+   - Follow the [best practices](index.md#best-practices) for components.
+   - Improve the configuration, for example by enabling [merge request pipelines](../pipelines/merge_request_pipelines.md)
+     or making it [more efficient](../pipelines/pipeline_efficiency.md).
 1. Leverage the `.gitlab-ci.yml` in the components repository to [test changes to the component](index.md#test-the-component).
 1. Tag and [release the component](index.md#release-a-component).
