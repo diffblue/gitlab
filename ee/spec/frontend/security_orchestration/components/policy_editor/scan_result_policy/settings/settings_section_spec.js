@@ -1,66 +1,81 @@
-import { GlFormCheckbox, GlSprintf, GlLink } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import SettingsSection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/settings/settings_section.vue';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
+import SettingsItem from 'ee/security_orchestration/components/policy_editor/scan_result_policy/settings/settings_item.vue';
 
 describe('ApprovalSettings', () => {
   let wrapper;
 
-  const createComponent = ({ propsData = {}, provide = {} } = {}) => {
+  const createComponent = ({ propsData = {} } = {}) => {
     wrapper = shallowMountExtended(SettingsSection, {
       propsData,
       provide: {
-        namespaceType: NAMESPACE_TYPES.PROJECT,
         namespacePath: 'test-path',
-        ...provide,
-      },
-      stubs: {
-        GlSprintf,
       },
     });
   };
 
-  const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
-  const findDescriptionText = () => wrapper.findByTestId('protected-branches-settings-group-text');
-  const findDescriptionLink = () => wrapper.findComponent(GlLink);
+  const findAllSettingsItem = () => wrapper.findAllComponents(SettingsItem);
+  const findProtectedBranchesSettingsItem = () =>
+    wrapper.findByTestId('protected-branches-setting');
+  const findMergeRequestSettingsItem = () => wrapper.findByTestId('merge-request-setting');
 
-  describe('"block_protected_branch_modification" checkbox', () => {
-    const createSettings = (value) => ({
+  describe('settings modification', () => {
+    const createSettings = (value, key = 'block_protected_branch_modification') => ({
       settings: {
-        block_protected_branch_modification: {
+        [key]: {
           enabled: value,
         },
       },
     });
 
     it.each`
-      title                                | propsData                | expected
-      ${'unchecked when enabled is false'} | ${createSettings(false)} | ${undefined}
-      ${'checked when enabled is true'}    | ${createSettings(true)}  | ${'true'}
-    `('renders setting checkbox as $title', ({ propsData, expected }) => {
-      createComponent({ propsData });
-      expect(findCheckbox().attributes('checked')).toBe(expected);
-    });
+      description                                                   | propsData                                                            | protectedBranchSettingVisible | mergeRequestSettingVisible
+      ${'disable block_protected_branch_modification setting'}      | ${createSettings(false)}                                             | ${true}                       | ${false}
+      ${'enable block_protected_branch_modification setting'}       | ${createSettings(true)}                                              | ${true}                       | ${false}
+      ${'disable prevent_approval_by_merge_request_author setting'} | ${createSettings(false, 'prevent_approval_by_merge_request_author')} | ${false}                      | ${true}
+      ${'enable prevent_approval_by_merge_request_author setting'}  | ${createSettings(true, 'prevent_approval_by_merge_request_author')}  | ${false}                      | ${true}
+    `(
+      '$description',
+      ({ propsData, protectedBranchSettingVisible, mergeRequestSettingVisible }) => {
+        createComponent({ propsData });
+        expect(findProtectedBranchesSettingsItem().exists()).toBe(protectedBranchSettingVisible);
+        expect(findMergeRequestSettingsItem().exists()).toBe(mergeRequestSettingVisible);
+        expect(findAllSettingsItem().at(0).props('settings')).toEqual(propsData.settings);
+      },
+    );
 
-    it('emits event when checkbox is clicked', async () => {
+    it('emits event when setting is toggled', async () => {
       createComponent({ propsData: createSettings(true) });
 
-      await findCheckbox().vm.$emit('change', true);
-      expect(wrapper.emitted('changed')).toEqual([[createSettings(true).settings]]);
+      await findAllSettingsItem()
+        .at(0)
+        .vm.$emit('update', { key: 'block_protected_branch_modification', value: false });
+      expect(wrapper.emitted('changed')).toEqual([[createSettings(false).settings]]);
     });
 
-    it('should render link for project', () => {
-      createComponent({ provide: { namespaceType: NAMESPACE_TYPES.PROJECT } });
+    it('should render different settings groups', () => {
+      createComponent({
+        propsData: {
+          settings: {
+            block_protected_branch_modification: {
+              enabled: true,
+            },
+            prevent_approval_by_merge_request_author: {
+              enabled: true,
+            },
+          },
+        },
+      });
 
-      expect(findDescriptionLink().exists()).toBe(true);
-      expect(findDescriptionText().exists()).toBe(false);
-    });
+      expect(findProtectedBranchesSettingsItem().exists()).toBe(true);
+      expect(findMergeRequestSettingsItem().exists()).toBe(true);
 
-    it('should render text for group', () => {
-      createComponent({ provide: { namespaceType: NAMESPACE_TYPES.GROUP } });
-
-      expect(findDescriptionLink().exists()).toBe(false);
-      expect(findDescriptionText().exists()).toBe(true);
+      expect(findProtectedBranchesSettingsItem().props('link')).toBe(
+        'http://test.host/test-path/-/settings/repository',
+      );
+      expect(findMergeRequestSettingsItem().props('link')).toBe(
+        'http://test.host/test-path/-/settings/merge_requests',
+      );
     });
   });
 });

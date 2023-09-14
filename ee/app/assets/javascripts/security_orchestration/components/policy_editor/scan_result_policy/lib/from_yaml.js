@@ -53,12 +53,14 @@ export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }
         return keys.length === 1 && keys[0] === 'enabled' && typeof object[keys[0]] === 'boolean';
       };
 
+      const { approval_settings: settings = {} } = policy;
+
       const hasInvalidApprovalSettings = glFeatures?.scanResultPolicySettings
-        ? hasInvalidKey(policy.approval_settings, VALID_APPROVAL_SETTINGS)
+        ? hasInvalidKey(settings, VALID_APPROVAL_SETTINGS)
         : false;
 
       const hasInvalidSettingStructure = glFeatures?.scanResultPolicySettings
-        ? !Object.values(policy.approval_settings).every((setting) => hasValidStructure(setting))
+        ? !Object.values(settings).every((setting) => hasValidStructure(setting))
         : false;
 
       return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) &&
@@ -80,6 +82,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false, glFeatures = {} }
 /**
  * Converts a security policy from yaml to an object
  * @param {String} manifest a security policy in yaml form
+ * @param {Object} glFeatures build yaml based on feature flags
  * @returns {Object} security policy object and any errors
  */
 export const createPolicyObject = (manifest, glFeatures = {}) => {

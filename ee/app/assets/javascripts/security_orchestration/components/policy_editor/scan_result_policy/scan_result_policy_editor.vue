@@ -1,4 +1,5 @@
 <script>
+import Vue from 'vue';
 import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
@@ -125,7 +126,7 @@ export default {
   computed: {
     settings() {
       return buildSettingsList({
-        approvalSettings: this.policy.approval_settings,
+        settings: this.policy.approval_settings,
         hasAnyMergeRequestRule: this.hasMergeRequestRule,
       });
     },
@@ -178,7 +179,12 @@ export default {
       this.updateYamlEditorValue(this.policy);
     },
     updateSettings(values) {
-      this.policy.approval_settings = values;
+      if (!this.policy.approval_settings) {
+        Vue.set(this.policy, 'approval_settings', values);
+      } else {
+        this.policy.approval_settings = values;
+      }
+
       this.updateYamlEditorValue(this.policy);
     },
     addRule() {

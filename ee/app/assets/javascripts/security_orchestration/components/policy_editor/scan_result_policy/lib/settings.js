@@ -12,6 +12,14 @@ export const protectedBranchesConfiguration = {
     enabled: true,
   },
 };
+export const PROTECTED_BRANCHES_CONFIGURATION_KEYS = [BLOCK_PROTECTED_BRANCH_MODIFICATION];
+
+export const MERGE_REQUEST_CONFIGURATION_KEYS = [
+  PREVENT_APPROVAL_BY_MR_AUTHOR,
+  PREVENT_APPROVAL_BY_ANYONE_WHO_ADDED_COMMIT,
+  REMOVE_ALL_APPROVALS_WHEN_COMMIT_ADDED,
+  REQUIRE_USER_PASSWORD_TO_APPROVE,
+];
 
 export const mergeRequestConfiguration = {
   [PREVENT_APPROVAL_BY_MR_AUTHOR]: {
@@ -80,22 +88,21 @@ export const buildConfig = ({ hasAnyMergeRequestRule } = { hasAnyMergeRequestRul
 
 /**
  * Map dynamic approval settings to defined list and update only enable property
- * @param approvalSettings
+ * @param settings
  * @param hasAnyMergeRequestRule
  * @returns {Object}
  */
 export const buildSettingsList = (
-  { approvalSettings, hasAnyMergeRequestRule } = {
-    approvalSettings: {},
+  { settings, hasAnyMergeRequestRule } = {
+    settings: {},
     hasAnyMergeRequestRule: false,
   },
 ) => {
   const configuration = buildConfig({ hasAnyMergeRequestRule });
 
   return Object.keys(configuration).reduce((acc, setting) => {
-    const hasEnabledProperty =
-      approvalSettings?.[setting] && 'enabled' in approvalSettings[setting];
-    const { enabled } = hasEnabledProperty ? approvalSettings[setting] : configuration[setting];
+    const hasEnabledProperty = settings?.[setting] && 'enabled' in settings[setting];
+    const { enabled } = hasEnabledProperty ? settings[setting] : configuration[setting];
 
     acc[setting] = {
       ...configuration[setting],

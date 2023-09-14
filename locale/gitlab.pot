@@ -41463,6 +41463,9 @@ msgstr ""
 msgid "ScanResultPolicy|If selected, the following choices will overwrite %{linkStart}project settings%{linkEnd} but only affect the branches selected in the policy."
 msgstr ""
 
+msgid "ScanResultPolicy|If selected, the following choices will overwrite %{linkStart}project settings%{linkEnd} for approval rules created by this policy."
+msgstr ""
+
 msgid "ScanResultPolicy|Is"
 msgstr ""
 
@@ -41476,6 +41479,9 @@ msgid "ScanResultPolicy|License scanning allows only one criteria: Status"
 msgstr ""
 
 msgid "ScanResultPolicy|Matching"
+msgstr ""
+
+msgid "ScanResultPolicy|Merge request approval settings"
 msgstr ""
 
 msgid "ScanResultPolicy|New age"
