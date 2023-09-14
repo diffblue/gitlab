@@ -769,7 +769,7 @@ GEM
       multi_json (~> 1.11)
       os (>= 0.9, < 2.0)
       signet (>= 0.16, < 2.a)
-    gpgme (2.0.22)
+    gpgme (2.0.23)
       mini_portile2 (~> 2.7)
     grape (1.7.1)
       activesupport
@@ -1848,7 +1848,7 @@ DEPENDENCIES
   google-apis-sqladmin_v1beta4 (~> 0.41.0)
   google-cloud-storage (~> 1.44.0)
   google-protobuf (~> 3.24, >= 3.24.3)
-  gpgme (~> 2.0.22)
+  gpgme (~> 2.0.23)
   grape (~> 1.7.1)
   grape-entity (~> 0.10.0)
   grape-path-helpers (~> 1.7.1)

@@ -113,7 +113,7 @@ gem 'browser', '~> 5.3.1'
 gem 'ohai', '~> 17.9'
 
 # GPG
-gem 'gpgme', '~> 2.0.22'
+gem 'gpgme', '~> 2.0.23'
 
 # LDAP Auth
 # GitLab fork with several improvements to original library. For full list of changes
