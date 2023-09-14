@@ -14,7 +14,10 @@ module Ci
     end
 
     def execute
-      return ServiceResponse.error(message: 'Feature not enabled') unless Feature.enabled?(:clickhouse_ci_analytics)
+      unless Feature.enabled?(:clickhouse_ci_analytics)
+        return ServiceResponse.error(message: 'Feature clickhouse_ci_analytics not enabled')
+      end
+
       return ServiceResponse.error(message: 'Not allowed') unless @current_user&.can?(:read_jobs_statistics)
 
       if (@to_time - @from_time) / 5.minutes > TIME_BUCKETS_LIMIT
