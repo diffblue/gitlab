@@ -1,7 +1,4 @@
-import {
-  triggerExternalAlert,
-  qualifiesForTasksToBeDone,
-} from 'ee/invite_members/utils/member_utils';
+import { triggerExternalAlert } from 'ee/invite_members/utils/member_utils';
 import { LEARN_GITLAB } from 'ee/invite_members/constants';
 import eventHub from '~/invite_members/event_hub';
 
@@ -21,14 +18,5 @@ describe('Trigger External Alert', () => {
     } else {
       expect(eventHub.$emit).not.toHaveBeenCalled();
     }
-  });
-});
-
-describe('Qualifies For Tasks To Be Done', () => {
-  it.each([
-    [LEARN_GITLAB, true],
-    ['blah', false],
-  ])(`returns result if it qualifies with source: %j`, (source, result) => {
-    expect(qualifiesForTasksToBeDone(source)).toBe(result);
   });
 });

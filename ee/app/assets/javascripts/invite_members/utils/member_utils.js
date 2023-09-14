@@ -15,7 +15,3 @@ export function triggerExternalAlert(source) {
 
   return false;
 }
-
-export function qualifiesForTasksToBeDone(source) {
-  return isOnLearnGitlab(source);
-}
