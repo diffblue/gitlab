@@ -30,6 +30,15 @@ module EE
       super.merge(data)
     end
 
+    override :mr_compare_form_data
+    def mr_compare_form_data(user, merge_request)
+      target_branch_finder_path = if can?(user, :read_target_branch_rule, merge_request.project)
+                                    project_target_branch_rules_path(merge_request.project)
+                                  end
+
+      super.merge({ target_branch_finder_path: target_branch_finder_path })
+    end
+
     def summarize_llm_enabled?(project, user)
       ::Llm::MergeRequests::SummarizeDiffService.enabled?(group: project.root_ancestor, user: user)
     end

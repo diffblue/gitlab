@@ -153,4 +153,42 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
       end
     end
   end
+
+  describe '#mr_compare_form_data' do
+    let_it_be(:project) { build_stubbed(:project) }
+    let_it_be(:merge_request) { build_stubbed(:merge_request, source_project: project) }
+    let_it_be(:user) { build_stubbed(:user) }
+
+    subject(:mr_compare_form_data) { helper.mr_compare_form_data(user, merge_request) }
+
+    describe 'when the target_branch_rules_flag flag is disabled' do
+      before do
+        stub_feature_flags(target_branch_rules_flag: false)
+      end
+
+      it 'returns target_branch_finder_path as nil' do
+        expect(subject[:target_branch_finder_path]).to eq(nil)
+      end
+    end
+
+    describe 'when the project does not have the correct license' do
+      before do
+        stub_licensed_features(target_branch_rules: false)
+      end
+
+      it 'returns target_branch_finder_path as nil' do
+        expect(subject[:target_branch_finder_path]).to eq(nil)
+      end
+    end
+
+    describe 'when the project has the correct license' do
+      before do
+        stub_licensed_features(target_branch_rules: true)
+      end
+
+      it 'returns target_branch_finder_path' do
+        expect(subject[:target_branch_finder_path]).to eq(project_target_branch_rules_path(project))
+      end
+    end
+  end
 end
