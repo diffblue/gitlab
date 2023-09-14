@@ -11595,13 +11595,22 @@ msgstr ""
 msgid "CodeSuggestionsSM|Enable Code Suggestions for users of this instance. %{link_start}What are Code Suggestions?%{link_end}"
 msgstr ""
 
+msgid "CodeSuggestions|%{linkStart}Code Suggestions%{linkEnd} uses generative AI to suggest code while you're developing."
+msgstr ""
+
 msgid "CodeSuggestions|%{link_start}What are code suggestions?%{link_end}"
+msgstr ""
+
+msgid "CodeSuggestions|A user can be assigned a Code Suggestion seat only once each billable month."
 msgstr ""
 
 msgid "CodeSuggestions|Code Suggestions"
 msgstr ""
 
-msgid "CodeSuggestions|Code Suggestions add-on assigned"
+msgid "CodeSuggestions|Code Suggestions add-on"
+msgstr ""
+
+msgid "CodeSuggestions|Code Suggestions seats used"
 msgstr ""
 
 msgid "CodeSuggestions|Enable Code Suggestions"

@@ -129,4 +129,3 @@ export const addSeatsText = s__('Billing|Add seats');
 export const subscriptionEndDateText = s__('Billing|Subscription end');
 export const subscriptionStartDateText = s__('Billing|Subscription start');
 export const seatsUsedDescriptionText = s__('Billing|%{plan} SaaS Plan seats used');
-export const learnMoreText = __('Learn more');

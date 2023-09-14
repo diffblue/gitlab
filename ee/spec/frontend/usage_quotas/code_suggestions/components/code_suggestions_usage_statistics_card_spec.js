@@ -1,44 +1,18 @@
-import { GlSprintf, GlSkeletonLoader } from '@gitlab/ui';
-import Vue from 'vue';
-import VueApollo from 'vue-apollo';
-import addOnPurchaseQuery from 'ee/usage_quotas/add_on/graphql/get_add_on_purchase.query.graphql';
-import createMockApollo from 'helpers/mock_apollo_helper';
+import { GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import {
-  codeSuggestionsDescriptionLink,
-  codeSuggestionsLearnMoreLink,
-} from 'ee/usage_quotas/code_suggestions/constants';
-import { learnMoreText } from 'ee/usage_quotas/seats/constants';
 import CodeSuggestionsUsageStatisticsCard from 'ee/usage_quotas/code_suggestions/components/code_suggestions_usage_statistics_card.vue';
 import UsageStatistics from 'ee/usage_quotas/components/usage_statistics.vue';
-import { assignedAddonData, noAssignedAddonData, noPurchasedAddonData } from '../mock_data';
-
-Vue.use(VueApollo);
 
 describe('CodeSuggestionsUsageStatisticsCard', () => {
   let wrapper;
 
-  const fullPath = 'namespace/full-path';
-
-  const assignedAddonDataHandler = jest.fn().mockResolvedValue(assignedAddonData);
-  const noAssignedAddonDataHandler = jest.fn().mockResolvedValue(noAssignedAddonData);
-  const noPurchasedAddonDataHandler = jest.fn().mockResolvedValue(noPurchasedAddonData);
-
-  const createMockApolloProvider = (handler = noPurchasedAddonDataHandler) =>
-    createMockApollo([[addOnPurchaseQuery, handler]]);
-
   const findCodeSuggestionsDescription = () => wrapper.findByTestId('code-suggestions-description');
   const findCodeSuggestionsInfo = () => wrapper.findByTestId('code-suggestions-info');
-  const findCodeSuggestionsDescriptionLink = () =>
-    wrapper.findByTestId('code-suggestions-description-link');
-  const findLearnMoreButton = () => wrapper.findByTestId('learn-more');
-  const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findUsageStatistics = () => wrapper.findComponent(UsageStatistics);
-  const createComponent = ({ handler } = {}) => {
+  const createComponent = (propsData) => {
     wrapper = shallowMountExtended(CodeSuggestionsUsageStatisticsCard, {
-      apolloProvider: createMockApolloProvider(handler),
-      provide: { fullPath },
+      propsData,
       stubs: {
         GlSprintf,
         UsageStatistics: {
@@ -56,53 +30,19 @@ describe('CodeSuggestionsUsageStatisticsCard', () => {
     return waitForPromises();
   };
 
-  it('renders the component', async () => {
-    await createComponent();
-
-    expect(wrapper.exists()).toBe(true);
-  });
-
-  describe('when loading', () => {
-    beforeEach(() => {
-      createComponent();
-    });
-
-    it(`renders <skeleton-loader>`, () => {
-      expect(findSkeletonLoader().exists()).toBe(true);
-    });
-
-    it(`does not render <usage-statistics>`, () => {
-      expect(findUsageStatistics().exists()).toBe(false);
-    });
-
-    it('does not render the description', () => {
-      expect(findCodeSuggestionsInfo().exists()).toBe(false);
-    });
-
-    it('does not render the info text', () => {
-      expect(findCodeSuggestionsInfo().exists()).toBe(false);
-    });
-  });
-
   describe('with purchased Add-ons', () => {
     beforeEach(() => {
-      return createComponent({ handler: noAssignedAddonDataHandler });
+      return createComponent({ usageValue: 0, totalValue: 20 });
     });
 
     it('renders the description text', () => {
-      expect(findCodeSuggestionsDescription().text()).toMatchInterpolatedText(
-        `Enhance your coding experience with intelligent recommendations. Code Suggestions uses generative AI to suggest code while you're developing.`,
+      expect(findCodeSuggestionsDescription().text()).toBe(
+        `A user can be assigned a Code Suggestion seat only once each billable month.`,
       );
     });
 
     it('renders the info text', () => {
-      expect(findCodeSuggestionsInfo().text()).toBe('Code Suggestions add-on assigned');
-    });
-
-    it('renders the description link', () => {
-      expect(findCodeSuggestionsDescriptionLink().attributes('href')).toBe(
-        codeSuggestionsDescriptionLink,
-      );
+      expect(findCodeSuggestionsInfo().text()).toBe('Code Suggestions seats used');
     });
 
     it('passes the correct props to <usage-statistics>', () => {
@@ -113,19 +53,19 @@ describe('CodeSuggestionsUsageStatisticsCard', () => {
       });
     });
 
+    describe('with no purchased Add-ons', () => {
+      beforeEach(() => {
+        return createComponent({ usageValue: 0, totalValue: 0 });
+      });
+
+      it('does not render usage statistics', () => {
+        expect(findUsageStatistics().exists()).toBe(false);
+      });
+    });
+
     describe('with assigned Add-ons', () => {
       beforeEach(() => {
-        return createComponent({ handler: assignedAddonDataHandler });
-      });
-
-      it('renders the description text', () => {
-        expect(findCodeSuggestionsDescription().text()).toBe(
-          "Enhance your coding experience with intelligent recommendations. Code Suggestions uses generative AI to suggest code while you're developing.",
-        );
-      });
-
-      it('does not render `Learn more` button', () => {
-        expect(findLearnMoreButton().exists()).toBe(false);
+        return createComponent({ usageValue: 5, totalValue: 20 });
       });
 
       it('passes the correct props to <usage-statistics>', () => {
@@ -134,44 +74,6 @@ describe('CodeSuggestionsUsageStatisticsCard', () => {
           'total-value': '20',
           'usage-value': '5',
         });
-      });
-    });
-  });
-
-  describe('with no statistics', () => {
-    beforeEach(() => {
-      return createComponent();
-    });
-
-    it('renders the description text', () => {
-      expect(findCodeSuggestionsDescription().text()).toBe(
-        "Enhance your coding experience with intelligent recommendations. Code Suggestions uses generative AI to suggest code while you're developing.",
-      );
-    });
-
-    it('renders the info text', () => {
-      expect(findCodeSuggestionsInfo().text()).toBe(`Introducing the Code Suggestions add-on`);
-    });
-
-    it('renders the description link', () => {
-      expect(findCodeSuggestionsDescriptionLink().attributes('href')).toBe(
-        codeSuggestionsDescriptionLink,
-      );
-    });
-
-    describe(`with <usage-statistics>`, () => {
-      it('passes the correct props', () => {
-        expect(findUsageStatistics().exists()).toBe(false);
-      });
-    });
-
-    describe('`Learn more` button', () => {
-      it('renders the text', () => {
-        expect(findLearnMoreButton().text()).toBe(learnMoreText);
-      });
-
-      it('provides the correct href', () => {
-        expect(findLearnMoreButton().attributes('href')).toBe(codeSuggestionsLearnMoreLink);
       });
     });
   });
