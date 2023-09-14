@@ -72,6 +72,14 @@ RSpec.describe ProtectedBranches::DestroyService, feature_category: :compliance_
 
         service.execute(protected_branch)
       end
+
+      context 'with blocking scan result policy' do
+        include_context 'with scan result policy blocking protected branches'
+
+        it 'blocks unprotecting branches' do
+          expect { service.execute(protected_branch) }.to raise_error(Gitlab::Access::AccessDeniedError)
+        end
+      end
     end
 
     context 'when destroy fails' do

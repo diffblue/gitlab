@@ -4,6 +4,7 @@ module EE
   module ProtectedBranches
     module LegacyApiUpdateService
       extend ::Gitlab::Utils::Override
+      prepend BlockedByPolicy
 
       private
 
