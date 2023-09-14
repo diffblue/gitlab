@@ -25,6 +25,11 @@ module EE
         def auto_fix_user_path
           '/' # TODO: real link will be updated with https://gitlab.com/gitlab-org/gitlab/-/issues/348463
         end
+
+        override :continuous_vulnerability_scans_enabled
+        def continuous_vulnerability_scans_enabled
+          project_settings&.continuous_vulnerability_scans_enabled
+        end
       end
     end
   end
