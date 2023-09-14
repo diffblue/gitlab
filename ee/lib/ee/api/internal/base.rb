@@ -85,6 +85,27 @@ module EE
               end
             end
           end
+
+          namespace 'internal' do
+            get '/authorized_certs', feature_category: :source_code_management, urgency: :high do
+              certificate = ::Groups::SshCertificate.find_by_fingerprint!(params[:key])
+              group = certificate.group
+
+              forbidden!('Feature is not available') unless group.licensed_feature_available?(:ssh_certificates)
+
+              user = group.users.find_by_login(params[:user_identifier])
+
+              not_found!('User') unless user
+
+              status 200
+
+              {
+                success: true,
+                namespace: group.full_path,
+                username: user.username
+              }
+            end
+          end
         end
       end
     end

@@ -8,6 +8,8 @@ module EE
       include PathLocksHelper
       include SubscribableBannerHelper
 
+      attr_accessor :allowed_namespace_path
+
       override :check
       def check(cmd, changes)
         check_maintenance_mode!(cmd)

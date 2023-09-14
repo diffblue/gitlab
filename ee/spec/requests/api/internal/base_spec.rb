@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe API::Internal::Base do
+RSpec.describe API::Internal::Base, feature_category: :source_code_management do
   include GitlabShellHelpers
   include EE::GeoHelpers
   include APIInternalBaseHelpers
@@ -511,6 +511,54 @@ RSpec.describe API::Internal::Base do
         end
       end
     end
+
+    context 'when namespace_path is specified' do
+      let_it_be(:root_group) { create(:group) }
+      let_it_be(:group) { create(:group, parent: root_group) }
+      let_it_be(:project) { create(:project, :public, :repository, group: group) }
+
+      def check_allowed(namespace_path)
+        post(
+          api("/internal/allowed"),
+          params: {
+            action: "git-upload-pack",
+            user_id: user.id,
+            project: project.full_path,
+            protocol: 'ssh',
+            namespace_path: namespace_path
+          },
+          headers: gitlab_shell_internal_api_request_header
+        )
+      end
+
+      context 'when non-root group is specified' do
+        it 'is forbidden' do
+          stub_licensed_features(ssh_certificates: group)
+
+          check_allowed(group.full_path)
+
+          expect(response).to have_gitlab_http_status(:unauthorized)
+          expect(json_response['status']).to eq(false)
+          expect(json_response['message']).to eq('You are not allowed to access projects in this namespace.')
+        end
+
+        context 'when ssh_certificates licensed feature is not available' do
+          it 'is successful' do
+            check_allowed(group.full_path)
+
+            expect(response).to have_gitlab_http_status(:ok)
+          end
+        end
+      end
+
+      context 'when root group is specified' do
+        it 'is successful' do
+          check_allowed(root_group.full_path)
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
+    end
   end
 
   describe "POST /internal/lfs_authenticate", :geo do
@@ -857,6 +905,74 @@ RSpec.describe API::Internal::Base do
 
           expect(json_response['success']).to be_falsey
         end
+      end
+    end
+  end
+
+  describe "GET /internal/authorized_certs" do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:cert) { create(:group_ssh_certificate, group: group) }
+
+    let(:params) { { key: cert.fingerprint, user_identifier: user.username } }
+
+    before do
+      stub_licensed_features(ssh_certificates: group)
+    end
+
+    context 'when user is a member of the group' do
+      before do
+        group.add_developer(user)
+      end
+
+      it 'finds the cert and the user' do
+        get(api('/internal/authorized_certs'), params: params, headers: gitlab_shell_internal_api_request_header)
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response['success']).to eq(true)
+        expect(json_response['namespace']).to eq(group.full_path)
+        expect(json_response['username']).to eq(user.username)
+      end
+
+      context 'when cert is not found' do
+        let(:params) { super().merge(key: 'invalid') }
+
+        it 'returns 404' do
+          get(api('/internal/authorized_certs'), params: params, headers: gitlab_shell_internal_api_request_header)
+
+          expect(response).to have_gitlab_http_status(:not_found)
+          expect(json_response['message']).to eq('404 Not found')
+        end
+      end
+
+      context 'when user is not found' do
+        let(:params) { super().merge(user_identifier: 'invalid') }
+
+        it 'returns 404' do
+          get(api('/internal/authorized_certs'), params: params, headers: gitlab_shell_internal_api_request_header)
+
+          expect(response).to have_gitlab_http_status(:not_found)
+          expect(json_response['message']).to eq('404 User Not Found')
+        end
+      end
+    end
+
+    context 'when user is not a member of the group' do
+      it 'returns 404' do
+        get(api('/internal/authorized_certs'), params: params, headers: gitlab_shell_internal_api_request_header)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+        expect(json_response['message']).to eq('404 User Not Found')
+      end
+    end
+
+    context 'when ssh_certificates licensed feature is not available' do
+      it 'returns error' do
+        stub_licensed_features(ssh_certificates: false)
+
+        get(api('/internal/authorized_certs'), params: params, headers: gitlab_shell_internal_api_request_header)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(json_response['message']).to eq('403 Forbidden - Feature is not available')
       end
     end
   end
