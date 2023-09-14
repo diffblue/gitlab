@@ -7,7 +7,8 @@ module Security
       VIOLATED_REPORTS_HEADER_PATTERN = /<!-- violated_reports: ([a-z_,]+)/
       REPORT_TYPES = {
         license_scanning: 'license_scanning',
-        scan_finding: 'scan_finding'
+        scan_finding: 'scan_finding',
+        any_merge_request: 'any_merge_request'
       }.freeze
 
       attr_reader :reports, :existing_comment
