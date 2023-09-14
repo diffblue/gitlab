@@ -44,6 +44,16 @@ RSpec.describe Sbom::ExportSerializers::JsonService, feature_category: :dependen
   let(:json_file) { JSON.load_file(json_file_path) }
   let(:service) { described_class.new(report) }
 
+  let(:metadata) do
+    metadata = ::Gitlab::Ci::Reports::Sbom::Metadata.new(
+      tools: [{ name: "Gemnasium", vendor: "Gitlab", version: "2.34.0" }],
+      authors: [{ email: "support@gitlab.com", name: "Gitlab" }],
+      properties: [{ name: "gitlab:dependency_scanning:input_file", value: "package-lock.json" }]
+    )
+    metadata.timestamp = "2020-04-13T20:20:39+00:00"
+    metadata
+  end
+
   let(:report) do
     report = ::Gitlab::Ci::Reports::Sbom::Report.new
     report.sbom_attributes = {
@@ -52,11 +62,7 @@ RSpec.describe Sbom::ExportSerializers::JsonService, feature_category: :dependen
       serial_number: "urn:uuid:#{uuid}",
       version: 1
     }
-    report.metadata = ::Gitlab::Ci::Reports::Sbom::Metadata.new(
-      tools: [{ name: "Gemnasium", vendor: "Gitlab", version: "2.34.0" }],
-      authors: [{ email: "support@gitlab.com", name: "Gitlab" }],
-      properties: [{ name: "gitlab:dependency_scanning:input_file", value: "package-lock.json" }]
-    )
+    report.metadata = metadata
     report.components = components
     report
   end
