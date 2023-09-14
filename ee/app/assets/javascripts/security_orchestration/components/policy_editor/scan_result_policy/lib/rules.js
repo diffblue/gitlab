@@ -86,13 +86,11 @@ const invalidRuleValues = (rules, key, allowedValues, areDuplicatesAllowed = fal
 
   const hasDuplicates = (items = []) => new Set(items).size !== items.length;
 
-  const flattenedValues = rules.filter((rule) => rule[key]).flatMap((rule) => rule[key]);
-
-  if (!areDuplicatesAllowed && hasDuplicates(flattenedValues)) {
+  if (!areDuplicatesAllowed && rules.some((rule) => hasDuplicates(rule[key] || []))) {
     return true;
   }
 
-  return flattenedValues.some((value) => !allowedValues.includes(value));
+  return rules.some((rule) => (rule[key] || []).some((value) => !allowedValues.includes(value)));
 };
 
 export const invalidScanners = (rules) => invalidRuleValues(rules, 'scanners', REPORT_TYPES_KEYS);

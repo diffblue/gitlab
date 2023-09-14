@@ -49,6 +49,12 @@ describe('invalidScanners', () => {
     });
   });
 
+  describe('with multiple rules with the same scanners', () => {
+    it('returns false', () => {
+      expect(invalidScanners([{ scanners: ['sast'] }, { scanners: ['sast'] }])).toBe(false);
+    });
+  });
+
   describe('with rules with duplicate scanners', () => {
     it('returns true', () => {
       expect(invalidScanners([{ scanners: ['sast', 'sast'] }])).toBe(true);
@@ -73,6 +79,12 @@ describe('invalidSeverities', () => {
 
   it('returns false with rules with valid severities', () => {
     expect(invalidSeverities([{ severity_levels: ['high'] }])).toBe(false);
+  });
+
+  it('returns false with multiple rules with the same severities', () => {
+    expect(invalidSeverities([{ severity_levels: ['high'] }, { severity_levels: ['high'] }])).toBe(
+      false,
+    );
   });
 
   it('returns true with rules with duplicate severities', () => {
@@ -153,18 +165,19 @@ describe('invalidVulnerabilityStates', () => {
   const previouslyExistingStates = Object.keys(APPROVAL_VULNERABILITY_STATES[PREVIOUSLY_EXISTING]);
 
   it.each`
-    rules                                                                           | expectedResult
-    ${null}                                                                         | ${false}
-    ${[]}                                                                           | ${false}
-    ${[{}]}                                                                         | ${false}
-    ${[{ vulnerability_states: [] }]}                                               | ${false}
-    ${[{ vulnerability_states: newlyDetectedStates }]}                              | ${false}
-    ${[{ vulnerability_states: previouslyExistingStates }]}                         | ${false}
-    ${[{ vulnerability_states: VULNERABILITY_STATE_KEYS }]}                         | ${false}
-    ${[{ vulnerability_states: [newlyDetectedStates[0], newlyDetectedStates[0]] }]} | ${true}
-    ${[{ vulnerability_states: ['invalid'] }]}                                      | ${true}
-    ${[{ vulnerability_states: [...newlyDetectedStates, 'invalid'] }]}              | ${true}
-    ${[{ vulnerability_states: [...previouslyExistingStates, 'invalid'] }]}         | ${true}
+    rules                                                                                             | expectedResult
+    ${null}                                                                                           | ${false}
+    ${[]}                                                                                             | ${false}
+    ${[{}]}                                                                                           | ${false}
+    ${[{ vulnerability_states: [] }]}                                                                 | ${false}
+    ${[{ vulnerability_states: newlyDetectedStates }]}                                                | ${false}
+    ${[{ vulnerability_states: previouslyExistingStates }]}                                           | ${false}
+    ${[{ vulnerability_states: VULNERABILITY_STATE_KEYS }]}                                           | ${false}
+    ${[{ vulnerability_states: newlyDetectedStates }, { vulnerability_states: newlyDetectedStates }]} | ${false}
+    ${[{ vulnerability_states: [newlyDetectedStates[0], newlyDetectedStates[0]] }]}                   | ${true}
+    ${[{ vulnerability_states: ['invalid'] }]}                                                        | ${true}
+    ${[{ vulnerability_states: [...newlyDetectedStates, 'invalid'] }]}                                | ${true}
+    ${[{ vulnerability_states: [...previouslyExistingStates, 'invalid'] }]}                           | ${true}
   `('returns $expectedResult with $rules', ({ rules, expectedResult }) => {
     expect(invalidVulnerabilityStates(rules)).toStrictEqual(expectedResult);
   });
