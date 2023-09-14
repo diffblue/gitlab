@@ -94,17 +94,6 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
         end
       end
 
-      context 'when base_access_level is too low' do
-        it 'creates a validation error' do
-          member_role.base_access_level = Gitlab::Access::MINIMAL_ACCESS
-          member_role.read_vulnerability = true
-
-          expect(member_role).not_to be_valid
-          expect(member_role.errors[:base_access_level])
-            .to include(s_("MemberRole|minimal base access level must be Guest (10)."))
-        end
-      end
-
       context 'when base_access_level is invalid' do
         it 'raises an error' do
           member_role.base_access_level = 11

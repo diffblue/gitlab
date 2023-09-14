@@ -4,25 +4,20 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   MAX_COUNT_PER_GROUP_HIERARCHY = 10
   ALL_CUSTOMIZABLE_PERMISSIONS = {
     admin_merge_request: {
-      descripition: 'Permission to admin merge requests',
-      minimal_level: Gitlab::Access::GUEST
+      descripition: 'Permission to admin merge requests'
     },
     admin_vulnerability: {
       description: 'Permission to admin vulnerability',
-      minimal_level: Gitlab::Access::GUEST,
       requirement: :read_vulnerability
     },
     read_code: {
-      description: 'Permission to read code',
-      minimal_level: Gitlab::Access::GUEST
+      description: 'Permission to read code'
     },
     read_dependency: {
-      description: 'Permission to read dependency',
-      minimal_level: Gitlab::Access::GUEST
+      description: 'Permission to read dependency'
     },
     read_vulnerability: {
-      description: 'Permission to read vulnerability',
-      minimal_level: Gitlab::Access::GUEST
+      description: 'Permission to read vulnerability'
     }
   }.freeze
   ALL_CUSTOMIZABLE_PROJECT_PERMISSIONS = [
@@ -60,7 +55,6 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   validate :max_count_per_group_hierarchy, on: :create
   validate :validate_namespace_locked, on: :update
   validate :attributes_locked_after_member_associated, on: :update
-  validate :validate_minimal_base_access_level
   validate :validate_requirements
 
   validates_associated :members
@@ -113,19 +107,6 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     return unless namespace_id_changed?
 
     errors.add(:namespace, s_("MemberRole|can't be changed"))
-  end
-
-  def validate_minimal_base_access_level
-    ALL_CUSTOMIZABLE_PERMISSIONS.each do |permission, params|
-      min_level = params[:minimal_level]
-      next unless self[permission]
-      next if base_access_level >= min_level
-
-      errors.add(:base_access_level,
-        format(s_("MemberRole|minimal base access level must be %{min_access_level}."),
-          min_access_level: "#{Gitlab::Access.options_with_owner.key(min_level)} (#{min_level})")
-      )
-    end
   end
 
   def validate_requirements
