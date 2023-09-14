@@ -95,24 +95,10 @@ RSpec.describe ApprovalState do
           expect(results).not_to include(*committers)
         end
 
-        context 'when keep_merge_commits_for_approvals is on' do
-          it 'passes the expected parameter to committers method' do
-            expect(merge_request).to receive(:committers).with(with_merge_commits: true).and_return(User.where(id: committers))
+        it 'passes the expected parameter to committers method' do
+          expect(merge_request).to receive(:committers).with(with_merge_commits: true).and_return(User.where(id: committers))
 
-            results
-          end
-        end
-
-        context 'when keep_merge_commits_for_approvals is off' do
-          before do
-            stub_feature_flags(keep_merge_commits_for_approvals: false)
-          end
-
-          it 'passes the expected parameter to committers method' do
-            expect(merge_request).to receive(:committers).with(with_merge_commits: false).and_return(User.where(id: committers))
-
-            results
-          end
+          results
         end
       end
     end
