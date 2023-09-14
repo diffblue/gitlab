@@ -60,6 +60,7 @@ export default {
       </template>
       <template #feedback>
         <user-feedback
+          class="gl-pt-0!"
           event-name="proposed_changes_summary"
           :feedback-link-text="__('Leave feedback')"
         />
