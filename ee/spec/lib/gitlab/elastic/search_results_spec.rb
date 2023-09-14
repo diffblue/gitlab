@@ -848,6 +848,26 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
     end
   end
 
+  describe 'milestones' do
+    let(:scope) { 'milestones' }
+
+    context 'filtering' do
+      let!(:unarchived_project) { create(:project, :public) }
+      let!(:archived_project) { create(:project, :public, :archived) }
+      let!(:unarchived_result) { create(:milestone, project: unarchived_project, title: 'foo unarchived') }
+      let!(:archived_result) { create(:milestone, project: archived_project, title: 'foo archived') }
+      let(:project_ids) { [unarchived_project.id, archived_project.id] }
+      let(:results) { described_class.new(user, 'foo', project_ids, filters: filters) }
+
+      before do
+        set_elasticsearch_migration_to(:backfill_archived_on_milestones, including: true)
+        ensure_elasticsearch_index!
+      end
+
+      include_examples 'search results filtered by archived', 'search_milestones_hide_archived_projects', :backfill_archived_on_milestones
+    end
+  end
+
   describe 'users' do
     let(:scope) { 'users' }
     let(:query) { 'john' }
