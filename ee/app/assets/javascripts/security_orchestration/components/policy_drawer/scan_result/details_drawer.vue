@@ -1,7 +1,7 @@
 <script>
 import { s__, __ } from '~/locale';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
-import { fromYaml } from '../../policy_editor/scan_result_policy/lib';
+import { fromYaml } from '../../policy_editor/scan_result/lib';
 import { SUMMARY_TITLE } from '../constants';
 import PolicyInfoRow from '../info_row.vue';
 import PolicyDrawerLayout from '../drawer_layout.vue';

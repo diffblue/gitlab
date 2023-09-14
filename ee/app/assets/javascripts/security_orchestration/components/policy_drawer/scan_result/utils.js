@@ -17,13 +17,13 @@ import {
   APPROVAL_VULNERABILITY_STATES_FLAT,
   FIX_AVAILABLE,
   FALSE_POSITIVE,
-} from '../../policy_editor/scan_result_policy/scan_filters/constants';
+} from '../../policy_editor/scan_result/rule/scan_filters/constants';
 import {
   ANY_MERGE_REQUEST,
   LICENSE_FINDING,
   LICENSE_STATES,
-} from '../../policy_editor/scan_result_policy/lib/rules';
-import { groupSelectedVulnerabilityStates } from '../../policy_editor/scan_result_policy/lib';
+} from '../../policy_editor/scan_result/lib/rules';
+import { groupSelectedVulnerabilityStates } from '../../policy_editor/scan_result/lib';
 import { buildBranchExceptionsString, humanizedBranchExceptions } from '../utils';
 
 /**

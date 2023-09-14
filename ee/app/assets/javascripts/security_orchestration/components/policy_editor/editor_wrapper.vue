@@ -4,7 +4,7 @@ import { s__ } from '~/locale';
 import { NAMESPACE_TYPES } from '../../constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import ScanExecutionPolicyEditor from './scan_execution/editor_component.vue';
-import ScanResultPolicyEditor from './scan_result_policy/scan_result_policy_editor.vue';
+import ScanResultPolicyEditor from './scan_result/editor_component.vue';
 
 export default {
   components: {
