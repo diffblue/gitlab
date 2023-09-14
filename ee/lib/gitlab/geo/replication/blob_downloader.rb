@@ -4,6 +4,8 @@ module Gitlab
   module Geo
     module Replication
       class BlobDownloader
+        include EE::GeoHelper # rubocop: disable Cop/InjectEnterpriseEditionModule
+
         TEMP_PREFIX = 'tmp_'
         DOWNLOAD_TIMEOUT = {
           connect: 60,
@@ -236,7 +238,7 @@ module Gitlab
           @actual_checksum = if file_storage?
                                Digest::SHA256.file(file_path).hexdigest
                              elsif Feature.enabled?(:geo_object_storage_verification)
-                               File.size(file_path).to_s
+                               format_file_size_for_checksum(File.size(file_path).to_s)
                              end
         end
 

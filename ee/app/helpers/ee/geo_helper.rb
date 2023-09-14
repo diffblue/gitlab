@@ -239,5 +239,11 @@ module EE
         retryCount: registry.repository_retry_count || 0
       }.to_json
     end
+
+    def format_file_size_for_checksum(file_size)
+      return file_size if file_size.length.even?
+
+      "0" + file_size
+    end
   end
 end
