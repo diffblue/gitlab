@@ -71,9 +71,9 @@ module Elastic
       end
 
       def archived_filter_applicable?(options)
-        Feature.enabled?(:search_merge_requests_hide_archived_projects, options[:current_user]) &&
-          ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_on_merge_requests) &&
-          !options[:include_archived]
+        !options[:include_archived] && options[:search_scope] != 'project' &&
+          Feature.enabled?(:search_merge_requests_hide_archived_projects, options[:current_user]) &&
+          ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_on_merge_requests)
       end
 
       def hidden_filter(query_hash)
