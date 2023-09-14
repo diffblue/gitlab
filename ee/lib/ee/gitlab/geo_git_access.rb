@@ -37,7 +37,15 @@ module EE
       def upload_pack_and_out_of_date?
         return false unless project
 
-        upload_pack? && ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
+        upload_pack? && geo_repository_out_of_date?(project)
+      end
+
+      def geo_repository_out_of_date?(project)
+        if ::Geo::ProjectRepositoryReplicator.enabled?
+          ::Geo::ProjectRepositoryRegistry.repository_out_of_date?(project.id)
+        else
+          ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
+        end
       end
 
       def proxy_direct_to_primary_headers
