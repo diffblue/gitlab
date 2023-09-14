@@ -33393,6 +33393,8 @@ CREATE INDEX index_projects_on_namespace_id_and_id ON projects USING btree (name
 
 CREATE INDEX index_projects_on_namespace_id_and_repository_size_limit ON projects USING btree (namespace_id, repository_size_limit);
 
+CREATE INDEX index_projects_on_organization_id ON projects USING btree (organization_id);
+
 CREATE INDEX index_projects_on_path_and_id ON projects USING btree (path, id);
 
 CREATE INDEX index_projects_on_path_trigram ON projects USING gin (path gin_trgm_ops);
