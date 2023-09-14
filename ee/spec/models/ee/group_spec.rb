@@ -1718,60 +1718,23 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
-  describe '#ineligible_user_ids_for_code_suggestions' do
-    let_it_be(:group) { create(:group) }
-    let_it_be(:sub_group) { create(:group, parent: group) }
-    let_it_be(:project) { create(:project, namespace: sub_group) }
-    let_it_be(:other_group) { create(:group) }
-    let_it_be(:eligible_user) { create(:user) }
-    let_it_be(:ineligible_user) { create(:user) }
+  describe '#code_suggestions_eligible_user_ids', :saas do
+    include_context 'for billable users setup'
 
-    let(:user_ids) { [eligible_user.id, ineligible_user.id] }
-    let(:expected_result) { [ineligible_user.id] }
-    let(:subject) { group.ineligible_user_ids_for_code_suggestions(Member.where(user_id: user_ids).select(:user_id)) }
+    subject(:eligible_user_ids) { group.code_suggestions_eligible_user_ids }
 
-    before do
-      other_group.add_guest(ineligible_user)
+    it 'includes distinct active users' do
+      expect(eligible_user_ids).to match_array([
+        group_guest.id,
+        project_guest.id,
+        group_developer.id,
+        project_developer.id,
+        invited_developer.id
+      ])
     end
 
-    context 'when eligible_user has non-minimal access via group' do
-      before do
-        sub_group.add_guest(eligible_user)
-      end
-
-      it { is_expected.to match_array(expected_result) }
-    end
-
-    context 'when eligible_user has non-minimal access via project' do
-      before do
-        project.add_guest(eligible_user)
-      end
-
-      it { is_expected.to match_array(expected_result) }
-    end
-
-    context 'with group invite' do
-      let_it_be(:invited_group) { create(:group) }
-
-      before do
-        invited_group.add_guest(eligible_user)
-      end
-
-      context 'when eligible_user has non-minimal access being invited to a group' do
-        before do
-          create(:group_group_link, shared_with_group: invited_group, shared_group: sub_group)
-        end
-
-        it { is_expected.to match_array(expected_result) }
-      end
-
-      context 'when eligible_user has non-minimal access being invited to a project' do
-        before do
-          create(:project_group_link, project: project, group: invited_group)
-        end
-
-        it { is_expected.to match_array(expected_result) }
-      end
+    it 'excludes banned members' do
+      expect(eligible_user_ids).to exclude(banned_group_user.id, banned_project_user.id)
     end
   end
 

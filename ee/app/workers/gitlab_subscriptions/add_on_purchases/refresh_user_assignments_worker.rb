@@ -23,9 +23,9 @@ module GitlabSubscriptions
 
         deleted_assignments_count = 0
         add_on_purchase.assigned_users.each_batch(of: BATCH_SIZE) do |batch|
-          user_ids_to_unassign = ineligible_user_ids(batch.select(:user_id))
+          ineligible_user_ids = batch.pluck_user_ids.to_set - eligible_user_ids
 
-          deleted_assignments_count += batch.for_user_ids(user_ids_to_unassign).delete_all
+          deleted_assignments_count += batch.for_user_ids(ineligible_user_ids).delete_all
         end
 
         log_event(deleted_assignments_count) if deleted_assignments_count > 0
@@ -43,8 +43,8 @@ module GitlabSubscriptions
         @add_on_purchase ||= root_namespace.subscription_add_on_purchases.for_code_suggestions.first
       end
 
-      def ineligible_user_ids(user_ids)
-        root_namespace.ineligible_user_ids_for_code_suggestions(user_ids)
+      def eligible_user_ids
+        @eligible_user_ids ||= root_namespace.code_suggestions_eligible_user_ids
       end
 
       def log_event(deleted_count)

@@ -830,26 +830,9 @@ module EE
         billed_shared_project_user?(user)
     end
 
-    # accepts AR Relation with select(:user_id) query
-    # returns array of [user_id] that are ineligible for code_suggestions
-    def ineligible_user_ids_for_code_suggestions(user_ids)
-      eligible_user_ids = Set.new(
-        billed_group_users.where(id: user_ids).pluck(:id) +
-        billed_project_users.where(id: user_ids).pluck(:id)
-      )
-
-      cte = ::Gitlab::SQL::CTE.new(:billed_shared_group_users, billed_shared_group_users.select(:id))
-      eligible_user_ids += ::User.with(cte.to_arel)
-        .joins("INNER JOIN billed_shared_group_users ON users.id = billed_shared_group_users.id")
-        .where(id: user_ids)
-        .pluck(:id)
-
-      cte = ::Gitlab::SQL::CTE.new(:billed_invited_group_to_project_users, billed_invited_group_to_project_users.select(:id))
-      eligible_user_ids += ::User.with(cte.to_arel)
-        .joins("INNER JOIN billed_invited_group_to_project_users ON users.id = billed_invited_group_to_project_users.id")
-        .where(id: user_ids).pluck(:id)
-
-      user_ids.pluck(:user_id) - eligible_user_ids.to_a
+    def code_suggestions_eligible_user_ids
+      # all billable users and guests are eligible to be assigned code suggestions, so reuse the billed users lookup
+      billed_user_ids_including_guests[:user_ids]
     end
 
     def parent_epic_ids_in_ancestor_groups
