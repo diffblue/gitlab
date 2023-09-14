@@ -4,6 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, feature_category: :duo_chat do
   describe '#execute' do
+    subject(:result) { tool.execute }
+
+    let(:tool) { described_class.new(context: context, options: options) }
     let(:response) do
       instance_double(
         'Net::HTTPResponse',
@@ -24,8 +27,6 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
     let_it_be(:user) { create(:user) }
     let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
 
-    subject(:tool) { described_class.new(context: context, options: options) }
-
     before do
       group.add_developer(user)
     end
@@ -42,14 +43,16 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
           expect(instance).to receive(:execute).and_return(response)
         end
 
-        expect(tool.execute.content).to eq("{\"content\":\"In your User settings.\",\"sources\":[]}")
+        expect(result.content).to eq("In your User settings.")
+        expect(result.extras).to eq(sources: [])
       end
     end
 
     context 'when context is not authorized' do
       it 'responds with the message from TanukiBot' do
-        expect(tool.execute.content)
+        expect(result.content)
           .to eq("I am sorry, I am unable to find the documentation answer you are looking for.")
+        expect(result.extras).to eq(nil)
       end
     end
   end
