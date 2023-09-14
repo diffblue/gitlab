@@ -22,4 +22,10 @@ class ProjectSecuritySetting < ApplicationRecord
       type if public_send("auto_fix_#{type}") # rubocop:disable GitlabSecurity/PublicSend
     end
   end
+
+  # TODO: the caller for this method is a graphql mutation implemented as part of
+  # https://gitlab.com/gitlab-org/gitlab/-/issues/424374
+  def set_continuous_vulnerability_scans!(enabled:)
+    update!(continuous_vulnerability_scans_enabled: enabled)
+  end
 end

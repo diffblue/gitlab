@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ProjectSecuritySetting do
+RSpec.describe ProjectSecuritySetting, feature_category: :software_composition_analysis do
   using RSpec::Parameterized::TableSyntax
 
   describe 'associations' do
@@ -53,6 +53,24 @@ RSpec.describe ProjectSecuritySetting do
 
     it 'return status only for available types' do
       is_expected.to eq([:dependency_scanning])
+    end
+  end
+
+  describe '#set_continuous_vulnerability_scans' do
+    where(:value_before, :enabled, :value_after) do
+      true  | false | false
+      true  | true  | true
+      false | true  | true
+      false | false | false
+    end
+
+    with_them do
+      let(:setting) { create(:project_security_setting, continuous_vulnerability_scans_enabled: value_before) }
+
+      specify do
+        setting.set_continuous_vulnerability_scans!(enabled: enabled)
+        expect(setting.reload.continuous_vulnerability_scans_enabled).to eq(value_after)
+      end
     end
   end
 end
