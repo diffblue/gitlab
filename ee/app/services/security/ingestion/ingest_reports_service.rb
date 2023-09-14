@@ -20,6 +20,7 @@ module Security
         set_latest_pipeline!
         schedule_mark_dropped_vulnerabilities
         schedule_auto_fix
+        sync_findings_to_approval_rules
       end
 
       private
@@ -68,6 +69,12 @@ module Security
         primary_identifiers_by_scan_type.each do |scan_type, identifiers|
           ScheduleMarkDroppedAsResolvedService.execute(pipeline.project_id, scan_type, identifiers)
         end
+      end
+
+      def sync_findings_to_approval_rules
+        return unless project.licensed_feature_available?(:security_orchestration_policies)
+
+        Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker.perform_async(pipeline.id)
       end
 
       def primary_identifiers_by_scan_type
