@@ -175,4 +175,24 @@ RSpec.describe EE::GeoHelper, feature_category: :geo_replication do
       end
     end
   end
+
+  describe '#format_file_size_for_checksum' do
+    context 'when file size is of even length' do
+      it 'returns same file size string' do
+        expect(helper.format_file_size_for_checksum("12")).to eq("12")
+      end
+    end
+
+    context 'when file size is of odd length' do
+      it 'returns even length file size string with a padded leading zero' do
+        expect(helper.format_file_size_for_checksum("123")).to eq("0123")
+      end
+    end
+
+    context 'when file size is 0' do
+      it 'returns even length file size string with a padded leading zero' do
+        expect(helper.format_file_size_for_checksum("0")).to eq("00")
+      end
+    end
+  end
 end

@@ -275,14 +275,15 @@ RSpec.shared_examples 'a blob replicator' do
     end
 
     context 'when the file is remotely stored' do
-      it 'raises an error' do
+      it 'returns the the size of the file' do
         carrierwave_uploader = replicator.carrierwave_uploader
         allow(carrierwave_uploader).to receive(:file_storage?).and_return(false)
         allow(carrierwave_uploader).to receive_message_chain(:file, size: 65112)
         allow(carrierwave_uploader).to receive_message_chain(:file, exists?: true)
         allow(replicator).to receive(:carrierwave_uploader).and_return(carrierwave_uploader)
 
-        expect(subject.calculate_checksum).to eq('65112')
+        # Padding file size string with a leading zero because it should be of even length
+        expect(subject.calculate_checksum).to eq('065112')
       end
     end
   end

@@ -244,7 +244,7 @@ RSpec.describe Gitlab::Geo::Replication::BlobDownloader, feature_category: :geo_
         let!(:model_record) { create(:package_file, :npm, :object_storage) }
 
         it 'returns a successful result' do
-          allow(replicator).to receive(:primary_checksum).and_return("3")
+          allow(replicator).to receive(:primary_checksum).and_return("03")
 
           content = 'foo' # 3 bytes
           stub_request(:get, subject.resource_url)

@@ -6,6 +6,7 @@ module Geo
 
     include ::Geo::VerifiableReplicator
     include Gitlab::Geo::LogHelpers
+    include EE::GeoHelper # rubocop: disable Cop/InjectEnterpriseEditionModule
 
     EVENT_CREATED = 'created'
     EVENT_DELETED = 'deleted'
@@ -149,7 +150,7 @@ module Geo
       if carrierwave_uploader.file_storage?
         model.sha256_hexdigest(blob_path)
       else
-        carrierwave_uploader.file.size.to_s
+        format_file_size_for_checksum(carrierwave_uploader.file.size.to_s)
       end
     end
 
