@@ -12,7 +12,7 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker, 
     let(:can_store_security_reports) { true }
 
     before do
-      allow_next_found_instance_of(Ci::Pipeline) do |record|
+      allow_next_found_instance_of(Project) do |record|
         allow(record).to receive(:can_store_security_reports?).and_return(can_store_security_reports)
       end
     end
@@ -20,10 +20,28 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker, 
     context 'when security reports cannot be stored for the pipeline' do
       let(:can_store_security_reports) { false }
 
-      it 'does not call SyncFindingsToApprovalRulesService' do
-        expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesService).not_to receive(:new)
+      context 'when project does not have `any_merge_request` approval rule' do
+        it 'does not call SyncFindingsToApprovalRulesService' do
+          expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesService).not_to receive(:new)
 
-        run_worker
+          run_worker
+        end
+      end
+
+      context 'when project has `any_merge_request` approval rule' do
+        let(:service) do
+          instance_double(Security::ScanResultPolicies::SyncFindingsToApprovalRulesService, execute: nil)
+        end
+
+        before do
+          create(:approval_project_rule, :any_merge_request, project: pipeline.project)
+        end
+
+        it 'does calls SyncFindingsToApprovalRulesService' do
+          expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesService).to receive(:new).and_return(service)
+
+          run_worker
+        end
       end
     end
 

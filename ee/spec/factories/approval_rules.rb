@@ -42,6 +42,10 @@ FactoryBot.define do
       sequence(:name) { |n| "Scan finding #{n}" }
       report_type { :scan_finding }
     end
+
+    trait :any_merge_request do
+      report_type { :any_merge_request }
+    end
   end
 
   factory :any_approver_rule, parent: :approval_merge_request_rule do
@@ -80,6 +84,11 @@ FactoryBot.define do
       rule_type { :report_approver }
       report_type { :scan_finding }
       applies_to_all_protected_branches { true }
+    end
+
+    trait :any_merge_request do
+      rule_type { :report_approver }
+      report_type { :any_merge_request }
     end
   end
 
