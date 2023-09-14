@@ -2,6 +2,7 @@
 
 module Security
   class OrchestrationPolicyConfiguration < ApplicationRecord
+    include Gitlab::Git::WrapsGitalyErrors
     include Security::ScanExecutionPolicy
     include Security::ScanResultPolicy
     include EachBatch
@@ -81,7 +82,9 @@ module Security
 
     def policy_last_updated_at
       strong_memoize(:policy_last_updated_at) do
-        policy_repo.last_commit_for_path(default_branch_or_main, POLICY_PATH)&.committed_date
+        capture_git_error(:last_commit_for_path) do
+          policy_repo.last_commit_for_path(default_branch_or_main, POLICY_PATH)&.committed_date
+        end
       end
     end
 
@@ -115,12 +118,23 @@ module Security
 
     def policy_blob
       strong_memoize(:policy_blob) do
-        policy_repo.blob_data_at(default_branch_or_main, POLICY_PATH)
+        capture_git_error(:blob_data_at) do
+          policy_repo.blob_data_at(default_branch_or_main, POLICY_PATH)
+        end
       end
     end
 
     def last_merge_request
       security_policy_management_project.merge_requests.merged.order_merged_at_desc.first
+    end
+
+    def capture_git_error(action, &block)
+      wrapped_gitaly_errors(&block)
+    rescue Gitlab::Git::BaseError => e
+
+      Gitlab::ErrorTracking.log_exception(e, action: action, security_orchestration_policy_configuration_id: id)
+
+      nil
     end
   end
 end

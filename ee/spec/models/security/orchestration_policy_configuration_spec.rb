@@ -18,6 +18,22 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     allow(repository).to receive(:blob_data_at).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
   end
 
+  shared_examples 'captures git errors' do |repository_method|
+    context 'when repository is unavailable' do
+      before do
+        allow(repository).to receive(repository_method).and_raise(GRPC::BadStatus, GRPC::Core::StatusCodes::DEADLINE_EXCEEDED)
+      end
+
+      it { is_expected.to be_nil }
+
+      it 'tracks the exception' do
+        expect(Gitlab::ErrorTracking).to receive(:log_exception).with(Gitlab::Git::CommandTimedOut, action: repository_method, security_orchestration_policy_configuration_id: security_orchestration_policy_configuration.id)
+
+        subject
+      end
+    end
+  end
+
   describe 'associations' do
     it { is_expected.to belong_to(:project).inverse_of(:security_orchestration_policy_configuration) }
     it { is_expected.to belong_to(:namespace).inverse_of(:security_orchestration_policy_configuration) }
@@ -164,6 +180,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
       it { expect(subject).to be_nil }
     end
+
+    it_behaves_like 'captures git errors', :blob_data_at
   end
 
   describe '#policy_by_type' do
@@ -1251,6 +1269,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
       it { is_expected.to be_nil }
     end
+
+    it_behaves_like 'captures git errors', :last_commit_for_path
   end
 
   describe '#delete_all_schedules' do
