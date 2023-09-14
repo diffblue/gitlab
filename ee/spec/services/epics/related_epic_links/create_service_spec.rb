@@ -8,7 +8,7 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService, feature_category: :portfo
     let_it_be(:group) { create :group }
     let_it_be(:issuable) { create :epic, group: group }
     let_it_be(:issuable2) { create :epic, group: group }
-    let_it_be(:restricted_issuable) { create :epic }
+    let_it_be(:restricted_issuable) { create(:epic, group: create(:group, :private)) }
     let_it_be(:another_group) { create :group }
     let_it_be(:issuable3) { create :epic, group: another_group }
     let_it_be(:issuable_a) { create :epic, group: group }

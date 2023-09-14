@@ -36,6 +36,10 @@ class EpicPolicy < BasePolicy
       Gitlab::Llm::StageCheck.available?(@subject.group, :summarize_notes)
   end
 
+  condition(:relations_for_non_members_available, scope: :subject) do
+    ::Feature.enabled?(:epic_relations_for_non_members,  @subject.group)
+  end
+
   rule { can?(:read_epic) }.policy do
     enable :read_epic_iid
     enable :read_note
@@ -73,6 +77,7 @@ class EpicPolicy < BasePolicy
     # 3. To add a related epic we also need to check that related epics feature is available,
     # i.e. `related_epics_available`
     enable :admin_epic_relation
+    enable :read_epic_link_relation
   end
 
   # Used to check permissions of subepics (child-parent relation)
@@ -108,5 +113,13 @@ class EpicPolicy < BasePolicy
 
   rule { ai_available & summarize_notes_enabled & is_member & can?(:read_epic) }.policy do
     enable :summarize_notes
+  end
+
+  rule { relations_for_non_members_available & ~anonymous & can?(:read_epic) }.policy do
+    enable :read_epic_link_relation
+  end
+
+  rule { can?(:read_epic_link_relation) & related_epics_available }.policy do
+    enable :admin_epic_link_relation
   end
 end

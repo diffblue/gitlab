@@ -142,7 +142,7 @@ module API
         target_epic = find_permissioned_epic!(
           declared_params[:target_epic_iid],
           group_id: declared_params[:target_group_id],
-          permission: :admin_epic_relation
+          permission: :read_epic_link_relation
         )
 
         create_params = { target_issuable: target_epic, link_type: declared_params[:link_type] }

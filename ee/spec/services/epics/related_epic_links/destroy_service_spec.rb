@@ -4,17 +4,45 @@ require 'spec_helper'
 
 RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portfolio_management do
   describe '#execute' do
-    let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group, :private) }
+    let_it_be(:guest) { create(:user).tap { |user| group.add_guest(user) } }
+    let_it_be(:source) { create(:epic, group: group) }
+    let_it_be(:target) { create(:epic, group: group) }
+    let_it_be(:issuable_link) { create(:related_epic_link, source: source, target: target) }
 
-    let!(:issuable_link) { create(:related_epic_link) }
+    let(:user) { guest }
+
+    subject { described_class.new(issuable_link, issuable_link.source, user).execute }
 
     before do
       stub_licensed_features(epics: true, related_epics: true)
     end
 
-    subject { described_class.new(issuable_link, issuable_link.source, user).execute }
+    it_behaves_like 'a destroyable issuable link'
 
-    it_behaves_like 'a destroyable issuable link', required_role: :guest
+    context 'with a public group' do
+      let_it_be(:issuable_link) { create(:related_epic_link) }
+
+      context 'when user is not a memmber' do
+        it 'removes relation' do
+          expect { subject }.to change { issuable_link.class.count }.by(-1)
+        end
+
+        context 'and `epic_relations_for_non_members` feature flag is disabled' do
+          before do
+            stub_feature_flags(epic_relations_for_non_members: false)
+          end
+
+          it 'does not remove relation' do
+            expect { subject }.not_to change { issuable_link.class.count }
+          end
+
+          it 'returns an error message' do
+            is_expected.to eq(message: 'No Related Epic Link found', status: :error, http_status: 404)
+          end
+        end
+      end
+    end
 
     context 'event tracking' do
       subject { described_class.new(issuable_link, epic, user).execute }
