@@ -1,8 +1,5 @@
-- true_up_url = 'https://about.gitlab.com/pricing/licensing-faq/'
-- true_up_link_start = '<a href="%{url}">'.html_safe % { url: true_up_url }
-- billable_users_url = help_page_path('subscriptions/self_managed/index', anchor: 'billable-users')
-- billable_users_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer nofollow">'.html_safe % { url: billable_users_url }
-- link_end = '</a>'.html_safe
+- true_up_link = link_to('', 'https://about.gitlab.com/pricing/licensing-faq/')
+- billable_users_link = link_to('', help_page_path('subscriptions/self_managed/index', anchor: 'billable-users'), target: '_blank', rel: 'noopener noreferrer nofollow')
 - billable_users_updated_string = s_("AdminArea|Updated %{last_update_time}") % { last_update_time: @license.daily_billable_users_updated_time }
 
 .d-flex
@@ -19,7 +16,7 @@
               = _(' %{start} to %{end}') % { start: @license.starts_at, end: @license.expires_at }
             \.
           %p
-            = _('The %{link_start}true-up model%{link_end} allows having more users, and additional users will incur a retroactive charge on renewal.').html_safe % { link_start: true_up_link_start, link_end: link_end }
+            = safe_format(_('The %{true_up_start}true-up model%{true_up_end} allows having more users, and additional users will incur a retroactive charge on renewal.'), tag_pair(true_up_link, :true_up_start, :true_up_end))
             = seats_calculation_message(@license)
           .gl-font-sm.gl-text-gray-300
             = s_("AdminArea|Updated %{last_update_time}") % { last_update_time: @license.updated_at.to_s }
@@ -30,7 +27,7 @@
             = number_with_delimiter @license.daily_billable_users_count
           .text-uppercase.gl-mb-4= _('Billable Users')
           %p
-            = _('This is the number of %{billable_users_link_start}billable users%{link_end} on your installation, and this is the minimum number you need to purchase when you renew your license.').html_safe % { billable_users_link_start: billable_users_link_start, link_end: link_end }
+            = safe_format(_('This is the number of %{billable_users_link_start}billable users%{billable_users_link_end} on your installation, and this is the minimum number you need to purchase when you renew your license.'), tag_pair(billable_users_link, :billable_users_link_start, :billable_users_link_end))
           .gl-font-sm.gl-text-gray-300
             = billable_users_updated_string
 .d-flex
@@ -55,6 +52,6 @@
             = render Pajamas::AlertComponent.new(alert_options: { class: 'gl-mb-3' }, dismissible: false) do |c|
               - c.with_body do
                 = s_('Your instance has exceeded your subscription\'s licensed user count.')
-          %p= _('You\'ll be charged for %{true_up_link_start}users over license%{link_end} on a quarterly or annual basis, depending on the terms of your agreement.').html_safe % { true_up_link_start: true_up_link_start, link_end: link_end }
+          %p= safe_format(_('You\'ll be charged for %{true_up_start}users over license%{true_up_end} on a quarterly or annual basis, depending on the terms of your agreement.'), tag_pair(true_up_link, :true_up_start, :true_up_end))
           .gl-font-sm.gl-text-gray-300
             = billable_users_updated_string
