@@ -9,6 +9,12 @@ module Projects
       render_404 unless can?(current_user, :read_target_branch_rule, @project)
     end
 
+    def index
+      service = ::TargetBranchRules::FindService.new(@project, current_user)
+
+      render json: { target_branch: service.execute(params[:branch_name]) }.to_json
+    end
+
     def create
       result = TargetBranchRules::CreateService.new(@project, current_user, create_params).execute
 
