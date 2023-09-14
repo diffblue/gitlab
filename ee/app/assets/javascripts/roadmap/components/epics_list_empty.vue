@@ -147,7 +147,7 @@ export default {
   <gl-empty-state
     :title="message"
     :svg-path="emptyStateIllustrationPath"
-    class="gl-mt-0"
+    :svg-height="150"
     v-bind="extraProps"
   >
     <template #description>
