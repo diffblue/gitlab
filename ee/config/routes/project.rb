@@ -42,7 +42,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           end
         end
 
-        resources :target_branch_rules, only: [:index, :create]
+        resources :target_branch_rules, only: [:index, :create, :destroy]
 
         resources :automations, only: [:index]
 

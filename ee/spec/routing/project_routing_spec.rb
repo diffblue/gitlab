@@ -93,5 +93,9 @@ RSpec.describe 'EE-specific project routing' do
     it "to #create" do
       expect(post("/gitlab/gitlabhq/-/target_branch_rules")).to route_to('projects/target_branch_rules#create', namespace_id: 'gitlab', project_id: 'gitlabhq')
     end
+
+    it "to #destroy" do
+      expect(delete("/gitlab/gitlabhq/-/target_branch_rules/1")).to route_to('projects/target_branch_rules#destroy', namespace_id: 'gitlab', project_id: 'gitlabhq', id: '1')
+    end
   end
 end

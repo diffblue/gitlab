@@ -27,6 +27,18 @@ module Projects
       end
     end
 
+    def destroy
+      result = TargetBranchRules::DestroyService.new(@project, current_user, params).execute
+
+      if result[:status] == :success
+        redirect_to(project_settings_merge_requests_path(@project, anchor: 'target-branch-rules'),
+          notice: _('Target branch rule deleted.'))
+      else
+        redirect_to(project_settings_merge_requests_path(@project, anchor: 'target-branch-rules'),
+          alert: result[:message])
+      end
+    end
+
     private
 
     def create_params
