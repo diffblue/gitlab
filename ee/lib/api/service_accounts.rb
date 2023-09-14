@@ -17,7 +17,7 @@ module API
         if response.status == :success
           present response.payload, with: ::API::Entities::UserBasic, current_user: current_user
         elsif response.reason == :forbidden
-          forbidden!
+          forbidden!(response.message)
         else
           bad_request!(response.message)
         end

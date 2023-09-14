@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe API::ServiceAccounts, :aggregate_failures, feature_category: :user_management do
   let(:user)  { create(:user) }
   let(:admin) { create(:admin) }
+  let(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
 
   describe "POST /service_accounts" do
     subject(:perform_request_as_admin) { post api("/service_accounts", admin, admin_mode: true) }
@@ -12,6 +13,7 @@ RSpec.describe API::ServiceAccounts, :aggregate_failures, feature_category: :use
     context 'when feature is licensed' do
       before do
         stub_licensed_features(service_accounts: true)
+        allow(License).to receive(:current).and_return(license)
       end
 
       context 'when user is an admin' do

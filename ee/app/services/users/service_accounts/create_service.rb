@@ -13,7 +13,9 @@ module Users
       end
 
       def execute
-        return error(error_message, :forbidden) unless can_create_service_account?
+        return error(error_messages[:no_permission], :forbidden) unless can_create_service_account?
+
+        return error(error_messages[:no_seats], :forbidden) unless ultimate? || seats_available?
 
         user = create_user
 
@@ -61,8 +63,11 @@ module Users
         ::Users::UpdateService.new(current_user, { user: user, external: true }).execute
       end
 
-      def error_message
-        _('ServiceAccount|User does not have permission to create a service account.')
+      def error_messages
+        {
+          no_permission: s_('ServiceAccount|User does not have permission to create a service account.'),
+          no_seats: s_('ServiceAccount|No more seats are available to create Service Account User')
+        }
       end
 
       def error(message, reason)
@@ -71,6 +76,16 @@ module Users
 
       def success(user)
         ServiceResponse.success(payload: user)
+      end
+
+      def ultimate?
+        License.current.ultimate?
+      end
+
+      def seats_available?
+        return true if ultimate?
+
+        User.service_account.count < License.current.restricted_user_count.to_i
       end
     end
   end
