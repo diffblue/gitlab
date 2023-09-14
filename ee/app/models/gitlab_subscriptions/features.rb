@@ -160,6 +160,7 @@ module GitlabSubscriptions
       service_accounts
       scoped_labels
       smartcard_auth
+      ssh_certificates
       swimlanes
       target_branch_rules
       type_of_work_analytics
