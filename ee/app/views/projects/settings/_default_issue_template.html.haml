@@ -15,6 +15,6 @@
           .form-group.col-md-9
             = f.text_area :issues_template, class: "form-control gl-form-input", rows: 3, aria: { labelledby: 'issue-settings-default-template-label'}, data: { qa_selector: 'issue_template_field' }
             .text-secondary
-              - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/markdown') }
-              = _('Description parsed with %{link_start}GitLab Flavored Markdown%{link_end}.').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
+              - link = link_to('', help_page_path('user/markdown'), target: '_blank', rel: 'noopener noreferrer')
+              = safe_format(_('Description parsed with %{link_start}GitLab Flavored Markdown%{link_end}.'), tag_pair(link, :link_start, :link_end))
         = f.submit _('Save changes'), data: { qa_selector: 'save_issue_template_button' }, pajamas_button: true
