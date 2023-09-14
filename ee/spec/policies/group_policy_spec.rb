@@ -1653,7 +1653,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       nested_group.add_guest(developer)
       nested_group.add_guest(maintainer)
 
-      group.owners.destroy_all # rubocop: disable Cop/DestroyAll
+      group.members.all_owners.destroy_all # rubocop: disable Cop/DestroyAll
 
       group.add_guest(owner)
       nested_group.add_owner(owner)

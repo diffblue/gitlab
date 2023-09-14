@@ -84,9 +84,13 @@ module EE
     def post_create_hook
       super
 
-      if provisioned_by_this_group?
-        run_after_commit_or_now do
-          notification_service.new_group_member_with_confirmation(self)
+      ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.temporary_ignore_tables_in_transaction(
+        %w[user_details], url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/424283'
+      ) do
+        if provisioned_by_this_group?
+          run_after_commit_or_now do
+            notification_service.new_group_member_with_confirmation(self)
+          end
         end
       end
 
@@ -120,7 +124,12 @@ module EE
 
     override :send_welcome_email?
     def send_welcome_email?
-      !provisioned_by_this_group?
+      # We call `send_welcome_email?` as part of `post_create_hook`
+      ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.temporary_ignore_tables_in_transaction(
+        %w[user_details], url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/424283'
+      ) do
+        !provisioned_by_this_group?
+      end
     end
 
     override :seat_available

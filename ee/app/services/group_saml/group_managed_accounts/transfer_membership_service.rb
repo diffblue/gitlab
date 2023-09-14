@@ -18,19 +18,23 @@ module GroupSaml
 
         return false unless current_user.verified_email?(saml_email)
 
-        ApplicationRecord.transaction do
-          if destroy_non_gma_identities && leave_non_gma_memberships && transfer_user
-            identity_linker = Gitlab::Auth::GroupSaml::IdentityLinker.new(current_user, oauth_data, session, group.saml_provider)
-            identity_linker.link
+        Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.temporary_ignore_tables_in_transaction(
+          %w[users user_preferences user_details identities], url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/424286'
+        ) do
+          ApplicationRecord.transaction do
+            if destroy_non_gma_identities && leave_non_gma_memberships && transfer_user
+              identity_linker = Gitlab::Auth::GroupSaml::IdentityLinker.new(current_user, oauth_data, session, group.saml_provider)
+              identity_linker.link
 
-            raise ActiveRecord::Rollback if identity_linker.failed?
+              raise ActiveRecord::Rollback if identity_linker.failed?
 
-            true
-          else
+              true
+            else
+              raise ActiveRecord::Rollback
+            end
+          rescue Gitlab::Auth::Saml::IdentityLinker::UnverifiedRequest
             raise ActiveRecord::Rollback
           end
-        rescue Gitlab::Auth::Saml::IdentityLinker::UnverifiedRequest
-          raise ActiveRecord::Rollback
         end
       end
 

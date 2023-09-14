@@ -16,9 +16,13 @@ module EE
                           )
             end
 
-            ScimIdentity.transaction do
-              identity.update!(active: false)
-              remove_group_access
+            ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.temporary_ignore_tables_in_transaction(
+              %w[identities], url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/424287'
+            ) do
+              ScimIdentity.transaction do
+                identity.update!(active: false)
+                remove_group_access
+              end
             end
 
             ServiceResponse.success(message: format(

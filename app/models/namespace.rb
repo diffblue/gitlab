@@ -17,6 +17,9 @@ class Namespace < ApplicationRecord
   include BlocksUnsafeSerialization
   include Ci::NamespaceSettings
   include Referable
+  include CrossDatabaseIgnoredTables
+
+  cross_database_ignore_tables %w[routes redirect_routes], url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/424277'
 
   # Tells ActiveRecord not to store the full class name, in order to save some space
   # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/69794
