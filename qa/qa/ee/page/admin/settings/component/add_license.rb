@@ -9,20 +9,20 @@ module QA
             class AddLicense < QA::Page::Base
               view 'ee/app/views/admin/application_settings/_add_license.html.haml' do
                 element 'expand-add-license-button'
-                element :accept_eula_checkbox
-                element :license_key_field
-                element :license_type_key_radio
-                element :license_upload_button
+                element 'accept-eula-checkbox-label'
+                element 'license-key-field'
+                element 'license-type-key-radio-label'
+                element 'license-upload-button'
               end
 
               def add_new_license(key)
                 raise 'License key empty!' if key.to_s.strip.empty?
 
                 click_element('expand-add-license-button')
-                choose_element(:license_type_key_radio, true)
-                fill_element(:license_key_field, key.strip)
-                check_element(:accept_eula_checkbox)
-                click_element(:license_upload_button)
+                click_element('license-type-key-radio-label')
+                fill_element('license-key-field', key.strip)
+                click_element('accept-eula-checkbox-label')
+                click_element('license-upload-button')
               end
             end
           end
