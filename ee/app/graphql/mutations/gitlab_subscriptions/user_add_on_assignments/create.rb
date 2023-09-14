@@ -7,7 +7,7 @@ module Mutations
         graphql_name 'UserAddOnAssignmentCreate'
 
         argument :add_on_purchase_id, ::Types::GlobalIDType[::GitlabSubscriptions::AddOnPurchase],
-          required: true, description: 'Global ID of AddOnPurchase to be assinged to.'
+          required: true, description: 'Global ID of AddOnPurchase to be assigned to.'
 
         argument :user_id, ::Types::GlobalIDType[::User],
           required: true, description: 'Global ID of user to be assigned.'
@@ -15,6 +15,10 @@ module Mutations
         field :add_on_purchase, ::Types::GitlabSubscriptions::AddOnPurchaseType,
           null: true,
           description: 'AddOnPurchase state after mutation.'
+
+        field :user, ::Types::GitlabSubscriptions::AddOnUserType,
+          null: true,
+          description: 'User who the add-on purchase was assigned to.'
 
         authorize :admin_add_on_purchase
 
@@ -24,10 +28,15 @@ module Mutations
             user: user_to_be_assigned
           ).execute
 
-          {
-            add_on_purchase: create_service.success? ? add_on_purchase : nil,
-            errors: create_service.errors
-          }
+          if create_service.success?
+            {
+              add_on_purchase: add_on_purchase,
+              user: user_to_be_assigned,
+              errors: create_service.errors
+            }
+          else
+            { errors: create_service.errors }
+          end
         end
 
         def ready?(add_on_purchase_id:, user_id:)
