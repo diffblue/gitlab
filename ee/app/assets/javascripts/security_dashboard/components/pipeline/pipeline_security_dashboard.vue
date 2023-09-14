@@ -27,6 +27,14 @@ export default {
     GlButton,
   },
   mixins: [glFeatureFlagMixin()],
+  provide() {
+    return {
+      // We can't use this.dismissalDescriptions due to bug in vue-apollo when
+      // provide is called in beforeCreate
+      // See https://github.com/vuejs/vue-apollo/pull/1153 for details
+      dismissalDescriptions: this.$options.propsData.dismissalDescriptions,
+    };
+  },
   inject: [
     'emptyStateSvgPath',
     'loadingErrorIllustrations',
@@ -35,6 +43,13 @@ export default {
     'projectId',
     'vulnerabilitiesEndpoint',
   ],
+  props: {
+    dismissalDescriptions: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
+  },
   data() {
     return {
       securityReportSummary: {},

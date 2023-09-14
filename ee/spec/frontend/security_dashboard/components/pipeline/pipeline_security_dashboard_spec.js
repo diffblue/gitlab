@@ -16,6 +16,7 @@ import SecurityDashboard from 'ee/security_dashboard/components/pipeline/securit
 import SecurityReportsSummary from 'ee/security_dashboard/components/pipeline/security_reports_summary.vue';
 import { DOC_PATH_SECURITY_CONFIGURATION } from 'ee/security_dashboard/constants';
 import { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_UNAUTHORIZED } from '~/lib/utils/http_status';
+import { dismissalDescriptions } from 'ee_jest/vulnerabilities/mock_data';
 import {
   pipelineSecurityReportSummary,
   pipelineSecurityReportSummaryWithErrors,
@@ -61,6 +62,9 @@ describe('Pipeline Security Dashboard component', () => {
         vulnerabilitiesEndpoint,
         loadingErrorIllustrations,
         ...provide,
+      },
+      propsData: {
+        dismissalDescriptions,
       },
       stubs: { PipelineVulnerabilityReport: true, ...stubs },
     });
