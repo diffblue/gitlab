@@ -3,6 +3,7 @@
 
 #js-compliance-report{ data: {
   can_add_edit: @group.subgroup? ? "false" : "true",
+  violations_csv_export_path: Feature.enabled?(:compliance_violation_csv_export, @group) && group_security_compliance_violation_reports_path(@group, format: :csv),
   frameworks_csv_export_path: group_security_compliance_framework_reports_path(@group, format: :csv),
   merge_commits_csv_export_path: group_security_merge_commit_reports_path(@group),
   group_path: @group.full_path,
