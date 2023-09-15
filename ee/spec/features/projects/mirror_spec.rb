@@ -108,17 +108,27 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
     end
 
     describe 'password authentication' do
-      it 'can be set up' do
+      let(:url) { 'http://example.com' }
+      let(:username) { 'user' }
+      let(:password) { 'foo' }
+      let(:direction) { 'Pull' }
+
+      def add_mirror
         visit project_settings_repository_path(project)
         click_button('Add new')
 
         page.within('.project-mirror-settings') do
-          fill_and_wait_for_mirror_url_javascript('Git repository URL', 'http://user@example.com')
+          fill_and_wait_for_mirror_url_javascript('Git repository URL', url)
 
-          select 'Pull', from: 'Mirror direction'
-          fill_in 'Password', with: 'foo'
+          select direction, from: 'Mirror direction'
+          fill_in 'Username', with: username
+          fill_in 'Password', with: password
           click_without_sidekiq 'Mirror repository'
         end
+      end
+
+      it 'can be set up' do
+        add_mirror
 
         expect(page).to have_content('Mirroring settings were successfully updated')
 
@@ -126,6 +136,73 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         expect(project.mirror?).to be_truthy
         expect(import_data.auth_method).to eq('password')
         expect(project.import_url).to eq('http://user:foo@example.com')
+      end
+
+      context 'when username is provided in url' do
+        let(:url) { 'http://urlusername@example.com' }
+
+        it 'will be ignored' do
+          add_mirror
+
+          expect(page).to have_content('Mirroring settings were successfully updated')
+
+          project.reload
+          expect(project.mirror?).to be_truthy
+          expect(import_data.auth_method).to eq('password')
+          expect(project.import_url).to eq('http://user:foo@example.com')
+        end
+      end
+
+      context 'when given special characters' do
+        context 'in the username' do
+          let(:username) { 'u@s+e/r' }
+          let(:password) { 'foo' }
+
+          context 'when adding a pull mirror' do
+            it 'escapes special characters in username' do
+              add_mirror
+
+              project.reload
+              expect(project.import_url).to eq('http://u%40s%2Be%2Fr:foo@example.com')
+            end
+          end
+
+          context 'when adding a push mirror' do
+            let(:direction) { 'Push' }
+
+            it 'escapes special characters in username' do # this one
+              add_mirror
+
+              project.reload
+              expect(project.remote_mirrors.first.url).to eq('http://u%40s%2Be%2Fr:foo@example.com')
+            end
+          end
+        end
+
+        context 'in the password' do
+          let(:username) { 'user' }
+          let(:password) { 'f@o+o/' }
+
+          context 'when adding a pull mirror' do
+            it 'escapes special characters in password' do
+              add_mirror
+
+              project.reload
+              expect(project.import_url).to eq('http://user:f%40o%2Bo%2F@example.com')
+            end
+          end
+
+          context 'when adding a push mirror' do
+            let(:direction) { 'Push' }
+
+            it 'escapes special characters in the password' do # this one
+              add_mirror
+
+              project.reload
+              expect(project.remote_mirrors.first.url).to eq('http://user:f%40o%2Bo%2F@example.com')
+            end
+          end
+        end
       end
 
       it 'can be changed to unauthenticated', quarantine: 'https://gitlab.com/gitlab-org/quality/engineering-productivity/master-broken-incidents/-/issues/1486' do # rubocop:disable Layout/LineLength
@@ -153,9 +230,10 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         click_button('Add new')
 
         page.within('.project-mirror-settings') do
-          fill_and_wait_for_mirror_url_javascript('Git repository URL', 'ssh://user@example.com')
+          fill_and_wait_for_mirror_url_javascript('Git repository URL', 'ssh://example.com')
 
           select('Pull', from: 'Mirror direction')
+          fill_in 'Username', with: 'user'
           select 'SSH public key', from: 'Authentication method'
 
           # Generates an SSH public key with an asynchronous PUT and displays it
@@ -170,9 +248,10 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         click_button('Add new')
 
         page.within('.project-mirror-settings') do
-          fill_and_wait_for_mirror_url_javascript('Git repository URL', 'http://git@example.com')
+          fill_and_wait_for_mirror_url_javascript('Git repository URL', 'http://example.com')
 
           select('Pull', from: 'Mirror direction')
+          fill_in 'Username', with: 'git'
           fill_in 'Password', with: 'test_password'
           click_without_sidekiq 'Mirror repository'
         end
@@ -187,7 +266,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
     end
 
     describe 'SSH public key authentication' do
-      let(:ssh_url) { 'ssh://user@example.com' }
+      let(:ssh_url) { 'ssh://example.com' }
 
       it 'can be set up' do
         visit project_settings_repository_path(project)
@@ -197,6 +276,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
           fill_and_wait_for_mirror_url_javascript('Git repository URL', ssh_url)
 
           select('Pull', from: 'Mirror direction')
+          fill_in 'Username', with: 'user'
           select 'SSH public key', from: 'Authentication method'
 
           click_without_sidekiq 'Mirror repository'
@@ -210,6 +290,26 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         expect(project.username_only_import_url).to eq('ssh://user@example.com')
         expect(import_data.auth_method).to eq('ssh_public_key')
         expect(import_data.password).to be_blank
+      end
+
+      context 'when no username is provided' do
+        it 'import url has no delimiting colon' do
+          visit project_settings_repository_path(project)
+          click_button('Add new')
+
+          page.within('.project-mirror-settings') do
+            fill_and_wait_for_mirror_url_javascript('Git repository URL', ssh_url)
+
+            select('Pull', from: 'Mirror direction')
+            select 'SSH public key', from: 'Authentication method'
+
+            click_without_sidekiq 'Mirror repository'
+          end
+          project.reload
+          expect(project.username_only_import_url).to eq('ssh://example.com')
+          expect(import_data.auth_method).to eq('ssh_public_key')
+          expect(import_data.password).to be_blank
+        end
       end
     end
 

@@ -68,6 +68,7 @@ module EE
           import_data_attributes: %i[
             id
             auth_method
+            user
             password
             ssh_known_hosts
             regenerate_ssh_private_key

@@ -17242,6 +17242,9 @@ msgstr ""
 msgid "Do not force push over diverged refs. After the mirror is created, this setting can only be modified using the API. %{mirroring_docs_link_start}Learn more about this option%{link_closing_tag} and %{mirroring_api_docs_link_start}the API.%{link_closing_tag}"
 msgstr ""
 
+msgid "Do not include the username in the URL, use the username field below if required: %{code_open}https://gitlab.company.com/group/project.git%{code_close}."
+msgstr ""
+
 msgid "Do you want to remove this deploy key?"
 msgstr ""
 
@@ -24796,9 +24799,6 @@ msgid "Include new features from all tiers."
 msgstr ""
 
 msgid "Include the name of the author of the issue, merge request or comment in the email body. By default, GitLab overrides the email sender's name. Some email servers don't support that option."
-msgstr ""
-
-msgid "Include the username in the URL if required: %{code_open}https://username@gitlab.company.com/group/project.git%{code_close}."
 msgstr ""
 
 msgid "Includes LFS objects. It can be overridden per group, or per project. Set to 0 for no limit."
@@ -51511,6 +51511,9 @@ msgid "Username"
 msgstr ""
 
 msgid "Username (optional)"
+msgstr ""
+
+msgid "Username and Password"
 msgstr ""
 
 msgid "Username is already taken."
