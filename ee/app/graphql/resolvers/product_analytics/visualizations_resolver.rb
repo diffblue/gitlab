@@ -13,7 +13,7 @@ module Resolvers
       argument :slug, GraphQL::Types::String, required: false, description: 'Slug of the visualization to return.'
 
       def resolve(slug: nil)
-        visualizations = ::ProductAnalytics::Visualization.for_project(object)
+        visualizations = ::ProductAnalytics::Visualization.for(container: object)
 
         return visualizations if slug.blank?
 

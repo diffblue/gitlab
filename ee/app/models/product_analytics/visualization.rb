@@ -2,7 +2,7 @@
 
 module ProductAnalytics
   class Visualization
-    attr_reader :type, :project, :data, :options, :config, :slug, :errors
+    attr_reader :type, :container, :data, :options, :config, :slug, :errors
 
     VISUALIZATIONS_ROOT_LOCATION = '.gitlab/analytics/dashboards/visualizations'
     SCHEMA_PATH = 'ee/app/validators/json_schemas/analytics_visualization.json'
@@ -28,16 +28,28 @@ module ProductAnalytics
     VALUE_STREAM_DASHBOARD_PATH = 'ee/lib/gitlab/analytics/value_stream_dashboard/visualizations'
     VALUE_STREAM_DASHBOARD_VISUALIZATIONS = %w[dora_chart].freeze
 
-    def self.for_project(project)
-      config_project = project.analytics_dashboards_configuration_project || project
+    def self.for(container:)
+      config_project =
+        container.analytics_dashboards_configuration_project ||
+        container.default_dashboards_configuration_source
 
-      trees = config_project.repository.tree(:head, VISUALIZATIONS_ROOT_LOCATION)
+      visualizations = []
+      visualizations << custom_visualizations(config_project)
+      visualizations << builtin_visualizations(container)
+
+      visualizations.flatten
+    end
+
+    def self.custom_visualizations(config_project)
+      trees = config_project&.repository&.tree(:head, VISUALIZATIONS_ROOT_LOCATION)
+
+      return [] unless trees.present?
 
       trees.entries.map do |entry|
         config = config_project.repository.blob_data_at(config_project.repository.root_ref_sha, entry.path)
 
         new(config: config, slug: File.basename(entry.name, File.extname(entry.name)))
-      end.append(*builtin_visualizations(project))
+      end
     end
 
     def self.load_visualization_data(path, data)
@@ -133,16 +145,12 @@ module ProductAnalytics
       load_visualizations(VALUE_STREAM_DASHBOARD_VISUALIZATIONS, VALUE_STREAM_DASHBOARD_PATH)
     end
 
-    def self.value_stream_dashboards_available?(project)
-      project.licensed_feature_available?(:project_level_analytics_dashboard)
-    end
-
-    def self.builtin_visualizations(project)
+    def self.builtin_visualizations(container)
       visualizations = []
 
       visualizations << product_analytics_visualizations
 
-      visualizations << value_stream_dashboard_visualizations if value_stream_dashboards_available?(project)
+      visualizations << value_stream_dashboard_visualizations if container.value_streams_dashboard_available?
 
       visualizations.flatten
     end

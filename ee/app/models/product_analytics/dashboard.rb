@@ -95,7 +95,7 @@ module ProductAnalytics
     end
 
     def self.value_stream_dashboard(container, config_project)
-      return [] unless value_stream_dashboard_available?(container)
+      return [] unless container.value_streams_dashboard_available?
 
       VALUE_STREAM_DASHBOARD_LIST.map do |name|
         config = load_yaml_dashboard_config(name, 'ee/lib/gitlab/analytics/value_stream_dashboard/dashboards')
@@ -114,7 +114,7 @@ module ProductAnalytics
     end
 
     def self.has_dashboards?(container)
-      container.product_analytics_enabled? || value_stream_dashboard_available?(container)
+      container.product_analytics_enabled? || container.value_streams_dashboard_available?
     end
 
     def self.builtin_dashboards(container, config_project)
@@ -126,17 +126,6 @@ module ProductAnalytics
       builtin << value_stream_dashboard(container, config_project)
 
       builtin
-    end
-
-    def self.value_stream_dashboard_available?(container)
-      licensed_feature =
-        if container.is_a?(Project)
-          :project_level_analytics_dashboard
-        else
-          :group_level_analytics_dashboard
-        end
-
-      container.licensed_feature_available?(licensed_feature)
     end
 
     def ==(other)

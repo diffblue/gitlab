@@ -10,9 +10,14 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
   end
 
   let(:dashboards) { project.product_analytics_dashboards }
+  let(:num_builtin_visualizations) { 15 }
 
   before do
-    stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: true)
+    stub_licensed_features(
+      product_analytics: true,
+      project_level_analytics_dashboard: true,
+      group_level_analytics_dashboard: true
+    )
   end
 
   shared_examples_for 'a valid visualization' do
@@ -22,39 +27,82 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
   end
 
   describe '#slug' do
-    subject { described_class.for_project(project) }
+    subject { described_class.for(container: project) }
 
     it 'returns the slugs' do
       expect(subject.map(&:slug)).to include('cube_bar_chart', 'cube_line_chart')
     end
   end
 
-  describe '.for_project' do
-    subject { described_class.for_project(project) }
+  describe '.for' do
+    context 'when resource_parent is a Project' do
+      subject { described_class.for(container: project) }
 
-    num_builtin_visualizations = 15
+      it 'returns all visualizations stored in the project as well as built-in ones' do
+        num_custom_visualizations = 2
+        expect(subject.count).to eq(num_builtin_visualizations + num_custom_visualizations)
+        expect(subject.map { |v| v.config['type'] }).to include('BarChart', 'LineChart')
+      end
 
-    it 'returns all visualizations stored in the project as well as built-in ones' do
-      num_custom_visualizations = 2
-      expect(subject.count).to eq(num_builtin_visualizations + num_custom_visualizations)
-      expect(subject.map { |v| v.config['type'] }).to include('BarChart', 'LineChart')
+      context 'when a custom dashboard pointer project is configured' do
+        let_it_be(:pointer_project) { create(:project, :with_product_analytics_custom_visualization) }
+
+        before do
+          project.update!(analytics_dashboards_configuration_project: pointer_project)
+        end
+
+        it 'returns custom visualizations from pointer project' do
+          num_custom_visualizations = 1
+          expect(subject.count).to eq(num_builtin_visualizations + num_custom_visualizations)
+          expect(subject.map(&:slug)).to include('example_custom_visualization')
+        end
+
+        it 'does not return custom visualizations from self' do
+          expect(subject.map { |v| v.config['title'] }).not_to include('Daily Something', 'Example title')
+        end
+      end
     end
 
-    context 'when a custom dashboard pointer project is configured' do
-      let_it_be(:pointer_project) { create(:project, :with_product_analytics_custom_visualization) }
+    context 'when resource_parent is a group' do
+      let_it_be_with_reload(:group) { create(:group) }
 
-      before do
-        project.update!(analytics_dashboards_configuration_project: pointer_project)
+      subject { described_class.for(container: group) }
+
+      it 'returns built in visualizations' do
+        expected_visualizations =
+          ProductAnalytics::Visualization::PRODUCT_ANALYTICS_VISUALIZATIONS +
+          ProductAnalytics::Visualization::VALUE_STREAM_DASHBOARD_VISUALIZATIONS
+
+        expect(subject.map(&:slug)).to match_array(expected_visualizations)
       end
 
-      it 'returns custom visualizations from pointer project' do
-        num_custom_visualizations = 1
-        expect(subject.count).to eq(num_builtin_visualizations + num_custom_visualizations)
-        expect(subject.map(&:slug)).to include('example_custom_visualization')
+      context 'when group value stream dashboard is not available' do
+        before do
+          stub_licensed_features(group_level_analytics_dashboard: false)
+        end
+
+        it 'does not include built in visualizations for VSD' do
+          expect(subject.map(&:slug)).to match_array(
+            ProductAnalytics::Visualization::PRODUCT_ANALYTICS_VISUALIZATIONS
+          )
+        end
       end
 
-      it 'does not return custom visualizations from self' do
-        expect(subject.map { |v| v.config['title'] }).not_to include('Daily Something', 'Example title')
+      context 'when a custom configuration project is defined' do
+        let_it_be(:config_project) { create(:project, :with_product_analytics_custom_visualization) }
+
+        before do
+          group.update!(analytics_dashboards_configuration_project: config_project)
+        end
+
+        it 'returns builtin and custom visualizations' do
+          expected_visualizations =
+            ProductAnalytics::Visualization::PRODUCT_ANALYTICS_VISUALIZATIONS +
+            ProductAnalytics::Visualization::VALUE_STREAM_DASHBOARD_VISUALIZATIONS
+          expected_visualizations.push('example_custom_visualization')
+
+          expect(subject.map(&:slug)).to match_array(expected_visualizations)
+        end
       end
     end
   end
@@ -143,7 +191,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
       )
     end
 
-    subject { described_class.for_project(project) }
+    subject { described_class.for(container: project) }
 
     it 'captures the error' do
       vis = (subject.select { |v| v.slug == 'example_invalid_custom_visualization' }).first
