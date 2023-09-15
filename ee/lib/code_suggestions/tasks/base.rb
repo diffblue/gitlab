@@ -5,9 +5,9 @@ module CodeSuggestions
     class Base
       DEFAULT_CODE_SUGGESTIONS_URL = 'https://codesuggestions.gitlab.com'
 
-      def initialize(params)
-        @prefix = params.delete(:prefix)
+      def initialize(params: {}, unsafe_passthrough_params: {})
         @params = params
+        @unsafe_passthrough_params = unsafe_passthrough_params
       end
 
       def endpoint
@@ -22,7 +22,7 @@ module CodeSuggestions
 
       private
 
-      attr_reader :params, :prefix
+      attr_reader :params, :unsafe_passthrough_params
 
       def endpoint_name
         raise NotImplementedError

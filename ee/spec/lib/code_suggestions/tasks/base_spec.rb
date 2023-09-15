@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe CodeSuggestions::Tasks::Base, feature_category: :code_suggestions do
-  subject { described_class.new({}) }
+  subject { described_class.new }
 
   describe '#endpoint' do
     it 'raies NotImplementedError' do

@@ -42,12 +42,6 @@ module CodeSuggestions
           "Verilog" => %w[v]
         }.freeze
 
-        def initialize(params)
-          @instruction = params.delete(:instruction)
-
-          super
-        end
-
         override :endpoint_name
         def endpoint_name
           'generations'
@@ -55,7 +49,7 @@ module CodeSuggestions
 
         override :body
         def body
-          params.merge(
+          unsafe_passthrough_params.merge(
             prompt_version: GATEWAY_PROMPT_VERSION,
             prompt: prompt
           ).to_json
@@ -63,10 +57,8 @@ module CodeSuggestions
 
         private
 
-        attr_reader :instruction
-
         def file_name
-          params.dig('current_file', 'file_name').to_s
+          params.dig(:current_file, :file_name).to_s
         end
 
         def prompt
@@ -83,11 +75,11 @@ module CodeSuggestions
             Already existing code:
 
             ```#{extension}
-            #{prefix}
+            #{params[:prefix]}
             ```
 
             Create new code for the following description:
-            `#{instruction}`
+            `#{params[:instruction]}`
           PROMPT
         end
       end

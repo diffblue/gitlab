@@ -7,14 +7,21 @@ RSpec.describe CodeSuggestions::Tasks::CodeGeneration::FromComment, feature_cate
   let(:instruction) { 'Add code for validating function' }
   let(:file_name) { 'test.py' }
 
-  let(:params) do
+  let(:unsafe_params) do
     {
-      :prefix => prefix,
-      :instruction => instruction,
       'current_file' => {
         'file_name' => file_name,
         'content_above_cursor' => 'some text'
-      }
+      },
+      'telemetry' => [{ 'model_engine' => 'vertex-ai' }]
+    }
+  end
+
+  let(:params) do
+    {
+      prefix: prefix,
+      instruction: instruction,
+      current_file: unsafe_params['current_file'].with_indifferent_access
     }
   end
 
@@ -37,10 +44,10 @@ RSpec.describe CodeSuggestions::Tasks::CodeGeneration::FromComment, feature_cate
   end
 
   describe 'prompt build' do
-    let(:task) { described_class.new(params) }
+    let(:task) { described_class.new(params: params, unsafe_passthrough_params: unsafe_params) }
     let(:endpoint) { 'https://codesuggestions.gitlab.com/v2/code/generations' }
     let(:body) do
-      params.merge(
+      unsafe_params.merge(
         'prompt' => prompt,
         'prompt_version' => 2
       )
