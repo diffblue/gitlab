@@ -24,7 +24,7 @@ module Gitlab
             template = ai_prompt_class.new(merge_request, mr_diff)
 
             ::Gitlab::Llm::VertexAi::Client
-              .new(user)
+              .new(user, tracking_context: tracking_context)
               .text(content: template.to_prompt)
           end
 
