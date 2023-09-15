@@ -48,13 +48,13 @@ RSpec.describe 'Epic shortcuts', :js, feature_category: :portfolio_management do
       find('.js-awards-block')
     end
 
-    it "quotes the selected text" do
+    it "quotes the selected text", quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/11057' do
       close_rich_text_promo_popover_if_present
 
       # This functionality now requires that the reply component has already been opened.
       click_on('Reply to comment')
 
-      note = find('.note-text')
+      note = find('.note-body')
       highlight_content(note)
 
       find('body').native.send_key('r')
