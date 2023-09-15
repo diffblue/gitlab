@@ -3696,6 +3696,9 @@ msgstr ""
 msgid "AdminSettings|The maximum number of included files per pipeline."
 msgstr ""
 
+msgid "AdminSettings|The selected level must be different from the selected default group and project visibility."
+msgstr ""
+
 msgid "AdminSettings|The template for the required pipeline configuration can be one of the GitLab-provided templates, or a custom template added to an instance template repository. %{link_start}How do I create an instance template repository?%{link_end}"
 msgstr ""
 
