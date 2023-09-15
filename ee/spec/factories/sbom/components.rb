@@ -6,5 +6,20 @@ FactoryBot.define do
     purl_type { :npm }
 
     sequence(:name) { |n| "component-#{n}" }
+
+    trait :bundler do
+      name { "bundler" }
+      purl_type { :gem }
+    end
+
+    trait :caddy do
+      name { "caddy" }
+      purl_type { :golang }
+    end
+
+    trait :webpack do
+      name { "webpack" }
+      purl_type { :npm }
+    end
   end
 end

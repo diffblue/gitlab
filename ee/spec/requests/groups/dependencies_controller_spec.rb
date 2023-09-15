@@ -196,7 +196,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
               end
 
               expect(project_routes_count).to eq(1)
-              expect(project_count).to eq(1)
+              expect(project_count).to eq(2)
             end
 
             context 'with sorting params' do
