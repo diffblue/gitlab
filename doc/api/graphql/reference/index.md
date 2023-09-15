@@ -15434,7 +15434,7 @@ Represents a DAST Site Profile.
 
 ### `DastSiteProfileAuth`
 
-Input type for DastSiteProfile authentication.
+DastSiteProfile authentication.
 
 #### Fields
 
