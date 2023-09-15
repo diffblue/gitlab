@@ -1,11 +1,12 @@
 <script>
-import { GlCard, GlIcon } from '@gitlab/ui';
+import { GlCard, GlBadge } from '@gitlab/ui';
+import { __ } from '~/locale';
 
 export default {
   name: 'VerificationStep',
   components: {
     GlCard,
-    GlIcon,
+    GlBadge,
   },
   props: {
     title: {
@@ -34,6 +35,9 @@ export default {
       return { [borderClasses]: this.isActive, [defaultClasses]: true };
     },
   },
+  i18n: {
+    completed: __('Completed'),
+  },
 };
 </script>
 <template>
@@ -41,7 +45,9 @@ export default {
     <template #header>
       <h3 :class="titleClasses">
         {{ title }}
-        <gl-icon v-if="completed" name="check-circle-filled" class="gl-text-green-500" :size="16" />
+        <gl-badge v-if="completed" variant="success" icon="check-circle-filled" icon-size="sm">
+          {{ $options.i18n.completed }}
+        </gl-badge>
       </h3>
     </template>
     <template #default>

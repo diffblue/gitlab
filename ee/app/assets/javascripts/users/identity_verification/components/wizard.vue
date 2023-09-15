@@ -1,11 +1,11 @@
 <script>
+import { GlLoadingIcon, GlButton } from '@gitlab/ui';
 import { kebabCase } from 'lodash';
-import { s__, sprintf } from '~/locale';
-import { visitUrl } from '~/lib/utils/url_utility';
+import { __, s__, sprintf } from '~/locale';
 import { convertArrayToCamelCase, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import axios from '~/lib/utils/axios_utils';
 import { createAlert } from '~/alert';
-import { REDIRECT_TIMEOUT, I18N_GENERIC_ERROR } from '../constants';
+import { I18N_GENERIC_ERROR } from '../constants';
 import EmailVerification from './email_verification.vue';
 import CreditCardVerification from './credit_card_verification.vue';
 import PhoneVerification from './phone_verification.vue';
@@ -18,17 +18,15 @@ export default {
     PhoneVerification,
     EmailVerification,
     VerificationStep,
+    GlLoadingIcon,
+    GlButton,
   },
-  inject: [
-    'verificationSteps',
-    'initialVerificationState',
-    'successfulVerificationPath',
-    'phoneExemptionPath',
-  ],
+  inject: ['verificationStatePath', 'phoneExemptionPath', 'successfulVerificationPath'],
   data() {
     return {
-      steps: this.verificationSteps,
-      stepsVerifiedState: this.initialVerificationState,
+      steps: [],
+      stepsVerifiedState: {},
+      loading: true,
     };
   },
   computed: {
@@ -44,16 +42,32 @@ export default {
     allStepsCompleted() {
       return !Object.entries(this.stepsVerifiedState).filter(([, completed]) => !completed).length;
     },
-    isStandaloneEmailVerification() {
-      return this.steps.length === 1;
-    },
+  },
+  mounted() {
+    this.fetchVerificationState();
   },
   methods: {
+    async fetchVerificationState() {
+      this.loading = true;
+      try {
+        const { data } = await axios.get(this.verificationStatePath);
+        this.setVerificationState(data);
+      } catch (error) {
+        createAlert({
+          message: I18N_GENERIC_ERROR,
+          captureError: true,
+          error,
+        });
+      } finally {
+        this.loading = false;
+      }
+    },
+    setVerificationState(data) {
+      this.steps = convertArrayToCamelCase(data.verification_methods);
+      this.stepsVerifiedState = convertObjectPropsToCamelCase(data.verification_state);
+    },
     onStepCompleted(step) {
       this.stepsVerifiedState[step] = true;
-      if (this.allStepsCompleted) {
-        setTimeout(() => visitUrl(this.successfulVerificationPath), REDIRECT_TIMEOUT);
-      }
     },
     methodComponent(method) {
       // eslint-disable-next-line @gitlab/require-i18n-strings
@@ -72,8 +86,7 @@ export default {
       axios
         .patch(this.phoneExemptionPath)
         .then((response) => {
-          this.steps = convertArrayToCamelCase(response.data.verification_methods);
-          this.stepsVerifiedState = convertObjectPropsToCamelCase(response.data.verification_state);
+          this.setVerificationState(response.data);
         })
         .catch((error) => {
           createAlert({
@@ -92,6 +105,7 @@ export default {
     ccStep: s__('IdentityVerification|Step %{stepNumber}: Verify a payment method'),
     phoneStep: s__('IdentityVerification|Step %{stepNumber}: Verify phone number'),
     emailStep: s__('IdentityVerification|Step %{stepNumber}: Verify email address'),
+    next: __('Next'),
   },
 };
 </script>
@@ -100,13 +114,10 @@ export default {
     <div class="gl-flex-grow-1 gl-max-w-62">
       <header class="gl-text-center">
         <h2>{{ $options.i18n.pageTitle }}</h2>
-        <p v-if="!isStandaloneEmailVerification">{{ $options.i18n.pageDescription }}</p>
+        <p>{{ $options.i18n.pageDescription }}</p>
       </header>
-      <email-verification
-        v-if="isStandaloneEmailVerification"
-        :is-standalone="true"
-        @completed="onStepCompleted(steps[0])"
-      />
+
+      <gl-loading-icon v-if="loading" />
       <template v-for="(step, index) in orderedSteps" v-else>
         <verification-step
           :key="step"
@@ -121,6 +132,14 @@ export default {
           />
         </verification-step>
       </template>
+      <gl-button
+        v-if="allStepsCompleted"
+        :href="successfulVerificationPath"
+        block
+        variant="confirm"
+      >
+        {{ $options.i18n.next }}
+      </gl-button>
     </div>
   </div>
 </template>

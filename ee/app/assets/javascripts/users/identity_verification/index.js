@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
-import { convertArrayToCamelCase, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 
 import IdentityVerificationWizard from './components/wizard.vue';
 
@@ -13,9 +13,8 @@ export const initIdentityVerification = () => {
     email,
     creditCard,
     phoneNumber,
-    verificationState,
-    verificationMethods,
     offerPhoneNumberExemption,
+    verificationStatePath,
     phoneExemptionPath,
     successfulVerificationPath,
   } = convertObjectPropsToCamelCase(JSON.parse(el.dataset.data), { deep: true });
@@ -28,9 +27,8 @@ export const initIdentityVerification = () => {
       email,
       creditCard,
       phoneNumber,
-      verificationSteps: convertArrayToCamelCase(verificationMethods),
-      initialVerificationState: verificationState,
       offerPhoneNumberExemption,
+      verificationStatePath,
       phoneExemptionPath,
       successfulVerificationPath,
     },

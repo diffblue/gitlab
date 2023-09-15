@@ -58,12 +58,13 @@ module IdentityVerificationHelpers
   end
 
   def expect_to_see_identity_verification_page
-    expect(page).to have_content("For added security, you'll need to verify your identity")
+    expect(page).to have_content(s_("IdentityVerification|For added security, you'll need to verify your identity"))
   end
 
-  def expect_to_see_verification_successful_page
-    expect(page).to have_content(s_('IdentityVerification|Verification successful'))
+  def expect_verification_completed
+    expect(page).to have_content(_('Completed'))
+    expect(page).to have_content(_('Next'))
 
-    click_link 'refresh the page'
+    click_link _('Next')
   end
 end

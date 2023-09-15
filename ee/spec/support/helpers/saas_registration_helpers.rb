@@ -83,7 +83,7 @@ module SaasRegistrationHelpers
       verify_email
     end
 
-    expect_to_see_verification_successful_page
+    expect_verification_completed
   end
 
   def user_signs_up(params = {})
@@ -164,7 +164,7 @@ module SaasRegistrationHelpers
       verify_email
     end
 
-    expect_to_see_verification_successful_page
+    expect_verification_completed
   end
 
   def sso_subscription_sign_up
@@ -182,7 +182,7 @@ module SaasRegistrationHelpers
       verify_email
     end
 
-    expect_to_see_verification_successful_page
+    expect_verification_completed
   end
 
   def sso_signup_through_signin
@@ -199,7 +199,7 @@ module SaasRegistrationHelpers
       verify_email
     end
 
-    expect_to_see_verification_successful_page
+    expect_verification_completed
   end
 
   def user_signs_up_through_trial_registration

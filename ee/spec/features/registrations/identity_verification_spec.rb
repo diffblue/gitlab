@@ -27,7 +27,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
       verify_email
 
-      expect_to_see_verification_successful_page
+      expect_verification_completed
 
       expect_to_see_welcome_page
     end
@@ -43,7 +43,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
       verify_email unless skip_email_validation
 
-      expect_to_see_verification_successful_page
+      expect_verification_completed
 
       expect_to_see_welcome_page
     end
@@ -58,7 +58,11 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
         verify_email unless skip_email_validation
 
-        expect_to_see_verification_successful_page
+        # if skip_email_validation = true, email is already verified
+        # plus, verify_credit_card creates a credit_card verification record &
+        # refreshes the page. This causes an automatic redirect to the welcome page,
+        # hence skipping the verification successful badge.
+        expect_verification_completed unless skip_email_validation
 
         expect_to_see_welcome_page
       end
@@ -77,7 +81,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
       verify_email unless skip_email_validation
 
-      expect_to_see_verification_successful_page
+      expect_verification_completed
 
       expect_to_see_welcome_page
     end
@@ -92,7 +96,11 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
         verify_email unless skip_email_validation
 
-        expect_to_see_verification_successful_page
+        # if skip_email_validation = true, email is already verified
+        # plus, verify_credit_card creates a credit_card verification record &
+        # refreshes the page. This causes an automatic redirect to the welcome page,
+        # hence skipping the verification successful badge.
+        expect_verification_completed unless skip_email_validation
 
         expect_to_see_welcome_page
       end

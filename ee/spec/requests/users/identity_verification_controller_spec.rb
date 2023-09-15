@@ -12,41 +12,79 @@ feature_category: :system_access do
   let_it_be(:invalid_verification_user_id) { non_existing_record_id }
 
   shared_examples 'it requires a valid verification_user_id' do |action|
-    before do
-      sign_in confirmed_user
-      stub_session(verification_user_id: invalid_verification_user_id)
-    end
+    context 'when session contains an invalid `verification_user_id`' do
+      before do
+        stub_session(verification_user_id: invalid_verification_user_id)
+      end
 
-    it 'handles sticking, logs the error and redirects', :aggregate_failures do
-      allow(User.sticking).to receive(:find_caught_up_replica)
+      it 'handles sticking' do
+        allow(User.sticking).to receive(:find_caught_up_replica)
         .and_call_original
 
-      expect(User.sticking)
-        .to receive(:find_caught_up_replica)
-        .with(:user, invalid_verification_user_id)
+        expect(User.sticking)
+          .to receive(:find_caught_up_replica)
+          .with(:user, invalid_verification_user_id)
 
-      expect(Gitlab::AppLogger).to receive(:info).with(
-        hash_including(
-          message: 'IdentityVerification::Error',
-          event: 'Verification User Not Found',
-          action: action,
-          username: confirmed_user.username,
-          referer: nil,
-          reason: "signed_in: true, " \
-                  "verification_user_id: #{invalid_verification_user_id}, " \
-                  "state: {\"email\"=>true}, " \
-                  "verified: true"
+        do_request
+
+        stick_object = request.env[::Gitlab::Database::LoadBalancing::RackMiddleware::STICK_OBJECT].first
+        expect(stick_object[0]).to eq(User.sticking)
+        expect(stick_object[1]).to eq(:user)
+        expect(stick_object[2]).to eq(invalid_verification_user_id)
+      end
+
+      it 'redirects to root path' do
+        do_request
+
+        expect(response).to redirect_to(root_path)
+      end
+
+      it 'logs the error' do
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          hash_including(
+            message: 'IdentityVerification::Error',
+            event: 'Verification User Not Found',
+            action: action,
+            username: nil,
+            reason: "signed_in: false, verification_user_id: #{invalid_verification_user_id}"
+          )
         )
-      )
 
-      do_request
+        do_request
+      end
+    end
 
-      expect(response).to redirect_to(root_path)
+    context 'when session contains a valid `verification_user_id`' do
+      before do
+        stub_session(verification_user_id: unconfirmed_user.id)
 
-      stick_object = request.env[::Gitlab::Database::LoadBalancing::RackMiddleware::STICK_OBJECT].first
-      expect(stick_object[0]).to eq(User.sticking)
-      expect(stick_object[1]).to eq(:user)
-      expect(stick_object[2]).to eq(invalid_verification_user_id)
+        do_request
+      end
+
+      it 'sets the user instance variable' do
+        expect(assigns(:user)).to eq(unconfirmed_user)
+      end
+
+      it 'renders identity verification page' do
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
+    context 'when session is empty but a confirmed user is logged in' do
+      before do
+        stub_session(verification_user_id: nil)
+        sign_in confirmed_user
+
+        do_request
+      end
+
+      it 'sets the user instance variable' do
+        expect(assigns(:user)).to eq(confirmed_user)
+      end
+
+      it 'does not redirect to root path' do
+        expect(response).not_to redirect_to(root_path)
+      end
     end
   end
 
@@ -176,6 +214,46 @@ feature_category: :system_access do
         it 'deletes the verification_user_id from the session' do
           expect(request.session.has_key?(:verification_user_id)).to eq(false)
         end
+      end
+    end
+  end
+
+  describe '#verification_state' do
+    subject(:do_request) { get verification_state_identity_verification_path }
+
+    it_behaves_like 'it requires a valid verification_user_id', 'verification_state'
+
+    context 'with a unverified user' do
+      let_it_be(:user) { unconfirmed_user }
+
+      before do
+        stub_session(verification_user_id: user.id)
+      end
+
+      it 'returns verification methods and state' do
+        do_request
+
+        expect(json_response).to eq({
+          'verification_methods' => ["email"],
+          'verification_state' => { "email" => false }
+        })
+      end
+    end
+
+    context 'with a verified user' do
+      let_it_be(:user) { confirmed_user }
+
+      before do
+        sign_in confirmed_user
+      end
+
+      it 'returns verification methods and state' do
+        do_request
+
+        expect(json_response).to eq({
+          'verification_methods' => user.required_identity_verification_methods,
+          'verification_state' => user.identity_verification_state
+        })
       end
     end
   end
@@ -533,10 +611,8 @@ feature_category: :system_access do
       expect(request.session.has_key?(:verification_user_id)).to eq(false)
     end
 
-    it 'renders the template with the after_sign_in_path_for variable' do
-      expect(response).to have_gitlab_http_status(:ok)
-      expect(response).to render_template('successful_verification', layout: 'minimal')
-      expect(assigns(:redirect_url)).to eq(stored_user_return_to_path)
+    it 'redirects to the after_sign_in_path_for variable' do
+      expect(response).to redirect_to(stored_user_return_to_path)
       expect(controller.stored_location_for(:user)).to be_nil
     end
 
@@ -544,8 +620,7 @@ feature_category: :system_access do
       let(:stored_user_return_to_path) { new_subscriptions_path(plan_id: 'bronze_id') }
 
       it 'does not empty out the stored location for user' do
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(assigns(:redirect_url)).to eq(stored_user_return_to_path)
+        expect(response).to redirect_to(stored_user_return_to_path)
         expect(controller.stored_location_for(:user)).to eq(stored_user_return_to_path)
       end
     end
@@ -568,8 +643,6 @@ feature_category: :system_access do
     end
 
     subject(:do_request) { get verify_credit_card_identity_verification_path(params) }
-
-    it_behaves_like 'it requires a valid verification_user_id', 'verify_credit_card'
 
     context 'when request format is html' do
       let(:params) { { format: :html } }
@@ -595,6 +668,7 @@ feature_category: :system_access do
       let(:params) { { format: :json } }
       let(:rate_limited) { false }
       let(:ip) { '1.2.3.4' }
+      let(:used_by_banned_user) { false }
 
       let_it_be(:credit_card_validation) { create(:credit_card_validation, user: user) }
 
@@ -614,9 +688,9 @@ feature_category: :system_access do
         end
       end
 
-      context 'when the user\'s credit card has not been used by a banned user' do
-        let(:used_by_banned_user) { false }
+      it_behaves_like 'it requires a valid verification_user_id', 'verify_credit_card'
 
+      context 'when the user\'s credit card has not been used by a banned user' do
         it 'returns HTTP status 200 and an empty json', :aggregate_failures do
           do_request
 
@@ -728,8 +802,8 @@ feature_category: :system_access do
         do_request
 
         expect(json_response).to eq({
-          'verification_methods' => user.required_identity_verification_methods,
-          'verification_state' => user.identity_verification_state
+          'verification_methods' => %w[credit_card email],
+          'verification_state' => { "credit_card" => false, "email" => false }
         })
       end
 

@@ -5,8 +5,7 @@ module Users
     def identity_verification_data(user)
       {
         data: {
-          verification_methods: user.required_identity_verification_methods,
-          verification_state: user.identity_verification_state,
+          verification_state_path: verification_state_identity_verification_path,
           offer_phone_number_exemption: user.offer_phone_number_exemption?,
           phone_exemption_path: toggle_phone_exemption_identity_verification_path,
           credit_card: {
