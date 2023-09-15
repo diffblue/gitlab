@@ -57,11 +57,14 @@ export default {
       requiresOnboarding: Object.keys(ONBOARDING_FEATURE_COMPONENTS),
       featureDashboards: [],
       userDashboards: [],
-      showCreateButtons: this.glFeatures.combinedAnalyticsDashboardsEditor,
+      showVisualizationDesignerButton: this.glFeatures.combinedAnalyticsVisualizationEditor,
       alert: null,
     };
   },
   computed: {
+    showCreateDashboardButton() {
+      return this.customDashboardsProject && this.glFeatures.combinedAnalyticsDashboardsEditor;
+    },
     showValueStreamsDashboard() {
       return !this.isProject && this.glFeatures.groupAnalyticsDashboards;
     },
@@ -178,12 +181,16 @@ export default {
           }}</gl-link>
         </p>
       </div>
-      <div v-if="showCreateButtons">
-        <gl-button to="visualization-designer" data-testid="visualization-designer-button">
+      <div>
+        <gl-button
+          v-if="showVisualizationDesignerButton"
+          to="visualization-designer"
+          data-testid="visualization-designer-button"
+        >
           {{ s__('Analytics|Visualization Designer') }}
         </gl-button>
         <router-link
-          v-if="customDashboardsProject"
+          v-if="showCreateDashboardButton"
           to="/new"
           class="btn btn-confirm btn-md gl-button"
           data-testid="new-dashboard-button"

@@ -297,12 +297,26 @@ describe('DashboardsList', () => {
       createWrapper({ glFeatures: { combinedAnalyticsDashboardsEditor: true } });
     });
 
+    it('renders the create new dashboard button', () => {
+      expect(findNewDashboardButton().exists()).toBe(true);
+    });
+
+    it('does not render the visualization designer button', () => {
+      expect(findVisualizationDesignerButton().exists()).toBe(false);
+    });
+  });
+
+  describe('when the combinedAnalyticsVisualizationEditor feature flag is enabled', () => {
+    beforeEach(() => {
+      createWrapper({ glFeatures: { combinedAnalyticsVisualizationEditor: true } });
+    });
+
     it('renders the visualization designer button', () => {
       expect(findVisualizationDesignerButton().exists()).toBe(true);
     });
 
-    it('renders the create new dashboard button', () => {
-      expect(findNewDashboardButton().exists()).toBe(true);
+    it('does not render the create new dashboard button', () => {
+      expect(findNewDashboardButton().exists()).toBe(false);
     });
   });
 });

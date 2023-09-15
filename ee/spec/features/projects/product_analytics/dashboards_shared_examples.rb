@@ -325,6 +325,28 @@ RSpec.shared_examples 'product analytics dashboards' do
                 it_behaves_like 'does not render the new dashboard button'
               end
             end
+
+            context 'when combined_analytics_visualization_editor FF is enabled' do
+              before do
+                stub_feature_flags(combined_analytics_visualization_editor: true)
+                visit_page
+              end
+
+              it 'renders the "Visualization Designer" button' do
+                expect(page).to have_content(s_('Analytics|Visualization Designer'))
+              end
+            end
+
+            context 'when combined_analytics_visualization_editor FF is disabled' do
+              before do
+                stub_feature_flags(combined_analytics_visualization_editor: false)
+                visit_page
+              end
+
+              it 'does not render the "Visualization Designer" button' do
+                expect(page).not_to have_content(s_('Analytics|Visualization Designer'))
+              end
+            end
           end
         end
       end
