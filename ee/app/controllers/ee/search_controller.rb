@@ -43,6 +43,10 @@ module EE
       end
 
       before_action only: :show do
+        push_frontend_feature_flag(:search_notes_hide_archived_projects, current_user)
+      end
+
+      before_action only: :show do
         push_frontend_feature_flag(:search_issues_hide_archived_projects, current_user)
       end
 
