@@ -128,6 +128,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::Streaming::InstanceHeaders::Destroy
         mount_mutation ::Mutations::AuditEvents::Streaming::InstanceEventTypeFilters::Create
         mount_mutation ::Mutations::AuditEvents::Streaming::InstanceEventTypeFilters::Destroy
+        mount_mutation ::Mutations::Security::CiConfiguration::ProjectSetContinuousVulnerabilityScanning
 
         prepend(Types::DeprecatedMutations)
       end

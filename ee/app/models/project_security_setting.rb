@@ -23,9 +23,7 @@ class ProjectSecuritySetting < ApplicationRecord
     end
   end
 
-  # TODO: the caller for this method is a graphql mutation implemented as part of
-  # https://gitlab.com/gitlab-org/gitlab/-/issues/424374
   def set_continuous_vulnerability_scans!(enabled:)
-    update!(continuous_vulnerability_scans_enabled: enabled)
+    enabled if update!(continuous_vulnerability_scans_enabled: enabled)
   end
 end
