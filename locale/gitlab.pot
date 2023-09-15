@@ -12277,9 +12277,6 @@ msgstr ""
 msgid "ComplianceReport|No projects found that match filters"
 msgstr ""
 
-msgid "ComplianceReport|No projects with standards adherence checks found"
-msgstr ""
-
 msgid "ComplianceReport|No violations found"
 msgstr ""
 
@@ -12313,6 +12310,9 @@ msgstr ""
 msgid "ComplianceStandardsAdherence|At least two approvals"
 msgstr ""
 
+msgid "ComplianceStandardsAdherence|Failure reason"
+msgstr ""
+
 msgid "ComplianceStandardsAdherence|Have a valid rule that prevents author approved merge requests"
 msgstr ""
 
@@ -12322,10 +12322,37 @@ msgstr ""
 msgid "ComplianceStandardsAdherence|Have a valid rule that requires any merge request to have more than two approvals"
 msgstr ""
 
+msgid "ComplianceStandardsAdherence|How to fix"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Merge request approval rules"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|No projects with standards adherence checks found"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|No rule configured to prevent merge requests approved by committers."
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|No rule is configured to prevent author approved merge requests."
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|No rule is configured to require two approvals."
+msgstr ""
+
 msgid "ComplianceStandardsAdherence|Prevent authors as approvers"
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|Prevent committers as approvers"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Requirement"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|The following features help satisfy this requirement."
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Update approval settings in the project's merge request settings to satisfy this requirement."
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|View details"
@@ -28376,6 +28403,9 @@ msgid "Manage project labels"
 msgstr ""
 
 msgid "Manage projects."
+msgstr ""
+
+msgid "Manage rules"
 msgstr ""
 
 msgid "Manage two-factor authentication"

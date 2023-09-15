@@ -11,6 +11,7 @@ query getProjectComplianceStandardsAdherence($fullPath: ID!) {
         project {
           id
           name
+          webUrl
           complianceFrameworks {
             nodes {
               id
