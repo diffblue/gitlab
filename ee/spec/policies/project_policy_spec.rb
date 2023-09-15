@@ -2038,8 +2038,17 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       let_it_be(:project_with_analytics_private) { create(:project, :analytics_private) }
       let_it_be(:project_with_analytics_enabled) { create(:project, :analytics_enabled) }
 
+      let(:all_read_analytics_permissions) do
+        %i[
+        read_project_merge_request_analytics
+        read_code_review_analytics
+        read_cycle_analytics
+        read_issue_analytics
+        ]
+      end
+
       before do
-        stub_licensed_features(issues_analytics: true, code_review_analytics: true, project_merge_request_analytics: true)
+        stub_licensed_features(issues_analytics: true, code_review_analytics: true, project_merge_request_analytics: true, cycle_analytics_for_projects: true)
 
         project_with_analytics_disabled.add_developer(developer)
         project_with_analytics_private.add_developer(developer)
@@ -2052,17 +2061,25 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         context 'for guest user' do
           let(:current_user) { guest }
 
-          it { is_expected.to be_disallowed(:read_project_merge_request_analytics) }
-          it { is_expected.to be_disallowed(:read_code_review_analytics) }
-          it { is_expected.to be_disallowed(:read_issue_analytics) }
+          it { is_expected.to be_disallowed(*all_read_analytics_permissions) }
         end
 
         context 'for developer' do
           let(:current_user) { developer }
 
-          it { is_expected.to be_disallowed(:read_project_merge_request_analytics) }
-          it { is_expected.to be_disallowed(:read_code_review_analytics) }
-          it { is_expected.to be_disallowed(:read_issue_analytics) }
+          it { is_expected.to be_disallowed(*all_read_analytics_permissions) }
+        end
+
+        context 'for admin', :enable_admin_mode do
+          let(:current_user) { admin }
+
+          it { is_expected.to be_disallowed(*all_read_analytics_permissions) }
+        end
+
+        context 'for auditor' do
+          let(:current_user) { auditor }
+
+          it { is_expected.to be_disallowed(*all_read_analytics_permissions) }
         end
       end
 
@@ -2072,33 +2089,25 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         context 'for guest user' do
           let(:current_user) { guest }
 
-          it { is_expected.to be_disallowed(:read_project_merge_request_analytics) }
-          it { is_expected.to be_disallowed(:read_code_review_analytics) }
-          it { is_expected.to be_disallowed(:read_issue_analytics) }
+          it { is_expected.to be_disallowed(*all_read_analytics_permissions) }
         end
 
         context 'for developer' do
           let(:current_user) { developer }
 
-          it { is_expected.to be_allowed(:read_project_merge_request_analytics) }
-          it { is_expected.to be_allowed(:read_code_review_analytics) }
-          it { is_expected.to be_allowed(:read_issue_analytics) }
+          it { is_expected.to be_allowed(*all_read_analytics_permissions) }
         end
 
         context 'for admin', :enable_admin_mode do
           let(:current_user) { admin }
 
-          it { is_expected.to be_allowed(:read_project_merge_request_analytics) }
-          it { is_expected.to be_allowed(:read_code_review_analytics) }
-          it { is_expected.to be_allowed(:read_issue_analytics) }
+          it { is_expected.to be_allowed(*all_read_analytics_permissions) }
         end
 
         context 'for auditor' do
           let(:current_user) { auditor }
 
-          it { is_expected.to be_allowed(:read_project_merge_request_analytics) }
-          it { is_expected.to be_allowed(:read_code_review_analytics) }
-          it { is_expected.to be_allowed(:read_issue_analytics) }
+          it { is_expected.to be_allowed(*all_read_analytics_permissions) }
         end
       end
 
@@ -2110,31 +2119,26 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
           it { is_expected.to be_disallowed(:read_project_merge_request_analytics) }
           it { is_expected.to be_disallowed(:read_code_review_analytics) }
+          it { is_expected.to be_disallowed(:read_cycle_analytics) }
           it { is_expected.to be_allowed(:read_issue_analytics) }
         end
 
         context 'for developer' do
           let(:current_user) { developer }
 
-          it { is_expected.to be_allowed(:read_project_merge_request_analytics) }
-          it { is_expected.to be_allowed(:read_code_review_analytics) }
-          it { is_expected.to be_allowed(:read_issue_analytics) }
+          it { is_expected.to be_allowed(*all_read_analytics_permissions) }
         end
 
         context 'for admin', :enable_admin_mode do
           let(:current_user) { admin }
 
-          it { is_expected.to be_allowed(:read_project_merge_request_analytics) }
-          it { is_expected.to be_allowed(:read_code_review_analytics) }
-          it { is_expected.to be_allowed(:read_issue_analytics) }
+          it { is_expected.to be_allowed(*all_read_analytics_permissions) }
         end
 
         context 'for auditor' do
           let(:current_user) { auditor }
 
-          it { is_expected.to be_allowed(:read_project_merge_request_analytics) }
-          it { is_expected.to be_allowed(:read_code_review_analytics) }
-          it { is_expected.to be_allowed(:read_issue_analytics) }
+          it { is_expected.to be_allowed(*all_read_analytics_permissions) }
         end
       end
     end
