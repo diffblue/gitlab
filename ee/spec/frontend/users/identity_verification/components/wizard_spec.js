@@ -1,9 +1,11 @@
+import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { visitUrl } from '~/lib/utils/url_utility';
+import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
+import waitForPromises from 'helpers/wait_for_promises';
 import { HTTP_STATUS_OK, HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 import IdentityVerificationWizard from 'ee/users/identity_verification/components/wizard.vue';
 import VerificationStep from 'ee/users/identity_verification/components/verification_step.vue';
@@ -19,12 +21,10 @@ jest.mock('~/lib/utils/url_utility', () => ({
 
 describe('IdentityVerificationWizard', () => {
   let wrapper;
-  let steps;
   let axiosMock;
 
   const DEFAULT_PROVIDE = {
-    verificationSteps: ['creditCard', 'email'],
-    initialVerificationState: { creditCard: false, email: false },
+    verificationStatePath: '/users/identity_verification/verification_state',
     successfulVerificationPath: '/users/identity_verification/success',
     phoneExemptionPath: '/users/identity_verification/toggle_phone_exemption',
   };
@@ -33,84 +33,105 @@ describe('IdentityVerificationWizard', () => {
     wrapper = shallowMount(IdentityVerificationWizard, {
       provide: { ...DEFAULT_PROVIDE, ...provide },
     });
-
-    steps = wrapper.findAllComponents(VerificationStep);
   };
 
+  const findSteps = () => wrapper.findAllComponents(VerificationStep);
   const findHeader = () => wrapper.find('h2');
   const findDescription = () => wrapper.find('p');
+  const findNextButton = () => wrapper.findComponent(GlButton);
+
+  const mockVerificationState = (mockState) => {
+    axiosMock.onGet(DEFAULT_PROVIDE.verificationStatePath).replyOnce(HTTP_STATUS_OK, {
+      verification_methods: Object.keys(mockState),
+      verification_state: mockState,
+    });
+  };
+
+  beforeEach(() => {
+    axiosMock = new MockAdapter(axios);
+  });
+
+  afterEach(() => {
+    axiosMock.restore();
+    createAlert.mockClear();
+  });
 
   describe('Default', () => {
-    beforeEach(() => {
-      createComponent({
-        provide: {
-          verificationSteps: ['creditCard', 'phone', 'email'],
-          initialVerificationState: { creditCard: false, phone: false, email: false },
-        },
-      });
+    beforeEach(async () => {
+      mockVerificationState({ credit_card: false, phone: false, email: false });
+      createComponent();
+      await waitForPromises();
     });
 
     it('displays the header', () => {
-      expect(findHeader().text()).toBe(wrapper.vm.$options.i18n.pageTitle);
+      expect(findHeader().text()).toBe(s__('IdentityVerification|Help us keep GitLab secure'));
     });
 
     it('displays the description', () => {
-      expect(findDescription().text()).toBe(wrapper.vm.$options.i18n.pageDescription);
+      expect(findDescription().text()).toBe(
+        s__(
+          "IdentityVerification|For added security, you'll need to verify your identity in a few quick steps.",
+        ),
+      );
     });
 
     it('renders the correct verification method components in order', () => {
-      expect(steps).toHaveLength(3);
-      expect(steps.at(0).findComponent(CreditCardVerification).exists()).toBe(true);
-      expect(steps.at(1).findComponent(PhoneVerification).exists()).toBe(true);
-      expect(steps.at(2).findComponent(EmailVerification).exists()).toBe(true);
+      expect(findSteps()).toHaveLength(3);
+      expect(findSteps().at(0).findComponent(CreditCardVerification).exists()).toBe(true);
+      expect(findSteps().at(1).findComponent(PhoneVerification).exists()).toBe(true);
+      expect(findSteps().at(2).findComponent(EmailVerification).exists()).toBe(true);
     });
 
     it('renders steps with correct number and title', () => {
-      expect(steps.at(0).props('title')).toBe('Step 1: Verify a payment method');
-      expect(steps.at(1).props('title')).toBe('Step 2: Verify phone number');
-      expect(steps.at(2).props('title')).toBe('Step 3: Verify email address');
+      expect(findSteps().at(0).props('title')).toBe('Step 1: Verify a payment method');
+      expect(findSteps().at(1).props('title')).toBe('Step 2: Verify phone number');
+      expect(findSteps().at(2).props('title')).toBe('Step 3: Verify email address');
     });
   });
 
   describe('Active verification step', () => {
     describe('when all steps are incomplete', () => {
-      it('is the first step', () => {
+      beforeEach(async () => {
+        mockVerificationState({ credit_card: false, phone: false, email: false });
         createComponent();
+        await waitForPromises();
+      });
 
-        expect(steps.at(0).props('isActive')).toBe(true);
-        expect(steps.at(1).props('isActive')).toBe(false);
+      it('is the first step', () => {
+        expect(findSteps().at(0).props('isActive')).toBe(true);
+        expect(findSteps().at(1).props('isActive')).toBe(false);
       });
     });
 
     describe('when some steps are complete', () => {
+      beforeEach(async () => {
+        mockVerificationState({ credit_card: true, phone: false, email: true });
+        createComponent();
+        await waitForPromises();
+      });
+
       it('shows the incomplete steps at the end', () => {
-        createComponent({
-          provide: {
-            verificationSteps: ['creditCard', 'phone', 'email'],
-            initialVerificationState: { creditCard: true, phone: false, email: true },
-          },
-        });
+        expect(findSteps().at(0).props('isActive')).toBe(false);
+        expect(findSteps().at(1).props('isActive')).toBe(false);
+        expect(findSteps().at(2).props('isActive')).toBe(true);
 
-        expect(steps.at(0).props('isActive')).toBe(false);
-        expect(steps.at(1).props('isActive')).toBe(false);
-        expect(steps.at(2).props('isActive')).toBe(true);
-
-        expect(steps.at(0).props('title')).toBe('Step 1: Verify a payment method');
-        expect(steps.at(1).props('title')).toBe('Step 2: Verify email address');
-        expect(steps.at(2).props('title')).toBe('Step 3: Verify phone number');
+        expect(findSteps().at(0).props('title')).toBe('Step 1: Verify a payment method');
+        expect(findSteps().at(1).props('title')).toBe('Step 2: Verify email address');
+        expect(findSteps().at(2).props('title')).toBe('Step 3: Verify phone number');
       });
     });
 
     describe('when all steps are complete', () => {
-      it('is none of the steps', () => {
-        createComponent({
-          provide: {
-            initialVerificationState: { creditCard: true, email: true },
-          },
-        });
+      beforeEach(async () => {
+        mockVerificationState({ credit_card: true, phone: true, email: true });
+        createComponent();
+        await waitForPromises();
+      });
 
-        expect(steps.at(0).props('isActive')).toBe(false);
-        expect(steps.at(1).props('isActive')).toBe(false);
+      it('shows all steps as completed', () => {
+        expect(findSteps().at(0).props('completed')).toBe(true);
+        expect(findSteps().at(1).props('completed')).toBe(true);
+        expect(findSteps().at(2).props('completed')).toBe(true);
       });
     });
   });
@@ -123,78 +144,47 @@ describe('IdentityVerificationWizard', () => {
       });
     };
 
-    const expectNoActiveMethod = (stepWrappers) => {
+    const expectAllMethodsToBeCompleted = (stepWrappers) => {
       stepWrappers.forEach((stepWrapper) => {
-        expect(stepWrapper.props('isActive')).toBe(false);
+        expect(stepWrapper.props('completed')).toBe(true);
       });
     };
 
-    beforeEach(() => {
+    beforeEach(async () => {
+      mockVerificationState({ credit_card: false, phone: false, email: false });
       createComponent();
+      await waitForPromises();
     });
 
     it('goes from first to last one step at a time and redirects after all are completed', async () => {
-      const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+      expect(findNextButton().exists()).toBe(false);
 
-      expectMethodToBeActive(1, steps.wrappers);
+      expectMethodToBeActive(1, findSteps().wrappers);
 
-      steps.at(0).findComponent(CreditCardVerification).vm.$emit('completed');
+      findSteps().at(0).findComponent(CreditCardVerification).vm.$emit('completed');
       await nextTick();
 
-      expect(setTimeoutSpy).not.toHaveBeenCalled();
-      expectMethodToBeActive(2, steps.wrappers);
+      expectMethodToBeActive(2, findSteps().wrappers);
 
-      steps.at(1).findComponent(EmailVerification).vm.$emit('completed');
+      findSteps().at(1).findComponent(PhoneVerification).vm.$emit('completed');
       await nextTick();
 
-      expectNoActiveMethod(steps.wrappers);
+      expectMethodToBeActive(3, findSteps().wrappers);
 
-      jest.runAllTimers();
+      findSteps().at(2).findComponent(EmailVerification).vm.$emit('completed');
+      await nextTick();
 
-      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
-      expect(visitUrl).toHaveBeenCalledWith(DEFAULT_PROVIDE.successfulVerificationPath);
-    });
-  });
+      expect(findNextButton().exists()).toBe(true);
 
-  describe('when there is only one step', () => {
-    beforeEach(() => {
-      createComponent({ provide: { verificationSteps: ['email'] } });
-    });
-
-    it('does not wrap the method component with a VerificationStep', () => {
-      expect(steps).toHaveLength(0);
-    });
-
-    it('renders the method component', () => {
-      expect(wrapper.findComponent(EmailVerification).exists()).toBe(true);
-    });
-
-    it('redirects to the successfulVerificationPath after completion', () => {
-      const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
-      wrapper.findComponent(EmailVerification).vm.$emit('completed');
-
-      jest.runAllTimers();
-
-      expect(setTimeoutSpy).toHaveBeenCalledTimes(1);
-      expect(visitUrl).toHaveBeenCalledWith(DEFAULT_PROVIDE.successfulVerificationPath);
+      expectAllMethodsToBeCompleted(findSteps().wrappers);
     });
   });
 
   describe('when the `exemptionRequested` event is fired from the phone verification step', () => {
-    beforeEach(() => {
-      axiosMock = new MockAdapter(axios);
-
-      createComponent({
-        provide: {
-          verificationSteps: ['phone', 'email'],
-          initialVerificationState: { phone: false, email: true },
-        },
-      });
-    });
-
-    afterEach(() => {
-      createAlert.mockClear();
-      axiosMock.restore();
+    beforeEach(async () => {
+      mockVerificationState({ phone: false, email: false });
+      createComponent();
+      await waitForPromises();
     });
 
     it('renders the credit card verification step instead of the phone verification step', async () => {

@@ -11,8 +11,9 @@ module Users
     EVENT_CATEGORIES = %i[email phone credit_card error toggle_phone_exemption].freeze
 
     skip_before_action :authenticate_user!
+
     before_action :require_verification_user!
-    before_action :require_unverified_user!, except: :success
+    before_action :require_unverified_user!, except: [:verification_state, :success]
     before_action :redirect_banned_user, only: [:show]
     before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session]
 
@@ -21,6 +22,16 @@ module Users
     layout 'minimal'
 
     def show; end
+
+    def verification_state
+      # if the back button is pressed, don't cache the user's identity verification state
+      no_cache_headers
+
+      render json: {
+        verification_methods: @user.required_identity_verification_methods,
+        verification_state: @user.identity_verification_state
+      }
+    end
 
     def verify_email_code
       result = verify_token
@@ -99,7 +110,7 @@ module Users
       set_redirect_url
       experiment(:phone_verification_for_low_risk_users, user: @user).track(:registration_completed)
 
-      render 'devise/sessions/successful_verification'
+      redirect_to @redirect_url
     end
 
     def verify_credit_card
@@ -157,14 +168,20 @@ module Users
     end
 
     def require_verification_user!
-      if verification_user_id = session[:verification_user_id]
-        load_balancer_stick_request(::User, :user, verification_user_id)
-        @user = User.find_by_id(verification_user_id)
-        return if @user.present?
-      end
+      @user = find_verification_user || current_user
+
+      return if @user.present?
 
       log_verification_user_not_found
       redirect_to root_path
+    end
+
+    def find_verification_user
+      return unless session[:verification_user_id]
+
+      verification_user_id = session[:verification_user_id]
+      load_balancer_stick_request(::User, :user, verification_user_id)
+      User.find_by_id(verification_user_id)
     end
 
     def require_unverified_user!

@@ -92,8 +92,7 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
 
     def expected_data
       {
-        verification_methods: mock_required_identity_verification_methods,
-        verification_state: mock_identity_verification_state,
+        verification_state_path: verification_state_identity_verification_path,
         offer_phone_number_exemption: mock_offer_phone_number_exemption,
         phone_exemption_path: toggle_phone_exemption_identity_verification_path,
         credit_card: {

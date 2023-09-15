@@ -24,13 +24,6 @@ export default {
     GlButton,
   },
   inject: ['email'],
-  props: {
-    isStandalone: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-  },
   data() {
     return {
       verificationCode: '',
@@ -128,48 +121,45 @@ export default {
 </script>
 <template>
   <div>
-    <p :class="{ 'gl-text-center': isStandalone }">
-      <span v-if="isStandalone">{{ $options.i18n.headerStandalone }}</span>
+    <p>
       <gl-sprintf :message="$options.i18n.header">
         <template #email>
           <b>{{ email.obfuscated }}</b>
         </template>
       </gl-sprintf>
     </p>
-    <div :class="{ 'gl-p-5 gl-border gl-rounded-base': isStandalone }">
-      <gl-form @submit.prevent="verify">
-        <gl-form-group
-          :label="$options.i18n.code"
-          label-for="verification_code"
+    <gl-form @submit.prevent="verify">
+      <gl-form-group
+        :label="$options.i18n.code"
+        label-for="verification_code"
+        :state="isValidInput"
+        :invalid-feedback="invalidFeedback"
+      >
+        <gl-form-input
+          v-model="verificationCode"
+          name="verification_code"
+          :autofocus="true"
+          autocomplete="one-time-code"
+          inputmode="numeric"
+          maxlength="6"
           :state="isValidInput"
-          :invalid-feedback="invalidFeedback"
-        >
-          <gl-form-input
-            v-model="verificationCode"
-            name="verification_code"
-            :autofocus="true"
-            autocomplete="one-time-code"
-            inputmode="numeric"
-            maxlength="6"
-            :state="isValidInput"
-            trim
-          />
-        </gl-form-group>
-        <div class="gl-font-sm gl-text-secondary">
-          <gl-icon name="information-o" :size="12" />
-          {{ $options.i18n.noCode }}
-          <gl-link class="gl-font-sm" @click="resend"> {{ $options.i18n.resend }}</gl-link>
-        </div>
-        <gl-button
-          class="gl-mt-5 gl-mb-3"
-          block
-          variant="confirm"
-          type="submit"
-          :disabled="!isValidInput"
-        >
-          {{ $options.i18n.verify }}
-        </gl-button>
-      </gl-form>
-    </div>
+          trim
+        />
+      </gl-form-group>
+      <div class="gl-font-sm gl-text-secondary">
+        <gl-icon name="information-o" :size="12" />
+        {{ $options.i18n.noCode }}
+        <gl-link class="gl-font-sm" @click="resend"> {{ $options.i18n.resend }}</gl-link>
+      </div>
+      <gl-button
+        class="gl-mt-5 gl-mb-3"
+        block
+        variant="confirm"
+        type="submit"
+        :disabled="!isValidInput"
+      >
+        {{ $options.i18n.verify }}
+      </gl-button>
+    </gl-form>
   </div>
 </template>

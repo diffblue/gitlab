@@ -6,8 +6,9 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js,
   feature_category: :system_access do
   include EmailHelpers
   include SessionsHelper
+  include IdentityVerificationHelpers
 
-  let(:new_user) { build_stubbed(:user) }
+  let(:new_user) { build_stubbed(:user, :no_super_sidebar) }
   let(:user) { User.find_by_username(new_user.username) }
 
   before do
@@ -38,24 +39,26 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js,
     end
 
     it 'shows the verification page' do
-      expect(page).to have_content(format(s_("IdentityVerification|For added security, you'll need to verify your "\
-        "identity. We've sent a verification code to %{email}"), email: obfuscated_email(new_user.email)))
+      expect(page).to have_content(s_(
+        "IdentityVerification|For added security, you'll need to verify your identity in a few quick steps."
+      ))
+
+      expect(page).to have_content(
+        format(s_("IdentityVerification|We've sent a verification code to %{email}"),
+          email: obfuscated_email(new_user.email))
+      )
     end
 
     describe 'verifying the code' do
-      shared_examples 'successfully confirms the user and shows the verification successful page' do
-        it 'successfully confirms the user and shows the verification successful page' do
+      shared_examples 'successfully confirms the user' do
+        it 'successfully confirms the user and shows the completed badge and next button' do
           verify_code confirmation_code
 
-          expect(page).to have_current_path(success_identity_verification_path)
-          expect(page).to have_content(s_('IdentityVerification|Verification successful'))
-          expect(page).to have_selector(
-            "meta[http-equiv='refresh'][content='3; url=#{users_sign_up_welcome_path}']", visible: :hidden
-          )
+          expect_verification_completed
         end
       end
 
-      it_behaves_like 'successfully confirms the user and shows the verification successful page'
+      it_behaves_like 'successfully confirms the user'
 
       it 'shows client side empty eror message' do
         verify_code ''
@@ -103,7 +106,7 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js,
       context 'when user email is mixed case' do
         let(:new_user) { build_stubbed(:user, email: 'testEmailAddress@example.com') }
 
-        it_behaves_like 'successfully confirms the user and shows the verification successful page'
+        it_behaves_like 'successfully confirms the user'
       end
     end
 
@@ -147,11 +150,13 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js,
 
       verify_code confirmation_code
 
-      expect(page).to have_current_path(success_identity_verification_path)
+      expect_verification_completed
 
-      stub_feature_flags(identity_verification_credit_card: user)
+      fill_in_welcome_form
 
-      sign_out(user)
+      stub_feature_flags(identity_verification_credit_card: true)
+
+      user_signs_out
 
       gitlab_sign_in(user, password: new_user.password)
 
@@ -183,5 +188,17 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js,
 
   def random_code(code)
     (different_code = rand.to_s[2..7]) == code ? random_code(code) : different_code
+  end
+
+  def fill_in_welcome_form
+    select 'Software Developer', from: 'Role'
+    click_button 'Get started!'
+  end
+
+  def user_signs_out
+    find_by_testid('user-dropdown').click
+    click_link 'Sign out'
+
+    expect(page).to have_button('Sign in')
   end
 end

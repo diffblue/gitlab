@@ -1,4 +1,4 @@
-import { GlIcon } from '@gitlab/ui';
+import { GlBadge } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import VerificationStep from 'ee/users/identity_verification/components/verification_step.vue';
 
@@ -23,7 +23,7 @@ describe('VerificationStep', () => {
     });
   };
 
-  const findIcon = () => wrapper.findComponent(GlIcon);
+  const findBadge = () => wrapper.findComponent(GlBadge);
   const findTitle = () => wrapper.findByText(DEFAULT_PROPS.title);
   const findStep = () => wrapper.findComponent(StepComponent);
 
@@ -37,7 +37,7 @@ describe('VerificationStep', () => {
     });
 
     it('does not display completed icon', () => {
-      expect(findIcon().exists()).toBe(false);
+      expect(findBadge().exists()).toBe(false);
     });
 
     it('does not render the default child component', () => {
@@ -50,8 +50,12 @@ describe('VerificationStep', () => {
       createComponent({ props: { completed: true } });
     });
 
-    it('displays completed icon', () => {
-      expect(findIcon().exists()).toBe(true);
+    it('displays completed badge', () => {
+      expect(findBadge().exists()).toBe(true);
+      expect(findBadge().props()).toMatchObject({
+        variant: 'success',
+        icon: 'check-circle-filled',
+      });
     });
   });
 
