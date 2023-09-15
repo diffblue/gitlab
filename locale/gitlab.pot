@@ -37691,9 +37691,6 @@ msgstr ""
 msgid "PrometheusService|Monitor application health with Prometheus metrics and dashboards"
 msgstr ""
 
-msgid "PrometheusService|More information"
-msgstr ""
-
 msgid "PrometheusService|New metric"
 msgstr ""
 
