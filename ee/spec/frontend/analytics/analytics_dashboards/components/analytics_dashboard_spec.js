@@ -251,10 +251,8 @@ describe('AnalyticsDashboard', () => {
           .customizableDashboardVisualizations.nodes;
 
       expect(findDashboard().props().availableVisualizations).toMatchObject({
-        'Product analytics': {
-          loading: false,
-          visualizations,
-        },
+        loading: false,
+        visualizations,
       });
     });
 

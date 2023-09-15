@@ -11,7 +11,7 @@ import {
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { saveCustomDashboard } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { NEW_DASHBOARD, PRODUCT_ANALYTICS_TITLE } from '../constants';
+import { NEW_DASHBOARD } from '../constants';
 import getProductAnalyticsDashboardQuery from '../graphql/queries/get_product_analytics_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_product_analytics_visualizations.query.graphql';
 
@@ -56,10 +56,8 @@ export default {
       initialDashboard: null,
       showEmptyState: false,
       availableVisualizations: {
-        [PRODUCT_ANALYTICS_TITLE]: {
-          loading: true,
-          visualizations: [],
-        },
+        loading: true,
+        visualizations: [],
       },
       defaultFilters: buildDefaultDashboardFilters(window.location.search),
       isSaving: false,
@@ -142,11 +140,8 @@ export default {
       update(data) {
         const visualizations = data?.project?.customizableDashboardVisualizations?.nodes;
         return {
-          ...this.availableVisualizations,
-          [PRODUCT_ANALYTICS_TITLE]: {
-            loading: false,
-            visualizations,
-          },
+          loading: false,
+          visualizations,
         };
       },
       error(error) {

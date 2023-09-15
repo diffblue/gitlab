@@ -19,6 +19,7 @@ import {
   CUSTOM_DATE_RANGE_KEY,
   DEFAULT_SELECTED_OPTION_INDEX,
 } from './filters/constants';
+import { CATEGORY_SINGLE_STATS, CATEGORY_CHARTS, CATEGORY_TABLES } from './constants';
 
 const isCustomOption = (option) => option && option === CUSTOM_DATE_RANGE_KEY;
 
@@ -70,10 +71,24 @@ export const isEmptyPanelData = (visualizationType, data) => {
   return isEmpty(data);
 };
 
-export const availableVisualizationsValidator = (obj) => {
-  return Object.values(obj).every(
-    ({ loading, visualizations }) => typeof loading === 'boolean' && Array.isArray(visualizations),
-  );
+/**
+ * Validator for the availableVisualizations property
+ */
+export const availableVisualizationsValidator = ({ loading, visualizations }) => {
+  return typeof loading === 'boolean' && Array.isArray(visualizations);
+};
+
+/**
+ * Get the category key for visualizations by their type. Default is "charts".
+ */
+export const getVisualizationCategory = (visualization) => {
+  if (visualization.type === 'SingleStat') {
+    return CATEGORY_SINGLE_STATS;
+  }
+  if (visualization.type === 'DataTable') {
+    return CATEGORY_TABLES;
+  }
+  return CATEGORY_CHARTS;
 };
 
 export const getUniquePanelId = () => uniqueId('panel-');

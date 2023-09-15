@@ -7,6 +7,7 @@ import {
   availableVisualizationsValidator,
   getDashboardConfig,
   updateApolloCache,
+  getVisualizationCategory,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { parsePikadayDate } from '~/lib/utils/datetime_utility';
 import {
@@ -20,6 +21,11 @@ import { createMockClient } from 'helpers/mock_apollo_helper';
 import { TYPENAME_PRODUCT_ANALYTICS_DASHBOARD } from 'ee/analytics/analytics_dashboards/graphql/constants';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
+import {
+  CATEGORY_SINGLE_STATS,
+  CATEGORY_CHARTS,
+  CATEGORY_TABLES,
+} from 'ee/vue_shared/components/customizable_dashboard/constants';
 import { mockDateRangeFilterChangePayload, dashboard } from './mock_data';
 
 const option = DATE_RANGE_OPTIONS[0];
@@ -127,22 +133,13 @@ describe('isEmptyPanelData', () => {
 });
 
 describe('availableVisualizationsValidator', () => {
-  it('returns true when there are no available visualizations', () => {
-    const result = availableVisualizationsValidator({});
+  it('returns true when the object contains all properties', () => {
+    const result = availableVisualizationsValidator({ loading: false, visualizations: [] });
     expect(result).toBe(true);
   });
 
-  it('returns true when the options have the required keys', () => {
-    const result = availableVisualizationsValidator({
-      foo: { loading: false, visualizations: [] },
-    });
-    expect(result).toBe(true);
-  });
-
-  it('returns false when the options dot not have the required keys', () => {
-    const result = availableVisualizationsValidator({
-      foo: { loading: false, bar: [] },
-    });
+  it('returns false when the object does not contain all properties', () => {
+    const result = availableVisualizationsValidator({ visualizations: [] });
     expect(result).toBe(false);
   });
 });
@@ -259,5 +256,17 @@ describe('updateApolloCache', () => {
     expect(modifiedData).toEqual({
       nodes: [{ __ref: 'some/existing/dashboardRef' }, { __ref: dashboardRef }],
     });
+  });
+});
+
+describe('getVisualizationCategory', () => {
+  it.each`
+    category                 | type
+    ${CATEGORY_SINGLE_STATS} | ${'SingleStat'}
+    ${CATEGORY_TABLES}       | ${'DataTable'}
+    ${CATEGORY_CHARTS}       | ${'LineChart'}
+    ${CATEGORY_CHARTS}       | ${'FooBar'}
+  `('returns $category when the visualization type is $type', ({ category, type }) => {
+    expect(getVisualizationCategory({ type })).toBe(category);
   });
 });

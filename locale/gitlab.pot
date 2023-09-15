@@ -5368,6 +5368,12 @@ msgstr ""
 msgid "Analytics|Add a visualization"
 msgstr ""
 
+msgid "Analytics|Add to dashboard"
+msgstr ""
+
+msgid "Analytics|Add visualization"
+msgstr ""
+
 msgid "Analytics|Add visualizations"
 msgstr ""
 
@@ -5393,6 +5399,9 @@ msgid "Analytics|By GitLab"
 msgstr ""
 
 msgid "Analytics|Cancel"
+msgstr ""
+
+msgid "Analytics|Charts"
 msgstr ""
 
 msgid "Analytics|Choose a chart type on the right"
@@ -5524,13 +5533,13 @@ msgstr ""
 msgid "Analytics|Select a measurement"
 msgstr ""
 
-msgid "Analytics|Select a visualization from the sidebar to get started."
-msgstr ""
-
 msgid "Analytics|Select a visualization type"
 msgstr ""
 
 msgid "Analytics|Single Statistic"
+msgstr ""
+
+msgid "Analytics|Single stats"
 msgstr ""
 
 msgid "Analytics|Something is wrong with your panel visualization configuration. See %{linkStart}troubleshooting documentation%{linkEnd}."
@@ -5540,6 +5549,9 @@ msgid "Analytics|Something went wrong while connecting to your data source. See 
 msgstr ""
 
 msgid "Analytics|Something went wrong."
+msgstr ""
+
+msgid "Analytics|Tables"
 msgstr ""
 
 msgid "Analytics|To create your own dashboards, first configure a project to store your dashboards."
@@ -35682,9 +35694,6 @@ msgid "ProductAnalytics|Compares feature usage of all features against each othe
 msgstr ""
 
 msgid "ProductAnalytics|Compares page views of all pages against each other"
-msgstr ""
-
-msgid "ProductAnalytics|Create a visualization"
 msgstr ""
 
 msgid "ProductAnalytics|Creating your product analytics instance..."
