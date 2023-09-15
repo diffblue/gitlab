@@ -1,10 +1,10 @@
-import { GlAlert, GlDisclosureDropdown, GlEmptyState, GlSprintf } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { GlDisclosureDropdown, GlEmptyState, GlSprintf } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { INSIGHTS_CONFIGURATION_TEXT } from 'ee/insights/constants';
 import Insights from 'ee/insights/components/insights.vue';
 import { createStore } from 'ee/insights/stores';
@@ -41,12 +41,13 @@ const invalidKeyMocks = {
 };
 
 const createComponent = (store, options = {}) => {
-  const { mocks = defaultMocks } = options;
-  return shallowMount(Insights, {
+  const { mocks = defaultMocks, props = {} } = options;
+  return shallowMountExtended(Insights, {
     store,
     propsData: {
       endpoint: TEST_HOST,
       queryEndpoint: `${TEST_HOST}/query`,
+      ...props,
     },
     stubs: ['router-link', 'router-view'],
     mocks,
@@ -59,6 +60,8 @@ describe('Insights component', () => {
   let vuexStore;
 
   const findGlDisclosureDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
+  const findFilteredOutAlert = () => wrapper.findByTestId('insights-filtered-out-alert');
+  const findNoticeAlert = () => wrapper.findByTestId('insights-notice-alert');
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
@@ -242,6 +245,44 @@ describe('Insights component', () => {
         expect(findGlDisclosureDropdown().attributes().disabled).toBeUndefined();
       });
     });
+
+    describe('notice alert', () => {
+      const page = {
+        title,
+        charts: [chart1, chart2],
+      };
+
+      const mockNotice = 'Sample notice';
+
+      beforeEach(() => {
+        vuexStore.state.insights.configLoading = false;
+        vuexStore.state.insights.activePage = page;
+        vuexStore.state.insights.configData = {
+          bugsPerTeam: page,
+        };
+      });
+
+      describe('when there is a notice', () => {
+        beforeEach(() => {
+          wrapper = createComponent(vuexStore, { props: { notice: mockNotice } });
+        });
+
+        it('should display a notice alert with the correct text', () => {
+          expect(findNoticeAlert().exists()).toBe(true);
+          expect(findNoticeAlert().text()).toBe(mockNotice);
+        });
+      });
+
+      describe('when there is no notice', () => {
+        beforeEach(() => {
+          wrapper = createComponent(vuexStore, { props: { notice: '' } });
+        });
+
+        it('should not display a notice alert', () => {
+          expect(findNoticeAlert().exists()).toBe(false);
+        });
+      });
+    });
   });
 
   describe('empty config', () => {
@@ -271,7 +312,7 @@ describe('Insights component', () => {
 
     it('displays a warning', async () => {
       await nextTick();
-      expect(wrapper.findComponent(GlAlert).text()).toContain(
+      expect(findFilteredOutAlert().text()).toContain(
         'This project is filtered out in the insights.yml file',
       );
     });

@@ -109,9 +109,6 @@ export default {
         INSIGHTS_REPORT_DROPDOWN_EMPTY_TEXT
       );
     },
-    showAlert() {
-      return this.note !== '';
-    },
   },
   mounted() {
     this.fetchConfigData(this.endpoint);
@@ -155,18 +152,20 @@ export default {
       <gl-loading-icon :inline="true" size="lg" />
     </div>
     <div v-else-if="allItemsAreFilteredOut" class="insights-wrapper">
-      <gl-alert>{{ $options.i18n.insightsPageFilteredOut }}</gl-alert>
+      <gl-alert data-testid="insights-filtered-out-alert">{{
+        $options.i18n.insightsPageFilteredOut
+      }}</gl-alert>
     </div>
     <div v-else-if="configPresent" class="insights-wrapper">
       <gl-disclosure-dropdown
         class="js-insights-dropdown"
-        data-qa-selector="insights_dashboard_dropdown"
+        data-testid="insights_dashboard_dropdown"
         toggle-class="dropdown-menu-toggle gl-field-error-outline"
         :disabled="pageLoading"
         :items="pages"
         :toggle-text="pageDropdownTitle"
       />
-      <gl-alert v-if="showAlert" :dismissible="false">
+      <gl-alert v-if="notice" data-testid="insights-notice-alert" :dismissible="false">
         {{ notice }}
       </gl-alert>
       <insights-page :query-endpoint="queryEndpoint" :page-config="activePage" />
