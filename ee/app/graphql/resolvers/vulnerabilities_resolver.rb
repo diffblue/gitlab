@@ -44,6 +44,10 @@ module Resolvers
              required: false,
              description: 'Returns only the vulnerabilities which have linked issues.'
 
+    argument :has_merge_request, GraphQL::Types::Boolean,
+             required: false,
+             description: 'Returns only the vulnerabilities which have linked merge requests.'
+
     argument :image, [GraphQL::Types::String],
              required: false,
              description: "Filter vulnerabilities by location image. When this filter is present, "\
