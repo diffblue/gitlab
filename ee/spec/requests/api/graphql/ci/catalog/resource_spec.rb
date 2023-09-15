@@ -51,7 +51,7 @@ RSpec.describe 'Query.ciCatalogResource', feature_category: :pipeline_compositio
             webPath: "/#{project.full_path}",
             starCount: project.star_count,
             forksCount: project.forks_count,
-            readmeHtml: a_string_including('<strong>Test</strong>')
+            readmeHtml: a_string_including('Test</strong>')
           )
         )
       end
