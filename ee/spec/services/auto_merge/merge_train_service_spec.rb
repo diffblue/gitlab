@@ -296,6 +296,14 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       subject
     end
 
+    it 'generates new todos', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/324122' do
+      todos = merge_request.author.reload.todos
+      expect { subject }.to change { todos.count }
+
+      expect(todos.last.merge_train_removed?).to be_truthy
+      expect(todos.last.state).to eq("pending")
+    end
+
     context 'when the other merge request is following the merge request' do
       let!(:merge_request_2) do
         create(:merge_request, :on_train,
