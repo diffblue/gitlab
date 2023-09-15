@@ -570,6 +570,10 @@ module EE
           .default_project_deletion_protection
       end
 
+      condition(:continuous_vulnerability_scanning_available) do
+        ::Feature.enabled?(:dependency_scanning_on_advisory_ingestion)
+      end
+
       rule { needs_new_sso_session }.policy do
         prevent :read_project
       end
@@ -700,6 +704,10 @@ module EE
       rule do
         (maintainer | owner | admin) & pages_multiple_versions_available
       end.enable :pages_multiple_versions
+
+      rule { continuous_vulnerability_scanning_available & can?(:developer_access) }.policy do
+        enable :enable_continuous_vulnerability_scans
+      end
     end
 
     override :lookup_access_level!

@@ -67,8 +67,8 @@ RSpec.describe ProjectSecuritySetting, feature_category: :software_composition_a
     with_them do
       let(:setting) { create(:project_security_setting, continuous_vulnerability_scans_enabled: value_before) }
 
-      specify do
-        setting.set_continuous_vulnerability_scans!(enabled: enabled)
+      it 'updates the attribute and returns the new value' do
+        expect(setting.set_continuous_vulnerability_scans!(enabled: enabled)).to eq(value_after)
         expect(setting.reload.continuous_vulnerability_scans_enabled).to eq(value_after)
       end
     end
