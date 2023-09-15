@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe ProtectedBranches::DestroyService, feature_category: :compliance_management do
+  let(:project) { protected_branch.project }
   let(:protected_branch) { create(:protected_branch) }
   let(:branch_name) { protected_branch.name }
-  let(:project) { protected_branch.project }
   let(:user) { project.first_owner }
 
   let!(:security_orchestration_policy_configuration) do
@@ -74,10 +74,16 @@ RSpec.describe ProtectedBranches::DestroyService, feature_category: :compliance_
       end
 
       context 'with blocking scan result policy' do
-        include_context 'with scan result policy blocking protected branches'
+        let_it_be(:project) { create(:project, :repository) }
+        let(:protected_branch) { create(:protected_branch, project: project, name: 'master') }
 
-        it 'blocks unprotecting branches' do
-          expect { service.execute(protected_branch) }.to raise_error(Gitlab::Access::AccessDeniedError)
+        include_context 'with scan result policy blocking protected branches' do
+          let(:branch_name) { protected_branch.name }
+          let(:policy_configuration) { security_orchestration_policy_configuration }
+
+          it 'blocks unprotecting branches' do
+            expect { service.execute(protected_branch) }.to raise_error(Gitlab::Access::AccessDeniedError)
+          end
         end
       end
     end

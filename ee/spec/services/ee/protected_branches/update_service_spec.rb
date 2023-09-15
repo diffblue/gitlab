@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe ProtectedBranches::UpdateService, feature_category: :compliance_management do
+  let_it_be(:project) { create(:project, :repository) }
   let(:branch_name) { 'feature' }
-  let(:protected_branch) { create(:protected_branch, name: branch_name) }
-  let(:project) { protected_branch.project }
+  let(:protected_branch) { create(:protected_branch, name: branch_name, project: project) }
   let(:user) { project.first_owner }
 
   subject(:service) { described_class.new(project, user, params) }
@@ -38,7 +38,15 @@ RSpec.describe ProtectedBranches::UpdateService, feature_category: :compliance_m
       end
 
       context 'with blocking scan result policy' do
-        include_context 'with scan result policy blocking protected branches'
+        before do
+          project.repository.add_branch(user, protected_branch.name, 'master')
+        end
+
+        include_context 'with scan result policy blocking protected branches' do
+          let(:policy_configuration) do
+            create(:security_orchestration_policy_configuration, project: protected_branch.project)
+          end
+        end
 
         it 'blocks unprotecting branches' do
           expect { service.execute(protected_branch) }.to raise_error(Gitlab::Access::AccessDeniedError)

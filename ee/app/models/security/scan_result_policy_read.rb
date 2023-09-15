@@ -25,10 +25,6 @@ module Security
     validates :project_approval_settings, json_schema: { filename: 'scan_result_policy_project_approval_settings' },
       allow_blank: true
 
-    scope :blocking_protected_branches, -> do
-      where("project_approval_settings->>'block_unprotecting_branches' = 'true'")
-    end
-
     def newly_detected?
       license_states.include?(ApprovalProjectRule::NEWLY_DETECTED)
     end

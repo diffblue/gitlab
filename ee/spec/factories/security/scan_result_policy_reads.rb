@@ -8,9 +8,5 @@ FactoryBot.define do
     orchestration_policy_idx { 0 }
     match_on_inclusion { true }
     sequence :rule_idx
-
-    trait :blocking_protected_branches do
-      project_approval_settings { { block_unprotecting_branches: true } }
-    end
   end
 end
