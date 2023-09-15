@@ -125,7 +125,7 @@ export const fetch = async ({
   filters = {},
 }) => {
   const userQuery = buildCubeQuery(query, queryOverrides, filters);
-  const resultSet = await createCubeJsApi(projectId).load(userQuery);
+  const resultSet = await createCubeJsApi(projectId).load(userQuery, { castNumerics: true });
 
   return VISUALIZATION_PARSERS[visualizationType](resultSet, userQuery, visualizationOptions);
 };

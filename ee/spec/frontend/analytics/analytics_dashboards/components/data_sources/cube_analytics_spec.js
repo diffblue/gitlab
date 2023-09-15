@@ -40,6 +40,7 @@ describe('Cube Analytics Data Source', () => {
   const visualizationType = 'LineChart';
   const query = { measures: ['SnowplowTrackedEvents.count'] };
   const queryOverrides = { measures: ['SnowplowTrackedEvents.userLanguage'] };
+  const cubeJsOptions = { castNumerics: true };
 
   describe('fetch', () => {
     beforeEach(() => {
@@ -49,7 +50,7 @@ describe('Cube Analytics Data Source', () => {
     itSetsUpCube();
 
     it('loads the query with the query override', () => {
-      expect(mockLoad).toHaveBeenCalledWith(queryOverrides);
+      expect(mockLoad).toHaveBeenCalledWith(queryOverrides, cubeJsOptions);
     });
 
     describe('formats the data', () => {
@@ -195,6 +196,7 @@ describe('Cube Analytics Data Source', () => {
               },
             ],
           }),
+          cubeJsOptions,
         );
       },
     );
