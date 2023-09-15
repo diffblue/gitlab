@@ -126,7 +126,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['listsFlags', 'highlightedLists', 'fullBoardIssuesCount']),
+    ...mapState(['listsFlags', 'highlightedLists']),
     baseVariables() {
       return {
         fullPath: this.fullPath,
@@ -234,7 +234,7 @@ export default {
     eventHub.$off(`toggle-issue-form-${this.list.id}`, this.toggleForm);
   },
   methods: {
-    ...mapActions(['moveIssue', 'moveIssueEpic', 'fetchItemsForList']),
+    ...mapActions(['moveIssue', 'fetchItemsForList']),
     toggleForm() {
       this.showIssueForm = !this.showIssueForm;
       if (this.showIssueForm && this.isUnassignedIssuesLane) {

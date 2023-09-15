@@ -80,7 +80,7 @@ export default {
       variables() {
         return {
           ...this.baseVariables,
-          issueFilters: this.filterParams,
+          issueFilters: this.filtersToUse,
         };
       },
       skip() {
@@ -101,7 +101,6 @@ export default {
     ...mapState([
       'epics',
       'pageInfoByListId',
-      'listsFlags',
       'filterParams',
       'epicsSwimlanesFetchInProgress',
       'hasMoreEpics',
@@ -174,9 +173,7 @@ export default {
       return this.isUnassignedCollapsed ? 'chevron-right' : 'chevron-down';
     },
     epicButtonLabel() {
-      return this.epicsSwimlanesFetchInProgress.epicLanesFetchMoreInProgress
-        ? s__('Board|Loading epics')
-        : s__('Board|Load more epics');
+      return this.isLoadingMoreEpics ? s__('Board|Loading epics') : s__('Board|Load more epics');
     },
     shouldShowLoadMoreUnassignedIssues() {
       return !this.isUnassignedCollapsed && this.hasMoreUnassignedIssues;
@@ -217,7 +214,7 @@ export default {
         await this.$apollo.queries.rawEpics.fetchMore({
           variables: {
             ...this.baseVariables,
-            issueFilters: this.filterParams,
+            issueFilters: this.filtersToUse,
             after: this.pageInfo.endCursor,
           },
         });

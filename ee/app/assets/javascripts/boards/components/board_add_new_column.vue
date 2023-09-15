@@ -29,7 +29,7 @@ import boardLabelsQuery from '~/boards/graphql/board_labels.query.graphql';
 import groupBoardMilestonesQuery from '~/boards/graphql/group_board_milestones.query.graphql';
 import projectBoardMilestonesQuery from '~/boards/graphql/project_board_milestones.query.graphql';
 import { setError } from '~/boards/graphql/cache_updates';
-import { getListByTypeId } from '~/boards//boards_util';
+import { getListByTypeId } from '~/boards/boards_util';
 import usersAutocompleteQuery from '~/graphql_shared/queries/users_autocomplete.query.graphql';
 import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 

@@ -139,7 +139,10 @@ export default {
       return formatDate(this.epic.createdAt);
     },
     isLoading() {
-      return Boolean(this.epicsFlags[this.epic.id]?.isLoading);
+      return (
+        Boolean(this.epicsFlags[this.epic.id]?.isLoading) ||
+        this.$apollo.queries.listsWithIssues.loading
+      );
     },
     shouldDisplay() {
       return this.issuesCount > 0 || this.isLoading;
