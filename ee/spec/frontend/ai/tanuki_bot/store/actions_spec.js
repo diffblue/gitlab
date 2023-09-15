@@ -24,11 +24,7 @@ describe('TanukiBot Store Actions', () => {
       const aiContentResponse = {
         content,
       };
-      const oldDocumentationResponse = {
-        content: JSON.stringify({ content, sources: extras.sources }),
-        extras,
-      };
-      const newDocumentationResponse = {
+      const documentationResponse = {
         content,
         extras,
       };
@@ -37,8 +33,7 @@ describe('TanukiBot Store Actions', () => {
         messageData                                                         | expectedPayload
         ${aiContentResponse}                                                | ${{ content, role: GENIE_CHAT_MODEL_ROLES.user }}
         ${{ ...aiContentResponse, role: GENIE_CHAT_MODEL_ROLES.assistant }} | ${{ content, role: GENIE_CHAT_MODEL_ROLES.assistant }}
-        ${oldDocumentationResponse}                                         | ${{ content, extras, role: GENIE_CHAT_MODEL_ROLES.user }}
-        ${newDocumentationResponse}                                         | ${{ content, extras, role: GENIE_CHAT_MODEL_ROLES.user }}
+        ${documentationResponse}                                            | ${{ content, extras, role: GENIE_CHAT_MODEL_ROLES.user }}
       `(
         'should commit the correct mutations for "$messageData" response',
         ({ messageData, expectedPayload }) => {
