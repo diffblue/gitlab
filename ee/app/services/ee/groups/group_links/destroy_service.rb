@@ -9,17 +9,18 @@ module EE
         override :execute
         def execute(one_or_more_links, skip_authorization: false)
           super.tap do |links|
-            log_audit_events(links)
+            next unless links.is_a?(Array)
+
+            perform_after_destroy_actions(links)
           end
         end
 
         private
 
-        def log_audit_events(links)
-          return unless links.is_a?(Array)
-
+        def perform_after_destroy_actions(links)
           links.each do |link|
             log_audit_event(link.shared_group, link.shared_with_group)
+            enqueue_refresh_add_on_assignments_worker(link)
           end
         end
 
@@ -35,6 +36,13 @@ module EE
           }
 
           ::Gitlab::Audit::Auditor.audit(audit_context)
+        end
+
+        def enqueue_refresh_add_on_assignments_worker(link)
+          return unless ::Feature.enabled?(:hamilton_seat_management)
+
+          GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
+            .perform_async(link.shared_group.root_ancestor.id)
         end
       end
     end
