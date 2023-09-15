@@ -1678,4 +1678,31 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       it { is_expected.to be_a(MergeTrains::Train) }
     end
   end
+
+  describe '#should_be_rebased?' do
+    subject { merge_request.should_be_rebased? }
+
+    context 'when merge source is no longer a fast-forward' do
+      before do
+        allow(merge_request.target_project).to receive(:ff_merge_must_be_possible?).and_return(true)
+        allow(merge_request).to receive(:ff_merge_possible?).and_return(false)
+      end
+
+      it { is_expected.to eq true }
+
+      context 'when MR is on an up-to-date fast-forward merge train' do
+        before do
+          car = create(:merge_train_car, merge_request: merge_request)
+
+          merge_request.update!(
+            merge_params: merge_request.merge_params.merge(
+              'train_ref' => { 'commit_sha' => car.pipeline.sha }
+            )
+          )
+        end
+
+        it { is_expected.to eq false }
+      end
+    end
+  end
 end
