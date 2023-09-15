@@ -1,6 +1,4 @@
 <script>
-// eslint-disable-next-line no-restricted-imports
-import { mapActions } from 'vuex';
 import BoardListHeaderFoss from '~/boards/components/board_list_header.vue';
 import { fetchPolicies } from '~/lib/graphql';
 import { n__, __, sprintf } from '~/locale';
@@ -76,9 +74,6 @@ export default {
         }
       },
     },
-  },
-  methods: {
-    ...mapActions(['setFullBoardIssuesCount']),
   },
 };
 </script>

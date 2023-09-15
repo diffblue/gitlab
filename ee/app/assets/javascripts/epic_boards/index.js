@@ -99,6 +99,7 @@ function mountBoardApp(el) {
       weightFeatureAvailable: parseBoolean(el.dataset.weightFeatureAvailable),
       healthStatusFeatureAvailable: parseBoolean(el.dataset.healthStatusFeatureAvailable),
       scopedLabelsAvailable: parseBoolean(el.dataset.scopedLabels),
+      allowSubEpics: parseBoolean(el.dataset.subEpicsFeatureAvailable),
       milestoneListsAvailable: false,
       assigneeListsAvailable: false,
       iterationListsAvailable: false,

@@ -45,6 +45,7 @@ const componentConfig = {
     BoardCardMoveToPosition,
   },
   provide: {
+    allowSubEpics: true,
     scopedLabelsAvailable: true,
     isEpicBoard: true,
     issuableType: TYPE_EPIC,
