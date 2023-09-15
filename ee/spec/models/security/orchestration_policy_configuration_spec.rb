@@ -642,14 +642,14 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       let(:action) { nil }
 
       shared_examples "scan result policy" do |required_rule_keys|
-        %i[name enabled rules actions].each do |key|
+        %i[name enabled rules].each do |key|
           context "without #{key}" do
             before do
               scan_result_policy.delete(key)
             end
 
             specify do
-              expect(errors).to contain_exactly("property '/scan_result_policy/0' is missing required keys: #{key}")
+              expect(errors).to include("property '/scan_result_policy/0' is missing required keys: #{key}")
             end
           end
         end
@@ -855,6 +855,59 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
           end
 
           it_behaves_like "branch_exceptions"
+        end
+
+        context "without actions or approval_settings" do
+          before do
+            scan_result_policy.delete(:actions)
+            scan_result_policy.delete(:approval_settings)
+          end
+
+          specify do
+            expect(errors).to contain_exactly("property '/scan_result_policy/0' is missing required keys: actions",
+              "property '/scan_result_policy/0' is missing required keys: approval_settings")
+          end
+        end
+
+        context "with approval_settings" do
+          let(:approval_settings) do
+            {
+              prevent_approval_by_author: true,
+              prevent_approval_by_commit_author: true,
+              remove_approvals_with_new_commit: true,
+              require_password_to_approve: false
+            }
+          end
+
+          specify { expect(errors).to be_empty }
+
+          context "without actions" do
+            before do
+              scan_result_policy.delete(:actions)
+            end
+
+            specify { expect(errors).to be_empty }
+          end
+        end
+
+        context "with actions" do
+          let(:action) do
+            {
+              type: "require_approval",
+              approvals_required: 1,
+              user_approvers_ids: [42]
+            }
+          end
+
+          specify { expect(errors).to be_empty }
+
+          context "without approval_settings" do
+            before do
+              scan_result_policy.delete(:approval_settings)
+            end
+
+            specify { expect(errors).to be_empty }
+          end
         end
       end
 

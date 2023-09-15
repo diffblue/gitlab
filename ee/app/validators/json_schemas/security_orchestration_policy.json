@@ -322,11 +322,23 @@
       "additionalItems": false,
       "items": {
         "maxItems": 5,
-        "required": [
-          "name",
-          "enabled",
-          "rules",
-          "actions"
+        "anyOf": [
+          {
+            "required": [
+              "name",
+              "enabled",
+              "rules",
+              "actions"
+            ]
+          },
+          {
+            "required": [
+              "name",
+              "enabled",
+              "rules",
+              "approval_settings"
+            ]
+          }
         ],
         "type": "object",
         "properties": {
