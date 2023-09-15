@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import { GlAlert } from '@gitlab/ui';
 import ComplianceStandardsAdherenceReport from 'ee/compliance_dashboard/components/standards_adherence_report/report.vue';
 import ComplianceStandardsAdherenceTable from 'ee/compliance_dashboard/components/standards_adherence_report/standards_adherence_table.vue';
@@ -12,7 +12,7 @@ describe('ComplianceStandardsAdherenceReport component', () => {
   const findAdherencesTable = () => wrapper.findComponent(ComplianceStandardsAdherenceTable);
 
   const createComponent = () => {
-    wrapper = mount(ComplianceStandardsAdherenceReport, {
+    wrapper = shallowMount(ComplianceStandardsAdherenceReport, {
       propsData: {
         groupPath,
       },

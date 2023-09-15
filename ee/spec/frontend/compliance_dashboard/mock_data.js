@@ -45,6 +45,7 @@ export const createComplianceAdherence = (id, checkName) => ({
   project: {
     id: 'gid://gitlab/Project/1',
     name: 'Example Project',
+    webUrl: 'example.com/groups/example-group/example-project',
     complianceFrameworks: {
       nodes: {
         id: 'gid://gitlab/ComplianceManagement::Framework/1',
@@ -52,6 +53,7 @@ export const createComplianceAdherence = (id, checkName) => ({
         description: 'asds',
         color: '#0000ff',
         __typename: 'ComplianceFramework',
+        default: true,
       },
     },
   },
@@ -63,7 +65,10 @@ export const createComplianceAdherencesResponse = ({
 } = {}) => ({
   data: {
     group: {
+      id: 'gid://gitlab/Group/1',
+      __typename: 'Group',
       projectComplianceStandardsAdherence: {
+        __typename: 'ComplianceAdherenceConnection',
         nodes: Array(count)
           .fill(null)
           .map((_, id) => createComplianceAdherence(id, checkName)),
