@@ -22,7 +22,9 @@ module Security
 
       security_orchestration_policy_configuration.namespace.all_projects.not_aimed_for_deletion.find_in_batches.each do |projects|
         projects.each do |project|
-          user = project.security_policy_bot || schedule.owner
+          user = project.security_policy_bot
+          next unless user
+
           with_context(project: project, user: user) do
             Security::ScanExecutionPolicies::RuleScheduleWorker.perform_async(project.id, user.id, schedule.id)
           end

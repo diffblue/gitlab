@@ -16,10 +16,26 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
       end
 
       context 'when schedule is created for security orchestration policy configuration in project' do
-        it 'invokes the rule schedule worker' do
-          expect(Security::ScanExecutionPolicies::RuleScheduleWorker).to receive(:perform_async).with(schedule.security_orchestration_policy_configuration.project.id, schedule.owner.id, schedule.id)
+        let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
 
-          worker.perform
+        context 'when a project does not have a security_policy_bot' do
+          it 'does not invoke the rule schedule worker' do
+            expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async)
+
+            worker.perform
+          end
+        end
+
+        context 'when a project does have a security_policy_bot' do
+          before do
+            security_orchestration_policy_configuration.project.add_guest(security_policy_bot)
+          end
+
+          it 'invokes the rule schedule worker' do
+            expect(Security::ScanExecutionPolicies::RuleScheduleWorker).to receive(:perform_async).with(schedule.security_orchestration_policy_configuration.project.id, security_policy_bot.id, schedule.id)
+
+            worker.perform
+          end
         end
 
         it 'updates next run at value' do
@@ -44,7 +60,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
       end
 
       context 'when policy has a security_policy_bot user' do
-        let_it_be(:security_policy_bot) { create(:user, user_type: :security_policy_bot) }
+        let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
         let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration) }
         let_it_be(:schedule) { create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: security_orchestration_policy_configuration) }
 
