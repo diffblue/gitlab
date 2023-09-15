@@ -102,7 +102,7 @@ module EE
         field :ai_messages, ::Types::Ai::ChatMessageType.connection_type,
               resolver: ::Resolvers::Ai::MessagesResolver,
               alpha: { milestone: '16.1' },
-              description: 'Find AI Duo Chat messages.'
+              description: 'Find GitLab Duo Chat messages.'
 
         field :ci_queueing_history,
               ::Types::Ci::QueueingHistoryType,
