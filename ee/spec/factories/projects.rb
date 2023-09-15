@@ -45,6 +45,12 @@ FactoryBot.modify do
       end
     end
 
+    trait :with_cvs do
+      after(:create) do |project|
+        project.security_setting.update!(continuous_vulnerability_scans_enabled: true)
+      end
+    end
+
     trait :with_compliance_framework do
       association :compliance_framework_setting, factory: :compliance_framework_project_setting
     end

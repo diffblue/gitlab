@@ -158,6 +158,23 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe '.filter_by_cvs_enabled scope' do
+    let_it_be(:project_with_cvs) { create(:project, :with_cvs) }
+    let_it_be(:project_without_cvs) { create(:project) }
+
+    let_it_be(:matching_occurrence) do
+      create(:sbom_occurrence, component: create(:sbom_component), project: project_with_cvs)
+    end
+
+    let_it_be(:non_matching_occurrence) do
+      create(:sbom_occurrence, component: create(:sbom_component), project: project_without_cvs)
+    end
+
+    it 'returns occurrences having a project where cvs is enabled' do
+      expect(described_class.filter_by_cvs_enabled).to eq([matching_occurrence])
+    end
+  end
+
   describe '.order_by_id' do
     let_it_be(:first) { create(:sbom_occurrence) }
     let_it_be(:second) { create(:sbom_occurrence) }
