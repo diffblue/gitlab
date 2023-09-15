@@ -58,7 +58,7 @@ RSpec.describe Projects::GroupLinks::DestroyService do
     let(:worker) { GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker }
 
     it 'enqueues RefreshUserAssignmentsWorker with correct arguments' do
-      expect(worker).to receive(:perform_async).with(project.root_ancestor.id).and_call_original
+      expect(worker).to receive(:perform_async).with(project.root_ancestor.id)
 
       subject.execute(group_link)
     end

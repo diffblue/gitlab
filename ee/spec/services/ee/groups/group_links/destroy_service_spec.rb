@@ -39,7 +39,7 @@ RSpec.describe Groups::GroupLinks::DestroyService, '#execute', feature_category:
       let(:worker) { GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker }
 
       it 'enqueues RefreshUserAssignmentsWorker with correct arguments' do
-        expect(worker).to receive(:perform_async).with(sub_group_shared.root_ancestor.id).and_call_original
+        expect(worker).to receive(:perform_async).with(sub_group_shared.root_ancestor.id)
 
         subject.execute(link)
       end
@@ -83,7 +83,7 @@ RSpec.describe Groups::GroupLinks::DestroyService, '#execute', feature_category:
       expect(GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker).to receive(:perform_async)
         .exactly(links.size).times do |arg|
           expect(arg).to eq(shared_group.id).or eq(another_shared_group.id)
-        end.and_call_original
+        end
 
       subject.execute(links)
     end
