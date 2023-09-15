@@ -9,7 +9,11 @@ module EE
         override :execute
         def execute(group_link)
           super.tap do |link|
-            send_audit_event(link) if link && !link&.persisted?
+            if link && !link&.persisted?
+              send_audit_event(link)
+
+              enqueue_refresh_add_on_assignments_woker(link)
+            end
           end
         end
 
@@ -31,6 +35,13 @@ module EE
           }
 
           ::Gitlab::Audit::Auditor.audit(audit_context)
+        end
+
+        def enqueue_refresh_add_on_assignments_woker(link)
+          return unless ::Feature.enabled?(:hamilton_seat_management)
+
+          GitlabSubscriptions::AddOnPurchases::RefreshUserAssignmentsWorker
+            .perform_async(link.project.root_ancestor.id)
         end
       end
     end
