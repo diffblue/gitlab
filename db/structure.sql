@@ -34162,6 +34162,8 @@ CREATE INDEX index_vulnerabilities_on_due_date_sourcing_milestone_id ON vulnerab
 
 CREATE INDEX index_vulnerabilities_on_epic_id ON vulnerabilities USING btree (epic_id);
 
+CREATE INDEX index_vulnerabilities_on_finding_id ON vulnerabilities USING btree (finding_id);
+
 CREATE INDEX index_vulnerabilities_on_last_edited_by_id ON vulnerabilities USING btree (last_edited_by_id);
 
 CREATE INDEX index_vulnerabilities_on_milestone_id ON vulnerabilities USING btree (milestone_id);
