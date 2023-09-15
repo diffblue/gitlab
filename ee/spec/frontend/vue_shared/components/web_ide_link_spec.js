@@ -134,7 +134,7 @@ describe('ee_component/vue_shared/components/web_ide_link', () => {
             projectId,
             projectFullPath: projectPath,
             newWorkspacePath,
-            borderPosition: 'bottom',
+            borderPosition: 'top',
             supportsWorkspaces: true,
           });
         });
