@@ -5,7 +5,27 @@ require 'spec_helper'
 RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
   include WorkhorseHelpers
 
+  let_it_be(:authorized_user) { create(:user) }
+  let_it_be(:tokens) do
+    {
+      api: create(:personal_access_token, scopes: %w[api], user: authorized_user),
+      read_api: create(:personal_access_token, scopes: %w[read_api], user: authorized_user),
+      ai_features: create(:personal_access_token, scopes: %w[ai_features], user: authorized_user),
+      unauthorized_user: create(:personal_access_token, scopes: %w[api], user: build(:user))
+    }
+  end
+
   let(:current_user) { nil }
+  let(:headers) { {} }
+  let(:access_code_suggestions) { true }
+  let(:is_saas) { true }
+
+  before do
+    allow(Gitlab).to receive(:org_or_com?).and_return(is_saas)
+    allow(Ability).to receive(:allowed?).and_call_original
+    allow(Ability).to receive(:allowed?).with(authorized_user, :access_code_suggestions, :global)
+                                        .and_return(access_code_suggestions)
+  end
 
   shared_examples 'a response' do |case_name|
     it "returns #{case_name} response", :freeze_time, :aggregate_failures do
@@ -72,28 +92,55 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     end
   end
 
-  describe 'POST /code_suggestions/tokens' do
-    let(:headers) { {} }
-    let(:access_code_suggestions) { true }
-    let(:is_gitlab_org_or_com) { true }
-
-    subject(:post_api) { post api('/code_suggestions/tokens', current_user), headers: headers }
+  shared_examples 'an endpoint authenticated with token' do |success_http_status = :created|
+    let(:current_user) { nil }
+    let(:access_token) { tokens[:api] }
+    let(:headers) { { "Authorization" => "Bearer #{access_token.token}" } }
 
     before do
-      allow(Ability).to receive(:allowed?).and_call_original
-      allow(Ability).to receive(:allowed?).with(an_instance_of(User), :access_code_suggestions, :global)
-         .and_return(access_code_suggestions)
-      allow(Gitlab).to receive(:org_or_com?).and_return(is_gitlab_org_or_com)
+      stub_feature_flags(code_suggestions_tokens_api: true)
+
+      post_api
     end
+
+    context 'when using token with :api scope' do
+      it { expect(response).to have_gitlab_http_status(success_http_status) }
+    end
+
+    context 'when using token with :ai_features scope' do
+      let(:access_token) { tokens[:ai_features] }
+
+      it { expect(response).to have_gitlab_http_status(success_http_status) }
+    end
+
+    context 'when using token with :read_api scope' do
+      let(:access_token) { tokens[:read_api] }
+
+      it { expect(response).to have_gitlab_http_status(:forbidden) }
+    end
+
+    context 'when using token with :read_api scope but for an unauthorized user' do
+      let(:access_token) { tokens[:unauthorized_user] }
+
+      it { expect(response).to have_gitlab_http_status(:unauthorized) }
+    end
+  end
+
+  describe 'POST /code_suggestions/tokens' do
+    subject(:post_api) { post api('/code_suggestions/tokens', current_user), headers: headers }
 
     context 'when user is not logged in' do
       let(:current_user) { nil }
 
       include_examples 'an unauthorized response'
+
+      context 'and access token is provided' do
+        it_behaves_like 'an endpoint authenticated with token'
+      end
     end
 
     context 'when user is logged in' do
-      let(:current_user) { create(:user) }
+      let(:current_user) { authorized_user }
 
       context 'when API feature flag is disabled' do
         before do
@@ -112,6 +159,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       context 'with access to code suggestions' do
         context 'when on .org or .com' do
           include_examples 'a successful response'
+          it_behaves_like 'an endpoint authenticated with token'
 
           it 'sets the access token realm to SaaS' do
             expect(Gitlab::CodeSuggestions::AccessToken).to receive(:new).with(
@@ -145,7 +193,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         end
 
         context 'when not on .org and .com' do
-          let(:is_gitlab_org_or_com) { false }
+          let(:is_saas) { false }
 
           include_examples 'a not found response'
         end
@@ -176,13 +224,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     end
 
     before do
-      allow(Gitlab).to receive(:org_or_com?).and_return(is_saas)
-      allow(Ability).to receive(:allowed?).and_call_original
-      allow(Ability).to receive(:allowed?).with(current_user, :access_code_suggestions, :global)
-                                          .and_return(access_code_suggestions)
-
       allow_next_instance_of(API::Helpers::GlobalIds::Generator) do |generator|
-        allow(generator).to receive(:generate).with(current_user).and_return([global_instance_id, global_user_id])
+        allow(generator).to receive(:generate).with(authorized_user).and_return([global_instance_id, global_user_id])
       end
     end
 
@@ -200,7 +243,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       end
 
       context 'when user is logged in' do
-        let(:current_user) { create(:user) }
+        let(:current_user) { authorized_user }
 
         before do
           stub_env('CODE_SUGGESTIONS_BASE_URL', nil)
@@ -333,7 +376,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       end
 
       context 'when user does not have active code suggestions purchase' do
-        let(:current_user) { create(:user) }
+        let(:current_user) { authorized_user }
 
         include_examples 'a not found response'
       end
@@ -341,11 +384,11 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       context 'when user has active code suggestions purchase' do
         before do
           add_on_purchase = create(:gitlab_subscription_add_on_purchase)
-          add_on_purchase.namespace.add_reporter(current_user)
+          add_on_purchase.namespace.add_reporter(authorized_user)
         end
 
         context 'when the task is code generation' do
-          let(:current_user) { create(:user) }
+          let(:current_user) { authorized_user }
           let(:instruction) { 'A function that outputs the first 20 fibonacci numbers' }
           let(:prefix) do
             <<~PREFIX
@@ -390,10 +433,11 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         end
 
         it_behaves_like 'code completions endpoint'
+        it_behaves_like 'an endpoint authenticated with token', :ok
       end
 
       context 'when code_suggestions_completion_api feature flag is disabled' do
-        let(:current_user) { create(:user) }
+        let(:current_user) { authorized_user }
 
         before do
           stub_feature_flags(code_suggestions_completion_api: false)
@@ -403,7 +447,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       end
 
       context 'when purchase_code_suggestions feature flag is disabled' do
-        let(:current_user) { create(:user) }
+        let(:current_user) { authorized_user }
 
         before do
           stub_feature_flags(purchase_code_suggestions: false)
@@ -428,6 +472,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       end
 
       it_behaves_like 'code completions endpoint'
+      it_behaves_like 'an endpoint authenticated with token', :ok
 
       context 'when there is no active code suggestions token' do
         before do
