@@ -21,11 +21,12 @@ module EE
 
       override :execute
       def execute
+        remove_unallowed_params
+
         if create_from_template?
           return ::Projects::CreateFromTemplateService.new(current_user, params).execute
         end
 
-        limit = params.delete(:repository_size_limit)
         mirror = ::Gitlab::Utils.to_boolean(params.delete(:mirror))
         mirror_user_id = current_user.id if mirror
         mirror_trigger_builds = params.delete(:mirror_trigger_builds)
@@ -33,6 +34,7 @@ module EE
         group_with_project_templates_id = params.delete(:group_with_project_templates_id) if params[:template_name].blank? && params[:template_project_id].blank?
 
         project = super do |project|
+          limit = params.delete(:repository_size_limit)
           # Repository size limit comes as MB from the view
           project.repository_size_limit = ::Gitlab::Utils.try_megabytes_to_bytes(limit) if limit
 
@@ -56,6 +58,10 @@ module EE
       end
 
       private
+
+      def remove_unallowed_params
+        params.delete(:repository_size_limit) unless current_user&.can_admin_all_resources?
+      end
 
       def log_geo_event(project)
         ::Geo::RepositoryCreatedEventStore.new(project).create!

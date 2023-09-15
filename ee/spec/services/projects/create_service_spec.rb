@@ -121,23 +121,45 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
   end
 
   context 'repository_size_limit assignment as Bytes' do
-    let(:admin_user) { create(:user, admin: true) }
+    let_it_be(:admin_user) { create(:admin) }
 
-    context 'when param present' do
-      let(:opts) { { repository_size_limit: '100' } }
+    context 'when user is an admin and admin mode is enabled', :enable_admin_mode do
+      context 'when the param is present' do
+        let(:opts) { { repository_size_limit: '100' } }
 
-      it 'assign repository_size_limit as Bytes' do
-        project = create_project(admin_user, opts)
+        it 'assign repository_size_limit as Bytes' do
+          project = create_project(admin_user, opts)
 
-        expect(project.repository_size_limit).to eql(100 * 1024 * 1024)
+          expect(project.repository_size_limit).to eql(100 * 1024 * 1024)
+        end
+      end
+
+      context 'when the param is an empty string' do
+        let(:opts) { { repository_size_limit: '' } }
+
+        it 'assigns a nil value' do
+          project = create_project(admin_user, opts)
+
+          expect(project.repository_size_limit).to be_nil
+        end
       end
     end
 
-    context 'when param not present' do
-      let(:opts) { { repository_size_limit: '' } }
+    context 'when user is an admin and admin mode is disabled' do
+      let(:opts) { { repository_size_limit: '100' } }
 
-      it 'assign nil value' do
+      it 'assigns a nil value' do
         project = create_project(admin_user, opts)
+
+        expect(project.repository_size_limit).to be_nil
+      end
+    end
+
+    context 'when the user is not an admin' do
+      let(:opts) { { repository_size_limit: '100' } }
+
+      it 'does not assign repository_size_limit' do
+        project = create_project(user, opts)
 
         expect(project.repository_size_limit).to be_nil
       end

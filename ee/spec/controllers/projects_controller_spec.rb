@@ -293,25 +293,6 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
   end
 
   describe 'PUT #update', feature_category: :groups_and_projects do
-    it 'updates EE attributes' do
-      params = {
-        repository_size_limit: 1024
-      }
-
-      put :update, params: {
-        namespace_id: project.namespace,
-        id: project,
-        project: params
-      }
-      project.reload
-
-      expect(response).to have_gitlab_http_status(:found)
-      params.except(:repository_size_limit).each do |param, value|
-        expect(project.public_send(param)).to eq(value)
-      end
-      expect(project.repository_size_limit).to eq(params[:repository_size_limit].megabytes)
-    end
-
     it 'updates Merge Request Approvers attributes' do
       params = {
         approvals_before_merge: 50,

@@ -175,25 +175,48 @@ RSpec.describe Groups::UpdateService, '#execute', feature_category: :groups_and_
   end
 
   context 'repository_size_limit assignment as Bytes' do
-    let(:group) { create(:group, :public, repository_size_limit: 0) }
+    let_it_be(:group) { create(:group, repository_size_limit: 0) }
+    let_it_be(:admin_user) { create(:admin) }
 
-    context 'when param present' do
-      let(:opts) { { repository_size_limit: '100' } }
+    context 'when the user is an admin and admin mode is enabled', :enable_admin_mode do
+      context 'when the param is present' do
+        let(:opts) { { repository_size_limit: '100' } }
 
-      it 'converts from MiB to Bytes' do
-        update_group(group, user, opts)
+        it 'converts from MiB to Bytes' do
+          update_group(group, admin_user, opts)
 
-        expect(group.reload.repository_size_limit).to eql(100 * 1024 * 1024)
+          expect(group.reload.repository_size_limit).to eql(100 * 1024 * 1024)
+        end
+      end
+
+      context 'when the param is an empty string' do
+        let(:opts) { { repository_size_limit: '' } }
+
+        it 'assigns a nil value' do
+          update_group(group, admin_user, opts)
+
+          expect(group.reload.repository_size_limit).to be_nil
+        end
       end
     end
 
-    context 'when param not present' do
-      let(:opts) { { repository_size_limit: '' } }
+    context 'when the user is an admin and admin mode is disabled' do
+      let(:opts) { { repository_size_limit: '100' } }
 
-      it 'assign nil value' do
+      it 'does not update the limit' do
+        update_group(group, admin_user, opts)
+
+        expect(group.reload.repository_size_limit).to eq(0)
+      end
+    end
+
+    context 'when the user is not an admin' do
+      let(:opts) { { repository_size_limit: '100' } }
+
+      it 'does not persist the limit' do
         update_group(group, user, opts)
 
-        expect(group.reload.repository_size_limit).to be_nil
+        expect(group.reload.repository_size_limit).to eq(0)
       end
     end
   end

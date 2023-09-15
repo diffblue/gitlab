@@ -414,26 +414,48 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
   end
 
   context 'repository_size_limit assignment as Bytes' do
-    let(:admin_user) { create(:user, admin: true) }
-    let(:project) { create(:project, repository_size_limit: 0) }
+    let_it_be(:project) { create(:project, repository_size_limit: 0) }
+    let_it_be(:admin_user) { create(:admin) }
 
-    context 'when param present' do
-      let(:opts) { { repository_size_limit: '100' } }
+    context 'when the user is an admin and admin mode is enabled', :enable_admin_mode do
+      context 'when the param is present' do
+        let(:opts) { { repository_size_limit: '100' } }
 
-      it 'converts from MiB to Bytes' do
-        update_project(project, admin_user, opts)
+        it 'converts from MiB to Bytes' do
+          update_project(project, admin_user, opts)
 
-        expect(project.reload.repository_size_limit).to eql(100 * 1024 * 1024)
+          expect(project.reload.repository_size_limit).to eql(100 * 1024 * 1024)
+        end
+      end
+
+      context 'when the param is an empty string' do
+        let(:opts) { { repository_size_limit: '' } }
+
+        it 'assigns a nil value' do
+          update_project(project, admin_user, opts)
+
+          expect(project.reload.repository_size_limit).to be_nil
+        end
       end
     end
 
-    context 'when param not present' do
-      let(:opts) { { repository_size_limit: '' } }
+    context 'when the user is an admin and admin mode is disabled' do
+      let(:opts) { { repository_size_limit: '100' } }
 
-      it 'assign nil value' do
+      it 'does not update the limit' do
         update_project(project, admin_user, opts)
 
-        expect(project.reload.repository_size_limit).to be_nil
+        expect(project.reload.repository_size_limit).to eq(0)
+      end
+    end
+
+    context 'when user is not an admin' do
+      let(:opts) { { repository_size_limit: '100' } }
+
+      it 'does not persist the repository_size_limit' do
+        update_project(project, user, opts)
+
+        expect(project.reload.repository_size_limit).to eq(0)
       end
     end
   end
