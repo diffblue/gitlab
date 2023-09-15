@@ -59,6 +59,7 @@ module Registrations
         :role,
         :registration_objective,
         :jobs_to_be_done_other,
+        :opt_in,
         :trial_onboarding_flow
       ).merge(glm_tracking_params)
     end

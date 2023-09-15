@@ -1,5 +1,5 @@
 export const initWelcomeIndex = () => {
-  const emailUpdatesForm = document.querySelector('.js-email-opt-in');
+  const emailUpdatesForm = document.querySelector('.js-opt-in-to-email');
   const setupForCompany = document.querySelector('.js-setup-for-company');
   const setupForMe = document.querySelector('.js-setup-for-me');
 

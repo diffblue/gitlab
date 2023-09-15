@@ -22,7 +22,7 @@ RSpec.describe 'Trial flow for user picking just me and creating a project', :js
 
       expect_to_see_company_form
 
-      fill_in_company_form
+      fill_in_company_form(opt_in_email: true)
       click_on 'Continue'
 
       expect_to_see_group_and_project_creation_form
@@ -44,6 +44,7 @@ RSpec.describe 'Trial flow for user picking just me and creating a project', :js
     fill_in 'Why are you signing up? (optional)', with: 'My reason'
 
     choose 'Just me'
+    check _("I'd like to receive updates about GitLab via email")
   end
 
   def expect_to_see_welcome_form
