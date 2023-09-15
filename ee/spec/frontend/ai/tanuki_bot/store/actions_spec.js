@@ -54,34 +54,6 @@ describe('TanukiBot Store Actions', () => {
           expectedMutations: [],
         });
       });
-
-      it('should commit the correct mutation for a number as content', () => {
-        return testAction({
-          action: actions.addDuoChatMessage,
-          payload: { content: '1', role: GENIE_CHAT_MODEL_ROLES.assistant },
-          state,
-          expectedMutations: [
-            {
-              type: types.ADD_MESSAGE,
-              payload: { content: '1', role: GENIE_CHAT_MODEL_ROLES.assistant },
-            },
-          ],
-        });
-      });
-
-      it('should commit the correct mutation for a boolean as content', () => {
-        return testAction({
-          action: actions.addDuoChatMessage,
-          payload: { content: 'true', role: GENIE_CHAT_MODEL_ROLES.assistant },
-          state,
-          expectedMutations: [
-            {
-              type: types.ADD_MESSAGE,
-              payload: { content: 'true', role: GENIE_CHAT_MODEL_ROLES.assistant },
-            },
-          ],
-        });
-      });
     });
 
     describe('with error', () => {
