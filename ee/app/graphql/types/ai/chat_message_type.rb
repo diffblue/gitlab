@@ -5,7 +5,7 @@ module Types
     # rubocop: disable Graphql/AuthorizeTypes
     class ChatMessageType < Types::BaseObject
       graphql_name 'AiChatMessage'
-      description "Duo Chat message"
+      description "GitLab Duo Chat message"
 
       field :id,
         GraphQL::Types::ID,

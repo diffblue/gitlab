@@ -74,7 +74,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 ### `Query.aiMessages`
 
-Find AI Duo Chat messages.
+Find GitLab Duo Chat messages.
 
 WARNING:
 **Introduced** in 16.1.
@@ -13004,7 +13004,7 @@ Information about a connected Agent.
 
 ### `AiChatMessage`
 
-Duo Chat message.
+GitLab Duo Chat message.
 
 #### Fields
 
