@@ -1,7 +1,7 @@
 <script>
 import { GridStack } from 'gridstack';
 import * as Sentry from '@sentry/browser';
-import { GlButton, GlFormInput, GlEmptyState, GlFormGroup, GlLink } from '@gitlab/ui';
+import { GlButton, GlFormInput, GlFormGroup, GlLink, GlIcon } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { cloneWithoutReferences } from '~/lib/utils/common_utils';
 import { loadCSSFile } from '~/lib/utils/css_utils';
@@ -17,11 +17,10 @@ import {
   GRIDSTACK_CELL_HEIGHT,
   GRIDSTACK_MIN_ROW,
   CURSOR_GRABBING_CLASS,
-  NEW_DASHBOARD_SLUG,
   DASHBOARD_DOCUMENTATION_LINKS,
 } from './constants';
-import VisualizationSelector from './dashboard_editor/visualization_selector.vue';
-import { filtersToQueryParams, getUniquePanelId } from './utils';
+import AvailableVisualizationsDrawer from './dashboard_editor/available_visualizations_drawer.vue';
+import { filtersToQueryParams, getUniquePanelId, availableVisualizationsValidator } from './utils';
 
 export default {
   name: 'CustomizableDashboard',
@@ -29,20 +28,14 @@ export default {
     DateRangeFilter: () => import('./filters/date_range_filter.vue'),
     GlButton,
     GlFormInput,
+    GlIcon,
     GlLink,
-    GlEmptyState,
     GlFormGroup,
     PanelsBase,
     UrlSync,
-    VisualizationSelector,
+    AvailableVisualizationsDrawer,
   },
   mixins: [glFeatureFlagsMixin()],
-  inject: {
-    dashboardEmptyStateIllustrationPath: {
-      type: Object,
-      default: null,
-    },
-  },
   props: {
     initialDashboard: {
       type: Object,
@@ -53,6 +46,7 @@ export default {
       type: Object,
       required: false,
       default: () => {},
+      validator: availableVisualizationsValidator,
     },
     dateRangeLimit: {
       type: Number,
@@ -106,6 +100,7 @@ export default {
       filters: this.defaultFilters,
       alert: null,
       titleValidationState: null,
+      visualizationDrawerOpen: false,
     };
   },
   computed: {
@@ -124,8 +119,8 @@ export default {
     showEditControls() {
       return this.editingEnabled && this.editing;
     },
-    showEmptyState() {
-      return this.dashboard.panels.length < 1 && this.showEditControls && this.isNewDashboard;
+    showGrid() {
+      return this.dashboard.panels.length > 0;
     },
     showDashboardDescription() {
       return Boolean(this.dashboard.description) && !this.editing;
@@ -168,6 +163,9 @@ export default {
     },
     editing(editing) {
       this.grid?.setStatic(!editing);
+      if (!editing) {
+        this.closeVisualizationDrawer();
+      }
     },
   },
   async created() {
@@ -246,13 +244,18 @@ export default {
 
       return gridAttributes[attribute];
     },
-    async addNewPanel(visualization) {
-      const panel = createNewVisualizationPanel(visualization);
-      this.dashboard.panels.push(panel);
+    async addSelectedVisualizations(selected) {
+      const panelIds = selected.map((visualization) => {
+        const panel = createNewVisualizationPanel(visualization);
+        this.dashboard.panels.push(panel);
+        return panel.id;
+      });
 
       // Wait for the panels to render
       await this.$nextTick();
-      this.registerNewGridPanel(panel.id);
+
+      panelIds.forEach((id) => this.registerNewGridPanel(id));
+      this.closeVisualizationDrawer();
     },
     async deletePanel(panel) {
       const panelIndex = this.dashboard.panels.indexOf(panel);
@@ -271,10 +274,6 @@ export default {
     startEdit() {
       this.editing = true;
     },
-    routeToVisualizationDesigner() {
-      const dashboard = this.isNewDashboard ? NEW_DASHBOARD_SLUG : this.dashboard.slug;
-      this.$router.push({ name: 'visualization-designer', params: { dashboard } });
-    },
     async saveEdit() {
       this.titleValidationState = this.dashboard.title.length > 0;
 
@@ -283,7 +282,7 @@ export default {
         return;
       }
 
-      if (this.dashboard.panels.length < 1) {
+      if (this.isNewDashboard && this.dashboard.panels.length < 1) {
         this.alert = createAlert({
           message: s__('Analytics|Add a visualization'),
         });
@@ -319,6 +318,12 @@ export default {
         startDate,
         endDate,
       };
+    },
+    toggleVisualizationDrawer() {
+      this.visualizationDrawerOpen = !this.visualizationDrawerOpen;
+    },
+    closeVisualizationDrawer() {
+      this.visualizationDrawerOpen = false;
     },
   },
   HISTORY_REPLACE_UPDATE_METHOD,
@@ -390,17 +395,7 @@ export default {
       class="grid-stack-container gl-mx-n5 gl-pl-2 gl-pr-2 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
     >
       <div class="grid-stack-container gl-display-flex">
-        <div
-          class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-py-3"
-          :class="{ 'gl-justify-content-center': !dashboard.panels.length }"
-        >
-          <gl-empty-state
-            v-if="showEmptyState"
-            class="gl-m-0 gl-mt-20"
-            :svg-path="dashboardEmptyStateIllustrationPath"
-            :title="s__('Analytics|Add a visualization')"
-            :description="s__('Analytics|Select a visualization from the sidebar to get started.')"
-          />
+        <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-py-3">
           <section
             v-if="showFilters"
             data-testid="dashboard-filters"
@@ -420,7 +415,22 @@ export default {
             :query="queryParams"
             :history-update-method="$options.HISTORY_REPLACE_UPDATE_METHOD"
           />
-          <div v-show="!showEmptyState" data-testid="gridstack-grid" class="grid-stack">
+          <button
+            v-if="showEditControls"
+            class="card upload-dropzone-card upload-dropzone-border gl-display-flex gl-align-items-center gl-px-5 gl-py-3 gl-my-3 gl-mx-4"
+            data-testid="add-visualization-button"
+            @click="toggleVisualizationDrawer"
+          >
+            <div class="gl-font-weight-bold gl-text-gray-700 gl-display-flex gl-align-items-center">
+              <div
+                class="gl-h-7 gl-w-7 gl-rounded-full gl-bg-gray-100 gl-display-inline-flex gl-align-items-center gl-justify-content-center gl-mr-3"
+              >
+                <gl-icon name="plus" />
+              </div>
+              {{ s__('Analytics|Add visualization') }}
+            </div>
+          </button>
+          <div data-testid="gridstack-grid" class="grid-stack">
             <div
               v-for="panel in dashboard.panels"
               :id="panel.id"
@@ -449,18 +459,13 @@ export default {
             </div>
           </div>
         </div>
-        <div
-          v-if="editing"
-          class="gl-ml-4 gl-p-4 gl-bg-white gl-border-l gl-overflow-auto gl-w-full gl-max-w-34"
-        >
-          <h5>{{ s__('Analytics|Add visualizations') }}</h5>
-          <visualization-selector
-            class="gl-border-t gl-pt-2"
-            :available-visualizations="availableVisualizations"
-            @select="addNewPanel"
-            @create="routeToVisualizationDesigner"
-          />
-        </div>
+        <available-visualizations-drawer
+          :visualizations="availableVisualizations.visualizations"
+          :loading="availableVisualizations.loading"
+          :open="visualizationDrawerOpen"
+          @select="addSelectedVisualizations"
+          @close="closeVisualizationDrawer"
+        />
       </div>
     </div>
     <template v-if="editing">

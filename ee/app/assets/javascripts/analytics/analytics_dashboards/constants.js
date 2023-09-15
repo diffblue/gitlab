@@ -1,8 +1,6 @@
-import { __, s__ } from '~/locale';
+import { s__ } from '~/locale';
 
 export const FEATURE_PRODUCT_ANALYTICS = 'productAnalytics';
-
-export const PRODUCT_ANALYTICS_TITLE = __('Product analytics');
 
 export const PRODUCT_ANALYTICS_FEATURE_DASHBOARDS = ['audience', 'behavior'];
 

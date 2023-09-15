@@ -2,7 +2,7 @@ import { nextTick } from 'vue';
 import { GridStack } from 'gridstack';
 import * as Sentry from '@sentry/browser';
 import { RouterLinkStub } from '@vue/test-utils';
-import { GlEmptyState, GlLink } from '@gitlab/ui';
+import { GlLink } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
@@ -13,7 +13,6 @@ import {
   GRIDSTACK_CSS_HANDLE,
   GRIDSTACK_CELL_HEIGHT,
   GRIDSTACK_MIN_ROW,
-  NEW_DASHBOARD_SLUG,
 } from 'ee/vue_shared/components/customizable_dashboard/constants';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -22,7 +21,7 @@ import {
   buildDefaultDashboardFilters,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
-import VisualizationSelector from 'ee/vue_shared/components/customizable_dashboard/dashboard_editor/visualization_selector.vue';
+import AvailableVisualizationsDrawer from 'ee/vue_shared/components/customizable_dashboard/dashboard_editor/available_visualizations_drawer.vue';
 import { NEW_DASHBOARD } from 'ee/analytics/analytics_dashboards/constants';
 import {
   TEST_VISUALIZATION,
@@ -76,7 +75,10 @@ describe('CustomizableDashboard', () => {
     wrapper = shallowMountExtended(CustomizableDashboard, {
       propsData: {
         initialDashboard: loadDashboard,
-        availableVisualizations: {},
+        availableVisualizations: {
+          loading: true,
+          visualizations: [],
+        },
         ...props,
       },
       stubs: {
@@ -95,13 +97,13 @@ describe('CustomizableDashboard', () => {
     });
   };
 
-  const findGrid = () => wrapper.findByTestId('gridstack-grid');
   const findDashboardTitle = () => wrapper.findByTestId('dashboard-title');
   const findEditModeTitle = () => wrapper.findByTestId('edit-mode-title');
   const findGridStackPanels = () => wrapper.findAllByTestId('grid-stack-panel');
   const findPanels = () => wrapper.findAllComponents(PanelsBase);
   const findPanelById = (panelId) => wrapper.find(`#${panelId}`);
   const findEditButton = () => wrapper.findByTestId('dashboard-edit-btn');
+  const findAddVisualizationButton = () => wrapper.findByTestId('add-visualization-button');
   const findTitleInput = () => wrapper.findByTestId('dashboard-title-input');
   const findTitleFormGroup = () => wrapper.findByTestId('dashboard-title-form-group');
   const findSaveButton = () => wrapper.findByTestId('dashboard-save-btn');
@@ -109,9 +111,8 @@ describe('CustomizableDashboard', () => {
   const findFilters = () => wrapper.findByTestId('dashboard-filters');
   const findDateRangeFilter = () => wrapper.findComponent(DateRangeFilter);
   const findUrlSync = () => wrapper.findComponent(UrlSync);
-  const findVisualizationSelector = () => wrapper.findComponent(VisualizationSelector);
+  const findVisualizationDrawer = () => wrapper.findComponent(AvailableVisualizationsDrawer);
   const findDashboardDescription = () => wrapper.findByTestId('dashboard-description');
-  const findEmptyState = () => wrapper.findComponent(GlEmptyState);
 
   describe('when being created and an error occurs while loading the CSS', () => {
     beforeEach(() => {
@@ -294,8 +295,8 @@ describe('CustomizableDashboard', () => {
           );
         });
 
-        it('opens the dashboard in edit mode', () => {
-          expect(findVisualizationSelector().exists()).toBe(true);
+        it('render the visualization drawer in edit mode', () => {
+          expect(findVisualizationDrawer().exists()).toBe(true);
         });
       });
 
@@ -384,33 +385,36 @@ describe('CustomizableDashboard', () => {
           expect(findEditButton().exists()).toBe(false);
         });
 
-        it('shows the visualization selector', () => {
-          expect(findVisualizationSelector().props()).toMatchObject({
-            availableVisualizations: {},
+        it('shows the visualization drawer', () => {
+          expect(findVisualizationDrawer().props()).toMatchObject({
+            visualizations: {},
+            loading: true,
+            open: false,
           });
+        });
+
+        it('closes the drawer when the visualization drawer emits "close"', async () => {
+          await findVisualizationDrawer().vm.$emit('close');
+
+          expect(findVisualizationDrawer().props('open')).toBe(false);
+        });
+
+        it('closes the drawer when a visualization is selected', async () => {
+          await findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
+
+          expect(findVisualizationDrawer().props('open')).toBe(false);
         });
 
         it('add a new panel when a visualization is selected', async () => {
           expect(findPanels()).toHaveLength(2);
 
           const visualization = TEST_VISUALIZATION();
-          await findVisualizationSelector().vm.$emit('select', visualization);
+          await findVisualizationDrawer().vm.$emit('select', [visualization]);
           await nextTick();
 
           const updatedPanels = findPanels();
           expect(updatedPanels).toHaveLength(3);
           expect(updatedPanels.at(-1).props('visualization')).toMatchObject(visualization);
-        });
-
-        it('routes to the designer when a "create" event is received', async () => {
-          await findVisualizationSelector().vm.$emit('create');
-
-          expect($router.push).toHaveBeenCalledWith({
-            name: 'visualization-designer',
-            params: {
-              dashboard: dashboard.slug,
-            },
-          });
         });
       });
     });
@@ -492,43 +496,32 @@ describe('CustomizableDashboard', () => {
       expect($router.push).toHaveBeenCalledWith('/');
     });
 
-    it('routes to the designer with `dashboard: "new"` when a "create" event is recieved', async () => {
-      await findVisualizationSelector().vm.$emit('create');
-
-      expect($router.push).toHaveBeenCalledWith({
-        name: 'visualization-designer',
-        params: {
-          dashboard: NEW_DASHBOARD_SLUG,
-        },
-      });
-    });
-
     it('shows the new dashboard page title', () => {
       expect(findEditModeTitle().text()).toBe('Create your dashboard');
     });
 
-    it('shows the empty state', () => {
-      expect(findEmptyState().props()).toMatchObject({
-        svgPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
-        title: 'Add a visualization',
-        description: 'Select a visualization from the sidebar to get started.',
-      });
-    });
-
-    it('does not display the grid', () => {
-      expect(findGrid().isVisible()).toBe(false);
-    });
-
-    it('hides the empty state and shows the grid when a visualization has been added', async () => {
-      await findVisualizationSelector().vm.$emit('select', TEST_VISUALIZATION());
-
-      expect(findEmptyState().exists()).toBe(false);
-
-      expect(findGrid().isVisible()).toBe(true);
+    it('shows the "Add visualization" button', () => {
+      expect(findAddVisualizationButton().text()).toBe('Add visualization');
     });
 
     it('does not show the filters', () => {
       expect(findDateRangeFilter().exists()).toBe(false);
+    });
+
+    describe('and the user clicks on the "Add visualization" button', () => {
+      beforeEach(() => {
+        return findAddVisualizationButton().trigger('click');
+      });
+
+      it('opens the drawer', () => {
+        expect(findVisualizationDrawer().props('open')).toBe(true);
+      });
+
+      it('closes the drawer when the user clicks on the same button again', async () => {
+        await findAddVisualizationButton().trigger('click');
+
+        expect(findVisualizationDrawer().props('open')).toBe(false);
+      });
     });
 
     describe('when saving', () => {
@@ -597,7 +590,7 @@ describe('CustomizableDashboard', () => {
 
         describe('and saved is clicked after a visualization has been added', () => {
           beforeEach(async () => {
-            await findVisualizationSelector().vm.$emit('select', TEST_VISUALIZATION());
+            await findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
 
             await findSaveButton().vm.$emit('click');
           });
@@ -612,7 +605,7 @@ describe('CustomizableDashboard', () => {
         beforeEach(async () => {
           await findTitleInput().vm.$emit('input', 'New Title');
 
-          await findVisualizationSelector().vm.$emit('select', TEST_VISUALIZATION());
+          await findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
 
           await findSaveButton().vm.$emit('click');
         });
@@ -700,6 +693,33 @@ describe('CustomizableDashboard', () => {
 
       expect(findPanels()).toHaveLength(1);
       expect(findPanelById(panelId).exists()).toBe(false);
+    });
+  });
+
+  describe('when editing a custom dashboard with no panels', () => {
+    const dashboardWithoutPanels = {
+      ...dashboard,
+      panels: [],
+    };
+
+    beforeEach(() => {
+      loadCSSFile.mockResolvedValue();
+
+      createWrapper({}, dashboardWithoutPanels, {
+        glFeatures: { combinedAnalyticsDashboardsEditor: true },
+      });
+
+      return findEditButton().vm.$emit('click');
+    });
+
+    it('does not validate the precense of panels when saving', async () => {
+      await findSaveButton().vm.$emit('click');
+
+      expect(createAlert).not.toHaveBeenCalled();
+
+      expect(wrapper.emitted('save')).toStrictEqual([
+        [dashboardWithoutPanels.slug, dashboardWithoutPanels],
+      ]);
     });
   });
 });
