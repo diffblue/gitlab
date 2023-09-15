@@ -18,6 +18,7 @@ module Sbom
         yield batch
           .with_component_source_version_project_and_pipeline
           .filter_by_non_nil_component_version
+          .filter_by_cvs_enabled
       end
     end
 

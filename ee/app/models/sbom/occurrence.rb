@@ -57,6 +57,10 @@ module Sbom
       includes(:component, :source, :component_version, :project).preload(:pipeline)
     end
     scope :filter_by_non_nil_component_version, -> { where.not(component_version: nil) }
+    scope :filter_by_cvs_enabled, -> do
+      joins(project: :security_setting)
+        .where(project_security_settings: { continuous_vulnerability_scans_enabled: true })
+    end
 
     def location
       {
