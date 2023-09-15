@@ -71,7 +71,7 @@ module GitlabSubscriptions
         def add_on_purchase_attributes
           {
             quantity: license_restrictions[:code_suggestions_seat_count],
-            expires_on: current_license.expires_at,
+            expires_on: current_license.block_changes_at || current_license.expires_at,
             purchase_xid: license_restrictions[:subscription_name]
           }
         end
