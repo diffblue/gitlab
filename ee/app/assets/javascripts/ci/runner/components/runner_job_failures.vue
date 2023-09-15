@@ -1,5 +1,6 @@
 <script>
-import { GlSkeletonLoader } from '@gitlab/ui';
+import { GlEmptyState, GlSkeletonLoader } from '@gitlab/ui';
+import EMPTY_STATE_SVG_URL from '@gitlab/svgs/dist/illustrations/success-sm.svg?url';
 
 import { captureException } from '~/ci/runner/sentry_utils';
 import { fetchPolicies } from '~/lib/graphql';
@@ -12,6 +13,7 @@ import RunnerJobFailure from './runner_job_failure.vue';
 export default {
   name: 'RunnerJobFailures',
   components: {
+    GlEmptyState,
     GlSkeletonLoader,
     RunnerJobFailure,
   },
@@ -39,6 +41,7 @@ export default {
       return this.$apollo.queries.failedJobs.loading;
     },
   },
+  EMPTY_STATE_SVG_URL,
 };
 </script>
 <template>
@@ -46,13 +49,17 @@ export default {
     <h2 class="gl-font-lg gl-mt-0">{{ s__('Runners|Most recent failures') }}</h2>
 
     <gl-skeleton-loader v-if="loading" />
-    <p v-else-if="!failedJobs.length">
-      {{
+    <gl-empty-state
+      v-else-if="!failedJobs.length"
+      class="gl-mt-5 gl-mb-11 gl-lg-mx-12"
+      :svg-path="$options.EMPTY_STATE_SVG_URL"
+      :svg-height="72"
+      :description="
         s__(
           'Runners|There are no recent runner failures for your instance runners. Error messages will populate here if runners fail.',
         )
-      }}
-    </p>
+      "
+    />
     <div v-else class="gl-border-b">
       <runner-job-failure
         v-for="job in failedJobs"

@@ -1,4 +1,4 @@
-import { GlSkeletonLoader } from '@gitlab/ui';
+import { GlEmptyState, GlSkeletonLoader } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -27,6 +27,7 @@ describe('RunnerJobFailures', () => {
   let wrapper;
   let runnerFailedJobsHandler;
 
+  const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findAllRunnerJobFailures = () => wrapper.findAllComponents(RunnerJobFailure);
 
@@ -65,8 +66,9 @@ describe('RunnerJobFailures', () => {
 
     it('shows empty state', () => {
       expect(findSkeletonLoader().exists()).toBe(false);
-      expect(wrapper.text()).toContain('no recent runner failures');
       expect(findAllRunnerJobFailures()).toHaveLength(0);
+
+      expect(findEmptyState().exists()).toBe(true);
     });
   });
 
@@ -83,6 +85,10 @@ describe('RunnerJobFailures', () => {
       expect(findSkeletonLoader().exists()).toBe(false);
       expect(findAllRunnerJobFailures().at(0).props('job')).toEqual(mockFailedJobs[0]);
       expect(findAllRunnerJobFailures().at(1).props('job')).toEqual(mockFailedJobs[1]);
+    });
+
+    it('does not show empty state', () => {
+      expect(findEmptyState().exists()).toBe(false);
     });
   });
 
@@ -102,6 +108,13 @@ describe('RunnerJobFailures', () => {
         component: 'RunnerJobFailures',
         error: mockError,
       });
+    });
+
+    it('shows empty state', () => {
+      expect(findSkeletonLoader().exists()).toBe(false);
+      expect(findAllRunnerJobFailures()).toHaveLength(0);
+
+      expect(findEmptyState().exists()).toBe(true);
     });
   });
 });
