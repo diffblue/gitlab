@@ -5,9 +5,11 @@ require 'spec_helper'
 RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestions do
   using RSpec::Parameterized::TableSyntax
 
-  let(:params) { { 'current_file' => { 'content_above_cursor' => prefix } } }
-
   describe '.task' do
+    let(:params) { { skip_generate_comment_prefix: skip_comment, current_file: { content_above_cursor: prefix } } }
+
+    subject { described_class.task(params: params) }
+
     shared_examples 'correct task detector' do
       context 'with the prefix, suffix produces the correct type' do
         where(:prefix, :type) do
@@ -66,16 +68,6 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         it 'only takes the last example in to account' do
           expect(subject).to be_an_instance_of(CodeSuggestions::Tasks::CodeGeneration::FromComment)
         end
-
-        context 'when prefix is too long' do
-          before do
-            stub_const('CodeSuggestions::TaskSelector::PREFIX_MAX_SIZE', 10)
-          end
-
-          it 'does not parse prefix and uses completion' do
-            expect(subject).to be_an_instance_of(CodeSuggestions::Tasks::CodeCompletion)
-          end
-        end
       end
 
       context 'when the last comment is a code suggestion' do
@@ -95,6 +87,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
     end
 
     context 'without skip_generate_comment_prefix prefix' do
+      let(:skip_comment) { false }
       let(:generate_prefix) { 'GitLab Duo Generate: ' }
       let(:case_insensitive_prefixes) do
         [
@@ -105,16 +98,13 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         ]
       end
 
-      subject { described_class.task(skip_generate_comment_prefix: false, params: params) }
-
       it_behaves_like 'correct task detector'
     end
 
     context 'with skip_generate_comment_prefix prefix' do
+      let(:skip_comment) { true }
       let(:generate_prefix) { '' }
       let(:case_insensitive_prefixes) { Array.new(4, '') }
-
-      subject { described_class.task(skip_generate_comment_prefix: true, params: params) }
 
       it_behaves_like 'correct task detector'
     end

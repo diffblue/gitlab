@@ -14,7 +14,7 @@ module CodeSuggestions
 
       override :body
       def body
-        params.merge(prompt_version: GATEWAY_PROMPT_VERSION).to_json
+        unsafe_passthrough_params.merge(prompt_version: GATEWAY_PROMPT_VERSION).to_json
       end
     end
   end

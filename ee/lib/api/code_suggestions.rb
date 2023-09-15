@@ -9,6 +9,10 @@ module API
     helpers ::API::Helpers::GlobalIds
 
     USER_CODE_SUGGESTIONS_ADD_ON_CACHE_KEY = 'user-%{user_id}-code-suggestions-add-on-cache'
+    # a limit used for overall body size when forwarding request to ai-assist, overall size should not be bigger than
+    # summary of limits on accepted parameters
+    # (https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/ai-assist#completions)
+    MAX_BODY_SIZE = 500_000
 
     allow_access_with_scope :ai_features
 
@@ -101,6 +105,12 @@ module API
       end
 
       resources :completions do
+        params do
+          requires :current_file, type: Hash do
+            requires :file_name, type: String, limit: 255, desc: 'The name of the current file'
+            requires :content_above_cursor, type: String, limit: 100_000, desc: 'The content above cursor'
+          end
+        end
         post do
           if Gitlab.org_or_com?
             forbidden! unless ::Feature.enabled?(:code_suggestions_completion_api, current_user)
@@ -117,15 +127,21 @@ module API
             token = code_suggestions_token.token
           end
 
-          task = ::CodeSuggestions::TaskSelector.task(
-            skip_generate_comment_prefix: Feature.enabled?(:code_generation_no_comment_prefix, current_user),
-            params: params.except(:private_token)
+          safe_params = declared_params(params).merge(
+            skip_generate_comment_prefix: Feature.enabled?(:code_generation_no_comment_prefix, current_user)
           )
+          task = ::CodeSuggestions::TaskSelector.task(
+            params: safe_params,
+            unsafe_passthrough_params: params.except(:private_token)
+          )
+
+          body = task.body
+          file_too_large! if body.size > MAX_BODY_SIZE
 
           workhorse_headers =
             Gitlab::Workhorse.send_url(
               task.endpoint,
-              body: task.body,
+              body: body,
               headers: model_gateway_headers(headers, token),
               method: "POST"
             )

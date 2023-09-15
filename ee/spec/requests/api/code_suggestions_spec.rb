@@ -33,7 +33,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
       expect(response).to have_gitlab_http_status(result)
 
-      expect(json_response).to include(**body)
+      expect(json_response).to include(**response_body)
     end
 
     it "records Snowplow events" do
@@ -55,7 +55,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
   shared_examples 'a successful response' do
     include_examples 'a response', 'successful' do
       let(:result) { :created }
-      let(:body) do
+      let(:response_body) do
         {
           'access_token' => kind_of(String),
           'expires_in' => Gitlab::CodeSuggestions::AccessToken::EXPIRES_IN,
@@ -68,7 +68,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
   shared_examples 'an unauthorized response' do
     include_examples 'a response', 'unauthorized' do
       let(:result) { :unauthorized }
-      let(:body) do
+      let(:response_body) do
         { "message" => "401 Unauthorized" }
       end
     end
@@ -77,7 +77,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
   shared_examples 'a forbidden response' do
     include_examples 'a response', 'unauthorized' do
       let(:result) { :forbidden }
-      let(:body) do
+      let(:response_body) do
         { "message" => "403 Forbidden" }
       end
     end
@@ -86,7 +86,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
   shared_examples 'a not found response' do
     include_examples 'a response', 'not found' do
       let(:result) { :not_found }
-      let(:body) do
+      let(:response_body) do
         { "message" => "404 Not Found" }
       end
     end
@@ -95,10 +95,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
   shared_examples 'an endpoint authenticated with token' do |success_http_status = :created|
     let(:current_user) { nil }
     let(:access_token) { tokens[:api] }
-    let(:headers) { { "Authorization" => "Bearer #{access_token.token}" } }
 
     before do
       stub_feature_flags(code_suggestions_tokens_api: true)
+      headers["Authorization"] = "Bearer #{access_token.token}"
 
       post_api
     end
@@ -206,15 +206,16 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     let(:global_instance_id) { 'instance-ABC' }
     let(:global_user_id) { 'user-ABC' }
     let(:prefix) { 'def is_even(n: int) ->' }
+    let(:file_name) { 'test.py' }
 
     let(:body) do
       {
         project_path: "gitlab-org/gitlab-shell",
         project_id: 33191677, # not removed given we still might get it but we will not use it
         current_file: {
-          file_name: "test.py",
+          file_name: file_name,
           content_above_cursor: prefix,
-          content_below_cursor: ""
+          content_below_cursor: ''
         }
       }
     end
@@ -332,8 +333,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
           it 'passes skip_generate_comment_prefix: true into TaskSelector.task' do
             expect(::CodeSuggestions::TaskSelector).to receive(:task)
-              .with(skip_generate_comment_prefix: true, params: kind_of(Hash))
-              .and_call_original
+              .with(
+                params: hash_including(skip_generate_comment_prefix: true),
+                unsafe_passthrough_params: kind_of(Hash)
+              ).and_call_original
 
             post_api
           end
@@ -346,8 +349,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
           it 'passes skip_generate_comment_prefix: false into TaskSelector.task' do
             expect(::CodeSuggestions::TaskSelector).to receive(:task)
-              .with(skip_generate_comment_prefix: false, params: kind_of(Hash))
-              .and_call_original
+              .with(
+                params: hash_including(skip_generate_comment_prefix: false),
+                unsafe_passthrough_params: kind_of(Hash)
+              ).and_call_original
 
             post_api
           end
@@ -430,6 +435,28 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
             post_api
           end
+
+          context 'when body is too big' do
+            before do
+              stub_const("#{described_class}::MAX_BODY_SIZE", 10)
+            end
+
+            it 'returns an error' do
+              post_api
+
+              expect(response).to have_gitlab_http_status(:payload_too_large)
+            end
+          end
+
+          context 'when a required parameter is invalid' do
+            let(:file_name) { 'x' * 256 }
+
+            it 'returns an error' do
+              post_api
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+            end
+          end
         end
 
         it_behaves_like 'code completions endpoint'
@@ -481,7 +508,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
         include_examples 'a response', 'unauthorized' do
           let(:result) { :unauthorized }
-          let(:body) do
+          let(:response_body) do
             { "message" => "401 Unauthorized" }
           end
         end
