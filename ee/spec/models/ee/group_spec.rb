@@ -2899,6 +2899,53 @@ RSpec.describe Group, feature_category: :groups_and_projects do
         end
       end
     end
+
+    context 'with multiple sub groups' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:group_a) { create(:group, parent: group) }
+      let_it_be(:group_a_a) { create(:group, parent: group_a) }
+
+      let_it_be(:project) { create(:project, namespace: group) }
+      let_it_be(:project_a) { create(:project, namespace: group_a) }
+      let_it_be(:project_a_a) { create(:project, namespace: group_a_a) }
+
+      let_it_be(:bundler) { create(:sbom_component, :bundler) }
+      let_it_be(:bundler_v1) { create(:sbom_component_version, component: bundler, version: "1.0.0") }
+
+      let_it_be(:webpack) { create(:sbom_component, :webpack) }
+      let_it_be(:webpack_v4) { create(:sbom_component_version, component: webpack, version: "4.46.0") }
+
+      let_it_be(:caddy) { create(:sbom_component, :caddy) }
+      let_it_be(:caddy_v1) { create(:sbom_component_version, component: caddy, version: "1.0.0") }
+
+      let_it_be(:bundler_in_root_project) { create(:sbom_occurrence, project: project, component: bundler, component_version: bundler_v1) }
+      let_it_be(:webpack_in_project_a) { create(:sbom_occurrence, project: project_a, component: webpack, component_version: webpack_v4) }
+      let_it_be(:caddy_in_project_a_a) { create(:sbom_occurrence, project: project_a_a, component: caddy, component_version: caddy_v1) }
+
+      it 'returns an occurrence for each version of each component' do
+        expect(subject).to match_array([
+          bundler_in_root_project,
+          caddy_in_project_a_a,
+          webpack_in_project_a
+        ])
+      end
+
+      it 'returns the project count for each component' do
+        expect(subject.pluck(:component_name, :component_version_id, :project_count)).to match_array([
+          [bundler.name, bundler_v1.id, 1],
+          [caddy.name, caddy_v1.id, 1],
+          [webpack.name, webpack_v4.id, 1]
+        ])
+      end
+
+      it 'returns the occurrence count for each component' do
+        expect(subject.pluck(:component_name, :component_version_id, :occurrence_count)).to match_array([
+          [bundler.name, bundler_v1.id, 1],
+          [caddy.name, caddy_v1.id, 1],
+          [webpack.name, webpack_v4.id, 1]
+        ])
+      end
+    end
   end
 
   describe '#reached_project_access_token_limit?' do
