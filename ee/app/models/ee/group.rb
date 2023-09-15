@@ -830,6 +830,11 @@ module EE
         billed_shared_project_user?(user)
     end
 
+    def code_suggestions_eligible_user_ids
+      # all billable users and guests are eligible to be assigned code suggestions, so reuse the billed users lookup
+      billed_user_ids_including_guests[:user_ids]
+    end
+
     def parent_epic_ids_in_ancestor_groups
       ids = Set.new
       epics.has_parent.each_batch(of: EPIC_BATCH_SIZE, column: :iid) do |batch|

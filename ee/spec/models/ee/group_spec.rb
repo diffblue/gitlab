@@ -1718,6 +1718,26 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#code_suggestions_eligible_user_ids', :saas do
+    include_context 'for billable users setup'
+
+    subject(:eligible_user_ids) { group.code_suggestions_eligible_user_ids }
+
+    it 'includes distinct active users' do
+      expect(eligible_user_ids).to match_array([
+        group_guest.id,
+        project_guest.id,
+        group_developer.id,
+        project_developer.id,
+        invited_developer.id
+      ])
+    end
+
+    it 'excludes banned members' do
+      expect(eligible_user_ids).to exclude(banned_group_user.id, banned_project_user.id)
+    end
+  end
+
   describe '#capacity_left_for_user?' do
     let_it_be(:group) { create(:group) }
     let_it_be(:user) { create(:user) }
