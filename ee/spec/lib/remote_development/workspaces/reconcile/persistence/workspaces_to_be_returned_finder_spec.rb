@@ -17,6 +17,19 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     )
   end
 
+  let_it_be(:workspace_that_is_terminated, reload: true) do
+    create(
+      :workspace,
+      :without_realistic_after_create_timestamp_updates,
+      name: "workspace_that_is_terminated",
+      desired_state: RemoteDevelopment::Workspaces::States::TERMINATED,
+      actual_state: RemoteDevelopment::Workspaces::States::TERMINATED,
+      agent: agent,
+      user: user,
+      responded_to_agent_at: 2.hours.ago
+    )
+  end
+
   let_it_be(:workspace_from_agent_info, reload: true) do
     create(
       :workspace,
@@ -65,6 +78,12 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     )
 
     # desired_state_updated_at IS NOT more recent than responded_to_agent_at
+    workspace_that_is_terminated.update_attribute(
+      :desired_state_updated_at,
+      workspace_that_is_terminated.responded_to_agent_at - 1.hour
+    )
+
+    # desired_state_updated_at IS NOT more recent than responded_to_agent_at
     workspace_from_agent_info.update_attribute(
       :desired_state_updated_at,
       workspace_from_agent_info.responded_to_agent_at - 1.hour
@@ -86,6 +105,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
     it "has the expected fixtures" do
       expect(workspace_only_returned_by_full_update.desired_state_updated_at)
         .to be < workspace_only_returned_by_full_update.responded_to_agent_at
+      expect(workspace_that_is_terminated.desired_state_updated_at)
+        .to be < workspace_that_is_terminated.responded_to_agent_at
       expect(workspace_with_new_update_to_desired_state.desired_state_updated_at)
         .to be > workspace_with_new_update_to_desired_state.responded_to_agent_at
       expect(workspace_from_agent_info.desired_state_updated_at)
@@ -106,10 +127,13 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
       ]
     end
 
-    it "returns all workspaces" do
+    it "does not return terminated workspaces" do
+      expect(subject.fetch(:workspaces_to_be_returned).map(&:name)).not_to include(workspace_that_is_terminated.name)
+    end
+
+    it "returns all non-terminated workspaces" do
       expect(subject.fetch(:workspaces_to_be_returned).map(&:name))
         .to match_array(expected_workspaces_to_be_returned.map(&:name))
-      expect(subject).to match(hash_including(value))
     end
 
     it "preserves existing value entries",
