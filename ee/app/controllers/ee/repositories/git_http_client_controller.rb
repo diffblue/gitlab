@@ -84,7 +84,7 @@ module EE
         def out_of_date_redirect?
           return false unless project
 
-          git_upload_pack_request? && ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
+          git_upload_pack_request? && repository_out_of_date?(project)
         end
 
         private
@@ -135,6 +135,14 @@ module EE
         #
         def redirect_to_avoid_enumeration?
           project.nil?
+        end
+
+        def repository_out_of_date?(project)
+          if ::Geo::ProjectRepositoryReplicator.enabled?
+            ::Geo::ProjectRepositoryRegistry.repository_out_of_date?(project.id)
+          else
+            ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
+          end
         end
       end
 
@@ -208,7 +216,11 @@ module EE
             return !::Geo::LfsObjectRegistry.oids_synced?(requested_oids)
           end
 
-          ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
+          if ::Geo::ProjectRepositoryReplicator.enabled?
+            ::Geo::ProjectRepositoryRegistry.repository_out_of_date?(project.id)
+          else
+            ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
+          end
         end
 
         def wanted_version

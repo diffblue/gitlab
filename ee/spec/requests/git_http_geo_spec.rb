@@ -12,6 +12,7 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
   let_it_be(:project_with_repo) { create(:project, :repository, :private) }
   let_it_be(:project_no_repo) { create(:project, :private) }
   let_it_be(:registry_with_repo) { create(:geo_project_registry, :synced, project: project_with_repo, last_repository_successful_sync_at: project_with_repo.last_repository_updated_at + 10.seconds) }
+  let_it_be(:project_registry_with_repo) { create(:geo_project_repository_registry, :synced, project: project_with_repo, last_synced_at: project_with_repo.last_repository_updated_at + 10.seconds) }
 
   let_it_be(:primary_url) { 'http://primary.example.com' }
   let_it_be(:primary_internal_url) { 'http://primary-internal.example.com' }
@@ -145,8 +146,91 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
             let(:endpoint_path) { "/#{project_with_repo_but_not_synced.full_path}.git/info/refs?service=git-upload-pack" }
             let(:redirect_url) { redirected_primary_url }
 
+            context 'with geo_project_repository_replication feature flag disabled' do
+              before do
+                stub_feature_flags(geo_project_repository_replication: false)
+                create(:geo_project_registry, :synced, project: project_with_repo_but_not_synced, last_repository_successful_sync_at: nil)
+              end
+
+              it_behaves_like 'a Geo 302 redirect to Primary'
+
+              context 'when terms are enforced' do
+                before do
+                  enforce_terms
+                end
+
+                it_behaves_like 'a Geo 302 redirect to Primary'
+              end
+            end
+
+            context 'with geo_project_repository_replication feature flag enabled' do
+              before do
+                stub_feature_flags(geo_project_repository_replication: true)
+                create(:geo_project_repository_registry, :synced, project: project_with_repo_but_not_synced, last_synced_at: nil)
+              end
+
+              it_behaves_like 'a Geo 302 redirect to Primary'
+
+              context 'when terms are enforced' do
+                before do
+                  enforce_terms
+                end
+
+                it_behaves_like 'a Geo 302 redirect to Primary'
+              end
+            end
+          end
+
+          context 'and has successfully synced' do
+            let_it_be(:project) { project_with_repo }
+
+            context 'with geo_project_repository_replication feature flag disabled' do
+              before do
+                stub_feature_flags(geo_project_repository_replication: false)
+              end
+
+              it_behaves_like 'a Geo git request'
+              it_behaves_like 'a Geo 200 git request'
+
+              context 'when terms are enforced' do
+                before do
+                  enforce_terms
+                end
+
+                it_behaves_like 'a Geo git request'
+                it_behaves_like 'a Geo 200 git request'
+              end
+            end
+
+            context 'with geo_project_repository_replication feature flag enabled' do
+              before do
+                stub_feature_flags(geo_project_repository_replication: true)
+              end
+
+              it_behaves_like 'a Geo git request'
+              it_behaves_like 'a Geo 200 git request'
+
+              context 'when terms are enforced' do
+                before do
+                  enforce_terms
+                end
+
+                it_behaves_like 'a Geo git request'
+                it_behaves_like 'a Geo 200 git request'
+              end
+            end
+          end
+        end
+
+        context 'when the repository does not exist' do
+          let_it_be(:project) { project_no_repo }
+
+          let(:endpoint_path) { "/#{project.full_path}.git/info/refs?service=git-upload-pack" }
+          let(:redirect_url) { redirected_primary_url }
+
+          context 'with geo_project_repository_replication feature flag disabled' do
             before do
-              create(:geo_project_registry, :synced, project: project_with_repo_but_not_synced, last_repository_successful_sync_at: nil)
+              stub_feature_flags(geo_project_repository_replication: false)
             end
 
             it_behaves_like 'a Geo 302 redirect to Primary'
@@ -160,37 +244,20 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
             end
           end
 
-          context 'and has successfully synced' do
-            let_it_be(:project) { project_with_repo }
+          context 'with geo_project_repository_replication feature flag enabled' do
+            before do
+              stub_feature_flags(geo_project_repository_replication: true)
+            end
 
-            it_behaves_like 'a Geo git request'
-            it_behaves_like 'a Geo 200 git request'
+            it_behaves_like 'a Geo 302 redirect to Primary'
 
             context 'when terms are enforced' do
               before do
                 enforce_terms
               end
 
-              it_behaves_like 'a Geo git request'
-              it_behaves_like 'a Geo 200 git request'
+              it_behaves_like 'a Geo 302 redirect to Primary'
             end
-          end
-        end
-
-        context 'when the repository does not exist' do
-          let_it_be(:project) { project_no_repo }
-
-          let(:endpoint_path) { "/#{project.full_path}.git/info/refs?service=git-upload-pack" }
-          let(:redirect_url) { redirected_primary_url }
-
-          it_behaves_like 'a Geo 302 redirect to Primary'
-
-          context 'when terms are enforced' do
-            before do
-              enforce_terms
-            end
-
-            it_behaves_like 'a Geo 302 redirect to Primary'
           end
         end
 
@@ -206,16 +273,40 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
           let(:endpoint_path) { "/#{non_existent_project_path}.git/info/refs?service=git-upload-pack" }
           let(:redirect_url) { redirected_primary_url }
 
-          # To avoid enumeration of private projects not in selective sync,
-          # this response must be the same as a private project without a repo.
-          it_behaves_like 'a Geo 302 redirect to Primary'
-
-          context 'when terms are enforced' do
+          context 'with geo_project_repository_replication feature flag disabled' do
             before do
-              enforce_terms
+              stub_feature_flags(geo_project_repository_replication: false)
             end
 
+            # To avoid enumeration of private projects not in selective sync,
+            # this response must be the same as a private project without a repo.
             it_behaves_like 'a Geo 302 redirect to Primary'
+
+            context 'when terms are enforced' do
+              before do
+                enforce_terms
+              end
+
+              it_behaves_like 'a Geo 302 redirect to Primary'
+            end
+          end
+
+          context 'with geo_project_repository_replication feature flag enabled' do
+            before do
+              stub_feature_flags(geo_project_repository_replication: true)
+            end
+
+            # To avoid enumeration of private projects not in selective sync,
+            # this response must be the same as a private project without a repo.
+            it_behaves_like 'a Geo 302 redirect to Primary'
+
+            context 'when terms are enforced' do
+              before do
+                enforce_terms
+              end
+
+              it_behaves_like 'a Geo 302 redirect to Primary'
+            end
           end
         end
       end
@@ -230,12 +321,31 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
         let(:endpoint_path) { "/#{project.full_path}.git/info/refs" }
         let(:redirect_url) { "#{redirected_primary_url}?service=git-receive-pack" }
 
-        subject do
-          make_request
-          response
+        context 'with geo_project_repository_replication feature flag disabled' do
+          before do
+            stub_feature_flags(geo_project_repository_replication: false)
+          end
+
+          subject do
+            make_request
+            response
+          end
+
+          it_behaves_like 'a Geo 302 redirect to Primary'
         end
 
-        it_behaves_like 'a Geo 302 redirect to Primary'
+        context 'with geo_project_repository_replication feature flag enabled' do
+          before do
+            stub_feature_flags(geo_project_repository_replication: true)
+          end
+
+          subject do
+            make_request
+            response
+          end
+
+          it_behaves_like 'a Geo 302 redirect to Primary'
+        end
       end
     end
 
@@ -247,16 +357,40 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
       context 'when the repository exists' do
         let_it_be(:project) { project_with_repo }
 
-        it_behaves_like 'a Geo git request'
-        it_behaves_like 'a Geo 200 git request'
-
-        context 'when terms are enforced' do
+        context 'with geo_project_repository_replication feature flag disabled' do
           before do
-            enforce_terms
+            stub_feature_flags(geo_project_repository_replication: false)
           end
 
           it_behaves_like 'a Geo git request'
           it_behaves_like 'a Geo 200 git request'
+
+          context 'when terms are enforced' do
+            before do
+              enforce_terms
+            end
+
+            it_behaves_like 'a Geo git request'
+            it_behaves_like 'a Geo 200 git request'
+          end
+        end
+
+        context 'with geo_project_repository_replication feature flag enabled' do
+          before do
+            stub_feature_flags(geo_project_repository_replication: true)
+          end
+
+          it_behaves_like 'a Geo git request'
+          it_behaves_like 'a Geo 200 git request'
+
+          context 'when terms are enforced' do
+            before do
+              enforce_terms
+            end
+
+            it_behaves_like 'a Geo git request'
+            it_behaves_like 'a Geo 200 git request'
+          end
         end
       end
 
@@ -266,14 +400,36 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
         let(:endpoint_path) { "/#{project.full_path}.git/git-upload-pack" }
         let(:redirect_url) { redirected_primary_url }
 
-        it_behaves_like 'a Geo 302 redirect to Primary'
-
-        context 'when terms are enforced' do
+        context 'with geo_project_repository_replication feature flag disabled' do
           before do
-            enforce_terms
+            stub_feature_flags(geo_project_repository_replication: false)
           end
 
           it_behaves_like 'a Geo 302 redirect to Primary'
+
+          context 'when terms are enforced' do
+            before do
+              enforce_terms
+            end
+
+            it_behaves_like 'a Geo 302 redirect to Primary'
+          end
+        end
+
+        context 'with geo_project_repository_replication feature flag enabled' do
+          before do
+            stub_feature_flags(geo_project_repository_replication: true)
+          end
+
+          it_behaves_like 'a Geo 302 redirect to Primary'
+
+          context 'when terms are enforced' do
+            before do
+              enforce_terms
+            end
+
+            it_behaves_like 'a Geo 302 redirect to Primary'
+          end
         end
       end
     end
@@ -334,6 +490,7 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
             end
           end
 
+          # rubocop:disable RSpec/MultipleMemoizedHelpers
           context 'operation download' do
             let(:user) { create(:user) }
             let(:authorization) { ActionController::HttpAuthentication::Basic.encode_credentials(user.username, user.password) }
@@ -406,21 +563,63 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
                   stub_feature_flags(geo_proxy_lfs_batch_requests: false)
                 end
 
-                context 'out of sync' do
+                context 'with geo_project_repository_replication feature flag disabled' do
                   before do
-                    allow(::Geo::ProjectRegistry).to receive(:repository_out_of_date?).with(project.id).and_return(true)
+                    stub_feature_flags(geo_project_repository_replication: false)
                   end
 
-                  it_behaves_like 'a Geo 302 redirect to Primary'
+                  context 'out of sync' do
+                    before do
+                      allow(::Geo::ProjectRegistry)
+                        .to receive(:repository_out_of_date?)
+                        .with(project.id)
+                        .and_return(true)
+                    end
+
+                    it_behaves_like 'a Geo 302 redirect to Primary'
+                  end
+
+                  context 'in sync' do
+                    before do
+                      allow(::Geo::ProjectRegistry)
+                        .to receive(:repository_out_of_date?)
+                        .with(project.id)
+                        .and_return(false)
+                    end
+
+                    it 'is handled by the secondary' do
+                      is_expected.to have_gitlab_http_status(:ok)
+                    end
+                  end
                 end
 
-                context 'in sync' do
+                context 'with geo_project_repository_replication feature flag enabled' do
                   before do
-                    allow(::Geo::ProjectRegistry).to receive(:repository_out_of_date?).with(project.id).and_return(false)
+                    stub_feature_flags(geo_project_repository_replication: true)
                   end
 
-                  it 'is handled by the secondary' do
-                    is_expected.to have_gitlab_http_status(:ok)
+                  context 'out of sync' do
+                    before do
+                      allow(::Geo::ProjectRepositoryRegistry)
+                        .to receive(:repository_out_of_date?)
+                        .with(project.id)
+                        .and_return(true)
+                    end
+
+                    it_behaves_like 'a Geo 302 redirect to Primary'
+                  end
+
+                  context 'in sync' do
+                    before do
+                      allow(::Geo::ProjectRepositoryRegistry)
+                        .to receive(:repository_out_of_date?)
+                        .with(project.id)
+                        .and_return(false)
+                    end
+
+                    it 'is handled by the secondary' do
+                      is_expected.to have_gitlab_http_status(:ok)
+                    end
                   end
                 end
               end
@@ -447,6 +646,7 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
               end
             end
           end
+          # rubocop:enable RSpec/MultipleMemoizedHelpers
         end
       end
 
@@ -485,12 +685,34 @@ RSpec.describe "Git HTTP requests (Geo)", :geo, feature_category: :geo_replicati
           context 'when the repository has been updated' do
             let_it_be(:project) { project_with_repo }
 
-            before do
-              allow(::Geo::ProjectRegistry).to receive(:repository_out_of_date?).with(project.id).and_return(true)
+            context 'with geo_project_repository_replication feature flag disabled' do
+              before do
+                stub_feature_flags(geo_project_repository_replication: false)
+
+                allow(::Geo::ProjectRegistry)
+                  .to receive(:repository_out_of_date?)
+                  .with(project.id)
+                  .and_return(true)
+              end
+
+              it 'is handled by the secondary' do
+                is_expected.to have_gitlab_http_status(:ok)
+              end
             end
 
-            it 'is handled by the secondary' do
-              is_expected.to have_gitlab_http_status(:ok)
+            context 'with geo_project_repository_replication feature flag enabled' do
+              before do
+                stub_feature_flags(geo_project_repository_replication: true)
+
+                allow(::Geo::ProjectRepositoryRegistry)
+                  .to receive(:repository_out_of_date?)
+                  .with(project.id)
+                  .and_return(true)
+              end
+
+              it 'is handled by the secondary' do
+                is_expected.to have_gitlab_http_status(:ok)
+              end
             end
           end
         end
