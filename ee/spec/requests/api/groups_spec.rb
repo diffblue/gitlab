@@ -5,7 +5,9 @@ require 'spec_helper'
 RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_projects do
   include GroupAPIHelpers
 
-  let_it_be(:group, reload: true) { create(:group) }
+  let_it_be(:ssh_certificate_1) { create(:group_ssh_certificate) }
+  let_it_be(:ssh_certificate_2) { create(:group_ssh_certificate) }
+  let_it_be(:group, reload: true) { create(:group, ssh_certificates: [ssh_certificate_1, ssh_certificate_2]) }
   let_it_be(:private_group) { create(:group, :private) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:user) { create(:user) }
@@ -1482,6 +1484,240 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
             expect(json_response.pluck('id')).to eq([provisioned_user.id])
           end
         end
+      end
+    end
+  end
+
+  shared_examples_for 'when unauthenticated' do
+    it_behaves_like '401 response' do
+      let(:message) { '401 Unauthorized' }
+    end
+  end
+
+  shared_examples_for 'when authenticated as owner' do
+    it_behaves_like '403 response' do
+      let(:message) { '403 Forbidden' }
+    end
+  end
+
+  shared_examples_for 'when feature is disabled' do
+    before do
+      stub_feature_flags(ssh_certificates_rest_endpoints: false)
+    end
+
+    it_behaves_like '404 response' do
+      let(:message) { '404 Not Found' }
+    end
+  end
+
+  shared_examples_for 'when premium feature not available' do
+    before do
+      stub_licensed_features(ssh_certificates: false)
+    end
+
+    it_behaves_like '404 response' do
+      let(:message) { '404 Not Found' }
+    end
+  end
+
+  shared_examples_for "when group doesn't exist" do
+    let(:route) { '/groups/9999/ssh_certificates' }
+
+    it_behaves_like '404 response' do
+      let(:message) { '404 Group Not Found' }
+    end
+  end
+
+  shared_examples_for 'when group is not a top level group' do
+    let_it_be(:subgroup) { create(:group, parent: group) }
+
+    it_behaves_like '403 response' do
+      let(:message) { '403 Forbidden Group' }
+    end
+  end
+
+  describe 'GET /groups/:id/ssh_certificates' do
+    let(:route) { "/groups/#{group.id}/ssh_certificates" }
+
+    before do
+      stub_licensed_features(ssh_certificates: true)
+    end
+
+    it_behaves_like 'when unauthenticated' do
+      let(:request) { get api(route) }
+    end
+
+    it_behaves_like 'when authenticated as owner' do
+      let(:request) { get api(route, user) }
+    end
+
+    context 'when authenticated as admin' do
+      let(:request) { get api(route, admin, admin_mode: true) }
+
+      it_behaves_like "when group doesn't exist" do
+        let(:route) { '/groups/9999/ssh_certificates' }
+      end
+
+      it_behaves_like 'when feature is disabled'
+
+      it_behaves_like 'when premium feature not available'
+
+      it_behaves_like 'when group is not a top level group' do
+        let(:route) { "/groups/#{subgroup.id}/ssh_certificates" }
+      end
+
+      context 'when no ssh certificates are found' do
+        let(:route) { "/groups/#{private_group.id}/ssh_certificates" }
+
+        it 'returns an empty array' do
+          request
+
+          expect_empty_array_response
+        end
+      end
+
+      it 'returns an array of ssh_certificates' do
+        request
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).to be_an Array
+        expect(response).to include_pagination_headers
+        expect(json_response.length).to eq 2
+        expect(json_response.first['title']).to include('My title')
+        expect(json_response.first['key']).to include('ssh-rsa ')
+      end
+    end
+  end
+
+  describe 'POST /groups/:id/ssh_certificates' do
+    let(:route) { "/groups/#{group.id}/ssh_certificates" }
+    let(:title) { 'ssh cert from post request' }
+    let(:key) { 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCxT+aWnicS3k2ckFuoaGH3lapt28Wbif72onlVdHIhtUXZCixzs9r+jw2kme4GkUP/u6YUYJ0eEnEQR76uRje1xtoEUeM/JoC43iFX+3jbOd32gTSWe0NNWtdwLBbt8NqeDGv3WbYAKZfZpEfV7ipb70ju9ML1i94SC45NzbzcRQ== example@gitlab.com' }
+    let(:params) do
+      {
+        title: title,
+        key: key
+      }
+    end
+
+    before do
+      stub_licensed_features(ssh_certificates: true)
+    end
+
+    it_behaves_like 'when unauthenticated' do
+      let(:request) { post api(route) }
+    end
+
+    it_behaves_like 'when authenticated as owner' do
+      let(:request) { post api(route, user), params: params }
+    end
+
+    context 'when authenticated as admin' do
+      let(:request) { post api(route, admin, admin_mode: true), params: params }
+
+      context 'when title param is empty' do
+        let(:title) { '' }
+
+        it_behaves_like '422 response' do
+          let(:message) { "Validation failed: Title can't be blank" }
+        end
+      end
+
+      context 'when key param is empty' do
+        let(:key) { '' }
+
+        it_behaves_like '422 response' do
+          let(:message) { 'Validation failed: Invalid key' }
+        end
+      end
+
+      context 'when key param is incorrectly formatted' do
+        let(:key) { 'xxx' }
+
+        it_behaves_like '422 response' do
+          let(:message) { "Validation failed: Invalid key" }
+        end
+      end
+
+      it_behaves_like "when group doesn't exist" do
+        let(:route) { '/groups/9999/ssh_certificates' }
+      end
+
+      it_behaves_like 'when feature is disabled'
+
+      it_behaves_like 'when premium feature not available'
+
+      it_behaves_like 'when group is not a top level group' do
+        let(:route) { "/groups/#{subgroup.id}/ssh_certificates" }
+      end
+
+      it 'adds an ssh_certificate to the group' do
+        request
+        expect(response).to have_gitlab_http_status(:created)
+        expect(json_response['title']).to eq('ssh cert from post request')
+        expect(json_response['key']).to include('ssh-rsa ')
+      end
+    end
+  end
+
+  describe 'DELETE /groups/:id/ssh_certificates/:ssh_certificates_id' do
+    let(:route) { "/groups/#{group.id}/ssh_certificates/#{ssh_certificate_1.id}" }
+
+    before do
+      stub_licensed_features(ssh_certificates: true)
+    end
+
+    it_behaves_like 'when unauthenticated' do
+      let(:request) { delete api(route) }
+    end
+
+    it_behaves_like 'when authenticated as owner' do
+      let(:request) { delete api(route, user) }
+    end
+
+    context 'when authenticated as admin' do
+      let(:request) { delete api(route, admin, admin_mode: true) }
+
+      it_behaves_like "when group doesn't exist" do
+        let(:route) { "/groups/9999/ssh_certificates/#{ssh_certificate_1.id}" }
+      end
+
+      it_behaves_like 'when feature is disabled'
+
+      it_behaves_like 'when premium feature not available'
+
+      it_behaves_like 'when group is not a top level group' do
+        let(:route) { "/groups/#{subgroup.id}/ssh_certificates/#{ssh_certificate_1.id}" }
+      end
+
+      context "when ssh cert doesn't exist" do
+        let(:route) { "/groups/#{group.id}/ssh_certificates/9999" }
+
+        it_behaves_like '404 response' do
+          let(:message) { 'SSH Certificate not found' }
+        end
+      end
+
+      context 'when ssh cert cannot be deleted' do
+        before do
+          # new object loaded in ee/lib/ee/api/groups.rb via find.
+          # cant stub the find on an active record association (group.ssh_certificates.find)
+          # disabling the rubocop instead.
+          allow_any_instance_of(Groups::SshCertificate).to receive(:destroy!).and_raise(ActiveRecord::RecordNotDestroyed) # rubocop:disable RSpec/AnyInstanceOf
+        end
+
+        it '405 response' do
+          request
+          expect(response).to have_gitlab_http_status(:method_not_allowed)
+
+          expect(response.body).to include('SSH Certificate could not be deleted')
+        end
+      end
+
+      it 'deletes the ssh_certificate' do
+        expect(group.ssh_certificates.size).to eq(2)
+        request
+        expect(response).to have_gitlab_http_status(:no_content)
+        expect(group.ssh_certificates.reload.size).to eq(1)
       end
     end
   end

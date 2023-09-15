@@ -98,6 +98,13 @@ module EE
             end
           end
 
+          def check_ssh_certificate_available_to_group(group)
+            not_found!('Group') unless group
+            not_found! unless ::Feature.enabled?(:ssh_certificates_rest_endpoints, group)
+            not_found! unless group.licensed_feature_available?(:ssh_certificates)
+            forbidden!('Group') if group.has_parent?
+          end
+
           override :delete_group
           def delete_group(group)
             return super unless group.adjourned_deletion?
@@ -240,6 +247,83 @@ module EE
             present paginate(users), with: ::API::Entities::UserPublic
           end
           # rubocop: enable CodeReuse/ActiveRecord
+
+          desc 'Get a list of ssh certificates created for a group.' do
+            summary 'Get a list of Groups::SshCertificate for a Group.'
+            success code: 200, model: EE::API::Entities::SshCertificate
+            failure [
+              { code: 401, message: 'Unauthorized' },
+              { code: 403, message: 'Forbidden' },
+              { code: 404, message: '404 Not Found' }
+            ]
+            is_array true
+            tags %w[groups]
+          end
+          params do
+            use :pagination
+          end
+          get ":id/ssh_certificates", feature_category: :groups_and_projects, urgency: :low do
+            authenticated_as_admin!
+
+            group = find_group!(params[:id])
+            check_ssh_certificate_available_to_group(group)
+
+            present paginate(group.ssh_certificates), with: EE::API::Entities::SshCertificate
+          end
+
+          desc 'Create a ssh certificate for a group.' do
+            summary 'Add a Groups::SshCertificate.'
+            success code: 201, model: EE::API::Entities::SshCertificate
+            failure [
+              { code: 400, message: 'Bad request' },
+              { code: 401, message: 'Unauthorized' },
+              { code: 403, message: 'Forbidden' },
+              { code: 404, message: 'Not found' }
+            ]
+            tags %w[groups]
+          end
+          params do
+            requires :title, type: String, desc: 'The title of the ssh certificate'
+            requires :key, type: String, desc: 'The key of the ssh certificate'
+          end
+          post ":id/ssh_certificates", feature_category: :groups_and_projects do
+            authenticated_as_admin!
+
+            group = find_group!(params[:id])
+            check_ssh_certificate_available_to_group(group)
+
+            response = ::Groups::SshCertificates::CreateService.new(group, params).execute
+            if response.success?
+              present response.payload, with: EE::API::Entities::SshCertificate
+            else
+              render_api_error!(response.message, response.reason)
+            end
+          end
+
+          desc 'Removes an ssh certificate from a group.' do
+            detail 'Removes a Groups::SshCertificate'
+            success code: 204
+            failure [
+              { code: 400, message: 'Bad request' },
+              { code: 401, message: 'Unauthorized' },
+              { code: 403, message: 'Forbidden' },
+              { code: 422, message: 'Unprocessable entity' }
+            ]
+          end
+          delete ":id/ssh_certificates/:ssh_certificates_id", feature_category: :groups_and_projects do
+            authenticated_as_admin!
+
+            group = find_group!(params[:id])
+            check_ssh_certificate_available_to_group(group)
+
+            response = ::Groups::SshCertificates::DestroyService.new(group, params).execute
+
+            if response.success?
+              no_content!
+            else
+              render_api_error!(response.message, response.reason)
+            end
+          end
         end
       end
     end
