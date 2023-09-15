@@ -31,7 +31,7 @@ module Security
       attr_reader :policy, :container, :current_user
 
       def required_approval(policy)
-        policy&.fetch(:actions)&.find { |action| action&.fetch(:type) == Security::ScanResultPolicy::REQUIRE_APPROVAL }
+        policy&.dig(:actions)&.find { |action| action&.fetch(:type) == Security::ScanResultPolicy::REQUIRE_APPROVAL }
       end
 
       def user_approvers(action)
