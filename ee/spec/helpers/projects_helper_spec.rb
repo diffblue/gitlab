@@ -173,6 +173,27 @@ RSpec.describe ProjectsHelper do
         expect(helper.group_project_templates_count(parent_group.id)).to eq 0
       end
     end
+
+    context 'when there are multiple groups' do
+      before do
+        allow(helper).to receive(:can?).and_call_original
+      end
+
+      it 'does not cause a N+1 problem' do
+        control = ActiveRecord::QueryRecorder.new { helper.group_project_templates_count(nil) }
+
+        parent_group2 = create(:group, name: 'parent-group2')
+        template_group2 = create(:group, parent: parent_group2, name: 'template-group2')
+        create(:project, group: template_group2, name: 'template-project2')
+        parent_group2.update!(custom_project_templates_group_id: template_group2.id)
+        parent_group2.add_owner(user)
+
+        # Namespace parent loads and authorization checks
+        threshold = 4
+
+        expect { helper.group_project_templates_count(nil) }.not_to exceed_query_limit(control).with_threshold(threshold)
+      end
+    end
   end
 
   describe '#group_project_templates' do
