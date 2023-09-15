@@ -51,23 +51,45 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_
   end
 
   context 'repository_size_limit assignment as Bytes' do
-    let(:admin_user) { create(:user, admin: true) }
+    let_it_be(:admin_user) { create(:admin) }
 
-    context 'when param present' do
-      let(:opts) { { repository_size_limit: '100' } }
+    context 'when the user is an admin with admin mode enabled', :enable_admin_mode do
+      context 'when the param is present' do
+        let(:opts) { { repository_size_limit: '100' } }
 
-      it 'assign repository_size_limit as Bytes' do
-        group = create_group(admin_user, group_params.merge(opts))
+        it 'assigns repository_size_limit as Bytes' do
+          group = create_group(admin_user, group_params.merge(opts))
 
-        expect(group.repository_size_limit).to eql(100 * 1024 * 1024)
+          expect(group.repository_size_limit).to eql(100 * 1024 * 1024)
+        end
+      end
+
+      context 'when the param is an empty string' do
+        let(:opts) { { repository_size_limit: '' } }
+
+        it 'assigns a nil value' do
+          group = create_group(admin_user, group_params.merge(opts))
+
+          expect(group.repository_size_limit).to be_nil
+        end
       end
     end
 
-    context 'when param not present' do
-      let(:opts) { { repository_size_limit: '' } }
+    context 'when the user is an admin with admin mode disabled' do
+      let(:opts) { { repository_size_limit: '100' } }
 
-      it 'assign nil value' do
+      it 'assigns a nil value' do
         group = create_group(admin_user, group_params.merge(opts))
+
+        expect(group.repository_size_limit).to be_nil
+      end
+    end
+
+    context 'when the user is not an admin' do
+      let(:opts) { { repository_size_limit: '100' } }
+
+      it 'assigns a nil value' do
+        group = create_group(user, group_params.merge(opts))
 
         expect(group.repository_size_limit).to be_nil
       end

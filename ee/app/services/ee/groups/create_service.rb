@@ -43,6 +43,8 @@ module EE
           params.delete(:delayed_project_removal)
         end
 
+        params.delete(:repository_size_limit) unless current_user&.can_admin_all_resources?
+
         super
       end
 

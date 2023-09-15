@@ -22,7 +22,6 @@ module EE
 
       override :execute
       def execute
-        limit = params.delete(:repository_size_limit)
         wiki_was_enabled = project.wiki_enabled?
 
         shared_runners_setting
@@ -42,6 +41,7 @@ module EE
         prepare_analytics_dashboards_params!
 
         result = super do
+          limit = params.delete(:repository_size_limit)
           # Repository size limit comes as MB from the view
           project.repository_size_limit = ::Gitlab::Utils.try_megabytes_to_bytes(limit) if limit
         end
@@ -109,6 +109,8 @@ module EE
         unless project.licensed_feature_available?(:external_status_checks)
           params.delete(:only_allow_merge_if_all_status_checks_passed)
         end
+
+        params.delete(:repository_size_limit) unless current_user&.can_admin_all_resources?
       end
 
       override :after_default_branch_change

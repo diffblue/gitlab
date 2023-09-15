@@ -49,6 +49,8 @@ module EE
           params.delete(:extra_shared_runners_minutes_limit)
         end
 
+        params.delete(:repository_size_limit) unless current_user&.can_admin_all_resources?
+
         insight_project_id = params.dig(:insight_attributes, :project_id)
         if insight_project_id
           group_projects = ::GroupProjectsFinder.new(group: group, current_user: current_user, options: { exclude_shared: true, include_subgroups: true }).execute
