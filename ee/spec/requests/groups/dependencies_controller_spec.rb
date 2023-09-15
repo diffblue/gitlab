@@ -185,7 +185,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
               expect(response).to include_pagination_headers
             end
 
-            it 'avoids N+1 database queries related to projects and routes' do
+            it 'avoids N+1 database queries related to projects and routes', :aggregate_failures do
               control = ActiveRecord::QueryRecorder.new(skip_cached: false) { subject }
 
               project_routes_count = control.log.count do |entry|
@@ -194,9 +194,21 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
               project_count = control.log.count do |entry|
                 entry[/\Aselect.+projects.+from.+projects.+where.+projects.+id/i]
               end
+              component_versions_count = control.log.count do |entry|
+                entry[/\Aselect.+sbom_component_versions.+from.+sbom_component_versions/i]
+              end
+              sbom_sources_count = control.log.count do |entry|
+                entry[/\Aselect.+sbom_sources.+from.+sbom_sources/i]
+              end
+              sbom_components_count = control.log.count do |entry|
+                entry[/\Aselect.+sbom_components.+from.+sbom_components/i]
+              end
 
               expect(project_routes_count).to eq(1)
               expect(project_count).to eq(2)
+              expect(component_versions_count).to eq(1)
+              expect(sbom_sources_count).to eq(1)
+              expect(sbom_components_count).to eq(1)
             end
 
             context 'with sorting params' do
