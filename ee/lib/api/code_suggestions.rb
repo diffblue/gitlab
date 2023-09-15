@@ -2,11 +2,15 @@
 
 module API
   class CodeSuggestions < ::API::Base
+    include APIGuard
+
     feature_category :code_suggestions
 
     helpers ::API::Helpers::GlobalIds
 
     USER_CODE_SUGGESTIONS_ADD_ON_CACHE_KEY = 'user-%{user_id}-code-suggestions-add-on-cache'
+
+    allow_access_with_scope :ai_features
 
     before do
       authenticate!
