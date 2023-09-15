@@ -1811,6 +1811,9 @@
     # From .qa:rules:package-and-test-schedule
     - <<: *if-dot-com-gitlab-org-schedule
       when: never
+    # Do not run on unapproved MR
+    - <<: *if-merge-request-not-approved
+      when: never
     # From .qa:rules:code-merge-request-manual
     - <<: *if-merge-request
       changes: *code-patterns
