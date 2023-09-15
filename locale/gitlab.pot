@@ -2481,6 +2481,9 @@ msgstr ""
 msgid "AccessDropdown|Groups"
 msgstr ""
 
+msgid "AccessDropdown|No role"
+msgstr ""
+
 msgid "AccessDropdown|Roles"
 msgstr ""
 
