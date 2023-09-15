@@ -91,6 +91,7 @@ module EE
         to: :namespace_settings, allow_nil: true
 
       delegate :ai_settings_allowed?, to: :namespace_settings
+      delegate :experiment_settings_allowed?, to: :namespace_settings
 
       delegate :wiki_access_level, :wiki_access_level=, to: :group_feature, allow_nil: true
 

@@ -413,6 +413,30 @@ RSpec.describe NamespaceSetting do
     end
   end
 
+  describe '.experiment_settings_allowed?' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:check_namespace_plan, :licensed_feature, :is_root, :result) do
+      true  | true  | true  | true
+      false | true  | true  | false
+      true  | false | true  | false
+      true  | true  | false | false
+    end
+
+    with_them do
+      let(:group) { create(:group) }
+      subject { group.namespace_settings.experiment_settings_allowed? }
+
+      before do
+        allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_namespace_plan)
+        allow(group).to receive(:licensed_feature_available?).with(:experimental_features).and_return(licensed_feature)
+        allow(group).to receive(:root?).and_return(is_root)
+      end
+
+      it { is_expected.to eq result }
+    end
+  end
+
   describe '.ai_settings_allowed?' do
     using RSpec::Parameterized::TableSyntax
 

@@ -209,6 +209,7 @@ module GitlabSubscriptions
       evaluate_group_level_compliance_pipeline
       explain_code
       external_audit_events
+      experimental_features
       generate_description
       generate_commit_message
       generate_test_file
