@@ -3,6 +3,7 @@ class ProtectedEnvironment < ApplicationRecord
   include ::Gitlab::Utils::StrongMemoize
   include FromUnion
   include EachBatch
+  include Importable
 
   belongs_to :project
   belongs_to :group, inverse_of: :protected_environments
@@ -12,7 +13,7 @@ class ProtectedEnvironment < ApplicationRecord
   accepts_nested_attributes_for :deploy_access_levels, allow_destroy: true
   accepts_nested_attributes_for :approval_rules, allow_destroy: true
 
-  validates :deploy_access_levels, length: { minimum: 1 }
+  validates :deploy_access_levels, length: { minimum: 1 }, unless: :importing?
   validates :name, presence: true
   validate :valid_tier_name, if: :group_level?
   validates :required_approval_count, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 5 }
