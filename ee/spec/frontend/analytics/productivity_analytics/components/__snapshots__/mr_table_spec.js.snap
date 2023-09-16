@@ -32,86 +32,27 @@ exports[`MergeRequestTable component matches the snapshot 1`] = `
             >
               Time to merge
             </span>
-            <gl-dropdown-stub
+            <gl-collapsible-listbox-stub
+              block="true"
               category="primary"
-              class="metric-col w-100"
-              clearalltext="Clear all"
-              clearalltextclass="gl-px-5"
+              class="metric-col"
+              fluidwidth="true"
               headertext=""
-              hideheaderborder="true"
-              highlighteditemstitle="Selected"
-              highlighteditemstitleclass="gl-px-5"
-              menu-class="w-100 mw-100"
+              icon=""
+              ischeckcentered="true"
+              items="[object Object],[object Object],[object Object]"
+              noresultstext="No results found"
+              placement="right"
+              positioningstrategy="absolute"
+              resetbuttonlabel=""
+              searchplaceholder="Search"
+              selected="time_to_last_commit"
+              showselectallbuttonlabel=""
               size="medium"
-              splithref=""
-              text="Time from first comment to last commit"
-              toggleclass="dropdown-menu-toggle w-100"
+              toggleclass="dropdown-menu-toggle gl-w-full!"
+              toggletext="Time from first comment to last commit"
               variant="default"
-            >
-              <gl-dropdown-item-stub
-                active-class="is-active"
-                avatarurl=""
-                class="w-100"
-                iconcolor=""
-                iconname=""
-                iconrightarialabel=""
-                iconrightname=""
-                secondarytext=""
-              >
-                <span
-                  class="d-flex"
-                >
-                  <gl-icon-stub
-                    class="flex-shrink-0 gl-mr-2 invisible"
-                    name="mobile-issue-close"
-                    size="16"
-                  />
-                  Time from first commit until first comment
-                </span>
-              </gl-dropdown-item-stub>
-              <gl-dropdown-item-stub
-                active-class="is-active"
-                avatarurl=""
-                class="w-100"
-                iconcolor=""
-                iconname=""
-                iconrightarialabel=""
-                iconrightname=""
-                secondarytext=""
-              >
-                <span
-                  class="d-flex"
-                >
-                  <gl-icon-stub
-                    class="flex-shrink-0 gl-mr-2"
-                    name="mobile-issue-close"
-                    size="16"
-                  />
-                  Time from first comment to last commit
-                </span>
-              </gl-dropdown-item-stub>
-              <gl-dropdown-item-stub
-                active-class="is-active"
-                avatarurl=""
-                class="w-100"
-                iconcolor=""
-                iconname=""
-                iconrightarialabel=""
-                iconrightname=""
-                secondarytext=""
-              >
-                <span
-                  class="d-flex"
-                >
-                  <gl-icon-stub
-                    class="flex-shrink-0 gl-mr-2 invisible"
-                    name="mobile-issue-close"
-                    size="16"
-                  />
-                  Time from last commit to merge
-                </span>
-              </gl-dropdown-item-stub>
-            </gl-dropdown-stub>
+            />
           </div>
         </div>
       </div>
