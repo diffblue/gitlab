@@ -36,6 +36,7 @@ module QA
             mirror_settings.repository_url = source_project_uri
             mirror_settings.mirror_direction = 'Pull'
             mirror_settings.authentication_method = 'SSH public key'
+            mirror_settings.username = 'git'
             mirror_settings.detect_host_keys
             mirror_settings.mirror_repository
             mirror_settings.public_key source_project_uri
