@@ -21,9 +21,6 @@ module Users
 
         return error(user.errors.full_messages.to_sentence, :bad_request) unless user.persisted?
 
-        result = declare_user_external(user)
-        return error(result[:message].to_sentence, :bad_request) unless result[:status] == :success
-
         success(user)
       end
 
@@ -55,12 +52,9 @@ module Users
           email: username_and_email_generator.email,
           username: username_and_email_generator.username,
           user_type: :service_account,
+          external: true,
           skip_confirmation: true # Bot users should always have their emails confirmed.
         }
-      end
-
-      def declare_user_external(user)
-        ::Users::UpdateService.new(current_user, { user: user, external: true }).execute
       end
 
       def error_messages

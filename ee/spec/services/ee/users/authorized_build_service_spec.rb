@@ -46,6 +46,7 @@ RSpec.describe Users::AuthorizedBuildService, feature_category: :user_management
 
           expect(user).to be_present
           expect(user).to be_confirmed
+          expect(user).not_to be_external
 
           expect(user.provisioned_by_group_id).to eq(namespace.id)
         end
