@@ -7,13 +7,14 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
     subject(:result) { tool.execute }
 
     let(:tool) { described_class.new(context: context, options: options) }
-    let(:response) do
+    let(:completion) do
       instance_double(
         'Net::HTTPResponse',
         body: { 'completion' => 'In your User settings. ATTRS: CNT-IDX-123' }.to_json
       )
     end
 
+    let(:response) { Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(completion.body) }
     let(:options) { { input: "how to reset the password?" } }
     let(:context) do
       Gitlab::Llm::Chain::GitlabContext.new(
@@ -45,6 +46,19 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
 
         expect(result.content).to eq("In your User settings.")
         expect(result.extras).to eq(sources: [])
+      end
+
+      context 'when response is empty' do
+        let(:message) { "some message" }
+        let(:response) { Gitlab::Llm::ResponseModifiers::EmptyResponseModifier.new(message) }
+
+        it 'responds with the message from TanukiBot' do
+          expect_next_instance_of(Gitlab::Llm::TanukiBot, expected_params) do |instance|
+            expect(instance).to receive(:execute).and_return(response)
+          end
+
+          expect(tool.execute.content).to eq(message)
+        end
       end
     end
 

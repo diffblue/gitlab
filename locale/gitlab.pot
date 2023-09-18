@@ -9607,9 +9607,6 @@ msgstr ""
 msgid "Chat"
 msgstr ""
 
-msgid "Chat not available."
-msgstr ""
-
 msgid "ChatMessage|%{project_link}: Pipeline %{pipeline_link} of %{ref_type} %{ref_link} by %{user_combined_name} %{humanized_status} in %{duration}"
 msgstr ""
 
@@ -23749,6 +23746,9 @@ msgid "I want to use GitLab CI with my existing repository"
 msgstr ""
 
 msgid "I'm signing up for GitLab because:"
+msgstr ""
+
+msgid "I'm sorry, I was not able to find any documentation to answer your question."
 msgstr ""
 
 msgid "ID"
