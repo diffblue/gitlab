@@ -14,15 +14,15 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
   let_it_be(:component_version_3) { create(:sbom_component_version, component: component_3) }
 
   let_it_be(:occurrence_1) do
-    create(:sbom_occurrence, component_version: component_version_1, packager_name: 'nuget', project: project)
+    create(:sbom_occurrence, :mit, component_version: component_version_1, packager_name: 'nuget', project: project)
   end
 
   let_it_be(:occurrence_2) do
-    create(:sbom_occurrence, component_version: component_version_2, packager_name: 'npm', project: project)
+    create(:sbom_occurrence, :apache_2, component_version: component_version_2, packager_name: 'npm', project: project)
   end
 
   let_it_be(:occurrence_3) do
-    create(:sbom_occurrence, component_version: component_version_3, source: nil, project: project)
+    create(:sbom_occurrence, :mpl_2, component_version: component_version_3, source: nil, project: project)
   end
 
   shared_examples 'filter and sorting' do
@@ -91,6 +91,26 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
           packagers = dependencies.map(&:packager)
 
           expect(packagers).to eq([nil, 'nuget', 'npm'])
+        end
+      end
+
+      context 'when sorted asc by license' do
+        let_it_be(:params) { { sort: 'asc', sort_by: 'license' } }
+
+        it 'returns sorted results' do
+          expect(dependencies[0].licenses[0]["spdx_identifier"]).to eq('Apache-2.0')
+          expect(dependencies[1].licenses[0]["spdx_identifier"]).to eq('MIT')
+          expect(dependencies[2].licenses[0]["spdx_identifier"]).to eq('MPL-2.0')
+        end
+      end
+
+      context 'when sorted desc by license' do
+        let_it_be(:params) { { sort: 'desc', sort_by: 'license' } }
+
+        it 'returns sorted results' do
+          expect(dependencies[0].licenses[0]["spdx_identifier"]).to eq('MPL-2.0')
+          expect(dependencies[1].licenses[0]["spdx_identifier"]).to eq('MIT')
+          expect(dependencies[2].licenses[0]["spdx_identifier"]).to eq('Apache-2.0')
         end
       end
 

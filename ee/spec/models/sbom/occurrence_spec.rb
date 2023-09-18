@@ -221,6 +221,44 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe '.order_by_spdx_identifier' do
+    let_it_be(:mit_occurrence) { create(:sbom_occurrence, :mit) }
+    let_it_be(:apache_occurrence) { create(:sbom_occurrence, :apache_2) }
+    let_it_be(:apache_and_mpl_occurrence) { create(:sbom_occurrence, :apache_2, :mpl_2) }
+    let_it_be(:apache_and_mit_occurrence) { create(:sbom_occurrence, :apache_2, :mit) }
+    let_it_be(:mit_and_mpl_occurrence) { create(:sbom_occurrence, :mit, :mpl_2) }
+
+    subject(:relation) { described_class.order_by_spdx_identifier(order) }
+
+    context 'when sorting in ascending order' do
+      let(:order) { 'asc' }
+
+      it 'returns the sorted records' do
+        expect(relation.map(&:licenses)).to eq([
+          apache_and_mit_occurrence.licenses,
+          apache_and_mpl_occurrence.licenses,
+          apache_occurrence.licenses,
+          mit_and_mpl_occurrence.licenses,
+          mit_occurrence.licenses
+        ])
+      end
+    end
+
+    context 'when sorting in descending order' do
+      let(:order) { 'desc' }
+
+      it 'returns the sorted records' do
+        expect(relation.map(&:licenses)).to eq([
+          mit_occurrence.licenses,
+          mit_and_mpl_occurrence.licenses,
+          apache_occurrence.licenses,
+          apache_and_mpl_occurrence.licenses,
+          apache_and_mit_occurrence.licenses
+        ])
+      end
+    end
+  end
+
   describe '.filter_by_component_names' do
     let_it_be(:occurrence_1) { create(:sbom_occurrence) }
     let_it_be(:occurrence_2) { create(:sbom_occurrence) }

@@ -33,6 +33,20 @@ module Sbom
       order(package_manager: direction)
     end
 
+    scope :order_by_spdx_identifier, ->(direction, depth: 1) do
+      order(Gitlab::Pagination::Keyset::Order.build(
+        0.upto(depth).map do |index|
+          sql = Arel.sql("(licenses#>'{#{index},spdx_identifier}')::text")
+          Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+            attribute_name: "spdx_identifier_#{index}",
+            order_expression: direction == "desc" ? sql.desc : sql.asc,
+            distinct: false,
+            sql_type: 'text'
+          )
+        end
+      ))
+    end
+
     scope :filter_by_package_managers, ->(package_managers) do
       where(package_manager: package_managers)
     end
