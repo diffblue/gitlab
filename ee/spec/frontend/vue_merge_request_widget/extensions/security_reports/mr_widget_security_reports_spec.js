@@ -11,6 +11,7 @@ import SummaryHighlights from 'ee/vue_merge_request_widget/extensions/security_r
 import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_finding.query.graphql';
 import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
 import revertFindingToDetectedMutation from 'ee/security_dashboard/graphql/mutations/revert_finding_to_detected.mutation.graphql';
+import createIssueMutation from 'ee/security_dashboard/graphql/mutations/finding_create_issue.mutation.graphql';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import Widget from '~/vue_merge_request_widget/components/widget/widget.vue';
@@ -554,6 +555,12 @@ describe('MR Widget Security Reports', () => {
               found_by_pipeline: {
                 iid: 1,
               },
+              project: {
+                id: 278964,
+                name: 'GitLab',
+                full_path: '/gitlab-org/gitlab',
+                full_name: 'GitLab.org / GitLab',
+              },
               ...props,
             },
           ],
@@ -729,14 +736,28 @@ describe('MR Widget Security Reports', () => {
       });
 
       it('handles issue creation - success', async () => {
+        const webUrl = 'https://gitlab.com/issue/1';
+
         await createComponentExpandWidgetAndOpenModal({
           mrProps: {
             createVulnerabilityFeedbackIssuePath,
           },
-        });
-
-        mockAxios.onPost(createVulnerabilityFeedbackIssuePath).replyOnce(HTTP_STATUS_OK, {
-          issue_links: [{ issue_url: '/my/issue/url', link_type: 'created' }],
+          additionalHandlers: [
+            [
+              createIssueMutation,
+              jest.fn().mockResolvedValue({
+                data: {
+                  securityFindingCreateIssue: {
+                    issue: {
+                      id: '1',
+                      webUrl,
+                    },
+                    errors: [],
+                  },
+                },
+              }),
+            ],
+          ],
         });
 
         const spy = jest.spyOn(urlUtils, 'visitUrl');
@@ -745,16 +766,15 @@ describe('MR Widget Security Reports', () => {
 
         await waitForPromises();
 
-        expect(spy).toHaveBeenCalledWith('/my/issue/url');
+        expect(spy).toHaveBeenCalledWith(webUrl);
       });
 
       it('handles issue creation - error', async () => {
-        mockAxios.onPost(createVulnerabilityFeedbackIssuePath).replyOnce(HTTP_STATUS_BAD_REQUEST);
-
         await createComponentExpandWidgetAndOpenModal({
           mrProps: {
             createVulnerabilityFeedbackIssuePath,
           },
+          additionalHandlers: [[createIssueMutation, jest.fn().mockRejectedValue()]],
         });
 
         findModal().vm.$emit('createNewIssue');

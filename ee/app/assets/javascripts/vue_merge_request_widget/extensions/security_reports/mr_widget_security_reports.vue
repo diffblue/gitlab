@@ -8,11 +8,14 @@ import { BV_SHOW_MODAL, BV_HIDE_MODAL } from '~/lib/utils/constants';
 import axios from '~/lib/utils/axios_utils';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__, sprintf } from '~/locale';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_finding.query.graphql';
 import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
 import revertFindingToDetectedMutation from 'ee/security_dashboard/graphql/mutations/revert_finding_to_detected.mutation.graphql';
+import createIssueMutation from 'ee/security_dashboard/graphql/mutations/finding_create_issue.mutation.graphql';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 import { capitalizeFirstCharacter, convertToCamelCase } from '~/lib/utils/text_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -21,10 +24,7 @@ import download from '~/lib/utils/downloader';
 import { DynamicScroller, DynamicScrollerItem } from 'vendor/vue-virtual-scroller';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
-import {
-  getCreatedIssueForVulnerability,
-  getDismissalTransitionForVulnerability,
-} from 'ee/vue_shared/security_reports/components/helpers';
+import { getDismissalTransitionForVulnerability } from 'ee/vue_shared/security_reports/components/helpers';
 import SummaryText, { MAX_NEW_VULNERABILITIES } from './summary_text.vue';
 import SummaryHighlights from './summary_highlights.vue';
 import SecurityTrainingPromoWidget from './security_training_promo_widget.vue';
@@ -381,20 +381,16 @@ export default {
       this.isCreatingIssue = true;
       const finding = this.modalData?.vulnerability;
 
-      axios
-        .post(this.mr.createVulnerabilityFeedbackIssuePath, {
-          vulnerability_feedback: {
-            feedback_type: 'issue',
-            pipeline_id: this.mr.pipelineId,
-            project_fingerprint: finding.project_fingerprint,
-            finding_uuid: finding.uuid,
-            category: finding.report_type,
-            vulnerability_data: { ...finding, category: finding.report_type },
+      this.$apollo
+        .mutate({
+          mutation: createIssueMutation,
+          variables: {
+            projectId: convertToGraphQLId(TYPENAME_PROJECT, finding.project.id),
+            findingUuid: finding.uuid,
           },
         })
         .then(({ data }) => {
-          const url = getCreatedIssueForVulnerability(data).issue_url;
-          visitUrl(url);
+          visitUrl(data.securityFindingCreateIssue.issue.webUrl);
         })
         .catch(() => {
           this.isCreatingIssue = false;
