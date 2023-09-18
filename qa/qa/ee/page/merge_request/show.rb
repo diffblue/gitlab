@@ -80,7 +80,10 @@ module QA
           end
 
           def wait_for_license_compliance_report
-            has_text?('License Compliance detected', wait: QA::Support::Repeater::DEFAULT_MAX_WAIT_TIME)
+            retry_until(reload: true, sleep_interval: 2, max_attempts: 30,
+              message: 'Finding "License Compliance" widget') do
+              has_text?('License Compliance detected')
+            end
           end
 
           def approvals_required_from
@@ -108,8 +111,8 @@ module QA
           end
 
           def expand_license_report
-            within_element(:mr_widget_extension) do
-              click_element(:toggle_button)
+            within_element('widget-extension') do
+              click_element('toggle-button')
             end
           end
 
