@@ -15,6 +15,8 @@ module Sbom
         sbom_occurrences.order_by_component_name(sort_direction)
       when 'packager'
         sbom_occurrences.order_by_package_name(sort_direction)
+      when 'license'
+        sbom_occurrences.order_by_spdx_identifier(sort_direction)
       else
         sbom_occurrences.order_by_id
       end

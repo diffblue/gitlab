@@ -17,6 +17,7 @@ describe('DependenciesActions component', () => {
 
   const objectBasicProp = {
     namespaceType: 'project',
+    enableProjectSearch: true,
   };
 
   const factory = ({ propsData, provide } = {}) => {
@@ -81,6 +82,33 @@ describe('DependenciesActions component', () => {
           Object.keys(SORT_FIELDS_GROUP).map((field) => [`${namespace}/setSortField`, field]),
         ),
       );
+    });
+
+    describe('with the "enableProjectSearch" set to false', () => {
+      beforeEach(async () => {
+        factory({
+          propsData: { namespace },
+          provide: {
+            namespaceType: 'group',
+            enableProjectSearch: false,
+            glFeatures: { groupLevelLicenses: true },
+          },
+        });
+        store.state[namespace].endpoint = `${TEST_HOST}/dependencies.json`;
+        await nextTick();
+      });
+
+      it('does not dispatch the "license" action', () => {
+        const sortingItems = wrapper.findAllComponents(GlSortingItem).wrappers;
+
+        sortingItems.forEach((item) => {
+          item.vm.$emit('click');
+        });
+
+        expect(store.dispatch.mock.calls).not.toEqual(
+          expect.arrayContaining([[`${namespace}/setSortField`, 'license']]),
+        );
+      });
     });
 
     describe('with the "groupLevelLicenses" feature flag disabled', () => {

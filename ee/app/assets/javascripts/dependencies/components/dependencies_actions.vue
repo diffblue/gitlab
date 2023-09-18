@@ -24,7 +24,7 @@ export default {
     GlSortingItem,
   },
   mixins: [glFeatureFlagsMixin()],
-  inject: ['namespaceType'],
+  inject: ['namespaceType', 'enableProjectSearch'],
   props: {
     namespace: {
       type: String,
@@ -49,9 +49,10 @@ export default {
       return this.sortFields[this.sortField];
     },
     sortFields() {
-      const groupFields = this.glFeatures.groupLevelLicenses
-        ? SORT_FIELDS_GROUP
-        : omit(SORT_FIELDS_GROUP, SORT_FIELD_LICENSE);
+      const groupFields =
+        this.glFeatures.groupLevelLicenses && this.enableProjectSearch
+          ? SORT_FIELDS_GROUP
+          : omit(SORT_FIELDS_GROUP, SORT_FIELD_LICENSE);
 
       return this.isProjectNamespace ? SORT_FIELDS_PROJECT : groupFields;
     },

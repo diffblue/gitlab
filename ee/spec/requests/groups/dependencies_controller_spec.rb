@@ -200,7 +200,18 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
             end
 
             context 'with sorting params' do
-              context 'when sorted by packager' do
+              context 'when sorted by packager in ascending order' do
+                let(:params) { { group_id: group.to_param, sort_by: 'packager', sort: 'asc' } }
+
+                it 'returns sorted list' do
+                  subject
+
+                  expect(json_response['dependencies'].first['packager']).to eq('bundler')
+                  expect(json_response['dependencies'].last['packager']).to eq('npm')
+                end
+              end
+
+              context 'when sorted by packager in descending order' do
                 let(:params) { { group_id: group.to_param, sort_by: 'packager', sort: 'desc' } }
 
                 it 'returns sorted list' do
@@ -211,7 +222,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                 end
               end
 
-              context 'when sorted by name' do
+              context 'when sorted by name in ascending order' do
                 let(:params) { { group_id: group.to_param, sort_by: 'name', sort: 'asc' } }
 
                 it 'returns sorted list' do
@@ -219,6 +230,39 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
 
                   expect(json_response['dependencies'].first['name']).to eq(sbom_occurrence_npm.name)
                   expect(json_response['dependencies'].last['name']).to eq(sbom_occurrence_bundler.name)
+                end
+              end
+
+              context 'when sorted by name in descending order' do
+                let(:params) { { group_id: group.to_param, sort_by: 'name', sort: 'desc' } }
+
+                it 'returns sorted list' do
+                  subject
+
+                  expect(json_response['dependencies'].first['name']).to eq(sbom_occurrence_bundler.name)
+                  expect(json_response['dependencies'].last['name']).to eq(sbom_occurrence_npm.name)
+                end
+              end
+
+              context 'when sorted by license in ascending order' do
+                let(:params) { { group_id: group.to_param, sort_by: 'license', sort: 'asc' } }
+
+                it 'returns sorted list' do
+                  subject
+
+                  expect(json_response['dependencies'].first['licenses'][0]['spdx_identifier']).to eq('Apache-2.0')
+                  expect(json_response['dependencies'].last['licenses'][0]['spdx_identifier']).to eq('MIT')
+                end
+              end
+
+              context 'when sorted by license in descending order' do
+                let(:params) { { group_id: group.to_param, sort_by: 'license', sort: 'desc' } }
+
+                it 'returns sorted list' do
+                  subject
+
+                  expect(json_response['dependencies'].first['licenses'][0]['spdx_identifier']).to eq('MIT')
+                  expect(json_response['dependencies'].last['licenses'][0]['spdx_identifier']).to eq('Apache-2.0')
                 end
               end
             end
@@ -230,7 +274,24 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                 it 'returns filtered list' do
                   subject
 
+                  expect(json_response['dependencies'].count).to eq(1)
                   expect(json_response['dependencies'].pluck('packager')).to eq(['npm'])
+                end
+              end
+
+              context 'when filtered by component_names' do
+                let(:params) do
+                  {
+                    group_id: group.to_param,
+                    component_names: [sbom_occurrence_bundler.name]
+                  }
+                end
+
+                it 'returns filtered list' do
+                  subject
+
+                  expect(json_response['dependencies'].count).to eq(1)
+                  expect(json_response['dependencies'].pluck('name')).to eq([sbom_occurrence_bundler.name])
                 end
               end
             end
