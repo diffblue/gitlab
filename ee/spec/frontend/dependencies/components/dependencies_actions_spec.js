@@ -1,6 +1,7 @@
 import { GlSorting, GlSortingItem } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import DependenciesActions from 'ee/dependencies/components/dependencies_actions.vue';
+import GroupDependenciesFilteredSearch from 'ee/dependencies/components/filtered_search/group_dependencies_filtered_search.vue';
 import createStore from 'ee/dependencies/store';
 import { DEPENDENCY_LIST_TYPES } from 'ee/dependencies/store/constants';
 import {
@@ -30,7 +31,11 @@ describe('DependenciesActions component', () => {
       stubs: {
         GlSortingItem,
       },
-      provide: { ...objectBasicProp, glFeatures: { groupLevelLicenses: true }, ...provide },
+      provide: {
+        ...objectBasicProp,
+        glFeatures: { groupLevelLicenses: true, groupLevelDependenciesFiltering: true },
+        ...provide,
+      },
     });
   };
 
@@ -131,6 +136,23 @@ describe('DependenciesActions component', () => {
         expect(store.dispatch.mock.calls).not.toEqual(
           expect.arrayContaining([[`${namespace}/setSortField`, 'license']]),
         );
+      });
+    });
+
+    describe('with the "groupLevelDependenciesFiltering" feature flag disabled', () => {
+      beforeEach(async () => {
+        factory({
+          propsData: { namespace },
+          provide: {
+            namespaceType: 'group',
+            glFeatures: { groupLevelDependenciesFiltering: false },
+          },
+        });
+        await nextTick();
+      });
+
+      it('does not render a filtered-search input', () => {
+        expect(wrapper.findComponent(GroupDependenciesFilteredSearch).exists()).toBe(false);
       });
     });
   });

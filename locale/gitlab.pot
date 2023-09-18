@@ -41775,6 +41775,9 @@ msgstr ""
 msgid "Search or filter commits"
 msgstr ""
 
+msgid "Search or filter dependencies..."
+msgstr ""
+
 msgid "Search or filter results…"
 msgstr ""
 
