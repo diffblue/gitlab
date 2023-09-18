@@ -4,11 +4,7 @@ module QA
   include Support::Helpers::Plan
 
   RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging },
-    product_group: :billing_and_subscription_management,
-    quarantine: {
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/423043',
-      type: :bug
-    } do
+    product_group: :billing_and_subscription_management do
     describe 'Seat overage modal' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:hash) { SecureRandom.hex(8) }
