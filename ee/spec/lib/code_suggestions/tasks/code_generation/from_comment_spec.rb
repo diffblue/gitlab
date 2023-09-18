@@ -77,5 +77,22 @@ RSpec.describe CodeSuggestions::Tasks::CodeGeneration::FromComment, feature_cate
 
       it_behaves_like 'code suggestion task'
     end
+
+    context 'when there is no prefix' do
+      let(:prefix) { '' }
+      let(:prompt) do
+        <<~PROMPT
+          This is a task to write new Python code in a file 'test.py' based on a given description.
+
+          It is your task to write valid and working Python code.
+          Only return in your response new code.
+
+          Create new code for the following description:
+          `#{instruction}`
+        PROMPT
+      end
+
+      it_behaves_like 'code suggestion task'
+    end
   end
 end
