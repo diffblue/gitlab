@@ -132,6 +132,15 @@ RSpec.describe Vulnerabilities::SecurityFinding::CreateMergeRequestService, '#ex
 
       expect(vulnerability.present_on_default_branch).to eq false
     end
+
+    it 'sets the new vulnerability state to detected' do
+      service_response = subject
+
+      merge_request = service_response.payload.fetch(:merge_request)
+      vulnerability = Vulnerabilities::MergeRequestLink.find_by(merge_request: merge_request).vulnerability
+
+      expect(vulnerability.state).to eq 'detected'
+    end
   end
 
   shared_examples 'an error occurs' do

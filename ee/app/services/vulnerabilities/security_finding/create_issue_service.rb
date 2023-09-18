@@ -30,7 +30,7 @@ module Vulnerabilities
           current_user: @current_user,
           params: params,
           present_on_default_branch: false,
-          state: 'confirmed').execute
+          state: 'detected').execute
 
         if vulnerability_response.error?
           @error_message = vulnerability_response[:message]

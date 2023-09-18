@@ -75,6 +75,12 @@ feature_category: :vulnerability_management do
       expect(vulnerability.present_on_default_branch).to eq false
     end
 
+    it 'sets the new vulnerability state to detected' do
+      service_response = subject
+      vulnerability = service_response.payload.fetch(:issue).vulnerability_links.first.vulnerability
+      expect(vulnerability.state).to eq 'detected'
+    end
+
     it 'does create a new Issue' do
       expect { subject }.to change(Issue, :count).by(1)
     end
