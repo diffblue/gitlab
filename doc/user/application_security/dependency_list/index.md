@@ -33,9 +33,9 @@ To view your project's dependencies, ensure you meet the following requirements:
   You should not change the default behavior of allowing the
   [application security jobs](../../application_security/index.md#application-coverage) to fail.
 
-## View a project's dependencies
+## View project dependencies
 
-To view the dependencies of a project or a group's projects:
+To view the dependencies of a project or all projects in a group:
 
 1. On the left sidebar, at the top, select **Search GitLab** (**{search}**) to find your project or group.
 1. Select **Secure > Dependency list**.
