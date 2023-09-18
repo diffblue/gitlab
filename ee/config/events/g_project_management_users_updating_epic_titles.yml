@@ -1,0 +1,21 @@
+---
+description: An epic's title has been updated
+category: InternalEventTracking
+action: g_project_management_users_updating_epic_titles
+label_description:
+property_description:
+value_description:
+extra_properties:
+identifiers:
+- user
+- namespace
+product_section: dev
+product_stage: plan
+product_group: product_planning
+milestone: "16.4"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/131794
+distributions:
+- ee
+tiers:
+- premium
+- ultimate

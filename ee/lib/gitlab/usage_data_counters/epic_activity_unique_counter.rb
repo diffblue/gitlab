@@ -48,18 +48,15 @@ module Gitlab
 
       class << self
         def track_epic_created_action(author:, namespace:)
-          track_snowplow_action(EPIC_CREATED, author, namespace)
-          track_unique_action(EPIC_CREATED, author)
+          track_internal_action(EPIC_CREATED, author, namespace)
         end
 
         def track_epic_title_changed_action(author:, namespace:)
-          track_snowplow_action(EPIC_TITLE_CHANGED, author, namespace)
-          track_unique_action(EPIC_TITLE_CHANGED, author)
+          track_internal_action(EPIC_TITLE_CHANGED, author, namespace)
         end
 
         def track_epic_description_changed_action(author:, namespace:)
-          track_snowplow_action(EPIC_DESCRIPTION_CHANGED, author, namespace)
-          track_unique_action(EPIC_DESCRIPTION_CHANGED, author)
+          track_internal_action(EPIC_DESCRIPTION_CHANGED, author, namespace)
         end
 
         def track_epic_note_created_action(author:, namespace:)
@@ -218,6 +215,17 @@ module Gitlab
         end
 
         private
+
+        def track_internal_action(event_name, author, namespace)
+          return unless Feature.enabled?(:track_epics_activity)
+          return unless author
+
+          Gitlab::InternalEvents.track_event(
+            event_name,
+            user: author,
+            namespace: namespace
+          )
+        end
 
         def track_unique_action(action, author)
           return unless Feature.enabled?(:track_epics_activity)
