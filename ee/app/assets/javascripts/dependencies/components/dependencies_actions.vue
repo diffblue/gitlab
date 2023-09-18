@@ -22,6 +22,8 @@ export default {
   components: {
     GlSorting,
     GlSortingItem,
+    GroupDependenciesFilteredSearch: () =>
+      import('ee/dependencies/components/filtered_search/group_dependencies_filtered_search.vue'),
   },
   mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType', 'enableProjectSearch'],
@@ -80,6 +82,10 @@ export default {
   <div
     class="gl-display-flex gl-p-5 gl-bg-gray-10 gl-border-t-1 gl-border-t-solid gl-border-gray-100"
   >
+    <group-dependencies-filtered-search
+      v-if="glFeatures.groupLevelDependenciesFiltering && !isProjectNamespace"
+      class="gl-mr-3"
+    />
     <gl-sorting
       :text="sortFieldName"
       :is-ascending="isSortAscending"
