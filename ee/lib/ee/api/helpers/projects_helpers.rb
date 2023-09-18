@@ -62,6 +62,7 @@ module EE
               :fallback_approvals_required,
               :import_url,
               :issues_template,
+              :mirror,
               :merge_requests_template,
               :merge_pipelines_enabled,
               :merge_trains_enabled,
