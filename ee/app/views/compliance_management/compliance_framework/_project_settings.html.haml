@@ -1,6 +1,6 @@
 - return unless @project.feature_available?(:custom_compliance_frameworks)
 - user_has_edit_permissions = current_user.can?(:admin_compliance_framework, @project)
-- compliance_framework_doc_link = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/project/settings/index.md', anchor: 'add-a-compliance-framework-to-a-project') }
+- compliance_framework_doc_link = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/project/working_with_projects.md', anchor: 'add-a-compliance-framework-to-a-project') }
 - compliance_pipelines_doc_link = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/group/compliance_frameworks.md', anchor: 'compliance-pipelines') }
 - gitlab_ci_yaml_doc_link = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('ci/yaml/gitlab_ci_yaml.md') }
 - namespace_doc_link = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/namespace/index.md', anchor: 'types-of-namespaces') }
