@@ -611,7 +611,7 @@ export default {
     :help-popover="$options.widgetHelpPopover"
     :action-buttons="actionButtons"
     multi-polling
-    data-qa-selector="vulnerability_report_grouped"
+    data-testid="vulnerability-report-grouped"
     @is-loading="handleIsLoading"
   >
     <template #summary>
