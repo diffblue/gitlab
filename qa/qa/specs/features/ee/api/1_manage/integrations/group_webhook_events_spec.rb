@@ -58,9 +58,7 @@ module QA
         it 'group hooks do not auto-disable',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/389594' do
           EE::Resource::GroupWebHook.setup(fail_mock, session: session, issues: true) do |webhook, smocker|
-            project = Resource::Project.fabricate_via_api! do |project|
-              project.group = webhook.group
-            end
+            project = create(:project, group: webhook.group)
 
             hook_trigger_times.times do
               create(:issue, project: project)

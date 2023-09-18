@@ -14,13 +14,7 @@ module QA
       let(:runner_name) { "runner-for-#{group.name}" }
 
       context 'when a compliance framework has a compliance pipeline' do
-        let(:pipeline_project) do
-          Resource::Project.fabricate_via_api! do |project|
-            project.name = 'pipeline-project'
-            project.group = group
-          end
-        end
-
+        let(:pipeline_project) { create(:project, name: 'pipeline-project', group: group) }
         let(:compliance_framework) do
           QA::EE::Resource::ComplianceFramework.fabricate_via_api! do |framework|
             framework.group = group
@@ -54,10 +48,7 @@ module QA
         it('runs that pipeline in a different project that has the compliance framework assigned',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/413715'
         ) do
-          compliant_project = Resource::Project.fabricate_via_api! do |project|
-            project.name = 'compliant-project'
-            project.group = group
-          end
+          compliant_project = create(:project, name: 'compliant-project', group: group)
           compliant_project.compliance_framework = compliance_framework
 
           mr = Resource::MergeRequest.fabricate_via_api! do |merge_request|

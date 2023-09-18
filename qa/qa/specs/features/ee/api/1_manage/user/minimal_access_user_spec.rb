@@ -14,11 +14,7 @@ module QA
 
         @group.sandbox.add_member(@user_with_minimal_access, Resource::Members::AccessLevel::MINIMAL_ACCESS)
 
-        @project = Resource::Project.fabricate_via_api! do |project|
-          project.group = @group
-          project.name = "project-for-minimal-access"
-          project.initialize_with_readme = true
-        end
+        @project = create(:project, :with_readme, name: 'project-for-minimal-access', group: @group)
       end
 
       it 'is not allowed to push code via the CLI', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347873' do

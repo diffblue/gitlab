@@ -13,13 +13,7 @@ module QA
 
       let(:group) { create(:group, path: "test-group-compliance-#{SecureRandom.hex(8)}") }
 
-      let!(:project) do
-        Resource::Project.fabricate_via_api! do |proj|
-          proj.name = 'project-compliance-dashboard'
-          proj.group = group
-        end
-      end
-
+      let!(:project) { create(:project, name: 'project-compliance-dashboard', group: group) }
       let(:merge_request) do
         Resource::MergeRequest.fabricate_via_api! do |mr|
           mr.project = project

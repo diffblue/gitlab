@@ -13,13 +13,7 @@ module QA
       include_context 'advanced search active'
 
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
-
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = "test-project-for-blob-index"
-        end
-      end
-
+      let(:project) { create(:project, name: 'test-project-for-blob-index') }
       let(:project_file_content) { "File content for blob index test #{SecureRandom.hex(8)}" }
 
       before do
