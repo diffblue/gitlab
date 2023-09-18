@@ -43,7 +43,7 @@ export default {
   <div>
     <time-ago v-if="job.finishedAt" :time="job.finishedAt" class="gl-text-secondary gl-font-sm" />
     <div class="gl-mt-1 gl-mb-3">
-      <ci-badge-link v-if="job.detailedStatus" :status="job.detailedStatus" badge-size="sm" />
+      <ci-badge-link v-if="job.detailedStatus" :status="job.detailedStatus" size="sm" />
       <gl-link v-if="runner" :href="runner.adminUrl" data-testid="runner-link">
         <runner-full-name :runner="runner" />
       </gl-link>

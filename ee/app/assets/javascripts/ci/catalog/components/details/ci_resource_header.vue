@@ -104,7 +104,7 @@ export default {
           v-if="hasPipelineStatus"
           class="gl-mt-2"
           :status="pipelineStatus"
-          badge-size="sm"
+          size="sm"
           show-text
         />
       </div>
