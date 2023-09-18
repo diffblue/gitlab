@@ -204,8 +204,8 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
         project.add_owner(current_user)
       end
 
-      it 'nullifies the configuration bot_user_id' do
-        expect { destroy_service.execute(member) }.to change { security_orchestration_policy_configuration.reload.bot_user_id }.to(nil)
+      it 'denies access' do
+        expect { destroy_service.execute(member) }.to raise_error(Gitlab::Access::AccessDeniedError)
       end
     end
 
