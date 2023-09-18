@@ -16,10 +16,9 @@ module QA
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
 
       let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = "es-adv-global-search-#{project_name_suffix}"
-          project.description = "This is a unique project description #{project_name_suffix}"
-        end
+        create(:project,
+          name: "es-adv-global-search-#{project_name_suffix}",
+          description: "This is a unique project description #{project_name_suffix}")
       end
 
       before do

@@ -25,11 +25,7 @@ module QA
         )
       end
 
-      let(:project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = "api-es-#{SecureRandom.hex(8)}"
-        end
-      end
+      let(:project) { create(:project, name: "api-es-#{SecureRandom.hex(8)}") }
 
       before do
         Resource::Repository::Commit.fabricate_via_api! do |commit|

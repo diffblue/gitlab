@@ -6,24 +6,15 @@ module QA
       let!(:subgroup) { create(:group, path: "compliance-#{Faker::Alphanumeric.alphanumeric(number: 8)}") }
 
       let!(:top_level_project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'project-compliance-framework-report'
-          project.group = subgroup.sandbox
-        end
+        create(:project, name: 'project-compliance-framework-report', group: subgroup.sandbox)
       end
 
       let!(:project_without_framework) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'project-without-compliance-framework'
-          project.group = subgroup.sandbox
-        end
+        create(:project, name: 'project-without-compliance-framework', group: subgroup.sandbox)
       end
 
       let!(:subgroup_project) do
-        Resource::Project.fabricate_via_api! do |project|
-          project.name = 'subgroup-project-compliance-framework-report'
-          project.group = subgroup
-        end
+        create(:project, name: 'subgroup-project-compliance-framework-report', group: subgroup)
       end
 
       let!(:default_compliance_framework) do
