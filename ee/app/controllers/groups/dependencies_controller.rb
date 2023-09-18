@@ -15,6 +15,7 @@ module Groups
 
     before_action only: :index do
       push_frontend_feature_flag(:group_level_licenses, group)
+      push_frontend_feature_flag(:group_level_dependencies_filtering, group)
     end
 
     def index
