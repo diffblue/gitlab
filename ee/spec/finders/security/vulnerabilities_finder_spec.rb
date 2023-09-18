@@ -24,9 +24,24 @@ RSpec.describe Security::VulnerabilitiesFinder, feature_category: :vulnerability
     create(:vulnerability, :with_findings, severity: :medium, report_type: :dast, state: :dismissed, project: project)
   end
 
+  let(:archive_associated_vulnerabilities) { archived_project.vulnerabilities }
   let(:filters) { {} }
   let(:vulnerable) { project }
-  let(:archive_associated_vulnerabilities) { archived_project.vulnerabilities }
+
+  shared_context 'with vulnerability dismissed with a reason' do
+    let_it_be(:dismissed_vulnerability) { create(:vulnerability, :dismissed, report_type: :dependency_scanning, severity: :low, project: project) }
+    let_it_be(:dismissed_vulnerability_read) do
+      create(
+        :vulnerability_read,
+        :used_in_tests,
+        report_type: dismissed_vulnerability.report_type,
+        state: dismissed_vulnerability.state,
+        severity: dismissed_vulnerability.severity,
+        vulnerability: dismissed_vulnerability,
+        project: project
+      )
+    end
+  end
 
   subject { described_class.new(vulnerable, filters).execute }
 
@@ -90,6 +105,26 @@ RSpec.describe Security::VulnerabilitiesFinder, feature_category: :vulnerability
 
     it 'only returns vulnerabilities matching the given states' do
       is_expected.to contain_exactly(vulnerability1, vulnerability2)
+    end
+
+    context 'when given multiple states and a dismissal reason' do
+      include_context 'with vulnerability dismissed with a reason'
+
+      let(:filters) { { state: %w[confirmed], dismissal_reason: %w[used_in_tests] } }
+
+      it 'returns vulnerabilites matching the state OR dismissal_reason' do
+        is_expected.to contain_exactly(vulnerability2, dismissed_vulnerability)
+      end
+    end
+
+    context 'when given a dismissal reason only' do
+      include_context 'with vulnerability dismissed with a reason'
+
+      let(:filters) { { dismissal_reason: %w[used_in_tests] } }
+
+      it 'only returns dismissed vulnerabilities with the given dismissal reason' do
+        is_expected.to contain_exactly(dismissed_vulnerability)
+      end
     end
   end
 
