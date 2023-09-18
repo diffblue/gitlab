@@ -14,6 +14,12 @@ module EE
             Can return true and not show an associated epic when the user has no access to the epic.",
           method: :has_epic?
 
+        field :has_parent, GraphQL::Types::Boolean,
+          null: false,
+          alpha: { milestone: '16.5' },
+          description: 'Indicates if the issue has a parent work item.',
+          method: :has_parent_link?
+
         field :iteration, ::Types::IterationType, null: true, description: 'Iteration of the issue.'
 
         field :weight, GraphQL::Types::Int, null: true, description: 'Weight of the issue.'

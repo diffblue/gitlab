@@ -1334,6 +1334,27 @@ RSpec.describe Issue, feature_category: :team_planning do
     end
   end
 
+  describe "#has_parent_link?" do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:work_item_epic) { create(:work_item, :epic, project: project) }
+    let_it_be(:work_item_issue) { create(:work_item, :issue, project: project) }
+    let_it_be(:issue) { described_class.find(work_item_issue.id) }
+
+    subject(:has_parent_link) { issue.has_parent_link? }
+
+    context 'when when there is no associated parent link' do
+      it { is_expected.to eq false }
+    end
+
+    context 'when when there is an associated parent link' do
+      before do
+        create(:parent_link, work_item: work_item_issue, work_item_parent: work_item_epic)
+      end
+
+      it { is_expected.to eq true }
+    end
+  end
+
   describe '#allowed_work_item_type_change' do
     let_it_be(:epic) { create(:epic) }
 
