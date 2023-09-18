@@ -52,7 +52,6 @@ exports[`License Compliance extension expanded data with new licenses displays a
         <li>
           <div
             class="gl-pl-6 gl-w-full"
-            data-qa-selector="child_content"
             data-testid="child-content"
           >
             <div
@@ -197,7 +196,6 @@ exports[`License Compliance extension expanded data with new licenses displays d
         <li>
           <div
             class="gl-pl-6 gl-w-full"
-            data-qa-selector="child_content"
             data-testid="child-content"
           >
             <div
@@ -334,7 +332,6 @@ exports[`License Compliance extension expanded data with new licenses displays u
         <li>
           <div
             class="gl-pl-6 gl-w-full"
-            data-qa-selector="child_content"
             data-testid="child-content"
           >
             <div

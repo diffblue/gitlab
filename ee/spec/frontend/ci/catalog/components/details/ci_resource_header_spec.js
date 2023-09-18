@@ -89,6 +89,13 @@ describe('CiResourceHeader', () => {
 
       it(`${testText} the pipeline status badge`, () => {
         expect(findPipelineStatusBadge().exists()).toBe(hasPipelineBadge);
+        if (hasPipelineBadge) {
+          expect(findPipelineStatusBadge().props()).toEqual({
+            showText: true,
+            size: 'sm',
+            status: pipelineStatus,
+          });
+        }
       });
     });
   });

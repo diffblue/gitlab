@@ -53,6 +53,7 @@ describe('RunnerJobFailure', () => {
       createComponent();
 
       expect(findCiBadgeLink().props('status')).toBe(mockFailedJob.detailedStatus);
+      expect(findCiBadgeLink().props('size')).toBe('sm');
     });
 
     it('when data is not present, shows no status badge', () => {
