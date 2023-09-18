@@ -9,7 +9,12 @@ module Projects
       before_action :authorize_analytics_settings!
 
       def update
-        ::Projects::UpdateService.new(project, current_user, update_params).tap do |service|
+        # clear instrumentation key since old one is not valid anymore
+        # a new instrumentation key will be set during stack initialization
+        params_to_update = update_params.to_h
+          .deep_merge({ project_setting_attributes: { product_analytics_instrumentation_key: nil } })
+
+        ::Projects::UpdateService.new(project, current_user, params_to_update).tap do |service|
           result = service.execute
           if result[:status] == :success
             flash[:toast] =
