@@ -21,6 +21,10 @@ FactoryBot.define do
       packager_name { 'npm' }
     end
 
+    trait :nuget do
+      packager_name { 'nuget' }
+    end
+
     trait :apache_2 do
       after(:build) do |occurrence|
         occurrence.licenses.push({
@@ -37,6 +41,16 @@ FactoryBot.define do
           'spdx_identifier' => 'MIT',
           'name' => 'MIT License',
           'url' => 'https://spdx.org/licenses/MIT.html'
+        })
+      end
+    end
+
+    trait :mpl_2 do
+      after(:build) do |occurrence|
+        occurrence.licenses.push({
+          'spdx_identifier' => 'MPL-2.0',
+          'name' => 'Mozilla Public License 2.0',
+          'url' => 'https://spdx.org/licenses/MPL-2.0.html'
         })
       end
     end
