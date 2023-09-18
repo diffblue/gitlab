@@ -59,7 +59,8 @@ module QA
 
         create_commit
         # Check that secret-detection job is triggered whenever there is a pipeline is triggered on main
-        check_pipeline_for_job
+        expect { check_pipeline_for_job }.to eventually_be_truthy.within(max_duration: 60, reload_page: page),
+          "Expected #{job_name} to appear but it is not present"
       end
 
       private
@@ -75,7 +76,6 @@ module QA
       end
 
       def check_pipeline_for_job
-        Flow::Pipeline.wait_for_latest_pipeline(status: 'warning')
         Flow::Pipeline.visit_latest_pipeline
 
         Page::Project::Pipeline::Show.perform do |pipeline|
