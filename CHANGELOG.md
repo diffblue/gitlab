@@ -836,6 +836,12 @@ entry.
 - [Fix test pollution in count_deployments_metric_spec](gitlab-org/gitlab@610e6a033fe9b20aabc237b18837cddf150d4d1b) ([merge request](gitlab-org/gitlab!126808))
 - [Update BulkImports::PipelineBatchWorker resource boundary](gitlab-org/gitlab@7d2477d81bcc2d035be26587802706f7098b6e44) ([merge request](gitlab-org/gitlab!126696))
 
+## 16.2.7 (2023-09-18)
+
+### Security (1 change)
+
+- [Enforce that the policy is executed by the bot user](gitlab-org/security/gitlab@336d6829bf5268dbbb1ccdaa224ed65c431a9ed6) ([merge request](gitlab-org/security/gitlab!3569))
+
 ## 16.2.6 (2023-09-12)
 
 ### Fixed (3 changes)
