@@ -28,15 +28,18 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
         end
 
         context 'when next_run_at is in the past' do
+          let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
+
           before do
             schedule.update_column(:next_run_at, 1.minute.ago)
           end
 
-          it 'invokes the rule schedule worker for all projects in the group' do
-            expect(Security::ScanExecutionPolicies::RuleScheduleWorker).to receive(:perform_async).with(project_1.id, schedule.owner.id, schedule.id)
-            expect(Security::ScanExecutionPolicies::RuleScheduleWorker).to receive(:perform_async).with(project_2.id, schedule.owner.id, schedule.id)
+          context 'when there is not a security_policy_bot in the project' do
+            it 'does not invoke the rule schedule worker for any projects in the group' do
+              expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async)
 
-            worker.perform(schedule_id)
+              worker.perform(schedule_id)
+            end
           end
 
           it 'updates next run at value' do
@@ -46,15 +49,13 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
           end
 
           context 'when there is a security_policy_bot in the project' do
-            let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
-
             before_all do
               project_1.add_guest(security_policy_bot)
             end
 
-            it 'invokes the rule schedule worker as the bot and falls back to schedule owner otherwise' do
+            it 'invokes the rule schedule worker as the bot and does not schedule otherwise' do
               expect(Security::ScanExecutionPolicies::RuleScheduleWorker).to receive(:perform_async).with(project_1.id, security_policy_bot.id, schedule.id)
-              expect(Security::ScanExecutionPolicies::RuleScheduleWorker).to receive(:perform_async).with(project_2.id, schedule.owner.id, schedule.id)
+              expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async).with(project_2.id, anything, anything)
 
               worker.perform(schedule_id)
             end

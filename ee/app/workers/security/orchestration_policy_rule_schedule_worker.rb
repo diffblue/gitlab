@@ -34,7 +34,8 @@ module Security
       project = schedule.security_orchestration_policy_configuration.project
       return if project.marked_for_deletion?
 
-      user = project.security_policy_bot || schedule.owner
+      user = project.security_policy_bot
+      return unless user
 
       Security::ScanExecutionPolicies::RuleScheduleWorker.perform_async(project.id, user.id, schedule.id)
     end
