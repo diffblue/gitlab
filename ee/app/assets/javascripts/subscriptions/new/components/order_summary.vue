@@ -220,8 +220,8 @@ export default {
         </template>
       </summary-details>
     </div>
-    <div class="gl-display-none gl-lg-display-block" data-qa-selector="order_summary">
-      <h4 class="gl-my-0 gl-font-lg" data-qa-selector="title">{{ titleWithName }}</h4>
+    <div class="gl-display-none gl-lg-display-block" data-testid="order-summary">
+      <h4 class="gl-my-0 gl-font-lg" data-testid="title">{{ titleWithName }}</h4>
       <summary-details class="gl-mt-6">
         <template v-if="isEligibleToUsePromoCode" #promo-code>
           <promo-code-input
