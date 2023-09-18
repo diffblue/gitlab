@@ -3,13 +3,29 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::ResponseModifiers::EmptyResponseModifier, feature_category: :duo_chat do
-  let(:ai_response) { {} }
+  context 'when not message is passed' do
+    subject(:response_modifier) { described_class.new }
 
-  it 'parses content from the ai response' do
-    expect(described_class.new(ai_response).response_body).to eq('')
+    it 'parses content from the ai response' do
+      expect(response_modifier.response_body).to eq('')
+    end
+
+    it 'returns empty errors' do
+      expect(response_modifier.errors).to be_empty
+    end
   end
 
-  it 'returns empty errors' do
-    expect(described_class.new(ai_response).errors).to contain_exactly('Chat not available.')
+  context 'when message is passed' do
+    let(:message) { 'Some message' }
+
+    subject(:response_modifier) { described_class.new(message) }
+
+    it 'parses content from the ai response' do
+      expect(response_modifier.response_body).to eq(message)
+    end
+
+    it 'returns empty errors' do
+      expect(response_modifier.errors).to be_empty
+    end
   end
 end
