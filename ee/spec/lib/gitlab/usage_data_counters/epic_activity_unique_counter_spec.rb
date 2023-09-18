@@ -3,6 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, :clean_gitlab_redis_shared_state do
+  subject { track_action({ author: user1, namespace: namespace }) }
+
+  let(:user) { user1 }
   let_it_be(:user1) { build(:user, id: 1) }
   let_it_be(:user2) { build(:user, id: 2) }
   let_it_be(:namespace) { build(:group) }
@@ -70,7 +73,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_created_action(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'internal event tracking' do
       let(:action) { described_class::EPIC_CREATED }
     end
 
@@ -82,7 +85,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_title_changed_action(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'internal event tracking' do
       let(:action) { described_class::EPIC_TITLE_CHANGED }
     end
 
@@ -94,7 +97,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_description_changed_action(**params)
     end
 
-    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'internal event tracking' do
       let(:action) { described_class::EPIC_DESCRIPTION_CHANGED }
     end
 
