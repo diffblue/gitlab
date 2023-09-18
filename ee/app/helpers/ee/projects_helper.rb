@@ -167,14 +167,22 @@ module EE
     end
 
     def group_project_templates_count(group_id)
-      projects_not_aimed_for_deletions_for(group_id).count do |project|
-        can?(current_user, :download_code, project)
+      if ::Feature.enabled?(:project_templates_without_min_access, current_user)
+        projects_not_aimed_for_deletions_for(group_id).count do |project|
+          can?(current_user, :download_code, project)
+        end
+      else
+        projects_not_aimed_for_deletions_for(group_id).count
       end
     end
 
-    def group_project_templates(group_id)
-      projects_not_aimed_for_deletions_for(group_id).select do |project|
-        can?(current_user, :download_code, project)
+    def group_project_templates(group)
+      if ::Feature.enabled?(:project_templates_without_min_access, current_user)
+        projects_not_aimed_for_deletions_for(group.id).select do |project|
+          can?(current_user, :download_code, project)
+        end
+      else
+        group.projects.not_aimed_for_deletion
       end
     end
 

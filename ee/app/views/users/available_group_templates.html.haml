@@ -1,7 +1,7 @@
 .custom-project-templates
   - if @groups_with_project_templates.present?
     - @groups_with_project_templates.each do |group|
-      - projects = group_project_templates(group.id)
+      - projects = group_project_templates(group)
       .template-group-options.js-template-group-options{ class: ('expanded border-top-0' if @groups_with_project_templates.first == group) }
         .template-header.d-flex.align-items-center
           .template-subgroup.d-flex.flex-fill.align-items-center

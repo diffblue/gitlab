@@ -172,6 +172,16 @@ RSpec.describe ProjectsHelper do
       specify do
         expect(helper.group_project_templates_count(parent_group.id)).to eq 0
       end
+
+      context 'when feature flag "project_templates_without_min_access" is disabled' do
+        before do
+          stub_feature_flags(project_templates_without_min_access: false)
+        end
+
+        specify do
+          expect(helper.group_project_templates_count(parent_group.id)).to eq 1
+        end
+      end
     end
 
     context 'when there are multiple groups' do
@@ -233,6 +243,16 @@ RSpec.describe ProjectsHelper do
 
       specify do
         expect(helper.group_project_templates(parent_group)).to be_empty
+      end
+
+      context 'when feature flag "project_templates_without_min_access" is disabled' do
+        before do
+          stub_feature_flags(project_templates_without_min_access: false)
+        end
+
+        specify do
+          expect(helper.group_project_templates(parent_group)).to be_empty
+        end
       end
     end
   end
