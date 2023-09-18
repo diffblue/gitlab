@@ -77,25 +77,7 @@ export default {
     @shown="onDropdownShown"
     @hidden="onDropdownHidden"
   >
-    <template v-if="shouldRenderWorkspacesDropdownGroupBeforeActions" #before-actions>
-      <get-project-details-query
-        :project-full-path="projectPath"
-        @result="onProjectDetailsResult"
-        @error="onProjectDetailsError"
-      />
-      <workspaces-dropdown-group
-        v-if="projectDetailsLoaded"
-        :new-workspace-path="newWorkspacePath"
-        :project-id="projectId"
-        :project-full-path="projectPath"
-        :supports-workspaces="supportsWorkspaces"
-        border-position="bottom"
-      />
-      <div v-else class="gl-my-3">
-        <gl-loading-icon />
-      </div>
-    </template>
-    <template v-if="shouldRenderWorkspacesDropdownGroupAfterActions" #after-actions>
+    <template v-if="shouldRenderWorkspacesDropdownGroup" #after-actions>
       <get-project-details-query
         :project-full-path="projectPath"
         @result="onProjectDetailsResult"

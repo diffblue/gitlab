@@ -1,8 +1,10 @@
 <script>
-import { GlEmptyState, GlSkeletonLoader } from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
+import { GlEmptyState, GlSkeletonLoader, GlAlert, GlLink, GlSprintf } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import { s__ } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import {
   buildDefaultDashboardFilters,
@@ -21,9 +23,12 @@ const HIDE_DATE_RANGE_FILTER = [BUILT_IN_VALUE_STREAM_DASHBOARD];
 export default {
   name: 'AnalyticsDashboard',
   components: {
-    GlSkeletonLoader,
     CustomizableDashboard,
+    GlAlert,
     GlEmptyState,
+    GlLink,
+    GlSkeletonLoader,
+    GlSprintf,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: {
@@ -65,6 +70,7 @@ export default {
       editingEnabled: this.glFeatures.combinedAnalyticsDashboardsEditor,
       changesSaved: false,
       alert: null,
+      dashboardError: null,
     };
   },
   computed: {
@@ -120,9 +126,8 @@ export default {
         this.breadcrumbState.updateName(this.initialDashboard?.title || '');
       },
       error(error) {
-        // TODO: Show user friendly errors when request fails
-        // https://gitlab.com/gitlab-org/gitlab/-/issues/395788
-        throw error;
+        this.dashboardError = error;
+        Sentry.captureException(error);
       },
     },
     availableVisualizations: {
@@ -146,7 +151,7 @@ export default {
       },
       error(error) {
         // TODO: Show user friendly errors when request fails
-        // https://gitlab.com/gitlab-org/gitlab/-/issues/395788
+        // https://gitlab.com/gitlab-org/gitlab/-/issues/425119
         throw error;
       },
     },
@@ -206,13 +211,29 @@ export default {
       });
     },
   },
+  troubleshootingDashboardDocsPath: helpPagePath('user/analytics/analytics_dashboards', {
+    anchor: '#troubleshooting',
+  }),
 };
 </script>
 
 <template>
   <div>
+    <gl-alert v-if="dashboardError" variant="danger" class="gl-mt-5">
+      <gl-sprintf
+        :message="
+          s__(
+            'Analytics|Something went wrong while loading the dashboard. Refresh the page to try again or see %{linkStart}troubleshooting documentation%{linkEnd}.',
+          )
+        "
+      >
+        <template #link="{ content }">
+          <gl-link :href="$options.troubleshootingDashboardDocsPath">{{ content }}</gl-link>
+        </template>
+      </gl-sprintf>
+    </gl-alert>
     <customizable-dashboard
-      v-if="initialDashboard"
+      v-else-if="initialDashboard"
       :initial-dashboard="initialDashboard"
       :available-visualizations="availableVisualizations"
       :default-filters="defaultFilters"

@@ -285,7 +285,7 @@ RSpec.describe ProjectsHelper do
           security_dashboard_empty_svg_path: start_with('/assets/illustrations/empty-state/empty-secure-md'),
           new_project_pipeline_path: "/#{project.full_path}/-/pipelines/new",
           auto_fix_mrs_path: end_with('/merge_requests?label_name=GitLab-auto-fix'),
-          scanners: '[{"id":123,"vendor":"Security Vendor","report_type":"SAST"}]',
+          scanners: '[{"id":123,"vendor":"Security Vendor","report_type":"SAST","name":"Find Security Bugs","external_id":"find_sec_bugs_1"}]',
           can_admin_vulnerability: 'true',
           can_view_false_positive: 'false',
           security_configuration_path: kind_of(String),
@@ -295,7 +295,7 @@ RSpec.describe ProjectsHelper do
 
       before do
         create(:vulnerability, project: project)
-        scanner = create(:vulnerabilities_scanner, project: project, id: 123)
+        scanner = create(:vulnerabilities_scanner, project: project, id: 123, name: "Find Security Bugs", external_id: "find_sec_bugs_1")
         create(:vulnerabilities_finding, project: project, scanner: scanner)
       end
 
