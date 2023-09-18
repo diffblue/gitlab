@@ -119,11 +119,13 @@ module Gitlab
           message: 'Final prompt request'
         })
 
-        final_prompt_result
+        Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(final_prompt_result.body)
       end
 
       def empty_response
-        {}
+        Gitlab::Llm::ResponseModifiers::EmptyResponseModifier.new(
+          _("I'm sorry, I was not able to find any documentation to answer your question.")
+        )
       end
     end
   end

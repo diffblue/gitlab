@@ -1,12 +1,8 @@
 # frozen_string_literal: true
 
 RSpec::Matchers.define :match_llm_tools do |expected_tools|
-  match do |prompt|
-    zero_shot_prompt_actions = ['the action to take', 'DirectAnswer']
-    actions = prompt[:prompt].scan(/Action: (?<action>.+?)(?=$)/)
-    actions.reject! { |action| action.first.start_with?(*zero_shot_prompt_actions) }
-    @tools = actions.flatten
-
+  match do |context|
+    @tools = context.tools_used.map { |tool| tool::NAME }
     expected_tools == @tools
   end
 

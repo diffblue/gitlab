@@ -7,6 +7,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let_it_be(:user) { create(:user) }
     let_it_be(:embeddings) { create_list(:tanuki_bot_mvc, 2) }
 
+    let(:empty_response_message) { "I'm sorry, I was not able to find any documentation to answer your question." }
     let(:question) { 'A question' }
     let(:answer) { 'The answer.' }
     let(:logger) { instance_double('Logger') }
@@ -16,7 +17,12 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let(:embedding) { Array.new(1536, 0.5) }
     let(:embedding_response) { { "data" => [{ "embedding" => embedding }] } }
     let(:attrs) { embeddings.map(&:id).map { |x| "CNT-IDX-#{x}" }.join(", ") }
-    let(:completion_response) { { "completion" => "#{answer} ATTRS: #{attrs}" } }
+    let(:completion_response) do
+      instance_double(
+        HTTParty::Response, code: 200, success?: true, body: { 'completion' => "#{answer} ATTRS: #{attrs}" }.to_json
+      )
+    end
+
     let(:status_code) { 200 }
     let(:success) { true }
 
@@ -137,8 +143,8 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
           allow(License).to receive(:feature_available?).with(:ai_tanuki_bot).and_return(false)
         end
 
-        it 'returns an empty hash' do
-          expect(execute).to eq({})
+        it 'returns an empty response message' do
+          expect(execute.response_body).to eq(empty_response_message)
         end
       end
 
@@ -151,8 +157,8 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
           context 'when no user is provided' do
             let(:user) { nil }
 
-            it 'returns an empty hash' do
-              expect(execute).to eq({})
+            it 'returns an empty response message' do
+              expect(execute.response_body).to eq(empty_response_message)
             end
           end
 
@@ -161,8 +167,8 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
               allow(described_class).to receive(:ai_feature_enabled?).and_return(false)
             end
 
-            it 'returns an empty hash' do
-              expect(execute).to eq({})
+            it 'returns an empty response message' do
+              expect(execute.response_body).to eq(empty_response_message)
             end
           end
 
@@ -174,10 +180,10 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
             end
 
             context 'when `tanuki_bot_mvc` table is empty (no embeddings are stored in the table)' do
-              it 'returns an empty hash' do
+              it 'returns an empty response message' do
                 ::Embedding::TanukiBotMvc.connection.execute("truncate #{::Embedding::TanukiBotMvc.table_name}")
 
-                expect(execute).to eq({})
+                expect(execute.response_body).to eq(empty_response_message)
               end
             end
 
@@ -212,8 +218,8 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
               stub_feature_flags(tanuki_bot: tanuki_bot)
             end
 
-            it 'returns an empty hash' do
-              expect(execute).to eq({})
+            it 'returns an empty response message' do
+              expect(execute.response_body).to eq(empty_response_message)
             end
           end
         end
@@ -229,8 +235,8 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
           context 'when the question is not provided' do
             let(:question) { nil }
 
-            it 'returns an empty hash' do
-              expect(execute).to eq({})
+            it 'returns an empty response message' do
+              expect(execute.response_body).to eq(empty_response_message)
             end
           end
 
@@ -243,7 +249,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
             end
 
             it 'returns an i do not know' do
-              expect(execute).to eq({})
+              expect(execute.response_body).to eq(empty_response_message)
             end
           end
         end

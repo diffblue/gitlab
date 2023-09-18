@@ -1310,6 +1310,18 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
         )
       end
 
+      context 'when only disabling pull mirror' do
+        let(:project) { create(:project, mirror: true, import_url: import_url, mirror_user: user, namespace: user.namespace) }
+        let(:project_params) do
+          { mirror: false }
+        end
+
+        it 'updates mirror to false' do
+          expect { subject }.to change { project.reload.mirror }.from(true).to(false)
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
+
       it 'updates project without mirror attributes when the project is unable to set up repository mirroring' do
         stub_licensed_features(repository_mirrors: false)
 

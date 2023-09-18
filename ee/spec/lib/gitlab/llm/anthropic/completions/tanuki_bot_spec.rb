@@ -21,12 +21,14 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category:
     }.to_json
   end
 
-  let(:ai_response) do
-    double( # rubocop: disable RSpec/VerifiedDoubles
-      body: ai_response_body,
-      empty?: false
+  let(:completion) do
+    instance_double(
+      'Net::HTTPResponse',
+      body: ai_response_body
     )
   end
+
+  let(:ai_response) { Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(completion.body) }
 
   subject(:tanuki_bot) { described_class.new(template_class, params).execute(user, user, options) }
 
@@ -46,13 +48,9 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category:
         .with(current_user: user, question: question, tracking_context: tracking_context).and_return(tanuki_instance)
       allow(tanuki_instance).to receive(:execute).and_return(ai_response)
 
-      response_modifier = double
+      response_modifier = ai_response
       response_service = double
       params = [user, user, response_modifier, { options: { request_id: 'uuid' } }]
-
-      expect(Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot).to receive(:new).with(ai_response_body).and_return(
-        response_modifier
-      )
 
       expect(::Gitlab::Llm::GraphqlSubscriptionResponseService).to receive(:new).with(*params).and_return(
         response_service
@@ -63,7 +61,9 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category:
     end
 
     it 'handles nil responses' do
-      allow(::Gitlab::Llm::TanukiBot).to receive(:execute).and_return({})
+      allow(::Gitlab::Llm::TanukiBot).to receive(:execute).and_return(
+        Gitlab::Llm::ResponseModifiers::EmptyResponseModifier.new(nil)
+      )
 
       expect { tanuki_bot }.not_to raise_error
     end
