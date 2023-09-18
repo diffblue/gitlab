@@ -93,9 +93,20 @@ module Security
     end
 
     def filter_by_states
-      if params[:state].present?
-        @vulnerabilities = vulnerabilities.with_states(params[:state])
-      end
+      return unless params[:state].present? || params[:dismissal_reason].present?
+
+      reads = vulnerable.vulnerability_reads
+
+      @vulnerabilities = if params[:state].present? && params[:dismissal_reason].present?
+                           by_state = reads.with_states(params[:state])
+                           by_dismissal_reason = reads.with_states(:dismissed).with_dismissal_reason(params[:dismissal_reason])
+
+                           by_state.or(by_dismissal_reason)
+                         elsif params[:state].present?
+                           reads.with_states(params[:state])
+                         else
+                           reads.with_states(:dismissed).with_dismissal_reason(params[:dismissal_reason])
+                         end.as_vulnerabilities
     end
 
     def filter_by_scanner_ids
