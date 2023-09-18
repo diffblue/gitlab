@@ -30,10 +30,11 @@ RSpec.describe AuditEvents::ExternalDestinationStreamer, feature_category: :audi
         create(:external_audit_event_destination, group: group)
         create_list(:instance_external_audit_event_destination, 2)
         create(:google_cloud_logging_configuration, group: group)
+        create(:instance_google_cloud_logging_configuration)
       end
 
       it 'makes correct number of HTTP calls' do
-        expect(Gitlab::HTTP).to receive(:post).exactly(4).times
+        expect(Gitlab::HTTP).to receive(:post).exactly(5).times
 
         subject
       end
@@ -55,6 +56,7 @@ RSpec.describe AuditEvents::ExternalDestinationStreamer, feature_category: :audi
         create(:external_audit_event_destination, group: group)
         create(:instance_external_audit_event_destination)
         create(:google_cloud_logging_configuration, group: group)
+        create(:instance_google_cloud_logging_configuration)
       end
 
       it { is_expected.to be_truthy }
@@ -80,6 +82,14 @@ RSpec.describe AuditEvents::ExternalDestinationStreamer, feature_category: :audi
       context 'when only google cloud logging destination is streamable' do
         before do
           create(:google_cloud_logging_configuration, group: group)
+        end
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when only instance google cloud logging destination is streamable' do
+        before do
+          create(:instance_google_cloud_logging_configuration)
         end
 
         it { is_expected.to be_truthy }
