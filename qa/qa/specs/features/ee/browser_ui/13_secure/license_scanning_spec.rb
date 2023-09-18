@@ -5,7 +5,7 @@ module QA
     only: { subdomain: %i[staging staging-canary] } do
     describe 'License Scanning' do
       let!(:test_project) do
-        create(:project, name: 'license-scanning-project', description: 'License Scanning Project')
+        create(:project, :with_readme, name: 'license-scanning-project', description: 'License Scanning Project')
       end
 
       let!(:licenses) do
@@ -23,19 +23,21 @@ module QA
           executor: :docker)
       end
 
-      before do
-        Resource::Repository::ProjectPush.fabricate! do |project_push|
-          project_push.project = test_project
-          project_push.files = [
+      let!(:source) do
+        Resource::Repository::Commit.fabricate_via_api! do |commit|
+          commit.project = test_project
+          commit.branch = 'license-management-mr'
+          commit.start_branch = test_project.default_branch
+          commit.add_files([
             {
-              name: '.gitlab-ci.yml',
+              file_path: '.gitlab-ci.yml',
               content: File.read(
                 File.join(EE::Runtime::Path.fixtures_path, 'secure_license_scanning_files',
                   '.gitlab-ci.yml')
               )
             },
             {
-              name: 'package.json',
+              file_path: 'package.json',
               content: File.read(
                 File.join(
                   EE::Runtime::Path.fixtures_path,
@@ -45,7 +47,7 @@ module QA
               )
             },
             {
-              name: 'package-lock.json',
+              file_path: 'package-lock.json',
               content: File.read(
                 File.join(
                   EE::Runtime::Path.fixtures_path,
@@ -54,13 +56,8 @@ module QA
                 )
               )
             }
-          ]
-          project_push.commit_message = 'NPM Package and Package Lock files'
+          ])
         end
-        Flow::Login.sign_in_unless_signed_in
-
-        test_project.visit!
-        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed', wait: 600)
       end
 
       after do
@@ -68,9 +65,29 @@ module QA
       end
 
       context 'when populated by a Dependency Scan' do
-        it 'populates licenses in the pipeline',
+        it 'populates licenses in the pipeline, dashboard and merge request',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/409969' do
+          merge_request = Resource::MergeRequest.fabricate_via_api! do |merge_request|
+            merge_request.source = source
+            merge_request.project = test_project
+            merge_request.source_branch = 'license-management-mr'
+            merge_request.target_branch = test_project.default_branch
+          end
           Flow::Login.sign_in_unless_signed_in
+
+          merge_request.visit!
+
+          Page::MergeRequest::Show.perform do |mr|
+            mr.wait_for_license_compliance_report
+            mr.expand_license_report
+            licenses.each do |license|
+              expect(mr).to have_license(license)
+            end
+            mr.merge_immediately!
+          end
+
+          Flow::Pipeline.wait_for_latest_pipeline(status: 'passed', wait: 600)
+
           test_project.visit!
           Flow::Pipeline.visit_latest_pipeline
           Page::Project::Pipeline::Show.perform do |pipeline|
@@ -79,11 +96,6 @@ module QA
               expect(pipeline).to have_license(license)
             end
           end
-        end
-
-        it 'populates licenses in the dashboard',
-          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/409967' do
-          Flow::Login.sign_in_unless_signed_in
           test_project.visit!
           Page::Project::Menu.perform(&:go_to_license_compliance)
           EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
