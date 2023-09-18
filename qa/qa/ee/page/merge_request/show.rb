@@ -21,7 +21,7 @@ module QA
               end
 
               view 'ee/app/assets/javascripts/vue_merge_request_widget/extensions/security_reports/mr_widget_security_reports.vue' do
-                element :vulnerability_report_grouped
+                element 'vulnerability-report-grouped'
                 element :sast_scan_report
                 element :dependency_scan_report
                 element :container_scan_report
@@ -117,7 +117,7 @@ module QA
           end
 
           def expand_vulnerability_report
-            within_element :vulnerability_report_grouped do
+            within_element 'vulnerability-report-grouped' do
               click_element :expand_report_button unless has_content? 'Collapse'
             end
           end
@@ -125,7 +125,7 @@ module QA
           def click_vulnerability(name)
             # To fix the flakiness, click on the MR title after widget is expanded
             click_element(:title_content)
-            within_element :vulnerability_report_grouped do
+            within_element 'vulnerability-report-grouped' do
               click_on name
             end
 
@@ -180,18 +180,20 @@ module QA
 
           def has_vulnerability_report?(timeout: 60)
             wait_until(reload: true, max_duration: timeout, sleep_interval: 1) do
-              has_element?(:vulnerability_report_grouped, wait: 10)
+              has_element?('vulnerability-report-grouped', wait: 10)
             end
-            find_element(:vulnerability_report_grouped).has_no_content?("is loading")
+            find_element('vulnerability-report-grouped').has_no_content?("is loading")
           end
 
           def has_vulnerability_count?(expected_count = nil)
             # Match text cut off in order to find both "1 vulnerability" and "X vulnerabilities"
+            click_element(:title_content)
+
             unless expected_count
-              return find_element(:vulnerability_report_grouped).has_content?(/Security scanning detected/)
+              return find_element('vulnerability-report-grouped').has_content?(/Security scanning detected/)
             end
 
-            find_element(:vulnerability_report_grouped).has_content?(/Security scanning detected #{expected_count}( new)?( potential)? vulnerabilit/)
+            find_element('vulnerability-report-grouped').has_content?(/Security scanning detected #{expected_count}( new)?( potential)? vulnerabilit/)
           end
 
           def has_sast_vulnerability_count_of?(expected)
