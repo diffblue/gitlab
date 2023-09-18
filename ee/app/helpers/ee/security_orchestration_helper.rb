@@ -45,7 +45,9 @@ module EE::SecurityOrchestrationHelper
       root_namespace_path: container.root_ancestor&.full_path,
       timezones: timezone_data(format: :full).to_json,
       max_active_scan_execution_policies_reached: max_active_scan_execution_policies_reached(container).to_s,
-      max_active_scan_result_policies_reached: max_active_scan_result_policies_reached(container).to_s
+      max_active_scan_result_policies_reached: max_active_scan_result_policies_reached(container).to_s,
+      max_scan_result_policies_allowed: Security::ScanResultPolicy::LIMIT,
+      max_scan_execution_policies_allowed: Security::ScanExecutionPolicy::POLICY_LIMIT
     }
 
     if container.is_a?(::Project)
