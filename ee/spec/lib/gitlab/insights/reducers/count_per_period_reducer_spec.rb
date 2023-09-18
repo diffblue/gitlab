@@ -143,7 +143,7 @@ RSpec.describe Gitlab::Insights::Reducers::CountPerPeriodReducer do
       # We're traveling back in the loop below, so we want to travel back to the current time ater the loop
       current_now = Time.current
 
-      (0..2).each do |i|
+      3.times do |i|
         merge_request = public_send("issuable#{i}")
         merge_request_metrics_service = MergeRequestMetricsService.new(merge_request.metrics)
         Event.transaction do

@@ -55,19 +55,6 @@ module EE
               }
             ].freeze
           end
-
-          override :chat_notification_events
-          def chat_notification_events
-            [
-              *super,
-              {
-                required: false,
-                name: :vulnerability_events,
-                type: ::API::Integrations::Boolean,
-                desc: 'Enable notifications for vulnerability_events'
-              }
-            ].freeze
-          end
         end
       end
     end
