@@ -4,20 +4,20 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   MAX_COUNT_PER_GROUP_HIERARCHY = 10
   ALL_CUSTOMIZABLE_PERMISSIONS = {
     admin_merge_request: {
-      descripition: 'Permission to admin merge requests'
+      description: 'Allows admin access to the merge requests.'
     },
     admin_vulnerability: {
-      description: 'Permission to admin vulnerability',
+      description: 'Allows admin access to the vulnerability reports.',
       requirement: :read_vulnerability
     },
     read_code: {
-      description: 'Permission to read code'
+      description: 'Allows read-only access to the source code.'
     },
     read_dependency: {
-      description: 'Permission to read dependency'
+      description: 'Allows read-only access to the dependencies.'
     },
     read_vulnerability: {
-      description: 'Permission to read vulnerability'
+      description: 'Allows read-only access to the vulnerability reports.'
     }
   }.freeze
   ALL_CUSTOMIZABLE_PROJECT_PERMISSIONS = [

@@ -129,6 +129,11 @@ module EE
               null: true,
               description: 'Instance level google cloud logging configurations.',
               resolver: ::Resolvers::AuditEvents::Instance::GoogleCloudLoggingConfigurationsResolver
+        field :member_role_permissions,
+              ::Types::MemberRoles::CustomizablePermissionType.connection_type,
+              resolver: ::Resolvers::MemberRoles::PermissionListResolver,
+              null: true,
+              description: 'List of all customizable permissions.'
       end
 
       def vulnerability(id:)
