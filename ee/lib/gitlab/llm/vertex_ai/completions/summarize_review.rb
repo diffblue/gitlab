@@ -15,7 +15,7 @@ module Gitlab
             response_modifier = ::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions.new(response)
 
             ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
-              user, merge_request, response_modifier, options: options
+              user, merge_request, response_modifier, options: response_options
             ).execute
 
             response_modifier
