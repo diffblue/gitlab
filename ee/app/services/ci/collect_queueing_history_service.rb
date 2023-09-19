@@ -2,7 +2,7 @@
 
 module Ci
   class CollectQueueingHistoryService
-    ALLOWED_PERCENTILES = [99, 95, 90, 50, 25].freeze
+    ALLOWED_PERCENTILES = [50, 75, 90, 95, 99].freeze
     TIME_BUCKETS_LIMIT = (3.hours / 5.minutes) + 1 # +1 to add some error margin
 
     def initialize(current_user:, percentiles:, runner_type:, from_time:, to_time:)

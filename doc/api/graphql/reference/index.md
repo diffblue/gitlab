@@ -23739,8 +23739,8 @@ The amount of time for a job to be picked up by a runner, in percentiles.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="queueinghistorytimeseriesp25"></a>`p25` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in 16.4. This feature is an Experiment. It can be changed or removed at any time. 25th percentile. 25% of the durations are lower than this value. |
 | <a id="queueinghistorytimeseriesp50"></a>`p50` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in 16.4. This feature is an Experiment. It can be changed or removed at any time. 50th percentile. 50% of the durations are lower than this value. |
+| <a id="queueinghistorytimeseriesp75"></a>`p75` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in 16.4. This feature is an Experiment. It can be changed or removed at any time. 75th percentile. 75% of the durations are lower than this value. |
 | <a id="queueinghistorytimeseriesp90"></a>`p90` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in 16.4. This feature is an Experiment. It can be changed or removed at any time. 90th percentile. 90% of the durations are lower than this value. |
 | <a id="queueinghistorytimeseriesp95"></a>`p95` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in 16.4. This feature is an Experiment. It can be changed or removed at any time. 95th percentile. 95% of the durations are lower than this value. |
 | <a id="queueinghistorytimeseriesp99"></a>`p99` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in 16.4. This feature is an Experiment. It can be changed or removed at any time. 99th percentile. 99% of the durations are lower than this value. |
