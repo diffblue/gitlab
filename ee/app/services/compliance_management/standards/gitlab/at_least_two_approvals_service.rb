@@ -9,7 +9,8 @@ module ComplianceManagement
         private
 
         def status
-          project.approval_rules.sum(&:approvals_required) >= 2 ? :success : :fail
+          total_required_approvals = project.approval_rules.pick("SUM(approvals_required)") || 0
+          total_required_approvals >= 2 ? :success : :fail
         end
       end
     end
