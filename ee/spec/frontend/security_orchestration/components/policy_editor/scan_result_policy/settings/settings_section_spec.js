@@ -2,7 +2,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import SettingsSection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/settings/settings_section.vue';
 import SettingsItem from 'ee/security_orchestration/components/policy_editor/scan_result_policy/settings/settings_item.vue';
 
-describe('ApprovalSettings', () => {
+describe('SettingsSection', () => {
   let wrapper;
 
   const createComponent = ({ propsData = {} } = {}) => {

@@ -29,6 +29,11 @@ export default {
   },
   inject: ['namespacePath'],
   props: {
+    rules: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
     settings: {
       type: Object,
       required: false,
@@ -82,6 +87,7 @@ export default {
         :description="$options.i18n.protectedBranchesDescription"
         :link="protectedBranchesSettingLink"
         :title="$options.i18n.protectedBranchTitle"
+        :rules="rules"
         :settings="protectedBranchSettings"
         @update="updateSetting"
       />
