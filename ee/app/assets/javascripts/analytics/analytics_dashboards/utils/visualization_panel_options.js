@@ -10,6 +10,7 @@ export function getPanelOptions(visualizationType, hasTimeDimension) {
         },
         yAxis: {
           name: __('Counts'),
+          type: 'value',
         },
       };
     case 'ColumnChart':
@@ -22,6 +23,7 @@ export function getPanelOptions(visualizationType, hasTimeDimension) {
             },
         yAxis: {
           name: __('Counts'),
+          type: 'value',
         },
       };
     default:
