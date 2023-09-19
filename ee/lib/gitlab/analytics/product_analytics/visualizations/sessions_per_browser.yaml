@@ -5,10 +5,10 @@ data:
   type: cube_analytics
   query:
     measures:
-      - SnowplowSessions.count
+      - Sessions.count
     dimensions:
-      - SnowplowSessions.agentName
-      - SnowplowSessions.agentVersion
+      - Sessions.agentName
+      - Sessions.agentVersion
     limit: 100
     timezone: UTC
     filters: []

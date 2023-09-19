@@ -5,15 +5,15 @@ data:
   type: cube_analytics
   query:
     measures:
-      - SnowplowTrackedEvents.pageViewsCount
+      - TrackedEvents.pageViewsCount
     timeDimensions:
-      - dimension: SnowplowTrackedEvents.derivedTstamp
+      - dimension: TrackedEvents.derivedTstamp
         granularity: day
     filters:
       - operator: equals
         values:
           - page_view
-        member: SnowplowTrackedEvents.event
+        member: TrackedEvents.event
     limit: 100
     timezone: UTC
     dimensions: []

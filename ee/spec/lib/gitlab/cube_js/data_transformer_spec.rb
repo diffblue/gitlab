@@ -10,16 +10,16 @@ RSpec.describe Gitlab::CubeJs::DataTransformer, feature_category: :product_analy
       "dimensions": [],
       "filters": [
         {
-          "member": "SnowplowSessions.startAt",
+          "member": "Sessions.startAt",
           "operator": "inDateRange",
           "values": ["2023-01-01", "2023-07-01"]
         }
       ],
       "limit": 100,
-      "measures": ["SnowplowSessions.count", "SnowplowSessions.repeatPercent"],
+      "measures": ["Sessions.count", "Sessions.repeatPercent"],
       "timeDimensions": [
         {
-          "dimension": "SnowplowSessions.startAt",
+          "dimension": "Sessions.startAt",
           "granularity": "day"
         }
       ],
@@ -32,18 +32,18 @@ RSpec.describe Gitlab::CubeJs::DataTransformer, feature_category: :product_analy
       "dimensions": [],
       "filters": [
         {
-          "member": "SnowplowTrackedEvents.event",
+          "member": "TrackedEvents.event",
           "operator": "equals",
           "values": ["page_view"]
         },
         {
-          "member": "SnowplowTrackedEvents.derivedTstamp",
+          "member": "TrackedEvents.derivedTstamp",
           "operator": "inDateRange",
           "values": ["2023-01-01", "2023-07-01"]
         }
       ],
       "limit": 100,
-      "measures": ["SnowplowTrackedEvents.pageViewsCount"],
+      "measures": ["TrackedEvents.pageViewsCount"],
       "timeDimensions": [],
       "timezone": "UTC"
     }')
@@ -67,11 +67,11 @@ RSpec.describe Gitlab::CubeJs::DataTransformer, feature_category: :product_analy
 
       expect(transformed_data.count).to eq(182)
 
-      expect(transformed_data[0]['SnowplowSessions.startAt.day']).to eq('2023-05-30T00:00:00.000')
-      expect(transformed_data[0]['SnowplowSessions.count']).to eq('1')
+      expect(transformed_data[0]['Sessions.startAt.day']).to eq('2023-05-30T00:00:00.000')
+      expect(transformed_data[0]['Sessions.count']).to eq('1')
 
-      expect(transformed_data[181][:'SnowplowSessions.startAt.day']).to eq('2023-07-01T00:00:00.000')
-      expect(transformed_data[181][:'SnowplowSessions.count']).to eq('0')
+      expect(transformed_data[181][:'Sessions.startAt.day']).to eq('2023-07-01T00:00:00.000')
+      expect(transformed_data[181][:'Sessions.count']).to eq('0')
     end
 
     context 'when the query is for a totalled measurement' do
@@ -113,7 +113,7 @@ RSpec.describe Gitlab::CubeJs::DataTransformer, feature_category: :product_analy
         it 'returns the results without transforming them' do
           transformed_data = new.transform
 
-          expect(transformed_data[0]['data'][0]["SnowplowSessions.startAt.#{granularity}"])
+          expect(transformed_data[0]['data'][0]["Sessions.startAt.#{granularity}"])
             .to eq('2023-05-30T00:00:00.000')
           expect(transformed_data).to eq(cube_data)
           expect(transformed_data[0]['data'].length).to eq(3)
@@ -126,8 +126,8 @@ RSpec.describe Gitlab::CubeJs::DataTransformer, feature_category: :product_analy
 
   def apply_granularity_to_data(granularity, current_data)
     current_data[0]['data'].map do |data|
-      data["SnowplowSessions.startAt.#{granularity}"] = data['SnowplowSessions.startAt.day']
-      data.delete('SnowplowSessions.startAt.day')
+      data["Sessions.startAt.#{granularity}"] = data['Sessions.startAt.day']
+      data.delete('Sessions.startAt.day')
 
       data
     end

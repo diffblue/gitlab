@@ -5,7 +5,7 @@ data:
   type: cube_analytics
   query:
     measures:
-      - SnowplowSessions.averageDurationMinutes
+      - Sessions.averageDurationMinutes
     limit: 100
     timezone: UTC
     filters: []

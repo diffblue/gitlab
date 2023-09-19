@@ -13,8 +13,8 @@ const PRODUCT_ANALYTICS_CUBE_PROXY = '/api/v4/projects/:id/product_analytics/req
 
 // Filter measurement types must be lowercase
 export const DATE_RANGE_FILTER_DIMENSIONS = {
-  snowplowtrackedevents: `${EVENTS_TABLE_NAME}.derivedTstamp`,
-  snowplowsessions: `${SESSIONS_TABLE_NAME}.startAt`,
+  trackedevents: `${EVENTS_TABLE_NAME}.derivedTstamp`,
+  sessions: `${SESSIONS_TABLE_NAME}.startAt`,
 };
 
 const convertToCommonChartFormat = (resultSet) => {

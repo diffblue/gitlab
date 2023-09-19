@@ -6,7 +6,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
   let_it_be(:project) { create(:project, :with_product_analytics_dashboard) }
   let_it_be(:user) { create(:user) }
 
-  let_it_be(:events_table) { 'SnowplowTrackedEvents.count' }
+  let_it_be(:events_table) { 'TrackedEvents.count' }
 
   context 'with trackingKey' do
     let_it_be(:query) do
