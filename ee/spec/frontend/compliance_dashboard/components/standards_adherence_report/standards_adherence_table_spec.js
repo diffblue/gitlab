@@ -1,6 +1,7 @@
 import { GlAlert, GlLoadingIcon, GlTable, GlLink } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
+import * as Sentry from '@sentry/browser';
 import { mount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ComplianceStandardsAdherenceTable from 'ee/compliance_dashboard/components/standards_adherence_report/standards_adherence_table.vue';
@@ -16,8 +17,10 @@ describe('ComplianceStandardsAdherenceTable component', () => {
   let wrapper;
 
   const defaultAdherencesResponse = createComplianceAdherencesResponse();
+  const sentryError = new Error('GraphQL networkError');
   const mockGraphQlSuccess = jest.fn().mockResolvedValue(defaultAdherencesResponse);
   const mockGraphQlLoading = jest.fn().mockResolvedValue(new Promise(() => {}));
+  const mockGraphQlError = jest.fn().mockRejectedValue(sentryError);
   const createMockApolloProvider = (resolverMock) => {
     return createMockApollo([[getProjectComplianceStandardsAdherence, resolverMock]]);
   };
@@ -69,6 +72,22 @@ describe('ComplianceStandardsAdherenceTable component', () => {
         'Last Scanned',
         'Fix Suggestions',
       ]);
+    });
+  });
+
+  describe('when the adherence query fails', () => {
+    beforeEach(() => {
+      jest.spyOn(Sentry, 'captureException');
+      createComponent({ resolverMock: mockGraphQlError });
+    });
+
+    it('renders the error message', async () => {
+      await waitForPromises();
+
+      expect(findErrorMessage().text()).toBe(
+        'Unable to load the standards adherence report. Refresh the page and try again.',
+      );
+      expect(Sentry.captureException.mock.calls[0][0].networkError).toBe(sentryError);
     });
   });
 

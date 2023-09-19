@@ -10,6 +10,9 @@ export const FAIL_STATUS = 'FAIL';
 export const NO_STANDARDS_ADHERENCES_FOUND = s__(
   'ComplianceStandardsAdherence|No projects with standards adherence checks found',
 );
+export const STANDARDS_ADHERENCE_FETCH_ERROR = s__(
+  'ComplianceStandardsAdherence|Unable to load the standards adherence report. Refresh the page and try again.',
+);
 
 export const STANDARDS_ADHERENCE_CHECK_LABELS = {
   [PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR]: s__(
