@@ -122,6 +122,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::GoogleCloudLoggingConfigurations::Create
         mount_mutation ::Mutations::AuditEvents::GoogleCloudLoggingConfigurations::Destroy
         mount_mutation ::Mutations::AuditEvents::GoogleCloudLoggingConfigurations::Update
+        mount_mutation ::Mutations::AuditEvents::Instance::GoogleCloudLoggingConfigurations::Create
         mount_mutation ::Mutations::Forecasting::BuildForecast, alpha: { milestone: '16.0' }
         mount_mutation ::Mutations::AuditEvents::Streaming::InstanceHeaders::Create
         mount_mutation ::Mutations::AuditEvents::Streaming::InstanceHeaders::Update
