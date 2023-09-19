@@ -34,11 +34,11 @@ module Elastic
 
     class_methods do
       def methods_for_all_write_targets
-        %i(refresh_index!)
+        %i[refresh_index!]
       end
 
       def methods_for_one_write_target
-        %i(import create_index! delete_index!)
+        %i[import create_index! delete_index!]
       end
     end
   end

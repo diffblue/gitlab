@@ -15,7 +15,7 @@ module Gitlab
       extend ::Gitlab::Geo::LogHelpers
       extend ::Gitlab::Geo::BatchCounter
 
-      CLASS_SUFFIXES = %w(RegistryFinder RegistriesResolver).freeze
+      CLASS_SUFFIXES = %w[RegistryFinder RegistriesResolver].freeze
 
       attr_reader :model_record_id
 

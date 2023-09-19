@@ -8,29 +8,29 @@ module EE
           extend ::Gitlab::Utils::Override
 
           ALLOWLISTED_GEO_ROUTES = {
-            'admin/geo/nodes' => %w{update}
+            'admin/geo/nodes' => %w[update]
           }.freeze
 
           ALLOWLISTED_GEO_ROUTES_TRACKING_DB = {
-            'admin/geo/projects' => %w{destroy resync reverify resync_all reverify_all},
-            'admin/geo/uploads' => %w{destroy}
+            'admin/geo/projects' => %w[destroy resync reverify resync_all reverify_all],
+            'admin/geo/uploads' => %w[destroy]
           }.freeze
 
           ALLOWLISTED_GIT_READ_WRITE_ROUTES = {
-            'repositories/git_http' => %w{git_upload_pack git_receive_pack}
+            'repositories/git_http' => %w[git_upload_pack git_receive_pack]
           }.freeze
 
           ALLOWLISTED_GIT_LFS_LOCKS_ROUTES = {
-            'repositories/lfs_locks_api' => %w{verify create unlock}
+            'repositories/lfs_locks_api' => %w[verify create unlock]
           }.freeze
 
           ALLOWLISTED_SIGN_OUT_ROUTES = {
-            'sessions' => %w{destroy}
+            'sessions' => %w[destroy]
           }.freeze
 
           ALLOWLISTED_SIGN_IN_ROUTES = {
-            'sessions' => %w{create},
-            'oauth/tokens' => %w{create}
+            'sessions' => %w[create],
+            'oauth/tokens' => %w[create]
           }.freeze
 
           ALLOWLISTED_SSO_SIGN_IN_CONTROLLERS = [

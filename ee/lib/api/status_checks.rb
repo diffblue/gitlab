@@ -132,7 +132,7 @@ module API
           requires :status,
             type: String,
             desc: 'Set to passed to pass the check or failed to fail it',
-            values: %w(passed failed),
+            values: %w[passed failed],
             documentation: { example: 'passed' }
         end
         post 'status_check_responses' do

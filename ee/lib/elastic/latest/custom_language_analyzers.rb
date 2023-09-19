@@ -4,7 +4,7 @@ module Elastic
   module Latest
     module CustomLanguageAnalyzers
       class << self
-        SUPPORTED_FIELDS = %i{title description}.freeze
+        SUPPORTED_FIELDS = %i[title description].freeze
 
         def custom_analyzers_mappings(type: :text)
           hash = { properties: {} }

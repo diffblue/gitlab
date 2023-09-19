@@ -6,7 +6,7 @@ module Gitlab
       class AuthHash < Gitlab::Auth::Saml::AuthHash
         include Gitlab::Utils::StrongMemoize
 
-        ALLOWED_USER_ATTRIBUTES = %w(can_create_group projects_limit).freeze
+        ALLOWED_USER_ATTRIBUTES = %w[can_create_group projects_limit].freeze
 
         def groups
           Array.wrap(get_raw('groups') || get_raw('Groups'))

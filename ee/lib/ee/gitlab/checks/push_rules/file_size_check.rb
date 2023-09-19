@@ -21,7 +21,7 @@ module EE
               ).find(timeout: logger.time_left)
 
               if large_blobs.present?
-                raise ::Gitlab::GitAccess::ForbiddenError, %{File "#{large_blobs.first.path}" is larger than the allowed size of #{max_file_size} MiB. Use Git LFS to manage this file.}
+                raise ::Gitlab::GitAccess::ForbiddenError, %(File "#{large_blobs.first.path}" is larger than the allowed size of #{max_file_size} MiB. Use Git LFS to manage this file.)
               end
             end
           end

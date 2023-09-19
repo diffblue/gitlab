@@ -9,7 +9,7 @@ module EE
           include Mappable
           extend ::Gitlab::Utils::Override
 
-          EXCLUDED_PAYLOAD_FINGERPRINT_PARAMS = %w(start_time end_time hosts).freeze
+          EXCLUDED_PAYLOAD_FINGERPRINT_PARAMS = %w[start_time end_time hosts].freeze
 
           private
 

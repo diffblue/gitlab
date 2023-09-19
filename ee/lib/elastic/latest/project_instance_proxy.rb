@@ -3,13 +3,13 @@
 module Elastic
   module Latest
     class ProjectInstanceProxy < ApplicationInstanceProxy
-      TRACKED_FEATURE_SETTINGS = %w(
+      TRACKED_FEATURE_SETTINGS = %w[
         issues_access_level
         merge_requests_access_level
         snippets_access_level
         wiki_access_level
         repository_access_level
-      ).freeze
+      ].freeze
 
       def as_indexed_json(options = {})
         # We don't use as_json(only: ...) because it calls all virtual and serialized attributes

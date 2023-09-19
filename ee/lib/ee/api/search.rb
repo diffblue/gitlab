@@ -9,7 +9,7 @@ module EE
         helpers do
           extend ::Gitlab::Utils::Override
 
-          ELASTICSEARCH_SCOPES = %w(wiki_blobs blobs commits notes).freeze
+          ELASTICSEARCH_SCOPES = %w[wiki_blobs blobs commits notes].freeze
 
           override :scope_preload_method
           def scope_preload_method

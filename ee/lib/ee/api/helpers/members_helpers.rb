@@ -22,7 +22,7 @@ module EE
           end
 
           params :optional_state_filter_ee do
-            optional :state, type: String, desc: 'Filter results by member state', values: %w(awaiting active)
+            optional :state, type: String, desc: 'Filter results by member state', values: %w[awaiting active]
           end
 
           params :optional_put_params_ee do
