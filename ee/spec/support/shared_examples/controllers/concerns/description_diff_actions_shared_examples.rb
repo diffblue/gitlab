@@ -133,15 +133,6 @@ RSpec.shared_examples DescriptionDiffActions do
       it_behaves_like 'description diff actions'
     end
 
-    context 'when features are available through Registration Features' do
-      before do
-        stub_application_setting(usage_ping_features_enabled: true)
-        stub_licensed_features(epics: true, description_diffs: false)
-      end
-
-      it_behaves_like 'description diff actions'
-    end
-
     context 'when license is not available' do
       before do
         stub_licensed_features(epics: true, description_diffs: false)

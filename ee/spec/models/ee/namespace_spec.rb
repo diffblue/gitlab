@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespace do
+RSpec.describe Namespace, feature_category: :groups_and_projects do
   using RSpec::Parameterized::TableSyntax
 
   include EE::GeoHelpers
@@ -733,11 +733,10 @@ RSpec.describe Namespace do
       end
 
       context "with service ping features" do
-        let(:feature) { :scoped_issue_board }
+        let(:feature) { :coverage_fuzzing }
 
         before do
           stub_application_setting(usage_ping_features_enabled: usage_ping_features_enabled)
-          stub_licensed_features(feature => false)
         end
 
         context 'when service ping features are disabled' do
