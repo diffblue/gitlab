@@ -79,6 +79,6 @@ CREATE INDEX index_tanuki_bot_mvc_on_version ON tanuki_bot_mvc USING btree (vers
 
 CREATE INDEX index_tanuki_bot_mvc_on_version_where_embedding_is_null ON tanuki_bot_mvc USING btree (version) WHERE (embedding IS NULL);
 
-CREATE INDEX index_vertex_gitlab_docs_on_version ON vertex_gitlab_docs USING btree (version);
+CREATE INDEX index_vertex_gitlab_docs_on_version_and_metadata_source_and_id ON vertex_gitlab_docs USING btree (version, ((metadata ->> 'source'::text)), id);
 
 CREATE INDEX index_vertex_gitlab_docs_on_version_where_embedding_is_null ON vertex_gitlab_docs USING btree (version) WHERE (embedding IS NULL);

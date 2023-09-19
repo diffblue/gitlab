@@ -7,6 +7,9 @@ module Llm
         include ApplicationWorker
         include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
         include Gitlab::ExclusiveLeaseHelpers
+        include EmbeddingsWorkerContext
+
+        MODEL = ::Embedding::Vertex::GitlabDocumentation
 
         idempotent!
         data_consistency :always # rubocop: disable SidekiqLoadBalancing/WorkerDataConsistency
@@ -14,58 +17,96 @@ module Llm
         urgency :throttled
         sidekiq_options retry: 3
 
-        DOC_DIRECTORY = 'doc'
-
         def perform
           return unless Feature.enabled?(:openai_experimentation) # this is legacy global AI toggle FF
           return unless Feature.enabled?(:gitlab_duo) # chat specific FF
-          return unless Feature.enabled?(:create_embeddings_with_vertex_ai) # embeddings supported by vertex FF
+          return unless Feature.enabled?(:create_embeddings_with_vertex_ai) # file_embeddings supported by vertex FF
           return unless ::License.feature_available?(:ai_chat) # license check
 
-          index = 0
-          in_lock("#{self.class.name.underscore}/version/#{version}", ttl: 10.minutes, sleep_sec: 1) do
+          # reset the indexing on chunks to be embedded, this is going to be used to ensure VertexAI embeddings API
+          # quotas/limits are respected.
+          in_lock("#{self.class.name.underscore}/version/#{update_version}", ttl: 10.minutes, sleep_sec: 1) do
+            self.class.set_embeddings_index!(0)
+
+            embeddings_sources = extract_embedding_sources
+
             files.each do |filename|
               content = File.read(filename)
-              filename.gsub!(Rails.root.to_s, '')
+              source = filename.gsub(Rails.root.to_s, '')
 
-              items = ::Gitlab::Llm::Embeddings::Utils::DocsContentParser.parse_and_split(
-                content, filename, DOC_DIRECTORY
-              )
+              next unless embeddable?(content)
 
-              items.each do |item|
-                index += 1
-                record = create_record(item)
+              current_md5sum = extract_md5sum(embeddings_sources, source)
+              new_md5sum = OpenSSL::Digest::SHA256.hexdigest(content)
 
-                # Vertex has 600 requests per minute(i.e. 10 req/sec) quota for embeddings endpoint based on
-                # https://cloud.google.com/vertex-ai/docs/quotas#request_quotas,
-                # so let's schedule roughly ~7 jobs per second
-                delay = (index / 7) + 1
+              # if file content did not change, then no need to rebuild it's file_embeddings, just used them as is.
+              next if new_md5sum == current_md5sum
 
-                ::Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker.perform_in(
-                  delay.seconds, record.id, version
+              CreateDbEmbeddingsPerDocFileWorker.perform_async(filename, update_version)
+              logger.info(
+                structured_payload(
+                  message: 'Enqueued DB embeddings creation',
+                  filename: filename,
+                  new_version: update_version
                 )
-              end
+              )
             end
+
+            cleanup_embeddings_for_missing_files(embeddings_sources)
           end
         end
 
         private
 
+        def extract_embedding_sources
+          embeddings_sources = Set.new
+          select_columns = "distinct version, metadata->>'source' as source, metadata->>'md5sum' as md5sum"
+
+          MODEL.select(select_columns).each_batch do |batch|
+            data = batch.map do |em|
+              { version: em.version, source: em.source, md5sum: em.md5sum }.with_indifferent_access
+            end
+
+            embeddings_sources.merge(data)
+          end
+
+          embeddings_sources.group_by { |em| em[:source] }
+        end
+
+        def extract_md5sum(embeddings_sources, source)
+          embeddings_for_source = embeddings_sources.delete(source)
+          embedding = embeddings_for_source&.find { |embedding| embedding[:version] == MODEL.current_version }
+
+          embedding&.dig('md5sum')
+        end
+
+        def embeddable?(content)
+          return false if content.empty?
+          return false if content.include?('This document was moved to [another location]')
+
+          true
+        end
+
+        def cleanup_embeddings_for_missing_files(embeddings_sources)
+          embeddings_sources.keys.each_slice(20) do |sources|
+            MODEL.for_sources(sources).each_batch(of: BATCH_SIZE) { |batch| batch.delete_all } # rubocop:disable Style/SymbolProc
+
+            logger.info(
+              structured_payload(
+                message: 'Deleting embeddings for missing files',
+                filename: sources,
+                new_version: MODEL.current_version
+              )
+            )
+          end
+        end
+
         def files
           Dir[Rails.root.join("#{DOC_DIRECTORY}/**/*.md")]
         end
 
-        def create_record(item)
-          ::Embedding::Vertex::GitlabDocumentation.create!(
-            metadata: item[:metadata],
-            content: item[:content],
-            url: item[:url],
-            version: version
-          )
-        end
-
-        def version
-          @version ||= ::Embedding::Vertex::GitlabDocumentation.get_current_version + 1
+        def update_version
+          @update_version ||= MODEL.current_version + 1
         end
       end
     end
