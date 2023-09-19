@@ -378,7 +378,7 @@ describe('DevopsAdoptionApp', () => {
           expect(API.trackInternalEvent).toHaveBeenCalledWith(event);
           expect(trackingSpy).toHaveBeenCalledWith(GITLAB_INTERNAL_EVENT_CATEGORY, event, {
             context: {
-              schema: 'iglu:com.gitlab/gitlab_service_ping/jsonschema/1-0-0',
+              schema: 'iglu:com.gitlab/gitlab_service_ping/jsonschema/1-0-1',
               data: {
                 event_name: event,
                 data_source: 'redis_hll',
