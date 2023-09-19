@@ -10,7 +10,7 @@ import {
   GlAlert,
 } from '@gitlab/ui';
 
-import { STATUS_OPEN } from '~/issues/constants';
+import { STATUS_OPEN, WORKSPACE_PROJECT } from '~/issues/constants';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import IssuableShow from '~/vue_shared/issuable/show/components/issuable_show_root.vue';
 import IssuableEventHub from '~/vue_shared/issuable/show/event_hub';
@@ -25,6 +25,7 @@ const stateEvent = {
 };
 
 export default {
+  WORKSPACE_PROJECT,
   components: {
     GlLoadingIcon,
     GlDropdown,
@@ -160,6 +161,7 @@ export default {
       :task-completion-status="taskCompletionStatus"
       :task-list-update-path="updatePath"
       :task-list-lock-version="lockVersion"
+      :workspace-type="$options.WORKSPACE_PROJECT"
       status-icon-class="gl-sm-display-none"
       show-work-item-type-icon
       @edit-issuable="handleEditTestCase"
