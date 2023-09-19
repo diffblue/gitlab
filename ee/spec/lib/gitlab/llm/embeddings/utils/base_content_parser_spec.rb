@@ -84,12 +84,12 @@ RSpec.describe Gitlab::Llm::Embeddings::Utils::BaseContentParser, feature_catego
     let(:source_name) { '/doc/path/to/file.md' }
     let(:source_type) { 'doc' }
 
-    subject(:parse) { parser.parse_content_and_metadata(input_content, source_name, source_type) }
+    subject(:parse) { parser.parse_content_and_metadata(input_content, 'fake-sum', source_name, source_type) }
 
     it 'returns title, source, source_type and url' do
       _content, metadata, url = parse
 
-      expect(metadata.keys).to match_array(%w[title source source_type])
+      expect(metadata.keys).to match_array(%w[md5sum title source source_type])
       expect(metadata['title']).to eq(parser.title(input_content))
       expect(metadata['source']).to eq(source_name)
       expect(metadata['source_type']).to eq(source_type)
@@ -102,7 +102,7 @@ RSpec.describe Gitlab::Llm::Embeddings::Utils::BaseContentParser, feature_catego
       it 'extracts metadata from the content' do
         content, metadata, _url = parse
 
-        expect(metadata.keys).to match_array(%w[info type title source source_type])
+        expect(metadata.keys).to match_array(%w[info type title md5sum source source_type])
         expect(metadata['info']).to eq('Test')
         expect(metadata['type']).to eq('reference')
         expect(content).to eq('text')

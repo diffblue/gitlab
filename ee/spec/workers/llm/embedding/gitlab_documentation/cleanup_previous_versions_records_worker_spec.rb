@@ -14,7 +14,7 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::CleanupPreviousVersionsRecor
     subject(:perform) { described_class.new.perform }
 
     before do
-      allow(::Embedding::Vertex::GitlabDocumentation).to receive(:get_current_version).and_return(version)
+      allow(::Embedding::Vertex::GitlabDocumentation).to receive(:current_version).and_return(version)
     end
 
     it 'does not delete previous records' do

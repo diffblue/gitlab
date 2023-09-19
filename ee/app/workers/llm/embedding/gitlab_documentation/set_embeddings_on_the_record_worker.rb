@@ -8,25 +8,25 @@ module Llm
         include Gitlab::ExclusiveLeaseHelpers
 
         TRACKING_CONTEXT = { action: 'documentation_embedding' }.freeze
+        MODEL = ::Embedding::Vertex::GitlabDocumentation
 
         idempotent!
+        worker_has_external_dependencies!
         data_consistency :delayed
         feature_category :duo_chat
         urgency :throttled
+        sidekiq_options retry: 5
 
-        sidekiq_options retry: 1
-
-        def perform(id, version)
+        def perform(id, update_version)
           return unless Feature.enabled?(:openai_experimentation) # this is legacy global AI toggle FF
           return unless Feature.enabled?(:gitlab_duo) # chat specific FF
           return unless Feature.enabled?(:create_embeddings_with_vertex_ai) # embeddings supported by vertex FF
           return unless ::License.feature_available?(:ai_chat) # license check
 
-          record = ::Embedding::Vertex::GitlabDocumentation.find_by_id(id)
+          record = MODEL.find_by_id(id)
           return unless record
 
           client = ::Gitlab::Llm::VertexAi::Client.new(nil, tracking_context: TRACKING_CONTEXT)
-
           result = client.text_embeddings(content: record.content)
 
           unless result.success? && result.has_key?('predictions')
@@ -36,17 +36,19 @@ module Llm
           embedding = result['predictions'].first['embeddings']['values']
           record.update!(embedding: embedding)
 
-          return if ::Embedding::Vertex::GitlabDocumentation.nil_embeddings_for_version(version).exists?
+          source = record.metadata["source"]
+          current_version = MODEL.current_version
 
-          in_lock("#{self.class.name.underscore}/version/#{version}", sleep_sec: 1) do
-            ::Embedding::Vertex::GitlabDocumentation.set_current_version!(version)
+          in_lock("#{source}/update_version/#{update_version}", ttl: 10.minutes, sleep_sec: 1) do
+            new_embeddings = MODEL.for_source(source).for_version(update_version)
 
-            logger.info(
-              structured_payload(
-                message: 'Updated current version',
-                version: version
-              )
-            )
+            break unless new_embeddings.exists?
+            break if MODEL.for_source(source).nil_embeddings_for_version(update_version).exists?
+
+            old_embeddings = MODEL.for_version(update_version).invert_where.for_source(source)
+            old_embeddings.each_batch(of: 100) { |batch| batch.delete_all } # rubocop:disable Style/SymbolProc
+
+            new_embeddings.each_batch(of: 100) { |batch| batch.update_all(version: current_version) } # rubocop:disable Style/SymbolProc
           end
         end
       end

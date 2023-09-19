@@ -1596,10 +1596,19 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: llm_embedding_gitlab_documentation_create_db_embeddings_per_doc_file
+  :worker_name: Llm::Embedding::GitlabDocumentation::CreateDbEmbeddingsPerDocFileWorker
+  :feature_category: :duo_chat
+  :has_external_dependencies: false
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: llm_embedding_gitlab_documentation_set_embeddings_on_the_record
   :worker_name: Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker
   :feature_category: :duo_chat
-  :has_external_dependencies: false
+  :has_external_dependencies: true
   :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1

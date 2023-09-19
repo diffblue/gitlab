@@ -3,16 +3,20 @@
 require 'spec_helper'
 
 RSpec.describe Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWorker, feature_category: :duo_chat do
+  let(:success) { true }
+  let(:version) { 112 }
+  let(:older_version) { 111 }
+  let(:status_code) { 200 }
+  let(:embedding) { Array.new(768, 0.5) }
   let(:logger) { described_class.new.send(:logger) }
   let(:class_instance) { described_class.new }
   let(:ai_client) { ::Gitlab::Llm::VertexAi::Client.new(nil) }
-  let_it_be_with_reload(:record) { create(:vertex_gitlab_documentation) }
-  let!(:records) { create_list(:vertex_gitlab_documentation, 4, version: version) }
-  let(:embedding) { Array.new(768, 0.5) }
-  let(:version) { 111 }
   let(:response) { { "predictions" => [{ "embeddings" => { "values" => embedding } }] } }
-  let(:status_code) { 200 }
-  let(:success) { true }
+
+  let(:metadata) { { source: '/ee/spec/fixtures/gitlab_documentation/non_existent.md' } }
+
+  let!(:record) { create(:vertex_gitlab_documentation, version: version, metadata: metadata) }
+  let!(:records) { create_list(:vertex_gitlab_documentation, 4, version: version, metadata: metadata) }
 
   it_behaves_like 'worker with data consistency', described_class, data_consistency: :delayed
 
@@ -25,6 +29,7 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWork
       allow(response).to receive(:code).and_return(status_code)
       allow(response).to receive(:success?).and_return(success)
       allow(::Gitlab::Llm::VertexAi::Client).to receive(:new).and_return(ai_client)
+      allow(::Embedding::Vertex::GitlabDocumentation).to receive(:current_version).and_return(older_version)
     end
 
     it 'does not make a call to the embedding API or update the record' do
@@ -73,6 +78,9 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWork
       end
 
       it 'updates the record' do
+        content = record.content
+        expect(ai_client).to receive(:text_embeddings).with(hash_including(content: content)).and_return(response)
+
         expect { perform }.to change { record.reload.embedding }.to(embedding)
       end
 
@@ -80,51 +88,65 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWork
         expect { perform }.not_to raise_error
       end
 
-      it 'sends a log message' do
-        expect(logger).to receive(:info)
-          .with(hash_including({ "version" => version, "message" => "Updated current version" }))
-
-        perform
-      end
-
-      it 'updates current version' do
-        expect(::Embedding::Vertex::GitlabDocumentation).to receive(:set_current_version!).with(version).once
-
-        perform
-      end
-
       it_behaves_like 'an idempotent worker' do
         let(:job_args) { [record.id, version] }
 
         it 'updates the record' do
-          expect(::Embedding::Vertex::GitlabDocumentation).to receive(:set_current_version!).with(version).once
-
           expect { perform }.to change { record.reload.embedding }.to(embedding)
         end
       end
 
-      context 'when the exclusive lease is already locked for the version' do
-        before do
-          lock_name = "#{described_class.name.underscore}/version/#{version}"
-          allow(class_instance).to receive(:in_lock).with(lock_name, sleep_sec: 1)
+      context 'when there are older version embeddings' do
+        let!(:old_records) { create_list(:vertex_gitlab_documentation, 2, version: older_version, metadata: metadata) }
+
+        context 'and some of the records have nil embedding' do
+          before do
+            records.first.update!(embedding: nil)
+          end
+
+          it 'updates the record' do
+            expect { perform }.to change { record.reload.embedding }.to(embedding)
+          end
+
+          it 'does not cleanup old records' do
+            expect { perform }.not_to change {
+              ::Embedding::Vertex::GitlabDocumentation.id_in(old_records.pluck(:id)).count
+            }
+          end
+
+          it 'does not update record version' do
+            expect { perform }.not_to change { record.reload.version }
+          end
+
+          it 'does not update version on other records related to this record\'s filename' do
+            expect { perform }.not_to change { ::Embedding::Vertex::GitlabDocumentation.for_version(version).count }
+          end
         end
 
-        it 'does not set current version' do
-          expect(::Embedding::Vertex::GitlabDocumentation).not_to receive(:set_current_version!)
+        context 'when all records have the embeddings' do
+          it 'updates the record' do
+            expect { perform }.to change { record.reload.embedding }.to(embedding)
+          end
 
-          perform
-        end
-      end
+          it 'cleanups up old records' do
+            expect { perform }.to change {
+              ::Embedding::Vertex::GitlabDocumentation.id_in(old_records.pluck(:id)).count
+            }.by(-2)
+          end
 
-      context 'when some of the records have nil embedding' do
-        before do
-          records.first.update!(embedding: nil)
-        end
+          it 'updates record version' do
+            expect { perform }.to change { record.reload.version }.from(version).to(older_version)
+          end
 
-        it 'does not set current version' do
-          expect(::Embedding::Vertex::GitlabDocumentation).not_to receive(:set_current_version!)
-
-          perform
+          it 'updates version on other records related to this record\'s filename' do
+            expect { perform }.to change {
+              ::Embedding::Vertex::GitlabDocumentation.for_version(version).count
+              # -5 = 1(:record) - 4(:records)
+            }.by(-5).and(
+              # 3 = -2(:old_records) +1(:record) + 4(:records)
+              change { ::Embedding::Vertex::GitlabDocumentation.for_version(older_version).count }.by(3)
+            )
+          end
         end
       end
 
