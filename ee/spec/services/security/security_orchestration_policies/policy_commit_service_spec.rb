@@ -81,7 +81,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, fea
             policy_yaml
           )
           policy_configuration.security_policy_management_project.add_developer(current_user)
-          policy_configuration.clear_memoization(:policy_hash)
           policy_configuration.clear_memoization(:policy_blob)
         end
 
@@ -129,6 +128,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, fea
 
       context 'with branch_name as parameter' do
         let(:branch_name) { 'main' }
+        let(:operation) { :replace }
         let(:params) { { policy_yaml: input_policy_yaml, operation: operation, branch_name: branch_name } }
 
         it 'returns error', :aggregate_failures do
@@ -159,6 +159,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, fea
       let_it_be(:policy_management_project) { create(:project, :repository, creator: current_user) }
       let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, security_policy_management_project: policy_management_project, project: project) }
 
+      before do
+        policy_configuration.invalidate_policy_yaml_cache
+      end
+
       it_behaves_like 'commits policy to associated project'
     end
 
@@ -171,6 +175,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, fea
 
       before do
         group.add_owner(current_user)
+        policy_configuration.invalidate_policy_yaml_cache
       end
 
       it_behaves_like 'commits policy to associated project'

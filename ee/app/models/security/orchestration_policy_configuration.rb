@@ -10,6 +10,7 @@ module Security
 
     self.table_name = 'security_orchestration_policy_configurations'
 
+    CACHE_DURATION = 1.hour
     POLICY_PATH = '.gitlab/security-policies/policy.yml'
     POLICY_SCHEMA_PATH = 'ee/app/validators/json_schemas/security_orchestration_policy.json'
     POLICY_SCHEMA = JSONSchemer.schema(Rails.root.join(POLICY_SCHEMA_PATH))
@@ -47,17 +48,25 @@ module Security
     end
 
     def policy_hash
-      strong_memoize(:policy_hash) do
-        next if policy_blob.blank?
+      return policy_yaml unless cached_security_policies_enabled?
 
-        Gitlab::Config::Loader::Yaml.new(policy_blob).load!
+      Rails.cache.fetch(policy_cache_key, expires_in: CACHE_DURATION) do
+        policy_yaml
       end
-    rescue Gitlab::Config::Loader::FormatError
-      nil
+    end
+
+    def invalidate_policy_yaml_cache
+      Rails.cache.delete(policy_cache_key)
     end
 
     def policy_configuration_exists?
       policy_hash.present?
+    end
+
+    def cached_security_policies_enabled?
+      return Feature.enabled?(:cached_security_policies, project) if project?
+
+      Feature.enabled?(:cached_security_policies, namespace)
     end
 
     def policy_configuration_valid?(policy = policy_hash)
@@ -111,6 +120,18 @@ module Security
     end
 
     private
+
+    def policy_cache_key
+      "security_orchestration_policy_configurations:#{id}:policy_yaml"
+    end
+
+    def policy_yaml
+      return if policy_blob.blank?
+
+      Gitlab::Config::Loader::Yaml.new(policy_blob).load!
+    rescue Gitlab::Config::Loader::FormatError
+      nil
+    end
 
     def policy_repo
       security_policy_management_project.repository

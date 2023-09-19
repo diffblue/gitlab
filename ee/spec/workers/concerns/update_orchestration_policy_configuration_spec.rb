@@ -96,6 +96,12 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
         execute
       end
 
+      it 'invalidates the policy yaml cache' do
+        expect(configuration).to receive(:invalidate_policy_yaml_cache)
+
+        execute
+      end
+
       shared_examples 'creates new rule schedules' do |expected_schedules:|
         it 'creates a rule schedule for each schedule rule in the scan execution policies' do
           expect { execute }.to change(Security::OrchestrationPolicyRuleSchedule, :count).from(1).to(expected_schedules)
