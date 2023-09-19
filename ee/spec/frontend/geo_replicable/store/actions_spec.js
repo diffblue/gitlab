@@ -1,4 +1,3 @@
-import Api from 'ee/api';
 import {
   ACTION_TYPES,
   PREV,
@@ -14,16 +13,11 @@ import * as types from 'ee/geo_replicable/store/mutation_types';
 import createState from 'ee/geo_replicable/store/state';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert } from '~/alert';
-import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
-import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 import toast from '~/vue_shared/plugins/global_toast';
 import {
-  MOCK_BASIC_FETCH_DATA_MAP,
-  MOCK_BASIC_FETCH_RESPONSE,
-  MOCK_BASIC_POST_RESPONSE,
   MOCK_REPLICABLE_TYPE,
-  MOCK_RESTFUL_PAGINATION_DATA,
   MOCK_BASIC_GRAPHQL_QUERY_RESPONSE,
+  MOCK_BASIC_GRAPHQL_DATA,
   MOCK_GRAPHQL_PAGINATION_DATA,
   MOCK_GRAPHQL_REGISTRY,
   MOCK_GRAPHQL_REGISTRY_CLASS,
@@ -44,13 +38,15 @@ describe('GeoReplicable Store Actions', () => {
   beforeEach(() => {
     state = createState({
       replicableType: MOCK_REPLICABLE_TYPE,
-      graphqlFieldName: null,
+      graphqlFieldName: MOCK_GRAPHQL_REGISTRY,
       graphqlMutationRegistryClass: MOCK_GRAPHQL_REGISTRY_CLASS,
       geoCurrentSiteId: null,
       geoTargetSiteId: null,
       verificationEnabled: 'true',
     });
   });
+
+  // Fetch Replicable Items
 
   describe('requestReplicableItems', () => {
     it('should commit mutation REQUEST_REPLICABLE_ITEMS', async () => {
@@ -68,12 +64,12 @@ describe('GeoReplicable Store Actions', () => {
     it('should commit mutation RECEIVE_REPLICABLE_ITEMS_SUCCESS', async () => {
       await testAction(
         actions.receiveReplicableItemsSuccess,
-        { data: MOCK_BASIC_FETCH_DATA_MAP, pagination: MOCK_RESTFUL_PAGINATION_DATA },
+        { data: MOCK_BASIC_GRAPHQL_DATA, pagination: MOCK_GRAPHQL_PAGINATION_DATA },
         state,
         [
           {
             type: types.RECEIVE_REPLICABLE_ITEMS_SUCCESS,
-            payload: { data: MOCK_BASIC_FETCH_DATA_MAP, pagination: MOCK_RESTFUL_PAGINATION_DATA },
+            payload: { data: MOCK_BASIC_GRAPHQL_DATA, pagination: MOCK_GRAPHQL_PAGINATION_DATA },
           },
         ],
         [],
@@ -97,43 +93,6 @@ describe('GeoReplicable Store Actions', () => {
   });
 
   describe('fetchReplicableItems', () => {
-    describe('with graphql', () => {
-      beforeEach(() => {
-        state.useGraphQl = true;
-      });
-
-      it('calls fetchReplicableItemsGraphQl', async () => {
-        await testAction(
-          actions.fetchReplicableItems,
-          null,
-          state,
-          [],
-          [
-            { type: 'requestReplicableItems' },
-            { type: 'fetchReplicableItemsGraphQl', payload: null },
-          ],
-        );
-      });
-    });
-
-    describe('without graphql', () => {
-      beforeEach(() => {
-        state.useGraphQl = false;
-      });
-
-      it('calls fetchReplicableItemsRestful', async () => {
-        await testAction(
-          actions.fetchReplicableItems,
-          null,
-          state,
-          [],
-          [{ type: 'requestReplicableItems' }, { type: 'fetchReplicableItemsRestful' }],
-        );
-      });
-    });
-  });
-
-  describe('fetchReplicableItemsGraphQl', () => {
     describe.each`
       geoCurrentSiteId | geoTargetSiteId
       ${2}             | ${3}
@@ -160,11 +119,12 @@ describe('GeoReplicable Store Actions', () => {
 
         it('should not error and pass empty values to the mutations', () => {
           testAction(
-            actions.fetchReplicableItemsGraphQl,
+            actions.fetchReplicableItems,
             direction,
             state,
             [],
             [
+              { type: 'requestReplicableItems' },
               {
                 type: 'receiveReplicableItemsSuccess',
                 payload: { data, pagination: null },
@@ -197,11 +157,12 @@ describe('GeoReplicable Store Actions', () => {
 
           it('should call mockGeoGqClient with no before/after variables as well as a first variable but no last variable', () => {
             testAction(
-              actions.fetchReplicableItemsGraphQl,
+              actions.fetchReplicableItems,
               direction,
               state,
               [],
               [
+                { type: 'requestReplicableItems' },
                 {
                   type: 'receiveReplicableItemsSuccess',
                   payload: { data, pagination: registries.pageInfo },
@@ -225,11 +186,12 @@ describe('GeoReplicable Store Actions', () => {
 
           it('should call mockGeoGqClient with after variable but no before variable as well as a first variable but no last variable', () => {
             testAction(
-              actions.fetchReplicableItemsGraphQl,
+              actions.fetchReplicableItems,
               direction,
               state,
               [],
               [
+                { type: 'requestReplicableItems' },
                 {
                   type: 'receiveReplicableItemsSuccess',
                   payload: { data, pagination: registries.pageInfo },
@@ -258,11 +220,12 @@ describe('GeoReplicable Store Actions', () => {
 
           it('should call mockGeoGqClient with before variable but no after variable as well as a last variable but no first variable', () => {
             testAction(
-              actions.fetchReplicableItemsGraphQl,
+              actions.fetchReplicableItems,
               direction,
               state,
               [],
               [
+                { type: 'requestReplicableItems' },
                 {
                   type: 'receiveReplicableItemsSuccess',
                   payload: { data, pagination: registries.pageInfo },
@@ -293,11 +256,12 @@ describe('GeoReplicable Store Actions', () => {
             state.statusFilter = FILTER_OPTIONS[1].value;
 
             testAction(
-              actions.fetchReplicableItemsGraphQl,
+              actions.fetchReplicableItems,
               direction,
               state,
               [],
               [
+                { type: 'requestReplicableItems' },
                 {
                   type: 'receiveReplicableItemsSuccess',
                   payload: { data, pagination: registries.pageInfo },
@@ -327,101 +291,13 @@ describe('GeoReplicable Store Actions', () => {
 
         it('should dispatch the request and error actions', async () => {
           await testAction(
-            actions.fetchReplicableItemsGraphQl,
+            actions.fetchReplicableItems,
             null,
             state,
             [],
-            [{ type: 'receiveReplicableItemsError' }],
+            [{ type: 'requestReplicableItems' }, { type: 'receiveReplicableItemsError' }],
           );
         });
-      });
-    });
-  });
-
-  describe('fetchReplicableItemsRestful', () => {
-    const normalizedHeaders = normalizeHeaders(MOCK_BASIC_FETCH_RESPONSE.headers);
-    const pagination = parseIntPagination(normalizedHeaders);
-
-    describe('on success', () => {
-      beforeEach(() => {
-        jest.spyOn(Api, 'getGeoReplicableItems').mockResolvedValue(MOCK_BASIC_FETCH_RESPONSE);
-      });
-
-      describe('with no params set', () => {
-        const defaultParams = {
-          page: 1,
-          search: null,
-          sync_status: null,
-        };
-
-        it('should call getGeoReplicableItems with default queryParams', () => {
-          testAction(
-            actions.fetchReplicableItemsRestful,
-            {},
-            state,
-            [],
-            [
-              {
-                type: 'receiveReplicableItemsSuccess',
-                payload: { data: MOCK_BASIC_FETCH_DATA_MAP, pagination },
-              },
-            ],
-            () => {
-              expect(Api.getGeoReplicableItems).toHaveBeenCalledWith(
-                MOCK_REPLICABLE_TYPE,
-                defaultParams,
-              );
-            },
-          );
-        });
-      });
-
-      describe('with params set', () => {
-        beforeEach(() => {
-          state.paginationData.page = 3;
-          state.searchFilter = 'test search';
-          state.statusFilter = FILTER_OPTIONS[2].value;
-        });
-
-        it('should call getGeoReplicableItems with default queryParams', () => {
-          testAction(
-            actions.fetchReplicableItemsRestful,
-            {},
-            state,
-            [],
-            [
-              {
-                type: 'receiveReplicableItemsSuccess',
-                payload: { data: MOCK_BASIC_FETCH_DATA_MAP, pagination },
-              },
-            ],
-            () => {
-              expect(Api.getGeoReplicableItems).toHaveBeenCalledWith(MOCK_REPLICABLE_TYPE, {
-                page: 3,
-                search: 'test search',
-                sync_status: FILTER_OPTIONS[2].value,
-              });
-            },
-          );
-        });
-      });
-    });
-
-    describe('on error', () => {
-      beforeEach(() => {
-        jest
-          .spyOn(Api, 'getGeoReplicableItems')
-          .mockRejectedValue(new Error(HTTP_STATUS_INTERNAL_SERVER_ERROR));
-      });
-
-      it('should dispatch the request and error actions', async () => {
-        await testAction(
-          actions.fetchReplicableItemsRestful,
-          {},
-          state,
-          [],
-          [{ type: 'receiveReplicableItemsError' }],
-        );
       });
     });
   });
@@ -475,46 +351,6 @@ describe('GeoReplicable Store Actions', () => {
     const action = ACTION_TYPES.RESYNC_ALL;
 
     describe('initiateAllReplicableAction', () => {
-      describe('with graphql', () => {
-        beforeEach(() => {
-          state.useGraphQl = true;
-        });
-
-        it('calls initiateReplicableActionGraphQl', async () => {
-          await testAction(
-            actions.initiateAllReplicableAction,
-            { action },
-            state,
-            [],
-            [
-              { type: 'requestInitiateAllReplicableAction' },
-              { type: 'initiateAllReplicableActionGraphQl', payload: { action } },
-            ],
-          );
-        });
-      });
-
-      describe('without graphql', () => {
-        beforeEach(() => {
-          state.useGraphQl = false;
-        });
-
-        it('calls initiateReplicableActionGraphQl', async () => {
-          await testAction(
-            actions.initiateAllReplicableAction,
-            { action },
-            state,
-            [],
-            [
-              { type: 'requestInitiateAllReplicableAction' },
-              { type: 'initiateAllReplicableActionRestful', payload: { action } },
-            ],
-          );
-        });
-      });
-    });
-
-    describe('initiateAllReplicableActionGraphQl', () => {
       describe('on success', () => {
         beforeEach(() => {
           jest.spyOn(mockGeoGqClient, 'mutate').mockResolvedValue({});
@@ -522,11 +358,12 @@ describe('GeoReplicable Store Actions', () => {
 
         it('should call mockGeoClient with correct parameters and success actions', () => {
           testAction(
-            actions.initiateAllReplicableActionGraphQl,
+            actions.initiateAllReplicableAction,
             { action },
             state,
             [],
             [
+              { type: 'requestInitiateAllReplicableAction' },
               {
                 type: 'receiveInitiateAllReplicableActionSuccess',
                 payload: { action },
@@ -551,11 +388,12 @@ describe('GeoReplicable Store Actions', () => {
 
         it('should call mockGeoClient with correct parameters and error actions', () => {
           testAction(
-            actions.initiateAllReplicableActionGraphQl,
+            actions.initiateAllReplicableAction,
             { action },
             state,
             [],
             [
+              { type: 'requestInitiateAllReplicableAction' },
               {
                 type: 'receiveInitiateAllReplicableActionError',
                 payload: { action },
@@ -569,53 +407,6 @@ describe('GeoReplicable Store Actions', () => {
                 },
               });
             },
-          );
-        });
-      });
-    });
-
-    describe('initiateAllReplicableActionRestful', () => {
-      describe('on success', () => {
-        beforeEach(() => {
-          jest
-            .spyOn(Api, 'initiateAllGeoReplicableSyncs')
-            .mockResolvedValue(MOCK_BASIC_POST_RESPONSE);
-        });
-
-        it('should dispatch the request with correct replicable param and success actions', () => {
-          testAction(
-            actions.initiateAllReplicableActionRestful,
-            { action },
-            state,
-            [],
-            [{ type: 'receiveInitiateAllReplicableActionSuccess', payload: { action } }],
-          );
-          expect(Api.initiateAllGeoReplicableSyncs).toHaveBeenCalledWith(
-            MOCK_REPLICABLE_TYPE,
-            action,
-          );
-        });
-      });
-
-      describe('on error', () => {
-        beforeEach(() => {
-          jest
-            .spyOn(Api, 'initiateAllGeoReplicableSyncs')
-            .mockRejectedValue(new Error(HTTP_STATUS_INTERNAL_SERVER_ERROR));
-        });
-
-        it('should dispatch the request and error actions', async () => {
-          await testAction(
-            actions.initiateAllReplicableActionRestful,
-            { action },
-            state,
-            [],
-            [
-              {
-                type: 'receiveInitiateAllReplicableActionError',
-                payload: { action },
-              },
-            ],
           );
         });
       });
@@ -669,46 +460,6 @@ describe('GeoReplicable Store Actions', () => {
     const name = 'test';
 
     describe('initiateReplicableAction', () => {
-      describe('with graphql', () => {
-        beforeEach(() => {
-          state.useGraphQl = true;
-        });
-
-        it('calls initiateReplicableActionGraphQl', async () => {
-          await testAction(
-            actions.initiateReplicableAction,
-            { registryId, name, action },
-            state,
-            [],
-            [
-              { type: 'requestInitiateReplicableAction' },
-              { type: 'initiateReplicableActionGraphQl', payload: { registryId, name, action } },
-            ],
-          );
-        });
-      });
-
-      describe('without graphql', () => {
-        beforeEach(() => {
-          state.useGraphQl = false;
-        });
-
-        it('calls initiateReplicableActionRestful', async () => {
-          await testAction(
-            actions.initiateReplicableAction,
-            { registryId, name, action },
-            state,
-            [],
-            [
-              { type: 'requestInitiateReplicableAction' },
-              { type: 'initiateReplicableActionRestful', payload: { registryId, name, action } },
-            ],
-          );
-        });
-      });
-    });
-
-    describe('initiateReplicableActionGraphQl', () => {
       describe('on success', () => {
         beforeEach(() => {
           jest.spyOn(mockGeoGqClient, 'mutate').mockResolvedValue({});
@@ -716,11 +467,12 @@ describe('GeoReplicable Store Actions', () => {
 
         it('should call mockGeoClient with correct parameters and success actions', () => {
           testAction(
-            actions.initiateReplicableActionGraphQl,
+            actions.initiateReplicableAction,
             { registryId, name, action },
             state,
             [],
             [
+              { type: 'requestInitiateReplicableAction' },
               {
                 type: 'receiveInitiateReplicableActionSuccess',
                 payload: { name, action },
@@ -747,11 +499,12 @@ describe('GeoReplicable Store Actions', () => {
 
         it('should call mockGeoClient with correct parameters and error actions', () => {
           testAction(
-            actions.initiateReplicableActionGraphQl,
+            actions.initiateReplicableAction,
             { registryId, name, action },
             state,
             [],
             [
+              { type: 'requestInitiateReplicableAction' },
               {
                 type: 'receiveInitiateReplicableActionError',
                 payload: { name },
@@ -767,51 +520,6 @@ describe('GeoReplicable Store Actions', () => {
                 },
               });
             },
-          );
-        });
-      });
-    });
-
-    describe('initiateReplicableActionRestful', () => {
-      describe('on success', () => {
-        beforeEach(() => {
-          jest.spyOn(Api, 'initiateGeoReplicableSync').mockResolvedValue(MOCK_BASIC_POST_RESPONSE);
-        });
-
-        it('should dispatch the request with correct replicable param and success actions', () => {
-          testAction(
-            actions.initiateReplicableActionRestful,
-            { registryId, name, action },
-            state,
-            [],
-            [{ type: 'receiveInitiateReplicableActionSuccess', payload: { name, action } }],
-          );
-          expect(Api.initiateGeoReplicableSync).toHaveBeenCalledWith(MOCK_REPLICABLE_TYPE, {
-            projectId: registryId,
-            action,
-          });
-        });
-      });
-
-      describe('on error', () => {
-        beforeEach(() => {
-          jest
-            .spyOn(Api, 'initiateGeoReplicableSync')
-            .mockRejectedValue(new Error(HTTP_STATUS_INTERNAL_SERVER_ERROR));
-        });
-
-        it('should dispatch the request and error actions', async () => {
-          await testAction(
-            actions.initiateReplicableActionRestful,
-            { registryId, name, action },
-            state,
-            [],
-            [
-              {
-                type: 'receiveInitiateReplicableActionError',
-                payload: { name: 'test' },
-              },
-            ],
           );
         });
       });
@@ -841,22 +549,6 @@ describe('GeoReplicable Store Actions', () => {
         testValue,
         state,
         [{ type: types.SET_SEARCH, payload: testValue }],
-        [],
-      );
-    });
-  });
-
-  describe('setPage', () => {
-    it('should commit mutation SET_PAGE', async () => {
-      state.paginationData.page = 1;
-
-      const testValue = 2;
-
-      await testAction(
-        actions.setPage,
-        testValue,
-        state,
-        [{ type: types.SET_PAGE, payload: testValue }],
         [],
       );
     });

@@ -8,7 +8,6 @@ export default {
   geoSitePath: '/api/:version/geo_nodes/:id',
   geoSitesPath: '/api/:version/geo_nodes',
   geoSitesStatusPath: '/api/:version/geo_nodes/status',
-  geoReplicationPath: '/api/:version/geo_replication/:replicable',
   ldapGroupsPath: '/api/:version/ldap/:provider/groups.json',
   subscriptionPath: '/api/:version/namespaces/:id/gitlab_subscription',
   childEpicPath: '/api/:version/groups/:id/epics',
@@ -102,21 +101,6 @@ export default {
   groupActivityNewMembersCount(groupPath) {
     const url = Api.buildUrl(this.groupActivityNewMembersPath);
     return axios.get(url, { params: { group_path: groupPath } });
-  },
-
-  getGeoReplicableItems(replicable, params = {}) {
-    const url = Api.buildUrl(this.geoReplicationPath).replace(':replicable', replicable);
-    return axios.get(url, { params });
-  },
-
-  initiateAllGeoReplicableSyncs(replicable, action) {
-    const url = Api.buildUrl(this.geoReplicationPath).replace(':replicable', replicable);
-    return axios.post(`${url}/${action}`, {});
-  },
-
-  initiateGeoReplicableSync(replicable, { projectId, action }) {
-    const url = Api.buildUrl(this.geoReplicationPath).replace(':replicable', replicable);
-    return axios.put(`${url}/${projectId}/${action}`, {});
   },
 
   fetchCountries() {
