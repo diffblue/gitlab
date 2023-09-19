@@ -1,6 +1,5 @@
 <script>
 import { renderMarkdown } from '~/notes/utils';
-import { getMarkdown } from '~/rest_api';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { renderGFM } from '~/behaviors/markdown/render_gfm';
 import { GENIE_CHAT_MODEL_ROLES } from '../constants';
@@ -32,7 +31,7 @@ export default {
   },
   data() {
     return {
-      messageContent: renderMarkdown(this.message.content || this.message.errors[0]),
+      messageContent: this.getContent(),
     };
   },
   computed: {
@@ -46,11 +45,11 @@ export default {
   watch: {
     message: {
       handler() {
-        const { chunkId, content, errors } = this.message;
+        const { chunkId, content } = this.message;
         if (!chunkId) {
           this.$options.messageChunks = [];
-          this.messageContent = renderMarkdown(content || errors[0]);
-          this.hydrateContentWithGFM();
+          this.messageContent = this.getContent();
+          renderGFM(this.$refs.content);
         } else {
           this.$options.messageChunks[chunkId] = content;
           this.messageContent = renderMarkdown(
@@ -66,16 +65,14 @@ export default {
     if (this.message.chunkId) {
       this.$options.messageChunks[this.message.chunkId] = this.message.content;
     }
-    this.hydrateContentWithGFM();
+    renderGFM(this.$refs.content);
   },
   methods: {
-    async hydrateContentWithGFM() {
-      const textToConvert = this.message.content || this.message.errors[0];
-      if (textToConvert) {
-        this.messageContent = (await getMarkdown({ text: textToConvert, gfm: true })).data.html;
-        await this.$nextTick();
-        renderGFM(this.$refs.content);
-      }
+    getContent() {
+      return (
+        this.message.contentHtml ||
+        renderMarkdown(this.message.content || this.message.errors.join('; '))
+      );
     },
   },
 };

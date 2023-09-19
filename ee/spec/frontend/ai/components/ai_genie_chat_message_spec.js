@@ -3,14 +3,14 @@ import waitForPromises from 'helpers/wait_for_promises';
 import AiGenieChatMessage from 'ee/ai/components/ai_genie_chat_message.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
-import { getMarkdown } from '~/rest_api';
+import { renderGFM } from '~/behaviors/markdown/render_gfm';
 import {
   MOCK_USER_MESSAGE,
   MOCK_TANUKI_MESSAGE,
   MOCK_CHUNK_MESSAGE,
 } from '../tanuki_bot/mock_data';
 
-jest.mock('~/rest_api');
+jest.mock('~/behaviors/markdown/render_gfm');
 
 describe('AiGenieChatMessage', () => {
   let wrapper;
@@ -28,9 +28,6 @@ describe('AiGenieChatMessage', () => {
       scopedSlots,
     });
   };
-  beforeEach(() => {
-    getMarkdown.mockImplementation(({ text }) => Promise.resolve({ data: { html: text } }));
-  });
 
   it('fails if message is not passed', () => {
     expect(createComponent.bind(null, { propsData: {} })).toThrow();
@@ -123,26 +120,119 @@ describe('AiGenieChatMessage', () => {
       });
     });
 
-    it('hydrates the message with GLFM when mounting the component', () => {
+    it('hydrates the message with GLFM when mounting the component', async () => {
       createComponent();
-      expect(getMarkdown).toHaveBeenCalledWith({ text: MOCK_USER_MESSAGE.content, gfm: true });
+      await nextTick();
+      expect(renderGFM).toHaveBeenCalled();
     });
 
-    it('listens to the message changes', async () => {
-      const newContent = 'new foo content';
-      createComponent();
-      // setProps is justified here because we are testing the component's
-      // reactive behavior which consistutes an exception
-      // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
-      wrapper.setProps({
-        message: {
-          ...MOCK_USER_MESSAGE,
-          content: newContent,
+    it('outputs errors if message has no content', () => {
+      const errors = ['foo', 'bar', 'baz'];
+
+      createComponent({
+        propsData: {
+          message: {
+            ...MOCK_USER_MESSAGE,
+            contentHtml: '',
+            content: '',
+            errors,
+          },
         },
       });
-      await nextTick();
-      expect(findContent().text()).not.toContain(MOCK_USER_MESSAGE.content);
-      expect(findContent().text()).toContain(newContent);
+
+      errors.forEach((err) => {
+        expect(findContent().text()).toContain(err);
+      });
+    });
+
+    describe('message updates watcher', () => {
+      const newContent = 'new foo content';
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('listens to the message changes', async () => {
+        expect(findContent().text()).toContain(MOCK_USER_MESSAGE.content);
+        // setProps is justified here because we are testing the component's
+        // reactive behavior which consistutes an exception
+        // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
+        wrapper.setProps({
+          message: {
+            ...MOCK_USER_MESSAGE,
+            contentHtml: `<p>${newContent}</p>`,
+          },
+        });
+        await nextTick();
+        expect(findContent().text()).not.toContain(MOCK_USER_MESSAGE.content);
+        expect(findContent().text()).toContain(newContent);
+      });
+
+      it('prioritises the output of contentHtml over content', async () => {
+        // setProps is justified here because we are testing the component's
+        // reactive behavior which consistutes an exception
+        // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
+        wrapper.setProps({
+          message: {
+            ...MOCK_USER_MESSAGE,
+            contentHtml: `<p>${MOCK_USER_MESSAGE.content}</p>`,
+            content: newContent,
+          },
+        });
+        await nextTick();
+        expect(findContent().text()).not.toContain(newContent);
+        expect(findContent().text()).toContain(MOCK_USER_MESSAGE.content);
+      });
+
+      it('outputs errors if message has no content', async () => {
+        // setProps is justified here because we are testing the component's
+        // reactive behavior which consistutes an exception
+        // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
+        wrapper.setProps({
+          message: {
+            ...MOCK_USER_MESSAGE,
+            contentHtml: '',
+            content: '',
+            errors: ['error'],
+          },
+        });
+        await nextTick();
+        expect(findContent().text()).not.toContain(newContent);
+        expect(findContent().text()).not.toContain(MOCK_USER_MESSAGE.content);
+        expect(findContent().text()).toContain('error');
+      });
+
+      it('merges all the errors for output', async () => {
+        const errors = ['foo', 'bar', 'baz'];
+        // setProps is justified here because we are testing the component's
+        // reactive behavior which consistutes an exception
+        // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
+        wrapper.setProps({
+          message: {
+            ...MOCK_USER_MESSAGE,
+            contentHtml: '',
+            content: '',
+            errors,
+          },
+        });
+        await nextTick();
+        expect(findContent().text()).toContain(errors[0]);
+        expect(findContent().text()).toContain(errors[1]);
+        expect(findContent().text()).toContain(errors[2]);
+      });
+
+      it('hydrates the output message with GLFM if its not a chunk', async () => {
+        // setProps is justified here because we are testing the component's
+        // reactive behavior which consistutes an exception
+        // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
+        wrapper.setProps({
+          message: {
+            ...MOCK_USER_MESSAGE,
+            contentHtml: `<p>${newContent}</p>`,
+          },
+        });
+        await nextTick();
+        expect(renderGFM).toHaveBeenCalled();
+      });
     });
   });
 
@@ -151,17 +241,17 @@ describe('AiGenieChatMessage', () => {
     const content2 = ' chunk #2';
     const content3 = ' chunk #3';
     const chunk1 = {
-      ...MOCK_USER_MESSAGE,
+      ...MOCK_CHUNK_MESSAGE,
       content: content1,
       chunkId: 1,
     };
     const chunk2 = {
-      ...MOCK_USER_MESSAGE,
+      ...MOCK_CHUNK_MESSAGE,
       content: content2,
       chunkId: 2,
     };
     const chunk3 = {
-      ...MOCK_USER_MESSAGE,
+      ...MOCK_CHUNK_MESSAGE,
       content: content3,
       chunkId: 3,
     };
@@ -176,7 +266,7 @@ describe('AiGenieChatMessage', () => {
       // See https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
       wrapper.setProps({
         message: {
-          ...MOCK_USER_MESSAGE,
+          ...MOCK_CHUNK_MESSAGE,
           content: content1,
         },
       });
@@ -244,14 +334,14 @@ describe('AiGenieChatMessage', () => {
       expect(findContent().text()).toBe(content1 + content2);
     });
 
-    it('hydrates the message with GLFM when the updated message is not a chunk', async () => {
+    it('does not hydrate the chunk message with GLFM', async () => {
       createComponent({
         propsData: {
           message: chunk1,
         },
       });
-      getMarkdown.mockClear();
-      expect(getMarkdown).not.toHaveBeenCalled();
+      renderGFM.mockClear();
+      expect(renderGFM).not.toHaveBeenCalled();
 
       // setProps is justified here because we are testing the component's
       // reactive behavior which consistutes an exception
@@ -260,7 +350,7 @@ describe('AiGenieChatMessage', () => {
         message: chunk2,
       });
       await nextTick();
-      expect(getMarkdown).not.toHaveBeenCalled();
+      expect(renderGFM).not.toHaveBeenCalled();
 
       wrapper.setProps({
         message: {
@@ -269,7 +359,7 @@ describe('AiGenieChatMessage', () => {
         },
       });
       await nextTick();
-      expect(getMarkdown).toHaveBeenCalledWith({ text: content3, gfm: true });
+      expect(renderGFM).toHaveBeenCalled();
     });
   });
 });
