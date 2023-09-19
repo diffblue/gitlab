@@ -1,0 +1,7 @@
+@import '../../../../../app/assets/stylesheets/page_bundles/signup';
+
+body.with-system-footer {
+  .footer-container {
+    padding-bottom: $system-footer-height;
+  }
+}

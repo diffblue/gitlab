@@ -35603,6 +35603,9 @@ msgstr ""
 msgid "Priority"
 msgstr ""
 
+msgid "Privacy"
+msgstr ""
+
 msgid "Private"
 msgstr ""
 
@@ -46769,6 +46772,9 @@ msgid "Terminal for environment"
 msgstr ""
 
 msgid "Terminal sync service is running"
+msgstr ""
+
+msgid "Terms"
 msgstr ""
 
 msgid "Terms of Service Agreement and Privacy Policy"
