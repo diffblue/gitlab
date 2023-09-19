@@ -16,3 +16,4 @@ distribution:
   - ee
 tier:
   - ultimate
+milestone: "<16.4"
