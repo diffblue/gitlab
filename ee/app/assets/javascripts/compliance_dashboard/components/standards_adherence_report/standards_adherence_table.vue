@@ -1,5 +1,5 @@
 <script>
-import { GlTable, GlIcon, GlLink, GlBadge, GlLoadingIcon } from '@gitlab/ui';
+import { GlAlert, GlTable, GlIcon, GlLink, GlBadge, GlLoadingIcon } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import getProjectComplianceStandardsAdherence from '../../graphql/compliance_standards_adherence.query.graphql';
@@ -9,12 +9,14 @@ import {
   STANDARDS_ADHERENCE_CHECK_DESCRIPTIONS,
   STANDARDS_ADHERENCE_STANARD_LABELS,
   NO_STANDARDS_ADHERENCES_FOUND,
+  STANDARDS_ADHERENCE_FETCH_ERROR,
 } from './constants';
 import FixSuggestionsSidebar from './fix_suggestions_sidebar.vue';
 
 export default {
   name: 'ComplianceStandardsAdherenceTable',
   components: {
+    GlAlert,
     GlTable,
     GlIcon,
     GlLink,
@@ -30,7 +32,7 @@ export default {
   },
   data() {
     return {
-      queryError: false,
+      hasStandardsAdherenceFetchError: false,
       adherences: {
         list: [],
       },
@@ -54,7 +56,7 @@ export default {
       },
       error(e) {
         Sentry.captureException(e);
-        this.queryError = true;
+        this.hasStandardsAdherenceFetchError = true;
       },
     },
   },
@@ -137,11 +139,20 @@ export default {
     },
   ],
   noStandardsAdherencesFound: NO_STANDARDS_ADHERENCES_FOUND,
+  standardsAdherenceFetchError: STANDARDS_ADHERENCE_FETCH_ERROR,
 };
 </script>
 
 <template>
   <section>
+    <gl-alert
+      v-if="hasStandardsAdherenceFetchError"
+      variant="danger"
+      class="gl-mt-3"
+      :dismissible="false"
+    >
+      {{ $options.standardsAdherenceFetchError }}
+    </gl-alert>
     <gl-table
       :fields="$options.fields"
       :items="adherences.list"
