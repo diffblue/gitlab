@@ -13,7 +13,7 @@ describe('LimitedAccessModal', () => {
   const findModal = () => wrapper.findComponent(GlModal);
 
   it('has correct button', () => {
-    createComponent();
+    createComponent({ limitedAccessReason: 'RAMP_SUBSCRIPTION' });
 
     expect(findModal().props('actionPrimary')).toStrictEqual({
       text: 'Close',

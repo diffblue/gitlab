@@ -1,6 +1,6 @@
 <script>
 import { GlLink, GlIcon, GlButton, GlModalDirective } from '@gitlab/ui';
-import { getSubscriptionData } from 'ee/fulfillment/shared_queries/subscription_actions.customer.query.graphql';
+import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import {
   addSeatsText,
   seatsOwedHelpText,
@@ -12,6 +12,7 @@ import {
 } from 'ee/usage_quotas/seats/constants';
 import Tracking from '~/tracking';
 import { visitUrl } from '~/lib/utils/url_utility';
+import { LIMITED_ACCESS_MESSAGING } from 'ee/usage_quotas/components/constants';
 import LimitedAccessModal from '../../components/limited_access_modal.vue';
 
 export default {
@@ -81,7 +82,7 @@ export default {
   },
   apollo: {
     subscriptionPermissions: {
-      query: getSubscriptionData,
+      query: getSubscriptionPermissionsData,
       client: 'customersDotClient',
       variables() {
         return {
@@ -91,7 +92,10 @@ export default {
       skip() {
         return !gon.features?.limitedAccessModal;
       },
-      update: (data) => data.subscription,
+      update: (data) => ({
+        ...data.subscription,
+        reason: data.userActionAccess?.limitedAccessReason,
+      }),
     },
   },
   computed: {
@@ -105,7 +109,11 @@ export default {
       return this.subscriptionPermissions?.canAddSeats ?? true;
     },
     shouldShowModal() {
-      return !this.canAddSeats && gon.features?.limitedAccessModal;
+      return (
+        !this.canAddSeats &&
+        gon.features?.limitedAccessModal &&
+        LIMITED_ACCESS_MESSAGING[this.subscriptionPermissions.reason]
+      );
     },
   },
   methods: {
@@ -181,6 +189,10 @@ export default {
     >
       {{ $options.i18n.addSeatsText }}
     </gl-button>
-    <limited-access-modal v-if="shouldShowModal" v-model="showLimitedAccessModal" />
+    <limited-access-modal
+      v-if="shouldShowModal"
+      v-model="showLimitedAccessModal"
+      :limited-access-reason="subscriptionPermissions.reason"
+    />
   </div>
 </template>

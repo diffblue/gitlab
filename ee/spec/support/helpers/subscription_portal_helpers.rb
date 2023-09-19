@@ -89,6 +89,24 @@ module SubscriptionPortalHelpers
       }.to_json)
   end
 
+  def stub_subscription_permissions_data(namespace_id, can_add_seats: true, can_renew: true, reason: 'MANAGED_BY_RESELLER')
+    stub_full_request(graphql_url, method: :post)
+      .with(
+        body: "{\"operationName\":\"getSubscriptionPermissionsData\",\"variables\":{\"namespaceId\":#{namespace_id}},\"query\":\"query getSubscriptionPermissionsData($namespaceId: ID!) {\\n  subscription(namespaceId: $namespaceId) {\\n    canAddSeats\\n    canRenew\\n    __typename\\n  }\\n  userActionAccess(namespaceId: $namespaceId) {\\n    limitedAccessReason\\n    __typename\\n  }\\n}\\n\"}"
+      )
+      .to_return(status: 200, body: {
+        "data": {
+          "subscription": {
+            "canAddSeats": can_add_seats,
+            "canRenew": can_renew
+          },
+          "userActionAccess": {
+            "limitedAccessReason": reason
+          }
+        }
+      }.to_json, headers: { 'Content-Type' => 'application/json' })
+  end
+
   def stub_invoice_preview(namespace_id = 'null', plan_id = 'bronze_id')
     stub_full_request(graphql_url, method: :post)
       .with(
