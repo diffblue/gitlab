@@ -56673,7 +56673,7 @@ msgstr ""
 msgid "mrWidget|The %{type} branch %{codeStart}%{name}%{codeEnd} does not exist."
 msgstr ""
 
-msgid "mrWidget|The source branch is %{link} the target branch"
+msgid "mrWidget|The source branch is %{link} the target branch."
 msgstr ""
 
 msgid "mrWidget|This merge request failed to be merged automatically"
