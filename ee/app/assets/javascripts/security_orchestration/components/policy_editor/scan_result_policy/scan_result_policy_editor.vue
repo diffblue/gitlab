@@ -403,7 +403,7 @@ export default {
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <settings-section :settings="settings" @changed="updateSettings" />
+        <settings-section :rules="policy.rules" :settings="settings" @changed="updateSettings" />
       </dim-disable-container>
     </template>
   </editor-layout>

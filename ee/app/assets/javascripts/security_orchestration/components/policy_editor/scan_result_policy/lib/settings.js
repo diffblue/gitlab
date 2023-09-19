@@ -1,4 +1,5 @@
 import { s__ } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
 
 export const BLOCK_PROTECTED_BRANCH_MODIFICATION = 'block_protected_branch_modification';
 export const PREVENT_APPROVAL_BY_MR_AUTHOR = 'prevent_approval_by_merge_request_author';
@@ -36,9 +37,9 @@ export const mergeRequestConfiguration = {
   },
 };
 
-export const SETTINGS_HUMANISED_STRINGS = {
+export const SETTINGS_HUMANIZED_STRINGS = {
   [BLOCK_PROTECTED_BRANCH_MODIFICATION]: s__(
-    'ScanResultPolicy|Block users from modifying protected branches',
+    'ScanResultPolicy|Prevent branch protection modification',
   ),
   [PREVENT_APPROVAL_BY_MR_AUTHOR]: s__(
     "ScanResultPolicy|Prevent approval by merge request's author",
@@ -57,6 +58,22 @@ export const SETTINGS_HUMANISED_STRINGS = {
 export const SETTINGS_TOOLTIP = {
   [PREVENT_APPROVAL_BY_MR_AUTHOR]: s__(
     'ScanResultPolicy|When enabled, two person approval will be required on all MRs as merge request authors cannot approve their own MRs and merge them unilaterally',
+  ),
+};
+
+export const SETTINGS_POPOVER_STRINGS = {
+  [BLOCK_PROTECTED_BRANCH_MODIFICATION]: {
+    title: s__('ScanResultPolicy|Recommended setting'),
+    description: s__(
+      'ScanResultPolicy|You have selected any protected branch option as a condition. To better protect your project, it is recommended to enable the protect branch settings. %{linkStart}Learn more.%{linkEnd}',
+    ),
+    featureName: 'security_policy_protected_branch_modification',
+  },
+};
+
+export const SETTINGS_LINKS = {
+  [BLOCK_PROTECTED_BRANCH_MODIFICATION]: helpPagePath(
+    '/user/application_security/policies/scan-result-policies.html',
   ),
 };
 
