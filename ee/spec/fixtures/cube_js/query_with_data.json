@@ -4,7 +4,7 @@
     {
       "query": {
         "measures": [
-          "SnowplowTrackedEvents.count"
+          "TrackedEvents.count"
         ],
         "filters": [
           {
@@ -12,10 +12,10 @@
             "values": [
               "page_view"
             ],
-            "member": "SnowplowTrackedEvents.event"
+            "member": "TrackedEvents.event"
           },
           {
-            "member": "SnowplowTrackedEvents.derivedTstamp",
+            "member": "TrackedEvents.derivedTstamp",
             "operator": "inDateRange",
             "values": [
               "2023-01-02",
@@ -39,7 +39,7 @@
       },
       "data": [
         {
-          "SnowplowTrackedEvents.count": "335"
+          "TrackedEvents.count": "335"
         }
       ],
       "lastRefreshTime": "2023-07-13T09:24:31.279Z",
@@ -54,8 +54,8 @@
       },
       "transformedQuery": {
         "sortedDimensions": [
-          "SnowplowTrackedEvents.derivedTstamp",
-          "SnowplowTrackedEvents.event"
+          "TrackedEvents.derivedTstamp",
+          "TrackedEvents.event"
         ],
         "sortedTimeDimensions": [
 
@@ -64,16 +64,16 @@
 
         ],
         "measures": [
-          "SnowplowTrackedEvents.pageViewsCount"
+          "TrackedEvents.pageViewsCount"
         ],
         "leafMeasureAdditive": true,
         "leafMeasures": [
-          "SnowplowTrackedEvents.count"
+          "TrackedEvents.count"
         ],
         "measureToLeafMeasures": {
-          "SnowplowTrackedEvents.count": [
+          "TrackedEvents.count": [
             {
-              "measure": "SnowplowTrackedEvents.count",
+              "measure": "TrackedEvents.count",
               "additive": true,
               "type": "count"
             }
@@ -139,8 +139,8 @@
         "windowGranularity": null,
         "filterDimensionsSingleValueEqual": null,
         "ownedDimensions": [
-          "SnowplowTrackedEvents.derivedTstamp",
-          "SnowplowTrackedEvents.event"
+          "TrackedEvents.derivedTstamp",
+          "TrackedEvents.event"
         ],
         "ownedTimeDimensionsWithRollupGranularity": [
 
@@ -152,7 +152,7 @@
       "requestId": "e10b4c42-3546-48d2-be32-22b48bd153b0-span-1",
       "annotation": {
         "measures": {
-          "SnowplowTrackedEvents.count": {
+          "TrackedEvents.count": {
             "title": "Snowplow Tracked Events Count",
             "shortTitle": "Event Count",
             "type": "number",
@@ -186,7 +186,7 @@
   ],
   "pivotQuery": {
     "measures": [
-      "SnowplowTrackedEvents.count"
+      "TrackedEvents.count"
     ],
     "filters": [
       {
@@ -194,10 +194,10 @@
         "values": [
           "page_view"
         ],
-        "member": "SnowplowTrackedEvents.event"
+        "member": "TrackedEvents.event"
       },
       {
-        "member": "SnowplowTrackedEvents.derivedTstamp",
+        "member": "TrackedEvents.derivedTstamp",
         "operator": "inDateRange",
         "values": [
           "2023-01-02",

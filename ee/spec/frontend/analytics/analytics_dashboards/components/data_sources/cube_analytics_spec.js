@@ -38,8 +38,8 @@ describe('Cube Analytics Data Source', () => {
   });
   const projectId = 'TEST_ID';
   const visualizationType = 'LineChart';
-  const query = { measures: ['SnowplowTrackedEvents.count'] };
-  const queryOverrides = { measures: ['SnowplowTrackedEvents.userLanguage'] };
+  const query = { measures: ['TrackedEvents.count'] };
+  const queryOverrides = { measures: ['TrackedEvents.userLanguage'] };
   const cubeJsOptions = { castNumerics: true };
 
   describe('fetch', () => {
@@ -63,7 +63,7 @@ describe('Cube Analytics Data Source', () => {
               ['2022-11-09T00:00:00.000', 55],
               ['2022-11-10T00:00:00.000', 14],
             ],
-            name: 'pageview, SnowplowTrackedEvents Count',
+            name: 'pageview, TrackedEvents Count',
           });
         });
 
@@ -75,7 +75,7 @@ describe('Cube Analytics Data Source', () => {
               ['2022-11-09T00:00:00.000', 55],
               ['2022-11-10T00:00:00.000', 14],
             ],
-            name: 'pageview, SnowplowTrackedEvents Count',
+            name: 'pageview, TrackedEvents Count',
           });
         });
       });
@@ -98,14 +98,14 @@ describe('Cube Analytics Data Source', () => {
             projectId,
             visualizationType: 'DataTable',
             query: {
-              measures: ['SnowplowTrackedEvents.pageViewsCount'],
-              dimensions: ['SnowplowTrackedEvents.docPath', 'SnowplowTrackedEvents.url'],
+              measures: ['TrackedEvents.pageViewsCount'],
+              dimensions: ['TrackedEvents.docPath', 'TrackedEvents.url'],
             },
             visualizationOptions: {
               links: [
                 {
-                  text: 'SnowplowTrackedEvents.docPath',
-                  href: 'SnowplowTrackedEvents.url',
+                  text: 'TrackedEvents.docPath',
+                  href: 'TrackedEvents.url',
                 },
               ],
             },
@@ -129,7 +129,7 @@ describe('Cube Analytics Data Source', () => {
         });
 
         it('returns the expected data format with custom measure', async () => {
-          const override = { measures: ['SnowplowTrackedEvents.url'] };
+          const override = { measures: ['TrackedEvents.url'] };
           const result = await fetch({
             projectId,
             visualizationType: 'SingleStat',
@@ -160,14 +160,14 @@ describe('Cube Analytics Data Source', () => {
       {
         operator: 'equals',
         values: ['pageview'],
-        member: 'SnowplowTrackedEvents.eventType',
+        member: 'TrackedEvents.eventType',
       },
     ];
 
     it.each`
-      type                       | queryMeasurement                         | expectedDimension
-      ${'SnowplowTrackedEvents'} | ${'SnowplowTrackedEvents.pageViewCount'} | ${'SnowplowTrackedEvents.derivedTstamp'}
-      ${'SnowplowSessions'}      | ${'SnowplowSessions.pageViewCount'}      | ${'SnowplowSessions.startAt'}
+      type               | queryMeasurement                 | expectedDimension
+      ${'TrackedEvents'} | ${'TrackedEvents.pageViewCount'} | ${'TrackedEvents.derivedTstamp'}
+      ${'Sessions'}      | ${'Sessions.pageViewCount'}      | ${'Sessions.startAt'}
     `(
       'loads the query with date range filters for "$type"',
       async ({ queryMeasurement, expectedDimension }) => {

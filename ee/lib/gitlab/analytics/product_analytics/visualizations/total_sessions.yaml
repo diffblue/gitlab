@@ -5,7 +5,7 @@ data:
   type: cube_analytics
   query:
     measures:
-      - SnowplowSessions.count
+      - Sessions.count
     limit: 100
     timezone: UTC
     filters: []

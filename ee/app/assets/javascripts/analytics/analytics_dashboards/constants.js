@@ -39,8 +39,8 @@ export const PANEL_DISPLAY_TYPE_ITEMS = [
 export const MEASURE_COLOR = '#00b140';
 export const DIMENSION_COLOR = '#c3e6cd';
 
-export const EVENTS_TABLE_NAME = 'SnowplowTrackedEvents';
-export const SESSIONS_TABLE_NAME = 'SnowplowSessions';
+export const EVENTS_TABLE_NAME = 'TrackedEvents';
+export const SESSIONS_TABLE_NAME = 'Sessions';
 
 export const ANALYTICS_FIELD_CATEGORIES = [
   {

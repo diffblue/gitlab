@@ -5,9 +5,9 @@ data:
   type: cube_analytics
   query:
     measures:
-      - SnowplowSessions.count
+      - Sessions.count
     timeDimensions:
-      - dimension: SnowplowSessions.startAt
+      - dimension: Sessions.startAt
         granularity: day
     limit: 100
     timezone: UTC

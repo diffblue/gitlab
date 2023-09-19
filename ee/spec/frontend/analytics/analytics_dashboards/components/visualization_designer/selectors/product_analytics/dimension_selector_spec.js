@@ -1,6 +1,9 @@
 import { nextTick } from 'vue';
 import { GlLabel, GlDropdownItem } from '@gitlab/ui';
-import { EVENTS_TABLE_NAME } from 'ee/analytics/analytics_dashboards/constants';
+import {
+  EVENTS_TABLE_NAME,
+  SESSIONS_TABLE_NAME,
+} from 'ee/analytics/analytics_dashboards/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ProductAnalyticsDimensionSelector from 'ee/analytics/analytics_dashboards/components/visualization_designer/selectors/product_analytics/dimension_selector.vue';
 
@@ -205,7 +208,7 @@ describe('ProductAnalyticsDimensionSelector', () => {
 
       expect(setTimeDimensions).toHaveBeenCalledWith([
         {
-          dimension: `${EVENTS_TABLE_NAME}.derivedTstamp`,
+          dimension: `${SESSIONS_TABLE_NAME}.startAt`,
           granularity: 'seconds',
         },
       ]);

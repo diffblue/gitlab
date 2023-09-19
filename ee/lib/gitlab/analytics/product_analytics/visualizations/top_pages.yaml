@@ -5,15 +5,15 @@ data:
   type: cube_analytics
   query:
     measures:
-      - SnowplowTrackedEvents.pageViewsCount
+      - TrackedEvents.pageViewsCount
     dimensions:
-      - SnowplowTrackedEvents.pageUrlpath
-      - SnowplowTrackedEvents.pageUrl
+      - TrackedEvents.pageUrlpath
+      - TrackedEvents.pageUrl
     limit: 100
     timezone: UTC
     filters: []
     timeDimensions: []
 options:
   links:
-    - text: SnowplowTrackedEvents.pageUrlpath
-      href: SnowplowTrackedEvents.pageUrl
+    - text: TrackedEvents.pageUrlpath
+      href: TrackedEvents.pageUrl

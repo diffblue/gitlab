@@ -5,10 +5,10 @@ data:
   type: cube_analytics
   query:
     measures:
-      - SnowplowTrackedEvents.uniqueUsersCount
+      - TrackedEvents.uniqueUsersCount
     dimensions:
-      - SnowplowTrackedEvents.agentName
-      - SnowplowTrackedEvents.agentVersion
+      - TrackedEvents.agentName
+      - TrackedEvents.agentVersion
     limit: 100
     timezone: UTC
     filters: []

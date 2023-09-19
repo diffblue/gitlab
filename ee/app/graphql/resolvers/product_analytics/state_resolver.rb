@@ -47,7 +47,7 @@ module Resolvers
 
       class << self
         def events_table
-          'SnowplowTrackedEvents.count'
+          'TrackedEvents.count'
         end
       end
     end

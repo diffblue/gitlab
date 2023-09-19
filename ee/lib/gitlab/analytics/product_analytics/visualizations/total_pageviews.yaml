@@ -5,12 +5,12 @@ data:
   type: cube_analytics
   query:
     measures:
-      - SnowplowTrackedEvents.pageViewsCount
+      - TrackedEvents.pageViewsCount
     filters:
       - operator: equals
         values:
           - page_view
-        member: SnowplowTrackedEvents.event
+        member: TrackedEvents.event
     limit: 100
     timezone: UTC
     dimensions: []

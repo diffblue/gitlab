@@ -5,18 +5,18 @@
       "query": {
         "limit": 100,
         "measures": [
-          "SnowplowSessions.count",
-          "SnowplowSessions.repeatPercent"
+          "Sessions.count",
+          "Sessions.repeatPercent"
         ],
         "timeDimensions": [
           {
-            "dimension": "SnowplowSessions.startAt",
+            "dimension": "Sessions.startAt",
             "granularity": "day"
           }
         ],
         "filters": [
           {
-            "member": "SnowplowSessions.startAt",
+            "member": "Sessions.startAt",
             "operator": "inDateRange",
             "values": [
               "2023-01-01",
@@ -36,22 +36,22 @@
       },
       "data": [
         {
-          "SnowplowSessions.startAt.day": "2023-05-30T00:00:00.000",
-          "SnowplowSessions.startAt": "2023-05-30T00:00:00.000",
-          "SnowplowSessions.count": "1",
-          "SnowplowSessions.repeatPercent": "0"
+          "Sessions.startAt.day": "2023-05-30T00:00:00.000",
+          "Sessions.startAt": "2023-05-30T00:00:00.000",
+          "Sessions.count": "1",
+          "Sessions.repeatPercent": "0"
         },
         {
-          "SnowplowSessions.startAt.day": "2023-06-05T00:00:00.000",
-          "SnowplowSessions.startAt": "2023-06-05T00:00:00.000",
-          "SnowplowSessions.count": "1",
-          "SnowplowSessions.repeatPercent": "100"
+          "Sessions.startAt.day": "2023-06-05T00:00:00.000",
+          "Sessions.startAt": "2023-06-05T00:00:00.000",
+          "Sessions.count": "1",
+          "Sessions.repeatPercent": "100"
         },
         {
-          "SnowplowSessions.startAt.day": "2023-06-06T00:00:00.000",
-          "SnowplowSessions.startAt": "2023-06-06T00:00:00.000",
-          "SnowplowSessions.count": "1",
-          "SnowplowSessions.repeatPercent": "100"
+          "Sessions.startAt.day": "2023-06-06T00:00:00.000",
+          "Sessions.startAt": "2023-06-06T00:00:00.000",
+          "Sessions.count": "1",
+          "Sessions.repeatPercent": "100"
         }
       ],
       "lastRefreshTime": "2023-07-05T13:46:59.074Z",
@@ -66,45 +66,45 @@
       },
       "transformedQuery": {
         "sortedDimensions": [
-          "SnowplowSessions.startAt"
+          "Sessions.startAt"
         ],
         "sortedTimeDimensions": [
           [
-            "SnowplowSessions.startAt",
+            "Sessions.startAt",
             "day"
           ]
         ],
         "timeDimensions": [
           [
-            "SnowplowSessions.startAt",
+            "Sessions.startAt",
             "day"
           ]
         ],
         "measures": [
-          "SnowplowSessions.count",
-          "SnowplowSessions.repeatPercent"
+          "Sessions.count",
+          "Sessions.repeatPercent"
         ],
         "leafMeasureAdditive": true,
         "leafMeasures": [
-          "SnowplowSessions.count",
-          "SnowplowSessions.repeatCount"
+          "Sessions.count",
+          "Sessions.repeatCount"
         ],
         "measureToLeafMeasures": {
-          "SnowplowSessions.count": [
+          "Sessions.count": [
             {
-              "measure": "SnowplowSessions.count",
+              "measure": "Sessions.count",
               "additive": true,
               "type": "count"
             }
           ],
-          "SnowplowSessions.repeatPercent": [
+          "Sessions.repeatPercent": [
             {
-              "measure": "SnowplowSessions.repeatCount",
+              "measure": "Sessions.repeatCount",
               "additive": true,
               "type": "count"
             },
             {
-              "measure": "SnowplowSessions.count",
+              "measure": "Sessions.count",
               "additive": true,
               "type": "count"
             }
@@ -170,17 +170,17 @@
         "windowGranularity": null,
         "filterDimensionsSingleValueEqual": null,
         "ownedDimensions": [
-          "SnowplowSessions.startAt"
+          "Sessions.startAt"
         ],
         "ownedTimeDimensionsWithRollupGranularity": [
           [
-            "SnowplowSessions.startAt",
+            "Sessions.startAt",
             "day"
           ]
         ],
         "ownedTimeDimensionsAsIs": [
           [
-            "SnowplowSessions.startAt",
+            "Sessions.startAt",
             "day"
           ]
         ]
@@ -188,8 +188,8 @@
       "requestId": "54a673d5-93a8-4f17-85ed-9626f22aa6bc-span-1",
       "annotation": {
         "measures": {
-          "SnowplowSessions.count": {
-            "title": "Snowplow Sessions Count",
+          "Sessions.count": {
+            "title": "Sessions Count",
             "shortTitle": "Count",
             "type": "number",
             "drillMembers": [
@@ -204,8 +204,8 @@
               ]
             }
           },
-          "SnowplowSessions.repeatPercent": {
-            "title": "Snowplow Sessions Repeat Percent",
+          "Sessions.repeatPercent": {
+            "title": "Sessions Repeat Percent",
             "shortTitle": "Repeat Percent",
             "description": "Percent of Repeat Sessions",
             "type": "number",
@@ -228,13 +228,13 @@
         "segments": {
         },
         "timeDimensions": {
-          "SnowplowSessions.startAt.day": {
-            "title": "Snowplow Sessions Start at",
+          "Sessions.startAt.day": {
+            "title": "Sessions Start at",
             "shortTitle": "Start at",
             "type": "time"
           },
-          "SnowplowSessions.startAt": {
-            "title": "Snowplow Sessions Start at",
+          "Sessions.startAt": {
+            "title": "Sessions Start at",
             "shortTitle": "Start at",
             "type": "time"
           }
@@ -251,18 +251,18 @@
   "pivotQuery": {
     "limit": 100,
     "measures": [
-      "SnowplowSessions.count",
-      "SnowplowSessions.repeatPercent"
+      "Sessions.count",
+      "Sessions.repeatPercent"
     ],
     "timeDimensions": [
       {
-        "dimension": "SnowplowSessions.startAt",
+        "dimension": "Sessions.startAt",
         "granularity": "day"
       }
     ],
     "filters": [
       {
-        "member": "SnowplowSessions.startAt",
+        "member": "Sessions.startAt",
         "operator": "inDateRange",
         "values": [
           "2023-01-01",

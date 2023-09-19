@@ -8,8 +8,8 @@ const cubeLineChart = {
     type: 'cube_analytics',
     query: {
       users: {
-        measures: ['SnowplowTrackedEvents.count'],
-        dimensions: ['SnowplowTrackedEvents.eventType'],
+        measures: ['TrackedEvents.count'],
+        dimensions: ['TrackedEvents.eventType'],
       },
     },
   },
@@ -56,8 +56,8 @@ export const invalidVisualization = {
     type: 'cube_analytics',
     query: {
       users: {
-        measures: ['SnowplowTrackedEvents.count'],
-        dimensions: ['SnowplowTrackedEvents.eventType'],
+        measures: ['TrackedEvents.count'],
+        dimensions: ['TrackedEvents.eventType'],
       },
     },
   },
