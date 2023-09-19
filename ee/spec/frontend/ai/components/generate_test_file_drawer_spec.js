@@ -83,6 +83,7 @@ describe('Generate test file drawer component', () => {
     expect(subscriptionHandlerMock).toHaveBeenCalledWith({
       resourceId: 'gid://gitlab/MergeRequest/1',
       userId: 'gid://gitlab/User/1',
+      htmlResponse: true,
     });
   });
 

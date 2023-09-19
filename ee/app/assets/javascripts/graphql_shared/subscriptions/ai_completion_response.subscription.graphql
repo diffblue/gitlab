@@ -2,6 +2,7 @@ subscription aiCompletionResponse(
   $userId: UserID
   $resourceId: AiModelID!
   $clientSubscriptionId: String
+  $htmlResponse: Boolean = true
 ) {
   aiCompletionResponse(
     userId: $userId
@@ -11,7 +12,7 @@ subscription aiCompletionResponse(
     id
     requestId
     content
-    contentHtml
+    contentHtml @include(if: $htmlResponse)
     errors
     role
     timestamp
