@@ -4,6 +4,7 @@ module CodeSuggestions
   module Tasks
     module CodeGeneration
       class FromComment < CodeSuggestions::Tasks::Base
+        include Gitlab::Utils::StrongMemoize
         extend ::Gitlab::Utils::Override
 
         GATEWAY_PROMPT_VERSION = 2
@@ -62,25 +63,42 @@ module CodeSuggestions
         end
 
         def prompt
-          extension = File.extname(file_name).delete_prefix('.')
           language = SUPPORTED_LANGUAGES.find { |_, extensions| extensions.include?(extension) }&.first
           file_path_info = File.path(file_name)
 
           <<~PROMPT
             This is a task to write new #{language} code in a file '#{file_path_info}' based on a given description.
-            You get first the already existing code file and then the description of the code that needs to be created.
+            #{existing_code_instruction}
             It is your task to write valid and working #{language} code.
             Only return in your response new code.
+            #{existing_code_block}
+            Create new code for the following description:
+            `#{params[:instruction]}`
+          PROMPT
+        end
+
+        def extension
+          File.extname(file_name).delete_prefix('.')
+        end
+        strong_memoize_attr :extension
+
+        def existing_code_instruction
+          return unless params[:prefix].present?
+
+          "You get first the already existing code file and then the description of the code that needs to be created."
+        end
+
+        def existing_code_block
+          return unless params[:prefix].present?
+
+          <<~CODE
 
             Already existing code:
 
             ```#{extension}
             #{params[:prefix]}
             ```
-
-            Create new code for the following description:
-            `#{params[:instruction]}`
-          PROMPT
+          CODE
         end
       end
     end
