@@ -3,13 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics_data_management do
+  let_it_be(:group) { create(:group) }
   let_it_be_with_refind(:project) do
     create(:project, :repository,
-      project_setting: build(:project_setting))
+      project_setting: build(:project_setting),
+      group: group)
   end
 
   let_it_be(:config_project) do
-    create(:project, :with_product_analytics_dashboard)
+    create(:project, :with_product_analytics_dashboard, group: group)
   end
 
   before do
@@ -83,7 +85,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
     end
 
     context 'when resource is a group' do
-      let_it_be(:resource_parent) { create(:group) }
+      let_it_be(:resource_parent) { group }
 
       subject { described_class.for(container: resource_parent) }
 
@@ -104,7 +106,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
 
   describe '#panels' do
     before do
-      project.update!(analytics_dashboards_configuration_project: config_project)
+      project.update!(analytics_dashboards_configuration_project: config_project, namespace: config_project.namespace)
     end
 
     subject { described_class.for(container: project).last.panels }

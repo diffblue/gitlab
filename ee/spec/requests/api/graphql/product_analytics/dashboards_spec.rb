@@ -6,7 +6,6 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be_with_reload(:config_project) { create(:project, :with_product_analytics_dashboard) }
 
   let(:query) do
     fields = all_graphql_fields_for('CustomizableDashboard')
@@ -86,6 +85,7 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
   end
 
   context 'when resource parent is a project' do
+    let_it_be_with_reload(:config_project) { create(:project, :with_product_analytics_dashboard) }
     let_it_be_with_reload(:resource_parent) { config_project }
 
     let(:resource_parent_type) { :project }
@@ -101,6 +101,9 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
 
   context 'when resource parent is a group' do
     let_it_be_with_reload(:resource_parent) { create(:group) }
+    let_it_be_with_reload(:config_project) do
+      create(:project, :with_product_analytics_dashboard, group: resource_parent)
+    end
 
     let(:resource_parent_type) { :group }
 

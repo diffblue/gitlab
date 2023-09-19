@@ -191,6 +191,19 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
           }.to_json)
         end
 
+        context 'when project_id outside of the group hierarchy was set' do
+          it 'does not pass the project pointer' do
+            project_outside_the_hierarchy = create(:project)
+            analytics_dashboards_pointer.update_column(:target_project_id, project_outside_the_hierarchy.id)
+
+            request
+
+            expect(response).to be_successful
+
+            expect(js_app_attributes).not_to include('data-pointer-project')
+          end
+        end
+
         it 'does not pass pointer_project if the configured project is missing' do
           analytics_dashboards_pointer.target_project.destroy!
           request

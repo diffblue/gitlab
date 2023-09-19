@@ -47,9 +47,8 @@ module Groups
       private
 
       def find_pointer_project
-        Project.find_by_id(
-          @group.analytics_dashboards_pointer&.target_project_id
-        )&.as_json(only: %w[id name], methods: %w[full_path])
+        project = @group.all_projects.find_by_id(@group.analytics_dashboards_pointer&.target_project_id)
+        project&.as_json(only: %w[id name], methods: %w[full_path])
       end
 
       def project?(source)

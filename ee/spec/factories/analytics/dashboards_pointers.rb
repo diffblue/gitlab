@@ -3,10 +3,11 @@
 FactoryBot.define do
   factory :analytics_dashboards_pointer, class: 'Analytics::DashboardsPointer' do
     namespace
-    target_project factory: :project
+    target_project { association(:project, namespace: namespace) }
 
     trait :project_based do
       project
+      target_project { association(:project, namespace: project.namespace) }
       namespace { nil }
     end
   end

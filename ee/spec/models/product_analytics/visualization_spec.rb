@@ -45,7 +45,9 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
       end
 
       context 'when a custom dashboard pointer project is configured' do
-        let_it_be(:pointer_project) { create(:project, :with_product_analytics_custom_visualization) }
+        let_it_be(:pointer_project) do
+          create(:project, :with_product_analytics_custom_visualization, namespace: project.namespace)
+        end
 
         before do
           project.update!(analytics_dashboards_configuration_project: pointer_project)
@@ -89,7 +91,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
       end
 
       context 'when a custom configuration project is defined' do
-        let_it_be(:config_project) { create(:project, :with_product_analytics_custom_visualization) }
+        let_it_be(:config_project) { create(:project, :with_product_analytics_custom_visualization, group: group) }
 
         before do
           group.update!(analytics_dashboards_configuration_project: config_project)
