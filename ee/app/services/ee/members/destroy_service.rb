@@ -18,7 +18,6 @@ module EE
         cleanup_group_deletion_schedule(member) if member.source.is_a?(Group)
         cleanup_oncall_rotations(member)
         cleanup_escalation_rules(member) if member.user
-        cleanup_security_orchestration_policy_configuration(member)
       end
 
       private
@@ -98,12 +97,6 @@ module EE
         rules = ::IncidentManagement::EscalationRulesFinder.new(member: member, include_removed: true).execute
 
         ::IncidentManagement::EscalationRules::DestroyService.new(escalation_rules: rules, user: member.user).execute
-      end
-
-      def cleanup_security_orchestration_policy_configuration(member)
-        return unless member.user && member.user.security_policy_bot?
-
-        ::Security::OrchestrationPolicyConfiguration.for_bot_user(member.user).update_all(bot_user_id: nil)
       end
 
       override :enqueue_cleanup_jobs_once_per_heirarchy
