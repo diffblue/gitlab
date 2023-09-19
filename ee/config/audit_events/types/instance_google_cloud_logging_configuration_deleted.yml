@@ -1,0 +1,9 @@
+---
+name: instance_google_cloud_logging_configuration_deleted
+description: Triggered when instance level Google Cloud Logging configuration is deleted.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/423040
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/131752
+milestone: '16.5'
+feature_category: audit_events
+saved_to_database: true
+streamed: true
