@@ -20,7 +20,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
     stub_feature_flags(usage_quotas_for_all_editions: false)
     stub_application_setting(check_namespace_plan: true)
     stub_feature_flags(enable_hamilton_in_usage_quotas_ui: false)
-    stub_subscription_management_data(group.id)
+    stub_subscription_permissions_data(group.id)
 
     group.add_owner(user)
     group.add_maintainer(maintainer)
@@ -211,7 +211,7 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category
 
       context 'when user is not allowed to add seats' do
         before do
-          stub_subscription_management_data(group.id, can_add_seats: false, can_renew: false)
+          stub_subscription_permissions_data(group.id, can_add_seats: false, can_renew: false)
 
           visit group_seat_usage_path(group)
           wait_for_requests

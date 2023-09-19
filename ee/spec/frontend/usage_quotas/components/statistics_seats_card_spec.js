@@ -7,7 +7,7 @@ import Tracking from '~/tracking';
 import { visitUrl } from '~/lib/utils/url_utility';
 import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.vue';
 import waitForPromises from 'helpers/wait_for_promises';
-import { getSubscriptionData } from 'ee/fulfillment/shared_queries/subscription_actions.customer.query.graphql';
+import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import { createMockClient } from 'helpers/mock_apollo_helper';
 
 Vue.use(VueApollo);
@@ -35,7 +35,9 @@ describe('StatisticsSeatsCard', () => {
     const queryHandlerMock = jest.fn().mockResolvedValue({
       data: apolloData,
     });
-    const mockCustomersDotClient = createMockClient([[getSubscriptionData, queryHandlerMock]]);
+    const mockCustomersDotClient = createMockClient([
+      [getSubscriptionPermissionsData, queryHandlerMock],
+    ]);
     const mockGitlabClient = createMockClient();
     const mockApollo = new VueApollo({
       defaultClient: mockGitlabClient,
@@ -136,41 +138,70 @@ describe('StatisticsSeatsCard', () => {
         gon.features = { limitedAccessModal: true };
       });
 
-      describe('when canAddSeats is false', () => {
-        beforeEach(async () => {
-          createComponent({ apolloData: { subscription: { canAddSeats: false, canRenew: true } } });
-          await waitForPromises();
+      describe.each`
+        canAddSeats | limitedAccessReason
+        ${false}    | ${'MANAGED_BY_RESELLER'}
+        ${false}    | ${'RAMP_SUBSCRIPTION'}
+      `(
+        'when canAddSeats=$canAddSeats and limitedAccessReason=$limitedAccessReason',
+        ({ canAddSeats, limitedAccessReason }) => {
+          beforeEach(async () => {
+            createComponent({
+              apolloData: {
+                subscription: { canAddSeats, canRenew: true },
+                userActionAccess: { limitedAccessReason },
+              },
+            });
+            await waitForPromises();
 
-          findPurchaseButton().vm.$emit('click');
-          await nextTick();
-        });
+            findPurchaseButton().vm.$emit('click');
+            await nextTick();
+          });
 
-        it('shows modal', () => {
-          expect(findLimitedAccessModal().isVisible()).toBe(true);
-        });
+          it('shows modal', () => {
+            expect(findLimitedAccessModal().isVisible()).toBe(true);
+          });
 
-        it('does not navigate to URL', () => {
-          expect(visitUrl).not.toHaveBeenCalled();
-        });
-      });
+          it('sends correct props', () => {
+            expect(findLimitedAccessModal().props('limitedAccessReason')).toBe(limitedAccessReason);
+          });
 
-      describe('when canAddSeats is true', () => {
-        beforeEach(async () => {
-          createComponent();
-          await waitForPromises();
+          it('does not navigate to URL', () => {
+            expect(visitUrl).not.toHaveBeenCalled();
+          });
+        },
+      );
 
-          findPurchaseButton().vm.$emit('click');
-          await nextTick();
-        });
+      describe.each`
+        canAddSeats | limitedAccessReason
+        ${false}    | ${'INVALID_REASON'}
+        ${true}     | ${'MANAGED_BY_RESELLER'}
+        ${true}     | ${'RAMP_SUBSCRIPTION'}
+      `(
+        'when canAddSeats=$canAddSeats and limitedAccessReason=$limitedAccessReason',
+        ({ canAddSeats, limitedAccessReason }) => {
+          beforeEach(async () => {
+            createComponent({
+              apolloData: {
+                subscription: { canAddSeats, canRenew: true },
+                userActionAccess: { limitedAccessReason },
+              },
+            });
+            await waitForPromises();
 
-        it('does not show modal', () => {
-          expect(findLimitedAccessModal().exists()).toBe(false);
-        });
+            findPurchaseButton().vm.$emit('click');
+            await nextTick();
+          });
 
-        it('navigates to URL', () => {
-          expect(visitUrl).toHaveBeenCalledWith(purchaseButtonLink);
-        });
-      });
+          it('does not show modal', () => {
+            expect(findLimitedAccessModal().exists()).toBe(false);
+          });
+
+          it('navigates to URL', () => {
+            expect(visitUrl).toHaveBeenCalledWith(purchaseButtonLink);
+          });
+        },
+      );
     });
 
     describe('when limitedAccessModal FF is off', () => {
