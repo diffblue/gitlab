@@ -1,4 +1,4 @@
-import { GlAlert, GlDropdown, GlDropdownItem, GlModal } from '@gitlab/ui';
+import { GlAlert, GlCollapsibleListbox, GlModal } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -13,6 +13,7 @@ describe('Download test coverage component', () => {
   const openCodeCoverageModal = () => {
     findCodeCoverageModalButton().vm.$emit('click');
   };
+  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findCodeCoverageDownloadButton = () =>
     wrapper.findByTestId('group-code-coverage-download-button');
   const clickSelectAllProjectsButton = () =>
@@ -37,8 +38,6 @@ describe('Download test coverage component', () => {
         ...injectedProperties,
       },
       stubs: {
-        GlDropdown,
-        GlDropdownItem,
         GlModal,
         SelectProjectsDropdown,
       },
@@ -129,6 +128,20 @@ describe('Download test coverage component', () => {
       });
     });
 
+    describe('selecting date range', () => {
+      it('should select date range', async () => {
+        expect(findDropdown().props('toggleText')).toBe('Last 30 days');
+        expect(findDropdown().props('selected')).toBe(30);
+
+        findDropdown().vm.$emit('select', 14);
+
+        await nextTick();
+
+        expect(findDropdown().props('toggleText')).toBe('Last 2 weeks');
+        expect(findDropdown().props('selected')).toBe(14);
+      });
+    });
+
     describe('when selecting a date range', () => {
       it.each`
         date  | expected
@@ -140,9 +153,7 @@ describe('Download test coverage component', () => {
       `(
         'updates CSV path to have the start date be $date days before today',
         async ({ date, expected }) => {
-          wrapper
-            .findByTestId(`group-code-coverage-download-select-date-${date}`)
-            .vm.$emit('click');
+          findDropdown().vm.$emit('select', date);
 
           await nextTick();
           expect(findCodeCoverageDownloadButton().attributes('href')).toBe(expected);
