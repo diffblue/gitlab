@@ -38,6 +38,12 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
           "##{case_insensitive_prefixes[2]}A function that outputs the first 20 fibonacci numbers"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
           "//#{case_insensitive_prefixes[3]}A function that outputs the first 20 fibonacci numbers"  | CodeSuggestions::Tasks::CodeGeneration::FromComment
 
+          # Multiline comments
+          "# #{generate_prefix}A function that outputs\n# the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "// #{generate_prefix}A function that outputs\n// the first 20 fibonacci numbers\n" | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "##{generate_prefix}A function that outputs\n#the first 20 fibonacci numbers\n"     | CodeSuggestions::Tasks::CodeGeneration::FromComment
+          "//#{generate_prefix}A function that outputs\n//the first 20 fibonacci numbers\n"   | CodeSuggestions::Tasks::CodeGeneration::FromComment
+
           # These are too short to be considered generation
           "# #{generate_prefix}A func" | CodeSuggestions::Tasks::CodeCompletion
           "// #{generate_prefix}A fun" | CodeSuggestions::Tasks::CodeCompletion

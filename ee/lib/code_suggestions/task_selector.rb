@@ -16,16 +16,16 @@ module CodeSuggestions
     def self.task(params:, unsafe_passthrough_params: {})
       prefix = params.dig(:current_file, :content_above_cursor)
       prefix_regex = params[:skip_generate_comment_prefix] ? GENERATE_COMMENT_NO_PREFIX : GENERATE_COMMENT_PREFIX
-      match = prefix&.match(prefix_regex)
 
-      unless match
+      result = CodeSuggestions::InstructionsExtractor.extract(prefix, prefix_regex)
+      if result.empty?
         return CodeSuggestions::Tasks::CodeCompletion.new(unsafe_passthrough_params: unsafe_passthrough_params)
       end
 
       CodeSuggestions::Tasks::CodeGeneration::FromComment.new(
         params: params.merge(
-          prefix: match.pre_match.chomp,
-          instruction: match[:instruction]
+          prefix: result[:prefix].chomp,
+          instruction: result[:instruction]
         ),
         unsafe_passthrough_params: unsafe_passthrough_params
       )
