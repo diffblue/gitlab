@@ -2,14 +2,17 @@
 
 require 'spec_helper'
 
-RSpec.describe Audit::GroupPushRulesChangesAuditor, feature_category: :source_code_management do
+RSpec.describe Audit::PushRules::GroupPushRulesChangesAuditor, feature_category: :source_code_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:current_user) { create(:user) }
 
   let(:push_rule) { group.build_push_rule }
 
-  before do
+  before_all do
     group.add_owner(current_user)
+  end
+
+  before do
     stub_licensed_features(audit_events: true, external_audit_events: true)
     group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
   end
@@ -76,8 +79,10 @@ RSpec.describe Audit::GroupPushRulesChangesAuditor, feature_category: :source_co
 
   context 'for EVENT_TYPE_PER_ATTR' do
     it 'defines audit event types for all the audit log allowlist attributes for group push rule changes' do
-      expect(PushRule::AUDIT_LOG_ALLOWLIST.keys - Audit::GroupPushRulesChangesAuditor::EVENT_TYPE_PER_ATTR.keys)
-        .to be_empty
+      expect(
+        PushRule::AUDIT_LOG_ALLOWLIST.keys -
+          Audit::PushRules::GroupPushRulesChangesAuditor::EVENT_TYPE_PER_ATTR.keys
+      ).to be_empty
     end
   end
 end
