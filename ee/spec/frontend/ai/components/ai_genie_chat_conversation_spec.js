@@ -2,10 +2,7 @@ import AiGenieChatConversation from 'ee/ai/components/ai_genie_chat_conversation
 import AiGenieChatMessage from 'ee/ai/components/ai_genie_chat_message.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { getMarkdown } from '~/rest_api';
 import { MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE } from '../tanuki_bot/mock_data';
-
-jest.mock('~/rest_api');
 
 describe('AiGenieChat', () => {
   let wrapper;
@@ -36,13 +33,7 @@ describe('AiGenieChat', () => {
     await waitForPromises();
   };
 
-  beforeEach(() => {
-    getMarkdown.mockImplementation(({ text }) => Promise.resolve({ data: { html: text } }));
-  });
-
   describe('rendering', () => {
-    const errorStr = 'Error bar';
-
     it('renders messages when messages are passed', async () => {
       await createComponent({ propsData: { messages } });
       expect(findChatMessages().at(0).text()).toBe(MOCK_USER_MESSAGE.content);
@@ -56,16 +47,6 @@ describe('AiGenieChat', () => {
     it('does not render delimiter when showDelimiter = false', async () => {
       await createComponent({ propsData: { messages, showDelimiter: false } });
       expect(findDelimiter().exists()).toBe(false);
-    });
-
-    it.each`
-      desc                                                   | msgs                                                           | expected
-      ${'content when errors is not available'}              | ${[MOCK_USER_MESSAGE]}                                         | ${MOCK_USER_MESSAGE.content}
-      ${'error when contnet is not available'}               | ${[{ ...MOCK_USER_MESSAGE, content: '', errors: [errorStr] }]} | ${errorStr}
-      ${'content when both content and error are available'} | ${[{ ...MOCK_USER_MESSAGE, errors: [errorStr] }]}              | ${MOCK_USER_MESSAGE.content}
-    `('requests markdown for $desc', async ({ msgs, expected }) => {
-      await createComponent({ propsData: { messages: msgs } });
-      expect(findChatMessages().at(0).text()).toBe(expected);
     });
   });
 

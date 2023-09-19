@@ -4,6 +4,7 @@ query getAiMessages {
       id
       requestId
       content
+      contentHtml
       errors
       role
       timestamp
