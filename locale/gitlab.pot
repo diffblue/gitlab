@@ -18241,9 +18241,6 @@ msgstr ""
 msgid "Enterprise User Account on GitLab"
 msgstr ""
 
-msgid "EnterpriseUsers|The user detail cannot be updated"
-msgstr ""
-
 msgid "EnterpriseUsers|The user does not match the \"Enterprise User\" definition for the group"
 msgstr ""
 

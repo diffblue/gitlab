@@ -40,6 +40,7 @@ module EE
       }
 
       after_create :perform_user_cap_check
+      after_create :associate_with_enterprise_group
       after_update :email_changed_hook, if: :saved_change_to_email?
 
       delegate :shared_runners_minutes_limit, :shared_runners_minutes_limit=,
@@ -260,6 +261,10 @@ module EE
 
       self.admin = (new_level == 'admin')
       self.auditor = (new_level == 'auditor')
+    end
+
+    def email_domain
+      Mail::Address.new(email).domain
     end
 
     def available_custom_project_templates(search: nil, subgroup_id: nil, project_id: nil)
@@ -764,6 +769,12 @@ module EE
 
       run_after_commit do
         SetUserStatusBasedOnUserCapSettingWorker.perform_async(id)
+      end
+    end
+
+    def associate_with_enterprise_group
+      run_after_commit do
+        ::Groups::EnterpriseUsers::AssociateWorker.perform_async(id)
       end
     end
 

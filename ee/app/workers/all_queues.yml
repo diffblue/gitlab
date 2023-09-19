@@ -1479,6 +1479,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: groups_enterprise_users_associate
+  :worker_name: Groups::EnterpriseUsers::AssociateWorker
+  :feature_category: :user_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: groups_enterprise_users_disassociate
   :worker_name: Groups::EnterpriseUsers::DisassociateWorker
   :feature_category: :user_management

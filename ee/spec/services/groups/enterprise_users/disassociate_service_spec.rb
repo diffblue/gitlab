@@ -54,7 +54,7 @@ RSpec.describe Groups::EnterpriseUsers::DisassociateService, :saas, feature_cate
         it 'raises active record error' do
           expect(Gitlab::AppLogger).not_to receive(:info)
 
-          expect { subject.execute }.to raise_error(ActiveRecord::RecordInvalid)
+          expect { service.execute }.to raise_error(ActiveRecord::RecordInvalid)
         end
       end
     end

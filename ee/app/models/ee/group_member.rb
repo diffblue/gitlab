@@ -87,7 +87,9 @@ module EE
       ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.temporary_ignore_tables_in_transaction(
         %w[user_details], url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/424283'
       ) do
-        if provisioned_by_this_group?
+        if provisioned_by_this_group? && ::Feature.disabled?(:enterprise_users_automatic_claim, group)
+          # This code should be removed altogether with the FF.
+          # After removing this code, schedule https://gitlab.com/gitlab-org/gitlab/-/issues/424226 for development.
           run_after_commit_or_now do
             notification_service.new_group_member_with_confirmation(self)
           end
@@ -124,6 +126,8 @@ module EE
 
     override :send_welcome_email?
     def send_welcome_email?
+      return true if ::Feature.enabled?(:enterprise_users_automatic_claim, group)
+
       # We call `send_welcome_email?` as part of `post_create_hook`
       ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.temporary_ignore_tables_in_transaction(
         %w[user_details], url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/424283'

@@ -319,6 +319,56 @@ RSpec.describe User, feature_category: :system_access do
         end
       end
     end
+
+    describe '#associate_with_enterprise_group' do
+      context 'when building user' do
+        subject(:build_user) { build(:user) }
+
+        it 'is not triggered' do
+          expect_next_instance_of(User) do |user|
+            expect(user).not_to receive(:associate_with_enterprise_group)
+          end
+
+          build_user
+        end
+      end
+
+      context 'when updating user' do
+        let!(:user) { create(:user) }
+
+        subject(:update_user) { user.update!(name: 'New name') }
+
+        it 'is not triggered' do
+          expect(user).not_to receive(:associate_with_enterprise_group)
+
+          update_user
+        end
+      end
+
+      context 'when creating user' do
+        subject(:create_user) { create(:user) }
+
+        it 'is triggered' do
+          expect_next_instance_of(User) do |user|
+            expect(user).to receive(:associate_with_enterprise_group)
+          end
+
+          create_user
+        end
+
+        it 'schedules Groups::EnterpriseUsers::AssociateWorker' do
+          user_id = 4242
+
+          allow_next_instance_of(User) do |user|
+            allow(user).to receive(:id).and_return(user_id)
+          end
+
+          expect(Groups::EnterpriseUsers::AssociateWorker).to receive(:perform_async).with(user_id)
+
+          create_user
+        end
+      end
+    end
   end
 
   describe 'after_update' do
@@ -603,6 +653,40 @@ RSpec.describe User, feature_category: :system_access do
       allow(Gitlab::Database).to receive(:read_only?) { true }
 
       expect { subject.remember_me! }.not_to change(subject, :remember_created_at)
+    end
+  end
+
+  describe '#email_domain' do
+    context 'when user email is nil' do
+      let_it_be(:user) { build(:user, email: nil) }
+
+      it 'returns nil' do
+        expect(user.email_domain).to eq(nil)
+      end
+    end
+
+    context 'when user email is empty string' do
+      let_it_be(:user) { build(:user, email: '') }
+
+      it 'returns nil' do
+        expect(user.email_domain).to eq(nil)
+      end
+    end
+
+    context 'when user email is invalid' do
+      let_it_be(:user) { build(:user, email: 'invalid_email_format') }
+
+      it 'returns nil' do
+        expect(user.email_domain).to eq(nil)
+      end
+    end
+
+    context 'when user email is valid' do
+      let_it_be(:user) { build(:user, email: 'user-email@example.GitLab.com') }
+
+      it 'returns email domain' do
+        expect(user.email_domain).to eq('example.GitLab.com')
+      end
     end
   end
 
