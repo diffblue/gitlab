@@ -295,14 +295,25 @@ describe('AiGenie', () => {
     it('calls the subscription with correct variables', async () => {
       await requestExplanation();
       await waitForPromises();
-      expect(subscriptionHandlerMock).toHaveBeenCalledWith({ resourceId, userId });
+
+      expect(subscriptionHandlerMock).toHaveBeenCalledWith({
+        resourceId,
+        userId,
+        htmlResponse: true,
+      });
     });
 
     it('once the response arrives, :content is set with the response message', async () => {
       await requestExplanation();
       await waitForPromises();
       await nextTick();
-      expect(subscriptionHandlerMock).toHaveBeenCalledWith({ resourceId, userId });
+
+      expect(subscriptionHandlerMock).toHaveBeenCalledWith({
+        resourceId,
+        userId,
+        htmlResponse: true,
+      });
+
       const filteredMessages = messages.slice(2);
       expect(findGenieChat().props('messages')).toEqual(filteredMessages);
     });

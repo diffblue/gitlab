@@ -83,6 +83,7 @@ export default {
             userId: this.userId,
             resourceId: this.resourceId || this.userId,
             clientSubscriptionId: this.clientSubscriptionId,
+            htmlResponse: false,
           };
         },
         result({ data }) {

@@ -115,6 +115,7 @@ describe('Generate test file drawer component', () => {
       userId: 'gid://gitlab/User/1',
       resourceId: 'gid://gitlab/MergeRequest/1',
       clientSubscriptionId: 'uuid',
+      htmlResponse: true,
     });
     expect(createAlert).toHaveBeenCalledWith({ message: 'Error' });
   });

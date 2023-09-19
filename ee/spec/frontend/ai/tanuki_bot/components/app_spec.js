@@ -207,11 +207,20 @@ describe('GitLab Duo Chat', () => {
         );
 
         it('once response arrives via GraphQL subscription with userId fallback calls addDuoChatMessage', () => {
+          subscriptionHandlerMock.mockClear();
+
           createComponent({ loading: true }, {}, { userId: MOCK_USER_ID, resourceId });
 
-          expect(subscriptionHandlerMock).toHaveBeenCalledWith({
-            resourceId: expectedResourceId,
+          expect(subscriptionHandlerMock).toHaveBeenNthCalledWith(1, {
             userId: MOCK_USER_ID,
+            resourceId: expectedResourceId,
+            htmlResponse: true,
+          });
+          expect(subscriptionHandlerMock).toHaveBeenNthCalledWith(2, {
+            userId: MOCK_USER_ID,
+            resourceId: expectedResourceId,
+            htmlResponse: false,
+            clientSubscriptionId: '123',
           });
           expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(
             expect.any(Object),
@@ -265,9 +274,16 @@ describe('GitLab Duo Chat', () => {
         });
 
         it('once error arrives via GraphQL subscription calls addDuoChatMessage', () => {
-          expect(subscriptionHandlerMock).toHaveBeenCalledWith({
+          expect(subscriptionHandlerMock).toHaveBeenNthCalledWith(1, {
             resourceId: expectedResourceId,
             userId: MOCK_USER_ID,
+            htmlResponse: true,
+          });
+          expect(subscriptionHandlerMock).toHaveBeenNthCalledWith(2, {
+            resourceId: expectedResourceId,
+            userId: MOCK_USER_ID,
+            htmlResponse: false,
+            clientSubscriptionId: '123',
           });
           expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(expect.any(Object), {
             errors: [error],
