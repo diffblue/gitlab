@@ -45,8 +45,8 @@
             %table.table.b-table.gl-table.b-table-stacked-md
               %colgroup
                 %col{ width: "30%" }
-                %col{ width: "40%" }
                 %col
+                %col{ width: "100px" }
               %thead
                 %tr
                   %th
@@ -60,5 +60,8 @@
                     %td.ref-name{ class: "gl-vertical-align-middle!" }= rule.name
                     %td.ref-name{ class: "gl-vertical-align-middle!" }= rule.target_branch
                     %td{ class: "gl-vertical-align-middle!" }
+                      - if can?(current_user, :admin_target_branch_rule, @project)
+                        = render Pajamas::ButtonComponent.new(href: project_target_branch_rule_path(@project, rule), method: :delete, button_options: { class: 'gl-ml-2', data: { confirm: _('Are you sure you want to delete this target branch rule?'), confirm_btn_variant: 'danger' } }) do
+                          = _('Delete')
             - if @target_branch_rules
               = paginate @target_branch_rules, theme: 'gitlab'
