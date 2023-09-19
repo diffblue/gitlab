@@ -7,7 +7,7 @@ module Types
       graphql_name 'QueueingHistoryTimeSeries'
       description 'The amount of time for a job to be picked up by a runner, in percentiles.'
 
-      PERCENTILES = [25, 50, 90, 95, 99].freeze
+      PERCENTILES = [50, 75, 90, 95, 99].freeze
 
       field :time,
         Types::TimeType,

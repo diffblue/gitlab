@@ -13,7 +13,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
   let_it_be(:starting_time) { Time.utc(2023) }
 
   let(:current_user) { create(:user, :admin) }
-  let(:percentiles) { [99, 95, 90, 50, 25] }
+  let(:percentiles) { [50, 75, 90, 95, 99] }
   let(:runner_type) { nil }
   let(:from_time) { starting_time }
   let(:to_time) { starting_time + 3.hours }
@@ -75,7 +75,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
 
     it 'returns an error' do
       expect(result.error?).to eq(true)
-      expect(result.errors).to eq(['At least one of 99, 95, 90, 50, 25 percentiles should be requested'])
+      expect(result.errors).to eq(['At least one of 50, 75, 90, 95, 99 percentiles should be requested'])
     end
   end
 
@@ -120,7 +120,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
 
     expect(result.success?).to eq(true)
     expect(result.payload).to eq([
-      { "p25" => 2.seconds, "p50" => 2.seconds, "p90" => 2.seconds, "p95" => 2.seconds, "p99" => 2.seconds,
+      { "p50" => 2.seconds, "p75" => 2.seconds, "p90" => 2.seconds, "p95" => 2.seconds, "p99" => 2.seconds,
         "time" => starting_time }
     ])
   end
@@ -143,9 +143,9 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
     expect(result.success?).to eq(true)
 
     expect(result.payload).to eq([
-      { "p25" => 6.minutes, "p50" => 6.minutes, "p90" => 6.minutes, "p95" => 6.minutes, "p99" => 6.minutes,
+      { "p50" => 6.minutes, "p75" => 6.minutes, "p90" => 6.minutes, "p95" => 6.minutes, "p99" => 6.minutes,
         "time" => starting_time + 5.minutes },
-      { "p25" => 6.minutes, "p50" => 6.minutes, "p90" => 6.minutes, "p95" => 6.minutes, "p99" => 6.minutes,
+      { "p50" => 6.minutes, "p75" => 6.minutes, "p90" => 6.minutes, "p95" => 6.minutes, "p99" => 6.minutes,
         "time" => starting_time + 10.minutes }
     ])
   end
@@ -170,7 +170,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
 
     # We don't calculate exact quantiles, so 10 seconds for 95 and 99 percentiles become 9 seconds
     expect(result.payload).to eq([
-      { "p25" => 3.seconds, "p50" => 5.seconds, "p90" => 9.seconds, "p95" => 9.seconds, "p99" => 9.seconds,
+      { "p50" => 5.seconds, "p75" => 7.seconds, "p90" => 9.seconds, "p95" => 9.seconds, "p99" => 9.seconds,
         "time" => starting_time }
     ])
   end
@@ -195,9 +195,9 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
     expect(result.success?).to eq(true)
 
     expect(result.payload).to eq([
-      { "p25" => 1.minute, "p50" => 1.minute, "p90" => 1.minute, "p95" => 1.minute, "p99" => 1.minute,
+      { "p50" => 1.minute, "p75" => 1.minute, "p90" => 1.minute, "p95" => 1.minute, "p99" => 1.minute,
         "time" => from_time },
-      { "p25" => 1.minute, "p50" => 1.minute, "p90" => 1.minute, "p95" => 1.minute, "p99" => 1.minute,
+      { "p50" => 1.minute, "p75" => 1.minute, "p90" => 1.minute, "p95" => 1.minute, "p99" => 1.minute,
         "time" => to_time }
     ])
   end
@@ -234,9 +234,9 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
       expect(result.success?).to eq(true)
 
       expect(result.payload).to eq([
-        { "p25" => 1.minute, "p50" => 1.minute, "p90" => 1.minute, "p95" => 1.minute, "p99" => 1.minute,
+        { "p50" => 1.minute, "p75" => 1.minute, "p90" => 1.minute, "p95" => 1.minute, "p99" => 1.minute,
           "time" => from_time_default },
-        { "p25" => 1.minute, "p50" => 1.minute, "p90" => 1.minute, "p95" => 1.minute, "p99" => 1.minute,
+        { "p50" => 1.minute, "p75" => 1.minute, "p90" => 1.minute, "p95" => 1.minute, "p99" => 1.minute,
           "time" => to_time_default }
       ])
     end
@@ -280,7 +280,7 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
       expect(result.success?).to eq(true)
 
       expect(result.payload).to eq([
-        { "p25" => 3.seconds, "p50" => 3.seconds, "p90" => 3.seconds, "p95" => 3.seconds, "p99" => 3.seconds,
+        { "p50" => 3.seconds, "p75" => 3.seconds, "p90" => 3.seconds, "p95" => 3.seconds, "p99" => 3.seconds,
           "time" => starting_time + 10.minutes }
       ])
     end

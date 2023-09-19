@@ -29,7 +29,7 @@ RSpec.describe 'Query.ciQueueingHistory', :click_house, feature_category: :runne
   let(:current_user) { admin }
 
   let(:query) do
-    wrap_fields(query_graphql_path(query_path, 'time p25 p50 p90 p95 p99'))
+    wrap_fields(query_graphql_path(query_path, 'time p50 p75 p90 p95 p99'))
   end
 
   let(:execute_query) do
@@ -103,9 +103,9 @@ RSpec.describe 'Query.ciQueueingHistory', :click_house, feature_category: :runne
     insert_ci_builds_to_click_house(builds)
 
     expect(ci_queueing_history["timeSeries"]).to eq([
-      { 'p25' => 360, 'p50' => 360, 'p90' => 360, 'p95' => 360, 'p99' => 360,
+      { 'p50' => 360, 'p75' => 360, 'p90' => 360, 'p95' => 360, 'p99' => 360,
         'time' => (starting_time + 5.minutes).utc.iso8601 },
-      { 'p25' => 360, 'p50' => 360, 'p90' => 360, 'p95' => 360, 'p99' => 360,
+      { 'p50' => 360, 'p75' => 360, 'p90' => 360, 'p95' => 360, 'p99' => 360,
         'time' => (starting_time + 10.minutes).utc.iso8601 }
     ])
   end
@@ -128,9 +128,9 @@ RSpec.describe 'Query.ciQueueingHistory', :click_house, feature_category: :runne
     insert_ci_builds_to_click_house(builds)
 
     expect(ci_queueing_history['timeSeries']).to eq([
-      { 'p25' => 60, 'p50' => 60, 'p90' => 60, 'p95' => 60, 'p99' => 60,
+      { 'p50' => 60, 'p75' => 60, 'p90' => 60, 'p95' => 60, 'p99' => 60,
         "time" => from_time.utc.iso8601 },
-      { 'p25' => 60, 'p50' => 60, 'p90' => 60, 'p95' => 60, 'p99' => 60,
+      { 'p50' => 60, 'p75' => 60, 'p90' => 60, 'p95' => 60, 'p99' => 60,
         'time' => to_time.utc.iso8601 }
     ])
   end
@@ -165,9 +165,9 @@ RSpec.describe 'Query.ciQueueingHistory', :click_house, feature_category: :runne
       insert_ci_builds_to_click_house(builds)
 
       expect(ci_queueing_history['timeSeries']).to eq([
-        { 'p25' => 60, 'p50' => 60, 'p90' => 60, 'p95' => 60, 'p99' => 60,
+        { 'p50' => 60, 'p75' => 60, 'p90' => 60, 'p95' => 60, 'p99' => 60,
           "time" => from_time_default.utc.iso8601 },
-        { 'p25' => 60, 'p50' => 60, 'p90' => 60, 'p95' => 60, 'p99' => 60,
+        { 'p50' => 60, 'p75' => 60, 'p90' => 60, 'p95' => 60, 'p99' => 60,
           'time' => to_time_default.utc.iso8601 }
       ])
     end
@@ -199,7 +199,7 @@ RSpec.describe 'Query.ciQueueingHistory', :click_house, feature_category: :runne
       insert_ci_builds_to_click_house(builds)
 
       expect(ci_queueing_history['timeSeries']).to eq([
-        { 'p25' => 3, 'p50' => 3, 'p90' => 3, 'p95' => 3, 'p99' => 3,
+        { 'p50' => 3, 'p75' => 3, 'p90' => 3, 'p95' => 3, 'p99' => 3,
           'time' => (starting_time + 10.minutes).utc.iso8601 }
       ])
     end
