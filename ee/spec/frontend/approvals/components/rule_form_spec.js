@@ -72,7 +72,7 @@ describe('EE Approvals RuleForm', () => {
   };
 
   const findForm = () => wrapper.find('form');
-  const findNameInput = () => wrapper.findByTestId('name');
+  const findNameInput = () => wrapper.findByTestId('rule-name-field');
   const findNameValidation = () => wrapper.findByTestId('name-group');
   const findApprovalsRequiredInput = () => wrapper.findByTestId('approvals-required');
   const findApprovalsRequiredValidation = () => wrapper.findByTestId('approvals-required-group');

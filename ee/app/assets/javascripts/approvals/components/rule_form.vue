@@ -365,8 +365,7 @@ export default {
         v-model="name"
         :disabled="isNameDisabled"
         :state="isValidName"
-        data-qa-selector="rule_name_field"
-        data-testid="name"
+        data-testid="rule-name-field"
       />
     </gl-form-group>
     <gl-form-group
@@ -400,7 +399,6 @@ export default {
         class="mw-6em"
         type="number"
         data-testid="approvals-required"
-        data-qa-selector="approvals_required_field"
       />
     </gl-form-group>
     <gl-form-group
@@ -408,7 +406,6 @@ export default {
       :state="isValidApprovers"
       :invalid-feedback="invalidApprovers"
       data-testid="approvers-group"
-      data-qa-selector="member_select_field"
     >
       <approvers-select
         v-model="approversToAdd"
