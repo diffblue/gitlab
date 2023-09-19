@@ -203,3 +203,7 @@ data:
 NOTE:
 If your secret management solution doesn't allow you to set an empty string for `runner-registration-token`,
 you can set it to any string - it will be ignored when `runner-token` is present.
+
+## Known issues
+
+- [Pod name is not visible in runner details page when using new runner registration workflow (#423523)](https://gitlab.com/gitlab-org/gitlab/-/issues/423523)
