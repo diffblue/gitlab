@@ -1,13 +1,5 @@
 <script>
-import {
-  GlAlert,
-  GlButton,
-  GlDropdown,
-  GlDropdownSectionHeader,
-  GlDropdownItem,
-  GlModal,
-  GlModalDirective,
-} from '@gitlab/ui';
+import { GlAlert, GlButton, GlCollapsibleListbox, GlModal, GlModalDirective } from '@gitlab/ui';
 import { pikadayToString } from '~/lib/utils/datetime_utility';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
 import { __, sprintf } from '~/locale';
@@ -19,9 +11,7 @@ export default {
   components: {
     GlAlert,
     GlButton,
-    GlDropdown,
-    GlDropdownSectionHeader,
-    GlDropdownItem,
+    GlCollapsibleListbox,
     GlModal,
     SelectProjectsDropdown,
   },
@@ -85,8 +75,10 @@ export default {
     },
   },
   methods: {
-    clickDateRange(dateRange) {
-      this.selectedDateRange = dateRange;
+    clickDateRange(dateRangeValue) {
+      this.selectedDateRange = this.$options.dateRangeOptions.find(
+        ({ value }) => value === dateRangeValue,
+      );
     },
     clickSelectAllProjects() {
       this.$refs.projectsDropdown.clickSelectAllProjects();
@@ -170,18 +162,15 @@ export default {
         <label class="gl-display-block col-form-label-sm col-form-label">
           {{ $options.i18n.dateRangeHeader }}
         </label>
-        <gl-dropdown :text="selectedDateRange.text" class="gl-w-half">
-          <gl-dropdown-section-header>
-            {{ $options.i18n.dateRangeHeader }}
-          </gl-dropdown-section-header>
-          <gl-dropdown-item
-            v-for="dateRange in $options.dateRangeOptions"
-            :key="dateRange.value"
-            :data-testid="`group-code-coverage-download-select-date-${dateRange.value}`"
-            @click="clickDateRange(dateRange)"
-            >{{ dateRange.text }}</gl-dropdown-item
-          >
-        </gl-dropdown>
+        <gl-collapsible-listbox
+          block
+          toggle-class="gl-w-half"
+          :header-text="$options.i18n.dateRangeHeader"
+          :items="$options.dateRangeOptions"
+          :selected="selectedDateRange.value"
+          :toggle-text="selectedDateRange.text"
+          @select="clickDateRange"
+        />
       </div>
     </gl-modal>
   </div>
