@@ -581,10 +581,9 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
             it_behaves_like 'description change diff', description_diffs_enabled: false
           end
 
-          context 'with description_diffs enabled through Registration Features' do
+          context 'with description_diffs enabled' do
             before do
-              stub_licensed_features(description_diffs: false)
-              stub_application_setting(usage_ping_features_enabled: true)
+              stub_licensed_features(description_diffs: true)
             end
 
             it_behaves_like 'description change diff', description_diffs_enabled: true
