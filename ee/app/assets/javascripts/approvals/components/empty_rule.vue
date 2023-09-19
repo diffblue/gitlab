@@ -64,7 +64,7 @@ export default {
         v-if="!allowMultiRule && canEdit"
         category="secondary"
         variant="confirm"
-        data-qa-selector="add_approvers_button"
+        data-testid="add-approval-rule"
         @click="openCreateModal(null)"
       >
         {{ __('Add approval rule') }}

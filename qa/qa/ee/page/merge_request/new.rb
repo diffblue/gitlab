@@ -14,13 +14,13 @@ module QA
               include ::QA::Page::Component::Dropdown
 
               view 'ee/app/assets/javascripts/approvals/components/app.vue' do
-                element :add_approvers_button
+                element 'add-approval-rule'
               end
 
               view 'ee/app/assets/javascripts/approvals/components/rule_form.vue' do
-                element :approvals_required_field
-                element :member_select_field
-                element :rule_name_field
+                element 'approvals-required'
+                element 'approvers-group'
+                element 'rule-name-field'
               end
 
               def add_approval_rules(rules)
@@ -28,12 +28,12 @@ module QA
                 click_button('Approval rules')
 
                 rules.each do |rule|
-                  click_element :add_approvers_button
+                  click_element('add-approval-rule')
 
-                  wait_for_animated_element :rule_name_field
+                  wait_for_animated_element('rule-name-field')
 
-                  fill_element :rule_name_field, rule[:name]
-                  fill_element :approvals_required_field, rule[:approvals_required]
+                  fill_element('rule-name-field', rule[:name])
+                  fill_element('approvals-required', rule[:approvals_required])
 
                   rule.key?(:users) && rule[:users].each do |user|
                     select_member(user.username)
@@ -58,13 +58,13 @@ module QA
 
               def select_member(name)
                 retry_until do
-                  within_element(:member_select_field) do
-                    click_button 'Search users or groups'
+                  within_element('approvers-group') do
+                    click_button('Search users or groups')
                     search_item(name)
 
                     # we must send an extra key to trigger the dropdown to filter
                     # as the filtering does not work correctly with Capybara input
-                    send_keys_to_search :space
+                    send_keys_to_search(:space)
                     select_item(name)
                   end
                 end

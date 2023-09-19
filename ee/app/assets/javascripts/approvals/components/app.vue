@@ -91,7 +91,6 @@ export default {
           :disabled="isLoading"
           category="secondary"
           size="small"
-          data-qa-selector="add_approvers_button"
           data-testid="add-approval-rule"
           @click="openCreateModal(null)"
         >
