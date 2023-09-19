@@ -163,6 +163,10 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
   describe '#policy_hash' do
     subject { security_orchestration_policy_configuration.policy_hash }
 
+    let(:cache_key) do
+      "security_orchestration_policy_configurations:#{security_orchestration_policy_configuration.id}:policy_yaml"
+    end
+
     context 'when policy is present' do
       it { expect(subject.dig(:scan_execution_policy, 0, :name)).to eq('Run DAST in every pipeline') }
     end
@@ -182,6 +186,40 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
 
     it_behaves_like 'captures git errors', :blob_data_at
+
+    context 'with cached_security_policies disabled' do
+      before do
+        stub_feature_flags(cached_security_policies: false)
+      end
+
+      it 'does not fetch from cache' do
+        expect(Rails.cache).not_to receive(:fetch).with(cache_key, { expires_in: described_class::CACHE_DURATION })
+
+        subject
+      end
+    end
+
+    context 'with cache enabled' do
+      it 'fetches from cache' do
+        expect(Rails.cache).to receive(:fetch).with(cache_key, { expires_in: described_class::CACHE_DURATION }).and_call_original
+
+        subject
+      end
+    end
+  end
+
+  describe '#invalidate_policy_yaml_cache' do
+    subject { security_orchestration_policy_configuration.invalidate_policy_yaml_cache }
+
+    let(:cache_key) do
+      "security_orchestration_policy_configurations:#{security_orchestration_policy_configuration.id}:policy_yaml"
+    end
+
+    it 'invalidates cache' do
+      expect(Rails.cache).to receive(:delete).with(cache_key).and_call_original
+
+      subject
+    end
   end
 
   describe '#policy_by_type' do

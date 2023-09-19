@@ -3,6 +3,7 @@
 module UpdateOrchestrationPolicyConfiguration
   def update_policy_configuration(configuration)
     configuration.delete_all_schedules
+    configuration.invalidate_policy_yaml_cache
 
     unless configuration.policy_configuration_valid?
       configuration.delete_scan_finding_rules
