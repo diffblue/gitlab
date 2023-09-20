@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver do
+RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver, feature_category: :security_policy_management do
   include GraphqlHelpers
 
   include_context 'orchestration policy context'
@@ -14,6 +14,7 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver do
       {
         name: 'Require security approvals',
         description: 'This policy considers only container scanning and critical severities',
+        edit_path: 'http://localhost/namespace1/project-1/-/security/policies/Require+security+approvals/edit?type=scan_result_policy',
         enabled: true,
         yaml: YAML.dump(policy.deep_stringify_keys),
         updated_at: policy_last_updated_at,

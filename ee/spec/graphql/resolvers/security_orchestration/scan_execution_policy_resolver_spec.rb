@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
+RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver, feature_category: :security_policy_management do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
@@ -34,6 +34,7 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
       {
         name: 'Run DAST in every pipeline',
         description: 'This policy enforces to run DAST for every pipeline within the project',
+        edit_path: edit_project_policy_path(project, policy),
         enabled: true,
         yaml: YAML.dump(policy.deep_stringify_keys),
         updated_at: policy_configuration.policy_last_updated_at,
@@ -121,6 +122,7 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
                 {
                   name: 'Run DAST in every pipeline',
                   description: 'This policy enforces to run DAST for every pipeline within the project',
+                  edit_path: edit_group_policy_path(group, policy),
                   enabled: true,
                   yaml: YAML.dump(policy.deep_stringify_keys),
                   updated_at: group_policy_configuration.policy_last_updated_at,
@@ -175,6 +177,7 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
                 {
                   name: 'Run DAST in every pipeline',
                   description: 'This policy enforces to run DAST for every pipeline within the project',
+                  edit_path: edit_project_policy_path(project, policy),
                   enabled: true,
                   yaml: YAML.dump(policy.deep_stringify_keys),
                   updated_at: policy_configuration.policy_last_updated_at,
@@ -187,6 +190,7 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
                 {
                   name: 'Run DAST in every pipeline',
                   description: 'This policy enforces to run DAST for every pipeline within the project',
+                  edit_path: edit_group_policy_path(group, policy),
                   enabled: true,
                   yaml: YAML.dump(policy.deep_stringify_keys),
                   updated_at: group_policy_configuration.policy_last_updated_at,
@@ -239,5 +243,17 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
         expect(resolve_scan_policies).to be_empty
       end
     end
+  end
+
+  def edit_project_policy_path(target_project, policy)
+    Gitlab::Routing.url_helpers.edit_project_security_policy_url(
+      target_project, id: CGI.escape(policy[:name]), type: 'scan_execution_policy'
+    )
+  end
+
+  def edit_group_policy_path(target_group, policy)
+    Gitlab::Routing.url_helpers.edit_group_security_policy_url(
+      target_group, id: CGI.escape(policy[:name]), type: 'scan_execution_policy'
+    )
   end
 end

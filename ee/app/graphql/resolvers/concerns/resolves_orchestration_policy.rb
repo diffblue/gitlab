@@ -12,4 +12,19 @@ module ResolvesOrchestrationPolicy
 
     alias_method :project, :object
   end
+
+  private
+
+  def edit_path(policy, type)
+    id = CGI.escape(policy[:name])
+    if policy[:namespace]
+      Rails.application.routes.url_helpers.edit_group_security_policy_url(
+        policy[:namespace], id: id, type: type
+      )
+    else
+      Rails.application.routes.url_helpers.edit_project_security_policy_url(
+        policy[:project], id: id, type: type
+      )
+    end
+  end
 end
