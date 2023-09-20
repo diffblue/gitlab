@@ -273,45 +273,21 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
     let(:check_namespace_plan) { true }
 
     before do
-      allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_namespace_plan)
+      stub_application_setting(check_namespace_plan: check_namespace_plan)
       stub_omniauth_setting(block_auto_created_users: false)
     end
 
     context 'when user is not registered yet' do
       let(:user) { build_stubbed(:user, email: 'new@example.com') }
 
-      context 'when onboarding is enforced' do
-        it 'redirects to welcome path with onboarding setup' do
-          post provider
+      it_behaves_like EE::Onboarding::Redirectable do
+        let(:glm_params) { { glm_source: '_glm_source_', glm_content: '_glm_content_', trial: true } }
+        let(:new_user_email) { user.email }
 
-          expect(request.env['warden']).to be_authenticated
-          expect_to_be_onboarding(response, user.email)
-        end
+        subject(:post_create) { post provider }
 
-        context 'when glm and trial params exist' do
-          let(:omniauth_params) { { glm_source: '_glm_source_', glm_content: '_glm_content_', trial: true } }
-
-          before do
-            request.env['omniauth.params'] = omniauth_params.stringify_keys
-          end
-
-          it 'redirects to welcome path with onboarding setup with passed params' do
-            post provider
-
-            expect(request.env['warden']).to be_authenticated
-            expect_to_be_onboarding(response, user.email, omniauth_params)
-          end
-        end
-      end
-
-      context 'when onboarding is not enforced' do
-        let(:check_namespace_plan) { false }
-
-        it 'redirects to welcome path without onboarding setup' do
-          post provider
-
-          expect(response).to redirect_to(users_sign_up_welcome_path)
-          expect_to_not_be_onboarding(user.email)
+        before do
+          request.env['omniauth.params'] = glm_params.stringify_keys
         end
       end
     end
@@ -324,21 +300,10 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
 
         expect(request.env['warden']).to be_authenticated
         expect(response).to redirect_to(root_path)
-        expect_to_not_be_onboarding(user.email)
+        created_user = User.find_by_email(user.email)
+        expect(created_user).not_to be_onboarding_in_progress
+        expect(created_user.user_detail.onboarding_step_url).to be_nil
       end
-    end
-
-    def expect_to_not_be_onboarding(email)
-      created_user = User.find_by_email(email)
-      expect(created_user).not_to be_onboarding_in_progress
-      expect(created_user.user_detail.onboarding_step_url).to be_nil
-    end
-
-    def expect_to_be_onboarding(response, email, params = {})
-      expect(response).to redirect_to(users_sign_up_welcome_path(params))
-      created_user = User.find_by_email(email)
-      expect(created_user).to be_onboarding_in_progress
-      expect(created_user.user_detail.onboarding_step_url).to eq(users_sign_up_welcome_path(params))
     end
   end
 end

@@ -7,12 +7,13 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
     let_it_be(:base_user_params) { build_stubbed(:user).slice(:first_name, :last_name, :username, :password) }
     let_it_be(:new_user_email) { 'new@user.com' }
     let_it_be(:user_params) { { user: base_user_params.merge(email: new_user_email) } }
+    let(:params) { {} }
 
     before do
       stub_feature_flags(arkose_labs_signup_challenge: false)
     end
 
-    subject { post :create, params: user_params }
+    subject(:post_create) { post :create, params: params.merge(user_params) }
 
     shared_examples 'blocked user by default' do
       it 'registers the user in blocked_pending_approval state' do
@@ -51,6 +52,14 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
         subject
 
         expect(flash[:notice]).to be_nil
+      end
+    end
+
+    it_behaves_like EE::Onboarding::Redirectable do
+      let(:glm_params) { { glm_source: '_glm_source_', glm_content: '_glm_content_' } }
+
+      before do
+        stub_application_setting(require_admin_approval_after_user_signup: false)
       end
     end
 
@@ -120,7 +129,7 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
       end
     end
 
-    context 'audit events' do
+    context 'with audit events' do
       context 'when licensed' do
         before do
           stub_licensed_features(admin_audit_log: true, external_audit_events: true)

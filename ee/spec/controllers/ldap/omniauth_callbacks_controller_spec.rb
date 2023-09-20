@@ -30,7 +30,7 @@ RSpec.describe Ldap::OmniauthCallbacksController, feature_category: :system_acce
       post provider
 
       expect(request.env['warden']).to be_authenticated
-      expect(response).to redirect_to(users_sign_up_welcome_path)
+      expect(response).to redirect_to(dashboard_projects_path)
       created_user = User.find_by_email(user.email)
       expect(created_user).not_to be_onboarding_in_progress
       expect(created_user.user_detail.onboarding_step_url).to be_nil

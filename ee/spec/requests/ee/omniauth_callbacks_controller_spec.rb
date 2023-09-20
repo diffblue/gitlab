@@ -27,14 +27,28 @@ RSpec.describe OmniauthCallbacksController, feature_category: :system_access do
         stub_session(user_return_to: path)
       end
 
-      it 'wipes the previously stored location for user' do
-        expect_next_instance_of(described_class) do |controller|
-          expect(controller).to receive(:store_location_for).with(:user, users_sign_up_welcome_path)
+      context 'when onboarding is enabled', :saas do
+        it 'wipes the previously stored location for user' do
+          expect_next_instance_of(described_class) do |controller|
+            expect(controller).to receive(:store_location_for).with(:user, users_sign_up_welcome_path)
+          end
+
+          post public_send("user_#{provider}_omniauth_callback_path")
+
+          expect(request.env['warden']).to be_authenticated
         end
+      end
 
-        post public_send("user_#{provider}_omniauth_callback_path")
+      context 'when onboarding is disabled' do
+        it 'does not wipe the previously stored location for user' do
+          expect_next_instance_of(described_class) do |controller|
+            expect(controller).to receive(:store_location_for).with(:user, path)
+          end
 
-        expect(request.env['warden']).to be_authenticated
+          post public_send("user_#{provider}_omniauth_callback_path")
+
+          expect(request.env['warden']).to be_authenticated
+        end
       end
 
       context 'when user is in subscription onboarding' do
