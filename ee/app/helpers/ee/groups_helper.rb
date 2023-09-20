@@ -82,9 +82,33 @@ module EE
     end
 
     def code_suggestions_usage_app_data(group)
+      data = { full_path: group.full_path }
+
+      return data unless ::Feature.enabled?(:cs_connect_with_sales, group)
+
+      data.merge(code_suggestions_hand_raise_props(group))
+    end
+
+    def hand_raise_props(namespace, glm_content:, product_interaction: 'Hand Raise PQL')
       {
-        full_path: group.full_path
+        namespace_id: namespace.id,
+        user_name: current_user.username,
+        first_name: current_user.first_name,
+        last_name: current_user.last_name,
+        company_name: current_user.organization,
+        glm_content: glm_content,
+        product_interaction: product_interaction,
+        create_hand_raise_lead_path: subscriptions_hand_raise_leads_path
       }
+    end
+
+    def code_suggestions_hand_raise_props(namespace)
+      hand_raise_props(
+        namespace,
+        glm_content: 'code-suggestions',
+        product_interaction: 'Requested Contact-Code Suggestions Add-On')
+        .merge(track_action: 'click_button', track_label: 'code_suggestions_hand_raise_lead_form')
+        .merge(button_attributes: { 'data-testid': 'code_suggestions_hand_raise_lead_button' }.to_json)
     end
 
     def show_code_suggestions_tab?(group)

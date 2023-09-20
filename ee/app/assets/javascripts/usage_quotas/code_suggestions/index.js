@@ -14,7 +14,20 @@ export default (containerId = 'js-code-suggestions-usage-app') => {
     return false;
   }
 
-  const { fullPath } = el.dataset;
+  const {
+    fullPath,
+    firstName,
+    lastName,
+    companyName,
+    namespaceId,
+    buttonAttributes,
+    createHandRaiseLeadPath,
+    glmContent,
+    productInteraction,
+    trackAction,
+    trackLabel,
+    userName,
+  } = el.dataset;
 
   return new Vue({
     el,
@@ -22,6 +35,21 @@ export default (containerId = 'js-code-suggestions-usage-app') => {
     name: 'CodeSuggestionsUsageApp',
     provide: {
       fullPath,
+      createHandRaiseLeadPath,
+      buttonAttributes: buttonAttributes && { ...JSON.parse(buttonAttributes), variant: 'confirm' },
+      user: {
+        namespaceId,
+        userName,
+        firstName,
+        lastName,
+        companyName,
+        glmContent,
+        productInteraction,
+      },
+      ctaTracking: {
+        action: trackAction,
+        label: trackLabel,
+      },
     },
     render(createElement) {
       return createElement(CodeSuggestionsUsage);

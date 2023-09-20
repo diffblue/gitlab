@@ -6,6 +6,8 @@ import {
   codeSuggestionsLearnMoreLink,
   salesLink,
 } from 'ee/usage_quotas/code_suggestions/constants';
+import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
+import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
 
 export default {
   name: 'CodeSuggestionsIntro',
@@ -24,10 +26,13 @@ export default {
     SafeHtml,
   },
   components: {
+    HandRaiseLeadButton,
     GlEmptyState,
     GlLink,
     GlSprintf,
   },
+  apolloProvider,
+  inject: ['createHandRaiseLeadPath'],
 };
 </script>
 <template>
@@ -50,6 +55,9 @@ export default {
           }}</gl-link>
         </template>
       </gl-sprintf>
+    </template>
+    <template #actions>
+      <hand-raise-lead-button v-if="createHandRaiseLeadPath" />
     </template>
   </gl-empty-state>
 </template>
