@@ -9,6 +9,7 @@ module EE
         override :execute
         def execute
           ::Ci::PipelineCreation::DropNotRunnableBuildsService.new(pipeline).execute
+          ::Ci::PipelineCreation::DropSecretsProviderNotFoundBuildsService.new(pipeline).execute
           super
         end
       end

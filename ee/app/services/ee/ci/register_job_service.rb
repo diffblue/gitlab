@@ -8,7 +8,7 @@ module EE
       override :pre_assign_runner_checks
       def pre_assign_runner_checks
         super.merge({
-          secrets_provider_not_found: -> (build, _) { build.ci_secrets_management_available? && build.secrets? && !build.secrets_provider? },
+          secrets_provider_not_found: -> (build, _) { ::Feature.disabled?(:drop_job_on_secrets_provider_not_found, build.project) && build.ci_secrets_management_available? && build.secrets? && !build.secrets_provider? },
           ip_restriction_failure: ->(build, _) { build.project.group && !::Gitlab::IpRestriction::Enforcer.new(build.project.group).allows_current_ip? }
         })
       end
