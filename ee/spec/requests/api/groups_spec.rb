@@ -1295,7 +1295,7 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
       end
     end
 
-    context 'feature is not available' do
+    context 'feature is not available', :clean_gitlab_redis_queues_metadata do
       before do
         stub_licensed_features(adjourned_deletion_for_projects_and_groups: false)
       end
