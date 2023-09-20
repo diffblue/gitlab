@@ -222,7 +222,6 @@ export default {
     :title="title"
     :action-primary="actionsProps.primary"
     :action-cancel="actionsProps.cancel"
-    scrollable
     @primary.prevent="isEditMode ? updateEscalationPolicy() : createEscalationPolicy()"
     @canceled="resetForm"
     @close="resetForm"
