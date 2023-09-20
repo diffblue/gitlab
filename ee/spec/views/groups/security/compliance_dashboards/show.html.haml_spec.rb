@@ -66,6 +66,28 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
     end
   end
 
+  context 'for `compliance-framework-report-ui-enabled` selector' do
+    context 'when feature `compliance_framework_report_ui` is not enabled' do
+      before do
+        Feature.disable(:compliance_framework_report_ui)
+      end
+
+      it 'renders with the correct selector value' do
+        render
+
+        expect(rendered).to have_selector("[data-compliance-framework-report-ui-enabled='false']")
+      end
+    end
+
+    context 'when feature `compliance_framework_report_ui` is globally enabled' do
+      it 'renders with the correct selector value' do
+        render
+
+        expect(rendered).to have_selector("[data-compliance-framework-report-ui-enabled='true']")
+      end
+    end
+  end
+
   context 'for violations export' do
     context "with compliance_violation_csv_export ff enabled" do
       it 'renders with the correct data attributes', :aggregate_failures do

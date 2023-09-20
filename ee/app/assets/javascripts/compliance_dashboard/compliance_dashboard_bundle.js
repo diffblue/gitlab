@@ -22,6 +22,7 @@ export default () => {
     pipelineConfigurationFullPathEnabled,
     pipelineConfigurationEnabled,
     adherenceReportUiEnabled,
+    complianceFrameworkReportUiEnabled,
   } = el.dataset;
 
   Vue.use(VueApollo);
@@ -49,6 +50,7 @@ export default () => {
       pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
       pipelineConfigurationEnabled: parseBoolean(pipelineConfigurationEnabled),
       adherenceReportUiEnabled: parseBoolean(adherenceReportUiEnabled),
+      complianceFrameworkReportUiEnabled: parseBoolean(complianceFrameworkReportUiEnabled),
     },
     render: (createElement) =>
       createElement(ReportsApp, {
