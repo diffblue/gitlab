@@ -27,7 +27,7 @@ module Elastic
             analyzer: {
               default: {
                 tokenizer: 'standard',
-                filter: %w(lowercase stemmer)
+                filter: %w[lowercase stemmer]
               },
               my_ngram_analyzer: {
                 tokenizer: 'my_ngram_tokenizer',
@@ -36,16 +36,16 @@ module Elastic
               path_analyzer: {
                 type: 'custom',
                 tokenizer: 'path_tokenizer',
-                filter: %w(lowercase asciifolding)
+                filter: %w[lowercase asciifolding]
               },
               code_analyzer: {
                 type: 'custom',
                 tokenizer: 'whitespace',
-                filter: %w(word_delimiter_graph_filter flatten_graph lowercase asciifolding remove_duplicates)
+                filter: %w[word_delimiter_graph_filter flatten_graph lowercase asciifolding remove_duplicates]
               },
               whitespace_reverse: {
                 tokenizer: 'whitespace',
-                filter: %w(lowercase asciifolding reverse)
+                filter: %w[lowercase asciifolding reverse]
               },
               email_analyzer: {
                 tokenizer: 'email_tokenizer'
@@ -62,7 +62,7 @@ module Elastic
                 type: 'ngram',
                 min_gram: 2,
                 max_gram: 3,
-                token_chars: %w(letter digit)
+                token_chars: %w[letter digit]
               },
               path_tokenizer: {
                 type: 'path_hierarchy',
@@ -95,7 +95,7 @@ module Elastic
         indexes :join_field,
           type: :join,
           relations: {
-            project: %i(
+            project: %i[
               issue
               merge_request
               milestone
@@ -103,7 +103,7 @@ module Elastic
               blob
               wiki_blob
               commit
-            )
+            ]
           }
         # ES6 requires a single type per index, so we implement our own "type"
         indexes :type, type: :keyword

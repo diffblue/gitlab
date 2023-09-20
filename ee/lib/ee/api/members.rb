@@ -144,7 +144,7 @@ module EE
           desc 'Changes the state of the memberships of a user in the group'
           params do
             requires :user_id, type: Integer, desc: 'The user ID of the user'
-            requires :state, type: String, values: %w(awaiting active), desc: 'The new state for the memberships of the user'
+            requires :state, type: String, values: %w[awaiting active], desc: 'The new state for the memberships of the user'
           end
           put ":id/members/:user_id/state", feature_category: :user_management do
             user = find_user(params[:user_id])

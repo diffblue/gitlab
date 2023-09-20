@@ -11,7 +11,7 @@ namespace :gitlab do
         indices += helper.standalone_indices_proxies.map(&:index_name)
         indices.each do |index_name|
           puts "===== Size stats for index: #{index_name} ====="
-          pp helper.index_size(index_name: index_name).slice(*%w(docs store))
+          pp helper.index_size(index_name: index_name).slice(*%w[docs store])
         end
       end
 

@@ -20,7 +20,7 @@ module EE
             options = {
               base: config.group_base,
               filter: Net::LDAP::Filter.eq("cn", cn),
-              attributes: %w(dn cn memberuid member submember uniquemember memberof)
+              attributes: %w[dn cn memberuid member submember uniquemember memberof]
             }
 
             options[:size] = size if size

@@ -171,7 +171,7 @@ module EE
           self.table_name = 'users'
         end
 
-        ALLOWED_TARGET_TYPES = %w{MergeRequest Project}.freeze
+        ALLOWED_TARGET_TYPES = %w[MergeRequest Project].freeze
 
         # @param target_type [String] class of target, either 'MergeRequest' or 'Project'
         # @param target_id [Integer] id of target

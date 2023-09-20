@@ -9,7 +9,7 @@ module EE
               module Schema
                 extend ::Gitlab::Utils::Override
 
-                CE_TYPES = %i(sast secret_detection).freeze
+                CE_TYPES = %i[sast secret_detection].freeze
 
                 override :root_path
                 def root_path
