@@ -15,14 +15,14 @@ import SecurityDashboardCard from './security_dashboard_card.vue';
 export default {
   css: {
     severityGroups: {
-      [severityGroupTypes.F]: 'gl-text-red-900',
+      [severityGroupTypes.F]: 'gl-text-red-800',
       [severityGroupTypes.D]: 'gl-text-red-700',
       [severityGroupTypes.C]: 'gl-text-orange-600',
       [severityGroupTypes.B]: 'gl-text-orange-400',
       [severityGroupTypes.A]: 'gl-text-green-500',
     },
     severityLevels: {
-      [severityLevels.CRITICAL]: 'gl-text-red-900',
+      [severityLevels.CRITICAL]: 'gl-text-red-800',
       [severityLevels.HIGH]: 'gl-text-red-700',
       [severityLevels.UNKNOWN]: 'gl-text-gray-300',
       [severityLevels.MEDIUM]: 'gl-text-orange-600',
