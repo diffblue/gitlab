@@ -27,10 +27,15 @@ module EE
       end
 
       def passed_through_params
+        opt_in_param = {
+          opt_in: ::Gitlab::Utils.to_boolean(params[:opt_in_to_email], default: onboarding_status.setup_for_company?)
+        }
+
         update_params.slice(:role, :registration_objective)
                      .merge(params.permit(:jobs_to_be_done_other))
                      .merge(glm_tracking_params)
                      .merge(params.permit(:trial))
+                     .merge(opt_in_param)
       end
 
       def iterable_params
@@ -40,7 +45,8 @@ module EE
           uid: current_user.id,
           comment: params[:jobs_to_be_done_other],
           jtbd: update_params[:registration_objective],
-          product_interaction: onboarding_status.iterable_product_interaction
+          product_interaction: onboarding_status.iterable_product_interaction,
+          opt_in: ::Gitlab::Utils.to_boolean(params[:opt_in_to_email], default: false)
         }.merge(update_params.slice(:setup_for_company, :role).to_h.symbolize_keys)
       end
 

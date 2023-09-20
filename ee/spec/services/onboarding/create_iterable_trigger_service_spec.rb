@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Onboarding::CreateIterableTriggerService, feature_category: :onboarding do
-  let(:params) { { work_email: 'work@email.com' } }
+  let(:params) { { work_email: 'work@email.com', opt_in: true } }
 
   describe '#execute' do
     context 'when sending iterable call' do

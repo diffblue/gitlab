@@ -90,7 +90,8 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
         phone_number: '+1 23 456-78-90',
         country: 'US',
         state: 'CA',
-        website_url: 'gitlab.com'
+        website_url: 'gitlab.com',
+        opt_in: 'true'
       }.merge(glm_params)
     end
 

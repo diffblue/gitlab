@@ -208,7 +208,8 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
                 role: 'software_developer',
                 jobs_to_be_done_other: '_jobs_to_be_done_other_',
                 glm_source: 'some_source',
-                glm_content: 'some_content'
+                glm_content: 'some_content',
+                opt_in: 'true'
               }.merge(trial_concerns)
             end
 
@@ -259,26 +260,36 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
             end
 
             context 'when trial is true' do
-              let(:extra_params) { { trial: 'true' } }
-              let(:expected_params) do
-                {
-                  registration_objective: 'code_storage',
-                  role: 'software_developer',
-                  jobs_to_be_done_other: '_jobs_to_be_done_other_',
-                  glm_source: 'some_source',
-                  glm_content: 'some_content',
-                  trial: 'true'
-                }
+              using RSpec::Parameterized::TableSyntax
+
+              where(:extra_params, :opt_in) do
+                { trial: 'true', opt_in_to_email: 'true' }  | 'true'
+                { trial: 'true', opt_in_to_email: 'false' } | 'false'
+                { trial: 'true', opt_in_to_email: nil }     | 'false'
+                { trial: 'true', opt_in_to_email: '' }      | 'false'
+                { trial: 'true' }                           | 'false'
               end
 
-              specify do
-                patch_update
-                user.reload
-                path = new_users_sign_up_company_path(expected_params)
+              with_them do
+                specify do
+                  expected_params = {
+                    registration_objective: 'code_storage',
+                    role: 'software_developer',
+                    jobs_to_be_done_other: '_jobs_to_be_done_other_',
+                    glm_source: 'some_source',
+                    glm_content: 'some_content',
+                    trial: 'true',
+                    opt_in: opt_in
+                  }
 
-                expect(user.onboarding_in_progress).to be_truthy
-                expect(user.user_detail.onboarding_step_url).to eq(path)
-                expect(response).to redirect_to path
+                  patch_update
+                  user.reload
+                  path = new_users_sign_up_company_path(expected_params)
+
+                  expect(user.onboarding_in_progress).to be_truthy
+                  expect(user.user_detail.onboarding_step_url).to eq(path)
+                  expect(response).to redirect_to path
+                end
               end
             end
 
@@ -365,7 +376,8 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
                     glm_source: 'some_source',
                     jobs_to_be_done_other: '_jobs_to_be_done_other_',
                     registration_objective: 'code_storage',
-                    role: 'software_developer'
+                    role: 'software_developer',
+                    opt_in: false
                   }.merge(extra_params)
                 )
 

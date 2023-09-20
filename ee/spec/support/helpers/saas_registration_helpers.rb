@@ -351,6 +351,7 @@ module SaasRegistrationHelpers
       expect(page).to have_content('I\'m signing up for GitLab because:')
       expect(page).to have_content('Who will be using this GitLab subscription?')
       expect(page).to have_content('What would you like to do?')
+      expect(page).not_to have_content(_("I'd like to receive updates about GitLab via email"))
     end
   end
 
@@ -394,7 +395,7 @@ module SaasRegistrationHelpers
       ).and_call_original
   end
 
-  def fill_in_company_form(with_last_name: false, trial: true, glm: true, success: true)
+  def fill_in_company_form(with_last_name: false, trial: true, glm: true, success: true, opt_in_email: false)
     result = if success
                ServiceResponse.success
              else
@@ -403,7 +404,7 @@ module SaasRegistrationHelpers
 
     expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
       user: user,
-      params: company_params(user, trial: trial, glm: glm)
+      params: company_params(user, trial: trial, glm: glm, opt_in: opt_in_email)
     ).and_return(instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: result))
 
     fill_in_company_user_last_name if with_last_name
@@ -423,7 +424,7 @@ module SaasRegistrationHelpers
     fill_in 'website_url', with: 'https://gitlab.com'
   end
 
-  def company_params(user, trial: true, glm: true)
+  def company_params(user, opt_in:, trial: true, glm: true)
     base_params = ActionController::Parameters.new(
       company_name: 'Test Company',
       company_size: '1-99',
@@ -437,7 +438,8 @@ module SaasRegistrationHelpers
       # these are the passed through params
       role: 'software_developer',
       registration_objective: 'other',
-      jobs_to_be_done_other: 'My reason'
+      jobs_to_be_done_other: 'My reason',
+      opt_in: (opt_in || user.setup_for_company).to_s
     ).permit!
 
     return base_params unless glm

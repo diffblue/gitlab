@@ -21,7 +21,7 @@ RSpec.describe 'Trial flow for user picking company and importing a project', :j
 
       expect_to_see_company_form
 
-      fill_in_company_form(glm: false)
+      fill_in_company_form(glm: false, opt_in_email: true)
       click_on 'Continue'
 
       expect_to_see_group_and_project_creation_form
@@ -55,6 +55,7 @@ RSpec.describe 'Trial flow for user picking company and importing a project', :j
       expect(page).to have_content('I\'m signing up for GitLab because:')
       expect(page).to have_content('Who will be using this GitLab trial?')
       expect(page).not_to have_content('What would you like to do?')
+      expect(page).not_to have_content(_("I'd like to receive updates about GitLab via email"))
     end
   end
 

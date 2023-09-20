@@ -22,7 +22,8 @@ RSpec.describe GitlabSubscriptions::CreateLeadService, feature_category: :billin
         setup_for_company: nil,
         skip_email_confirmation: true,
         gitlab_com_trial: true,
-        provider: 'gitlab'
+        provider: 'gitlab',
+        opt_in: true
       }
     end
 

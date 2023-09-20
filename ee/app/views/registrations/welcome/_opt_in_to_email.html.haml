@@ -1,0 +1,8 @@
+- return unless onboarding_status.enabled?
+
+.gl-mb-3.js-opt-in-to-email.hidden
+  .gl-font-weight-bold.gl-mb-3
+    = _('Email updates (optional)')
+  = render Pajamas::CheckboxTagComponent.new(name: :opt_in_to_email, value: nil) do |c|
+    - c.with_label do
+      = _("I'd like to receive updates about GitLab via email")
