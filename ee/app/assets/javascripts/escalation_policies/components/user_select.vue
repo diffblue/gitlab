@@ -114,6 +114,7 @@ export default {
     :loading="loading"
     :placeholder="placeholderText"
     container-class="rule-control"
+    class="escalation-email-user-dropdown"
     @text-input="filterUsers"
     @token-add="emitUserUpdate"
   >
