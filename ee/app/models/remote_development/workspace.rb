@@ -6,6 +6,7 @@ module RemoteDevelopment
   class Workspace < ApplicationRecord
     include Sortable
     include RemoteDevelopment::Workspaces::States
+    include IgnorableColumns
 
     MAX_HOURS_BEFORE_TERMINATION_LIMIT = 120
 
@@ -36,6 +37,8 @@ module RemoteDevelopment
     validates :actual_state, inclusion: { in: VALID_ACTUAL_STATES }
     validates :editor, inclusion: { in: ['webide'], message: "'webide' is currently the only supported editor" }
     validates :max_hours_before_termination, numericality: { less_than_or_equal_to: MAX_HOURS_BEFORE_TERMINATION_LIMIT }
+
+    ignore_column :force_full_reconciliation, remove_with: '16.7', remove_after: '2023-11-22'
 
     scope :with_desired_state_updated_more_recently_than_last_response_to_agent, -> do
       # noinspection SqlResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
