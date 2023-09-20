@@ -67,7 +67,7 @@ export default {
         <div class="gl-w-80p">{{ planStorageDescription }}</div>
         <number-to-human-size class="gl-white-space-nowrap" :value="includedStorage" />
       </div>
-      <div class="gl-display-flex gl-justify-content-space-between" data-testid="storage-purchased">
+      <div class="gl-display-flex gl-justify-content-space-between">
         <div class="gl-w-80p">
           {{ $options.i18n.STORAGE_STATISTICS_PURCHASED_STORAGE }}
           <gl-link
@@ -79,12 +79,20 @@ export default {
             <gl-icon name="question-o" />
           </gl-link>
         </div>
-        <number-to-human-size class="gl-white-space-nowrap" :value="purchasedStorage" />
+        <number-to-human-size
+          class="gl-white-space-nowrap"
+          :value="purchasedStorage"
+          data-testid="storage-purchased"
+        />
       </div>
       <hr />
-      <div class="gl-display-flex gl-justify-content-space-between" data-testid="total-storage">
+      <div class="gl-display-flex gl-justify-content-space-between">
         <div class="gl-w-80p">{{ $options.i18n.STORAGE_STATISTICS_TOTAL_STORAGE }}</div>
-        <number-to-human-size class="gl-white-space-nowrap" :value="totalStorage" />
+        <number-to-human-size
+          class="gl-white-space-nowrap"
+          :value="totalStorage"
+          data-testid="total-storage"
+        />
       </div>
     </div>
   </gl-card>
