@@ -19,7 +19,7 @@ module API
     API_TOKEN_ENV = 'gitlab.api.token'
     API_EXCEPTION_ENV = 'gitlab.api.exception'
     API_RESPONSE_STATUS_CODE = 'gitlab.api.response_status_code'
-    INTEGER_ID_REGEX = /^-?\d+$/.freeze
+    INTEGER_ID_REGEX = /^-?\d+$/
 
     def logger
       API.logger
