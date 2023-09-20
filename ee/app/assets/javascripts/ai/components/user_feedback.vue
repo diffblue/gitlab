@@ -37,11 +37,6 @@ export default {
       feedbackReceived: false,
     };
   },
-  computed: {
-    isMRSummaryNote() {
-      return this.feedbackLinkText !== i18n.GENIE_CHAT_FEEDBACK_LINK;
-    },
-  },
   methods: {
     trackFeedback({ feedbackOptions, extendedFeedback } = {}) {
       this.track(this.eventName, {
@@ -66,8 +61,8 @@ export default {
 </script>
 
 <template>
-  <div>
-    <div :class="{ 'gl-pt-4': !isMRSummaryNote }">
+  <div class="gl-pt-4">
+    <div>
       <gl-button v-if="!feedbackReceived" variant="link" @click="$refs.feedbackModal.show()">{{
         feedbackLinkText
       }}</gl-button>

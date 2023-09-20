@@ -34,6 +34,7 @@ exports[`Merge request summary note component renders review note 1`] = `
       class="gl--flex-center gl-border-t gl-px-4 gl-py-3"
     >
       <user-feedback-stub
+        class="gl-pt-0!"
         eventextradata="[object Object]"
         eventname="proposed_changes_summary"
         feedbacklinktext="Leave feedback"
@@ -85,6 +86,7 @@ exports[`Merge request summary note component renders summary note 1`] = `
       class="gl--flex-center gl-border-t gl-px-4 gl-py-3"
     >
       <user-feedback-stub
+        class="gl-pt-0!"
         eventextradata="[object Object]"
         eventname="proposed_changes_summary"
         feedbacklinktext="Leave feedback"
