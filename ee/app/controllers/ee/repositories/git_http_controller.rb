@@ -110,18 +110,7 @@ module EE
       end
 
       def send_git_audit_streaming_event
-        return if user.blank? || project.blank?
-
-        audit_context = {
-          name: 'repository_git_operation',
-          stream_only: true,
-          author: user,
-          scope: project,
-          target: project,
-          message: { protocol: 'http', action: 'git-upload-pack' }
-        }
-
-        ::Gitlab::Audit::Auditor.audit(audit_context)
+        ::Gitlab::GitAuditEvent.new(user, project).send_audit_event({ protocol: 'http', action: 'git-upload-pack' })
       end
     end
   end
