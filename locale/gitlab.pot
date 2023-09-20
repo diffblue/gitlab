@@ -1911,9 +1911,6 @@ msgstr ""
 msgid "AI|Apply AI-generated description"
 msgstr ""
 
-msgid "AI|Ask GitLab Duo"
-msgstr ""
-
 msgid "AI|Ask a question"
 msgstr ""
 
@@ -1954,6 +1951,9 @@ msgid "AI|Generate issue description"
 msgstr ""
 
 msgid "AI|GitLab Duo"
+msgstr ""
+
+msgid "AI|GitLab Duo Chat"
 msgstr ""
 
 msgid "AI|Give feedback on AI content"
@@ -46644,9 +46644,6 @@ msgid "TagsPage|protected"
 msgstr ""
 
 msgid "Take a look at the documentation to discover all of GitLab’s capabilities."
-msgstr ""
-
-msgid "TanukiBot|Ask GitLab Duo"
 msgstr ""
 
 msgid "TanukiBot|Ask a question about GitLab"

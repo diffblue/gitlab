@@ -31,7 +31,7 @@ RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
       before do
         page.within '[data-testid="super-sidebar"]' do
           click_button('Help')
-          click_button('Ask GitLab Duo')
+          click_button('GitLab Duo Chat')
         end
       end
 
@@ -41,7 +41,7 @@ RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
     context "when opening the drawer from the breadcrumbs" do
       before do
         page.within '[data-testid="top-bar"]' do
-          click_button('Ask GitLab Duo')
+          click_button('GitLab Duo Chat')
         end
       end
 
@@ -57,7 +57,7 @@ RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
 
     it 'does not show the entry point in the breadcrumbs' do
       page.within '[data-testid="top-bar"]' do
-        expect(page).not_to have_button('Ask GitLab Duo')
+        expect(page).not_to have_button('GitLab Duo Chat')
       end
     end
   end
