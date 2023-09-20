@@ -21,7 +21,7 @@ module Mutations
           description: 'Content of the user message to be sent to the language model.'
 
         field :user_message,
-          Types::Ai::MessageType,
+          Types::Ai::DeprecatedMessageType,
           null: true,
           description: 'User chat message.'
 
