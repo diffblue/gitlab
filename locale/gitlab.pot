@@ -21774,13 +21774,13 @@ msgstr ""
 msgid "GithubImporter|Merge request %{merge_request_iid} attachment"
 msgstr ""
 
-msgid "GithubImporter|Merge request links"
-msgstr ""
-
 msgid "GithubImporter|Note attachment"
 msgstr ""
 
 msgid "GithubImporter|Note links"
+msgstr ""
+
+msgid "GithubImporter|PR attachments"
 msgstr ""
 
 msgid "GithubImporter|PR mergers"
