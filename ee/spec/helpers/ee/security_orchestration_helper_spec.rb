@@ -114,7 +114,9 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           root_namespace_path: project.root_ancestor.full_path,
           timezones: timezones.to_json,
           max_active_scan_execution_policies_reached: 'false',
-          max_active_scan_result_policies_reached: 'false'
+          max_active_scan_result_policies_reached: 'false',
+          max_scan_result_policies_allowed: 5,
+          max_scan_execution_policies_allowed: 5
         }
       end
 
@@ -196,7 +198,9 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           root_namespace_path: namespace.root_ancestor.full_path,
           timezones: timezones.to_json,
           max_active_scan_execution_policies_reached: 'false',
-          max_active_scan_result_policies_reached: 'false'
+          max_active_scan_result_policies_reached: 'false',
+          max_scan_result_policies_allowed: 5,
+          max_scan_execution_policies_allowed: 5
         }
       end
 
