@@ -54,33 +54,45 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
         expect(flash[:toast]).to eq("Analytics settings for '#{project.name}' were successfully updated.")
       end
 
-      it 'updates product analytics settings' do
-        params = {
-          project: {
-            project_setting_attributes: {
-              product_analytics_configurator_connection_string: 'https://test:test@configurator.example.com',
-              product_analytics_data_collector_host: 'https://collector.example.com',
-              cube_api_base_url: 'https://cube.example.com',
-              cube_api_key: 'cube_api_key'
+      context 'with existing product_analytics_instrumentation_key' do
+        before do
+          project.project_setting.update!(product_analytics_instrumentation_key: "key")
+        end
+
+        it 'updates product analytics settings and cleans up instrumentation key' do
+          params = {
+            project: {
+              project_setting_attributes: {
+                product_analytics_configurator_connection_string: 'https://test:test@configurator.example.com',
+                product_analytics_data_collector_host: 'https://collector.example.com',
+                cube_api_base_url: 'https://cube.example.com',
+                cube_api_key: 'cube_api_key'
+              }
             }
           }
-        }
 
-        expect do
-          patch project_settings_analytics_path(project, params)
-        end.to change {
-          project.reload.project_setting.product_analytics_configurator_connection_string
-        }.to(
-          params.dig(:project, :project_setting_attributes, :product_analytics_configurator_connection_string)
-        ).and change {
-          project.reload.project_setting.product_analytics_data_collector_host
-        }.to(
-          params.dig(:project, :project_setting_attributes, :product_analytics_data_collector_host)
-        ).and change {
-          project.reload.project_setting.cube_api_base_url
-        }.to(params.dig(:project, :project_setting_attributes, :cube_api_base_url)).and change {
-          project.reload.project_setting.cube_api_key
-        }.to(params.dig(:project, :project_setting_attributes, :cube_api_key))
+          expect do
+            patch project_settings_analytics_path(project, params)
+          end.to change {
+            project.reload.project_setting.product_analytics_configurator_connection_string
+          }.to(
+            params.dig(:project, :project_setting_attributes, :product_analytics_configurator_connection_string)
+          ).and change {
+            project.reload.project_setting.product_analytics_data_collector_host
+          }.to(
+            params.dig(:project, :project_setting_attributes, :product_analytics_data_collector_host)
+          ).and change {
+            project.reload.project_setting.cube_api_base_url
+          }.to(
+            params.dig(:project, :project_setting_attributes, :cube_api_base_url)
+          ).and change {
+            project.reload.project_setting.cube_api_key
+          }.to(
+            params.dig(:project, :project_setting_attributes, :cube_api_key)
+          ).and change {
+            project.reload.project_setting.product_analytics_instrumentation_key
+          }.to(nil)
+        end
       end
 
       it 'updates dashboard pointer project reference' do
