@@ -1,5 +1,5 @@
 <script>
-import { GlToggle, GlTooltip } from '@gitlab/ui';
+import { GlToggle } from '@gitlab/ui';
 import { __ } from '~/locale';
 import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
 import {
@@ -7,8 +7,6 @@ import {
   CANNOT_UNASSIGN_ADDON_ERROR_CODE,
   ADD_ON_ERROR_DICTIONARY,
 } from 'ee/usage_quotas/error_constants';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPENAME_USER } from '~/graphql_shared/constants';
 import userAddOnAssignmentCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_create.mutation.graphql';
 import userAddOnAssignmentRemoveMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_remove.mutation.graphql';
 
@@ -16,50 +14,41 @@ export default {
   name: 'CodeSuggestionsAddonAssignment',
   i18n: {
     toggleLabel: __('Code Suggestions add-on status'),
-    addOnUnavailableTooltipText: __('The Code Suggestions add-on is not available.'),
   },
   components: {
     GlToggle,
-    GlTooltip,
   },
   props: {
     userId: {
-      type: Number,
+      type: String,
       required: true,
     },
-    addOns: {
-      type: Object,
+    addOnAssignments: {
+      type: Array,
       required: false,
-      default: () => {},
+      default: () => [],
     },
     addOnPurchaseId: {
       type: String,
-      required: false,
-      default: undefined,
+      required: true,
     },
   },
   data() {
     return {
       isLoading: false,
       isAssigned: Boolean(
-        this.addOns?.assigned?.find((assigned) => assigned.name === ADD_ON_CODE_SUGGESTIONS),
+        this.addOnAssignments?.find(
+          (assignment) => assignment.addOnPurchase?.name === ADD_ON_CODE_SUGGESTIONS,
+        ),
       ),
       toggleId: `toggle-${this.userId}`,
     };
   },
   computed: {
-    isApplicable() {
-      return Boolean(
-        this.addOns?.applicable?.find((applicable) => applicable.name === ADD_ON_CODE_SUGGESTIONS),
-      );
-    },
-    globalUserId() {
-      return convertToGraphQLId(TYPENAME_USER, this.userId);
-    },
     addOnAssignmentQueryVariables() {
       return {
         input: {
-          userId: this.globalUserId,
+          userId: this.userId,
           addOnPurchaseId: this.addOnPurchaseId,
         },
       };
@@ -68,6 +57,7 @@ export default {
   methods: {
     async onToggle() {
       this.isLoading = true;
+      this.$emit('clearAddOnAssignmentError');
 
       try {
         const { errors } = this.isAssigned ? await this.unassignAddOn() : await this.assignAddOn();
@@ -124,13 +114,9 @@ export default {
       :value="isAssigned"
       :label="$options.i18n.toggleLabel"
       :is-loading="isLoading"
-      :disabled="!isApplicable"
       class="gl-display-inline-block gl-vertical-align-middle"
       label-position="hidden"
       @change="onToggle"
     />
-    <gl-tooltip v-if="!isApplicable" :target="toggleId">
-      {{ $options.i18n.addOnUnavailableTooltipText }}
-    </gl-tooltip>
   </div>
 </template>
