@@ -1,0 +1,29 @@
+query getAddOnEligibleUsers(
+  $fullPath: ID!
+  $sort: UserSort!
+  $addOnType: GitlabSubscriptionsAddOnType!
+) {
+  namespace(fullPath: $fullPath) {
+    id
+    addOnEligibleUsers(addOnType: $addOnType, sort: $sort) @client {
+      edges {
+        node {
+          id
+          username
+          name
+          publicEmail
+          avatarUrl
+          webUrl
+          lastActivityOn
+          addOnAssignments {
+            nodes {
+              addOnPurchase {
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

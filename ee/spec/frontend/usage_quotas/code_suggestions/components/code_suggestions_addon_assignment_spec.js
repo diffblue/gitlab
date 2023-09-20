@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlToggle, GlTooltip } from '@gitlab/ui';
+import { GlToggle } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -14,10 +14,9 @@ Vue.use(VueApollo);
 describe('CodeSuggestionsAddonAssignment', () => {
   let wrapper;
 
-  const userId = 1;
-  const globalUserId = `gid://gitlab/User/${userId}`;
+  const userId = 'gid://gitlab/User/1';
   const addOnPurchaseId = 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/2';
-  const codeSuggestionsAddon = { name: ADD_ON_CODE_SUGGESTIONS };
+  const codeSuggestionsAddOn = { addOnPurchase: { name: ADD_ON_CODE_SUGGESTIONS } };
   const addOnPurchase = {
     id: addOnPurchaseId,
     name: ADD_ON_CODE_SUGGESTIONS,
@@ -65,7 +64,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
         addOnAssignmentRemoveHandler,
       ),
       propsData: {
-        addOns: {},
+        addOnAssignments: [],
         userId,
         addOnPurchaseId,
         ...props,
@@ -74,57 +73,32 @@ describe('CodeSuggestionsAddonAssignment', () => {
   };
 
   const findToggle = () => wrapper.findComponent(GlToggle);
-  const findTooltip = () => wrapper.findComponent(GlTooltip);
-
-  const codeSuggestionsAddOn = { name: ADD_ON_CODE_SUGGESTIONS };
-
-  const applicableAddOns = { applicable: [codeSuggestionsAddOn], assigned: [] };
-  const assignedAddOns = { applicable: [codeSuggestionsAddOn], assigned: [codeSuggestionsAddOn] };
-  const noAddOns = { applicable: [], assigned: [] };
 
   describe.each([
     {
-      title: 'when there are applicable addons',
-      addOns: applicableAddOns,
-      toggleProps: { disabled: false, value: false },
-      tooltipExists: false,
-    },
-    {
-      title: 'when there are assigned addons',
-      addOns: assignedAddOns,
+      title: 'when there are assigned add-ons',
+      addOnAssignments: [codeSuggestionsAddOn],
       toggleProps: { disabled: false, value: true },
-      tooltipExists: false,
     },
     {
-      title: 'when there are no applicable addons',
-      addOns: noAddOns,
-      toggleProps: { disabled: true, value: false },
-      tooltipExists: true,
+      title: 'when there are no assigned add-ons',
+      addOnAssignments: [],
+      toggleProps: { disabled: false, value: false },
     },
-    {
-      title: 'when addons is not provided',
-      addOns: undefined,
-      toggleProps: { disabled: true, value: false },
-      tooltipExists: true,
-    },
-  ])('$title', ({ addOns, toggleProps, tooltipExists }) => {
+  ])('$title', ({ addOnAssignments, toggleProps }) => {
     beforeEach(() => {
-      createComponent({ props: { addOns } });
+      createComponent({ props: { addOnAssignments } });
     });
 
     it('renders addon toggle with appropriate props', () => {
       expect(findToggle().props()).toEqual(expect.objectContaining(toggleProps));
-    });
-
-    it(`shows addon unavailable tooltip: ${tooltipExists}`, () => {
-      expect(findTooltip().exists()).toBe(tooltipExists);
     });
   });
 
   describe('when assigning an addon', () => {
     beforeEach(() => {
       createComponent({
-        props: { addOns: { applicable: [codeSuggestionsAddon], assigned: [] } },
+        props: { addOnAssignments: [] },
       });
       findToggle().vm.$emit('change', true);
     });
@@ -149,7 +123,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
       expect(assignAddOnHandler).toHaveBeenCalledWith({
         input: {
           addOnPurchaseId,
-          userId: globalUserId,
+          userId,
         },
       });
     });
@@ -160,11 +134,11 @@ describe('CodeSuggestionsAddonAssignment', () => {
   });
 
   describe('when error occurs while assigning add-on', () => {
-    const addOns = { applicable: [codeSuggestionsAddon], assigned: [] };
+    const addOnAssignments = [];
 
     it('emits an event with the error code from response for a known error', async () => {
       createComponent({
-        props: { addOns },
+        props: { addOnAssignments },
         addonAssignmentCreateHandler: jest
           .fn()
           .mockResolvedValue({ data: { userAddOnAssignmentCreate: knownAddOnAssignmentError } }),
@@ -178,7 +152,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
     it('emits an event with generic error code for a non string error code', async () => {
       createComponent({
-        props: { addOns },
+        props: { addOnAssignments },
         addonAssignmentCreateHandler: jest.fn().mockResolvedValue({
           data: { userAddOnAssignmentCreate: nonStringAddOnAssignmentError },
         }),
@@ -192,7 +166,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
     it('emits an event with generic error code for an unknown error', async () => {
       createComponent({
-        props: { addOns },
+        props: { addOnAssignments },
         addonAssignmentCreateHandler: jest
           .fn()
           .mockResolvedValue({ data: { userAddOnAssignmentCreate: unknownAddOnAssignmentError } }),
@@ -206,7 +180,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
     it('emits an event with the generic error code', async () => {
       createComponent({
-        props: { addOns },
+        props: { addOnAssignments },
         addonAssignmentCreateHandler: jest.fn().mockRejectedValue(new Error('An error')),
       });
       findToggle().vm.$emit('change', true);
@@ -220,7 +194,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
   describe('when un-assigning an addon', () => {
     beforeEach(() => {
       createComponent({
-        props: { addOns: { applicable: [codeSuggestionsAddon], assigned: [codeSuggestionsAddon] } },
+        props: { addOnAssignments: [codeSuggestionsAddOn] },
       });
       findToggle().vm.$emit('change', false);
     });
@@ -245,7 +219,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
       expect(unassignAddOnHandler).toHaveBeenCalledWith({
         input: {
           addOnPurchaseId,
-          userId: globalUserId,
+          userId,
         },
       });
     });
@@ -256,11 +230,11 @@ describe('CodeSuggestionsAddonAssignment', () => {
   });
 
   describe('when error occurs while un-assigning add-on', () => {
-    const addOns = { applicable: [codeSuggestionsAddon], assigned: [codeSuggestionsAddon] };
+    const addOnAssignments = [codeSuggestionsAddOn];
 
     it('emits an event with the error code from response for a known error', async () => {
       createComponent({
-        props: { addOns },
+        props: { addOnAssignments },
         addOnAssignmentRemoveHandler: jest
           .fn()
           .mockResolvedValue({ data: { userAddOnAssignmentRemove: knownAddOnAssignmentError } }),
@@ -274,7 +248,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
     it('emits an event with generic error code for a non string error code', async () => {
       createComponent({
-        props: { addOns },
+        props: { addOnAssignments },
         addOnAssignmentRemoveHandler: jest.fn().mockResolvedValue({
           data: { userAddOnAssignmentRemove: nonStringAddOnAssignmentError },
         }),
@@ -288,7 +262,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
     it('emits an event with generic error code for an unknown error', async () => {
       createComponent({
-        props: { addOns },
+        props: { addOnAssignments },
         addOnAssignmentRemoveHandler: jest
           .fn()
           .mockResolvedValue({ data: { userAddOnAssignmentRemove: unknownAddOnAssignmentError } }),
@@ -302,7 +276,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
     it('emits an event with the generic error code', async () => {
       createComponent({
-        props: { addOns },
+        props: { addOnAssignments },
         addOnAssignmentRemoveHandler: jest.fn().mockRejectedValue(new Error('An error')),
       });
       findToggle().vm.$emit('change', false);
