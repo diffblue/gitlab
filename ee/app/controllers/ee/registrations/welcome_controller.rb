@@ -52,6 +52,7 @@ module EE
 
       override :successful_update_hooks
       def successful_update_hooks
+        # invites finish here
         finish_onboarding(current_user) unless onboarding_status.continue_full_onboarding?
 
         return unless onboarding_status.eligible_for_iterable_trigger?
@@ -63,7 +64,7 @@ module EE
       def signup_onboarding_path
         if onboarding_status.joining_a_project?
           finish_onboarding(current_user)
-          path_for_signed_in_user(current_user)
+          path_for_signed_in_user
         elsif onboarding_status.redirect_to_company_form?
           path = new_users_sign_up_company_path(passed_through_params)
           save_onboarding_step_url(path, current_user)

@@ -39,28 +39,25 @@ module EE
       })
     end
 
-    override :after_sign_up_path
-    def after_sign_up_path
-      # The sign in path for creating an account with sso will not have params as there are no
-      # leads that would start out there. So we need to protect for that here by using fetch
-      onboarding_params = request.env.fetch('omniauth.params', {}).slice('glm_source', 'glm_content', 'trial')
-
-      ::Gitlab::Utils.add_url_parameters(super, onboarding_params)
-    end
-
     override :perform_registration_tasks
     def perform_registration_tasks(user, provider)
       # We need to do this here since the subscription flow relies on what was set in the stored_location_for(:user)
       # that was set on initial redirect from the SubscriptionsController#new and super will wipe that out.
       # Then the IdentityVerificationController#success will get whatever is set in super instead of the subscription
       # path we desire.
-      super unless ::Onboarding::Status.new(params.to_unsafe_h.deep_symbolize_keys, session, user).subscription?
+      super unless onboarding_status.subscription?
 
       # This also protects the sub classes group saml and ldap from staring onboarding
       # as we don't want those to onboard.
       return unless provider.to_sym.in?(::AuthHelper.providers_for_base_controller)
 
-      start_onboarding!(after_sign_up_path, user)
+      start_onboarding!(onboarding_first_step_path, user)
+    end
+
+    def onboarding_params
+      # The sign in path for creating an account with sso will not have params as there are no
+      # leads that would start out there. So we need to protect for that here by using fetch
+      request.env.fetch('omniauth.params', {}).slice('glm_source', 'glm_content', 'trial')
     end
 
     override :sign_in_and_redirect_or_verify_identity

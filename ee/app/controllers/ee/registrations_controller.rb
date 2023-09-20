@@ -54,7 +54,7 @@ module EE
 
       custom_confirmation_instructions_service.set_token(save: false)
 
-      start_onboarding(after_sign_up_path, resource)
+      start_onboarding(onboarding_first_step_path, resource)
     end
 
     override :set_blocked_pending_approval?
@@ -106,11 +106,6 @@ module EE
           registration_details: user.registration_audit_details
         }
       })
-    end
-
-    override :after_sign_up_path
-    def after_sign_up_path
-      ::Gitlab::Utils.add_url_parameters(super, glm_tracking_params)
     end
 
     override :registration_path_params

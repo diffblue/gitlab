@@ -16,6 +16,8 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
       sign_in(user)
     end
 
+    it { is_expected.to render_template(:show) }
+
     it 'tracks render event' do
       get_show
 
@@ -60,18 +62,74 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
     end
 
     context 'when completed welcome step' do
-      let_it_be(:user) { create(:user, setup_for_company: true) }
+      context 'when setup_for_company is set to true' do
+        let_it_be(:user) { create(:user, setup_for_company: true) }
 
-      it 'does not track render event' do
-        get_show
+        it 'does not track render event' do
+          get_show
 
-        expect_no_snowplow_event(
-          category: 'registrations:welcome:show',
-          action: 'render',
-          user: user,
-          label: 'free_registration'
-        )
+          expect_no_snowplow_event(
+            category: 'registrations:welcome:show',
+            action: 'render',
+            user: user,
+            label: 'free_registration'
+          )
+        end
       end
+
+      context 'when setup_for_company is set to false' do
+        before do
+          user.update!(setup_for_company: false)
+          sign_in(user)
+        end
+
+        it { is_expected.to redirect_to(dashboard_projects_path) }
+      end
+    end
+
+    context 'when 2FA is required from group' do
+      before do
+        user = create(:user, require_two_factor_authentication_from_group: true)
+        sign_in(user)
+      end
+
+      it 'does not perform a redirect' do
+        expect(subject).not_to redirect_to(profile_two_factor_auth_path)
+      end
+    end
+
+    context 'when welcome step is completed' do
+      before do
+        user.update!(setup_for_company: true)
+      end
+
+      context 'when user is confirmed' do
+        before do
+          sign_in(user)
+        end
+
+        it { is_expected.to render_template(:show) }
+      end
+
+      context 'when user is not confirmed' do
+        before do
+          stub_application_setting_enum('email_confirmation_setting', 'hard')
+
+          sign_in(user)
+
+          user.update!(confirmed_at: nil)
+        end
+
+        it { is_expected.to redirect_to user_session_path }
+      end
+    end
+
+    render_views
+
+    it 'has the expected submission url' do
+      get_show
+
+      expect(response.body).to include("action=\"#{users_sign_up_welcome_path}\"")
     end
   end
 
@@ -129,6 +187,30 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
               user: user,
               label: 'free_registration'
             )
+          end
+
+          context 'when the new user already has any accepted group membership' do
+            let!(:member1) { create(:group_member, user: user) }
+
+            it 'redirects to the group activity page' do
+              expect(patch_update).to redirect_to(activity_group_path(member1.source))
+            end
+
+            context 'when the new user already has more than 1 accepted group membership' do
+              it 'redirects to the most recent membership group activity page' do
+                member2 = create(:group_member, user: user)
+
+                expect(patch_update).to redirect_to(activity_group_path(member2.source))
+              end
+            end
+
+            context 'when the member has an orphaned source at the time of the welcome' do
+              it 'redirects to the project dashboard page' do
+                member1.source.delete
+
+                expect(patch_update).to redirect_to(dashboard_projects_path)
+              end
+            end
           end
         end
 

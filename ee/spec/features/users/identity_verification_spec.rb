@@ -152,8 +152,6 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js,
 
       expect_verification_completed
 
-      fill_in_welcome_form
-
       stub_feature_flags(identity_verification_credit_card: true)
 
       user_signs_out
@@ -188,11 +186,6 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js,
 
   def random_code(code)
     (different_code = rand.to_s[2..7]) == code ? random_code(code) : different_code
-  end
-
-  def fill_in_welcome_form
-    select 'Software Developer', from: 'Role'
-    click_button 'Get started!'
   end
 
   def user_signs_out

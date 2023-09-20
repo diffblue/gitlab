@@ -29,7 +29,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
       expect_verification_completed
 
-      expect_to_see_welcome_page
+      expect_to_see_dashboard_page
     end
   end
 
@@ -45,7 +45,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
       expect_verification_completed
 
-      expect_to_see_welcome_page
+      expect_to_see_dashboard_page
     end
 
     context 'when the user requests a phone verification exemption' do
@@ -64,7 +64,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
         # hence skipping the verification successful badge.
         expect_verification_completed unless skip_email_validation
 
-        expect_to_see_welcome_page
+        expect_to_see_dashboard_page
       end
     end
   end
@@ -83,7 +83,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
       expect_verification_completed
 
-      expect_to_see_welcome_page
+      expect_to_see_dashboard_page
     end
 
     context 'and the user has a phone verification exemption' do
@@ -102,7 +102,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
         # hence skipping the verification successful badge.
         expect_verification_completed unless skip_email_validation
 
-        expect_to_see_welcome_page
+        expect_to_see_dashboard_page
       end
     end
   end
@@ -129,8 +129,9 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     context 'when the user is low risk' do
       let(:risk) { :low }
 
-      it 'does not verify the user' do
-        expect_to_see_welcome_page
+      it 'does not verify the user and lands on group activity page' do
+        expect(page).to have_current_path(activity_group_path(invitation.group))
+        expect(page).to have_content("You have been granted Developer access to group #{invitation.group.name}.")
       end
     end
 
@@ -169,8 +170,10 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     it_behaves_like 'registering a high risk user with identity verification'
   end
 
-  describe 'Subscription flow' do
+  describe 'Subscription flow', :saas do
     before do
+      stub_ee_application_setting(should_check_namespace_plan: true)
+
       visit new_subscriptions_path
       sign_up
     end
@@ -221,8 +224,8 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     click_button s_('IdentityVerification|Verify phone number')
   end
 
-  def expect_to_see_welcome_page
-    expect(page).to have_content(_(format('Welcome to GitLab, %{first_name}!', first_name: user.first_name)))
+  def expect_to_see_dashboard_page
+    expect(page).to have_content(_('Welcome to GitLab'))
   end
 
   def request_phone_exemption
