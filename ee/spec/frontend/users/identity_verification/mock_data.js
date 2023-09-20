@@ -11,8 +11,4 @@ export const mockCountry2 = {
   flag: 'AU',
 };
 
-export const COUNTRIES = [
-  mockCountry1,
-  mockCountry2,
-  { id: 'R', name: 'Random Country', internationalDialCode: '', flag: 'R' },
-];
+export const COUNTRIES = [mockCountry1, mockCountry2];
