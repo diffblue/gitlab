@@ -422,6 +422,36 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
       end
     end
 
+    context 'when merge_trains_skip_train_allowed param is specified' do
+      let(:params) { { merge_trains_skip_train_allowed: true } }
+
+      let(:request) do
+        put :update, params: { namespace_id: project.namespace, id: project, project: params }
+      end
+
+      before do
+        stub_licensed_features(merge_pipelines: true, merge_trains: true)
+      end
+
+      it 'updates the attribute' do
+        request
+
+        expect(project.merge_trains_skip_train_allowed).to be_truthy
+      end
+
+      context 'when license is not sufficient' do
+        before do
+          stub_licensed_features(merge_trains: false)
+        end
+
+        it 'does not update the attribute' do
+          request
+
+          expect(project.merge_trains_skip_train_allowed).to be_falsy
+        end
+      end
+    end
+
     context 'when auto_rollback_enabled param is specified' do
       let(:params) { { auto_rollback_enabled: true } }
 

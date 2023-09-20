@@ -28,6 +28,10 @@ module EE
       super && project.feature_available?(:auto_rollback)
     end
 
+    def merge_trains_skip_train_allowed?
+      merge_trains_skip_train_allowed && ::Feature.enabled?(:merge_trains_skip_train, project)
+    end
+
     private
 
     def merge_trains_disabled?(project)

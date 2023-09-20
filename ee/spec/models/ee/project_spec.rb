@@ -92,7 +92,8 @@ RSpec.describe Project, feature_category: :groups_and_projects do
           # EE only
           'auto_rollback_enabled' => '',
           'merge_pipelines_enabled' => '',
-          'merge_trains_enabled' => ''
+          'merge_trains_enabled' => '',
+          'merge_trains_skip_train_allowed' => ''
         }
       end
 

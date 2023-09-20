@@ -9,6 +9,8 @@ RSpec.describe ProjectCiCdSetting, feature_category: :continuous_integration do
     stub_feature_flags(disable_merge_trains: false)
   end
 
+  it { is_expected.to validate_inclusion_of(:merge_trains_skip_train_allowed).in_array([true, false]) }
+
   describe '#merge_pipelines_enabled?' do
     subject { project.merge_pipelines_enabled? }
 

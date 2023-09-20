@@ -36860,6 +36860,9 @@ msgstr ""
 msgid "ProjectSettings|Allow anyone to pull from Package Registry"
 msgstr ""
 
+msgid "ProjectSettings|Allow skipping the merge train"
+msgstr ""
+
 msgid "ProjectSettings|Always show thumbs-up and thumbs-down emoji buttons on issues, merge requests, and snippets."
 msgstr ""
 
@@ -37077,6 +37080,9 @@ msgid "ProjectSettings|Merge requests"
 msgstr ""
 
 msgid "ProjectSettings|Merge requests approved for merge are queued, and pipelines validate the combined results of the source and target branches before merge. %{link_start}What are merge trains?%{link_end}"
+msgstr ""
+
+msgid "ProjectSettings|Merge requests can be set to merge immediately without interrupting the merge train. Commits in earlier merge train pipelines might not get validated with immediately merged commits."
 msgstr ""
 
 msgid "ProjectSettings|Merge suggestions"
