@@ -44,7 +44,6 @@ query groupEpics(
         id
         iid
         title
-        titleHtml
         createdAt
         updatedAt
         startDate
