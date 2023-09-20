@@ -94,7 +94,7 @@ export default {
           :target="buyAddonTargetAttr"
           category="primary"
           variant="confirm"
-          data-qa-selector="purchase_more_storage"
+          data-testid="purchase-more-storage"
           class="gl-absolute gl-top-4 gl-right-4"
         >
           {{ $options.i18n.BUY_STORAGE }}
@@ -111,6 +111,7 @@ export default {
           label-class="gl-font-lg"
           :value="Number(purchasedStorage)"
           plain-zero
+          data-testid="storage-purchased"
         />
       </div>
       <template v-if="showPercentageInfo">
