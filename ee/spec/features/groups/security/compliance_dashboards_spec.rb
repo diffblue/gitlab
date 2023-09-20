@@ -9,8 +9,10 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
   let_it_be(:project) { create(:project, :repository, :public, namespace: group) }
   let_it_be(:project_2) { create(:project, :repository, :public, namespace: group) }
   let(:adherence_ff) { false }
+  let(:compliance_framework_ff) { false }
 
   before do
+    stub_feature_flags(compliance_framework_report_ui: compliance_framework_ff)
     stub_feature_flags(adherence_report_ui: adherence_ff)
     stub_licensed_features(group_level_compliance_dashboard: true)
     group.add_owner(user)
@@ -61,6 +63,32 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
 
       context 'when `Frameworks` tab is clicked' do
         it 'has the violations tab selected' do
+          page.within('.gl-tabs') do
+            click_link _('Frameworks')
+
+            expect(find('[aria-selected="true"]').text).to eq('Frameworks')
+          end
+        end
+      end
+    end
+
+    context 'with feature flag `compliance_framework_report_ui` enabled' do
+      let(:compliance_framework_ff) { true }
+
+      context 'when `Projects` tab is clicked' do
+        it 'has the projects tab selected' do
+          page.within('.gl-tabs') do
+            click_link _('Projects')
+
+            expect(find('[aria-selected="true"]').text).to eq('Projects')
+          end
+        end
+      end
+    end
+
+    context 'with feature flag `compliance_framework_report_ui` disabled' do
+      context 'when `Frameworks` tab is clicked' do
+        it 'has the frameworks tab selected' do
           page.within('.gl-tabs') do
             click_link _('Frameworks')
 

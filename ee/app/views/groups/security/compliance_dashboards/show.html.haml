@@ -11,4 +11,5 @@
   pipeline_configuration_full_path_enabled: can?(current_user, :admin_compliance_pipeline_configuration, @group),
   base_path: group_security_compliance_dashboard_path(@group),
   pipeline_configuration_enabled: @group.licensed_feature_available?(:compliance_pipeline_configuration).to_s,
-  adherence_report_ui_enabled: Feature.enabled?(:adherence_report_ui, @group).to_s } }
+  adherence_report_ui_enabled: Feature.enabled?(:adherence_report_ui, @group).to_s,
+  compliance_framework_report_ui_enabled: Feature.enabled?(:compliance_framework_report_ui, @group).to_s } }

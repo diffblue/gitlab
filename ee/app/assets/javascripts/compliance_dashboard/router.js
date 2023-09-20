@@ -2,7 +2,12 @@ import VueRouter from 'vue-router';
 
 import { joinPaths } from '~/lib/utils/url_utility';
 
-import { ROUTE_STANDARDS_ADHERENCE, ROUTE_FRAMEWORKS, ROUTE_VIOLATIONS } from './constants';
+import {
+  ROUTE_STANDARDS_ADHERENCE,
+  ROUTE_FRAMEWORKS,
+  ROUTE_PROJECTS,
+  ROUTE_VIOLATIONS,
+} from './constants';
 import ViolationsReport from './components/violations_report/report.vue';
 import FrameworksReport from './components/frameworks_report/report.vue';
 import StandardsReport from './components/standards_adherence_report/report.vue';
@@ -38,6 +43,15 @@ export function createRouter(basePath, props) {
     {
       path: '/frameworks',
       name: ROUTE_FRAMEWORKS,
+      component: FrameworksReport,
+      props: {
+        groupPath,
+        rootAncestorPath,
+      },
+    },
+    {
+      path: '/projects',
+      name: ROUTE_PROJECTS,
       component: FrameworksReport,
       props: {
         groupPath,

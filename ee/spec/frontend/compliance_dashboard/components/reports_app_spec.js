@@ -8,7 +8,12 @@ import ReportHeader from 'ee/compliance_dashboard/components/shared/report_heade
 import MergeCommitsExportButton from 'ee/compliance_dashboard/components/violations_report/shared/merge_commits_export_button.vue';
 import { stubComponent } from 'helpers/stub_component';
 import { mockTracking } from 'helpers/tracking_helper';
-import { ROUTE_FRAMEWORKS, ROUTE_VIOLATIONS, TABS } from 'ee/compliance_dashboard/constants';
+import {
+  ROUTE_FRAMEWORKS,
+  ROUTE_PROJECTS,
+  ROUTE_VIOLATIONS,
+  TABS,
+} from 'ee/compliance_dashboard/constants';
 
 describe('ComplianceReportsApp component', () => {
   let wrapper;
@@ -25,6 +30,7 @@ describe('ComplianceReportsApp component', () => {
   const findViolationsExportButton = () => wrapper.findByTestId('violations-export');
   const findFrameworkExportButton = () => wrapper.findByTestId('framework-export');
   const findTabs = () => wrapper.findComponent(GlTabs);
+  const findProjectsTab = () => wrapper.findByTestId('projects-tab');
   const findFrameworksTab = () => wrapper.findByTestId('frameworks-tab');
   const findViolationsTab = () => wrapper.findByTestId('violations-tab');
   const findStandardsAdherenceTab = () => wrapper.findByTestId('standards-adherence-tab');
@@ -48,6 +54,7 @@ describe('ComplianceReportsApp component', () => {
         },
         provide: {
           adherenceReportUiEnabled: false,
+          complianceFrameworkReportUiEnabled: false,
           ...provide,
         },
       }),
@@ -123,6 +130,10 @@ describe('ComplianceReportsApp component', () => {
       expect(findFrameworksTab().exists()).toBe(true);
     });
 
+    it('does not renders the projects tab', () => {
+      expect(findProjectsTab().exists()).toBe(false);
+    });
+
     it('passes the expected values to the header', () => {
       expect(findHeader().props()).toMatchObject({
         heading: __('Compliance center'),
@@ -149,6 +160,29 @@ describe('ComplianceReportsApp component', () => {
       });
 
       expect(findFrameworkExportButton().exists()).toBe(false);
+    });
+  });
+
+  describe('projects report', () => {
+    beforeEach(() => {
+      wrapper = createComponent(
+        defaultProps,
+        mount,
+        {
+          $route: {
+            name: ROUTE_PROJECTS,
+          },
+        },
+        { complianceFrameworkReportUiEnabled: true },
+      );
+    });
+
+    it('renders the projects tab', () => {
+      expect(findProjectsTab().exists()).toBe(true);
+    });
+
+    it('does not renders the frameworks report tab', () => {
+      expect(findFrameworksTab().exists()).toBe(false);
     });
   });
 

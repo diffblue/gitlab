@@ -39,6 +39,7 @@ export const FRAMEWORK_BADGE_SIZES = [FRAMEWORK_BADGE_SIZE_SM, FRAMEWORK_BADGE_S
 
 export const ROUTE_STANDARDS_ADHERENCE = 'standards_adherence';
 export const ROUTE_VIOLATIONS = 'violations';
+export const ROUTE_PROJECTS = 'projects';
 export const ROUTE_FRAMEWORKS = 'frameworks';
 export const TABS = [ROUTE_VIOLATIONS, ROUTE_FRAMEWORKS];
 

@@ -5,7 +5,13 @@ import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
 import Tracking from '~/tracking';
-import { ROUTE_STANDARDS_ADHERENCE, ROUTE_FRAMEWORKS, ROUTE_VIOLATIONS, TABS } from '../constants';
+import {
+  ROUTE_STANDARDS_ADHERENCE,
+  ROUTE_FRAMEWORKS,
+  ROUTE_PROJECTS,
+  ROUTE_VIOLATIONS,
+  TABS,
+} from '../constants';
 import MergeCommitsExportButton from './violations_report/shared/merge_commits_export_button.vue';
 import ReportHeader from './shared/report_header.vue';
 
@@ -22,7 +28,7 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   mixins: [Tracking.mixin()],
-  inject: ['adherenceReportUiEnabled'],
+  inject: ['adherenceReportUiEnabled', 'complianceFrameworkReportUiEnabled'],
   props: {
     mergeCommitsCsvExportPath: {
       type: String,
@@ -57,11 +63,14 @@ export default {
       return Boolean(this.frameworksCsvExportPath) && this.isFrameworksReport;
     },
     tabIndex() {
-      if (this.adherenceReportUiEnabled) {
-        return [ROUTE_STANDARDS_ADHERENCE].concat(TABS).indexOf(this.$route.name);
-      }
+      const adherenceTab = this.adherenceReportUiEnabled ? [ROUTE_STANDARDS_ADHERENCE] : [];
+      const complianceFrameworkTab = this.complianceFrameworkReportUiEnabled
+        ? [ROUTE_PROJECTS]
+        : [];
 
-      return TABS.indexOf(this.$route.name);
+      const currentTabs = [...adherenceTab, ...TABS, ...complianceFrameworkTab];
+
+      return currentTabs.indexOf(this.$route.name);
     },
   },
   methods: {
@@ -75,6 +84,7 @@ export default {
   ROUTE_STANDARDS: ROUTE_STANDARDS_ADHERENCE,
   ROUTE_VIOLATIONS,
   ROUTE_FRAMEWORKS,
+  ROUTE_PROJECTS,
   i18n: {
     export: s__('Compliance Center|Export full report as CSV'),
     exportTitle: {
@@ -86,6 +96,7 @@ export default {
       ),
     },
     frameworksTab: s__('Compliance Center|Frameworks'),
+    projectsTab: __('Projects'),
     heading: __('Compliance center'),
     standardsAdherenceTab: s__('Compliance Center|Standards Adherence'),
     subheading: __(
@@ -153,6 +164,16 @@ export default {
         @click="goTo($options.ROUTE_VIOLATIONS)"
       />
       <gl-tab
+        v-if="complianceFrameworkReportUiEnabled"
+        :title="$options.i18n.projectsTab"
+        :title-link-attributes="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
+          'data-qa-selector': 'projects_tab',
+        } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+        data-testid="projects-tab"
+        @click="goTo($options.ROUTE_PROJECTS)"
+      />
+      <gl-tab
+        v-else
         :title="$options.i18n.frameworksTab"
         :title-link-attributes="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
           'data-qa-selector': 'frameworks_tab',
