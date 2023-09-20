@@ -1,5 +1,5 @@
 <script>
-import { GlPagination } from '@gitlab/ui';
+import { GlKeysetPagination } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { PREV, NEXT } from '../constants';
@@ -8,48 +8,20 @@ import GeoReplicableItem from './geo_replicable_item.vue';
 export default {
   name: 'GeoReplicable',
   components: {
-    GlPagination,
+    GlKeysetPagination,
     GeoReplicableItem,
   },
   computed: {
-    ...mapState(['replicableItems', 'paginationData', 'useGraphQl']),
-    page: {
-      get() {
-        return this.paginationData.page;
-      },
-      set(newVal) {
-        let action;
-        if (this.useGraphQl) {
-          action = this.page > newVal ? PREV : NEXT;
-        }
-
-        this.setPage(newVal);
-        this.fetchReplicableItems(action);
-      },
-    },
-    paginationProps() {
-      if (!this.useGraphQl) {
-        return {
-          perPage: this.paginationData.perPage,
-          totalItems: this.paginationData.total,
-        };
-      }
-
-      return {
-        prevPage: this.paginationData.hasPreviousPage ? this.page - 1 : null,
-        nextPage: this.paginationData.hasNextPage ? this.page + 1 : null,
-      };
-    },
+    ...mapState(['replicableItems', 'paginationData']),
   },
   methods: {
-    ...mapActions(['setPage', 'fetchReplicableItems']),
+    ...mapActions(['fetchReplicableItems']),
     buildName(item) {
       return item.name ? item.name : item.id;
     },
-    buildRegistryId(item) {
-      return this.useGraphQl ? item.id : item.projectId;
-    },
   },
+  NEXT,
+  PREV,
 };
 </script>
 
@@ -57,13 +29,19 @@ export default {
   <section>
     <geo-replicable-item
       v-for="item in replicableItems"
-      :key="buildRegistryId(item)"
+      :key="item.id"
       :name="buildName(item)"
-      :registry-id="buildRegistryId(item)"
+      :registry-id="item.id"
       :sync-status="item.state.toLowerCase()"
       :last-synced="item.lastSyncedAt"
       :last-verified="item.verifiedAt"
     />
-    <gl-pagination v-model="page" v-bind="paginationProps" align="center" class="gl-mt-6" />
+    <div class="gl-display-flex gl-justify-content-center gl-mt-6">
+      <gl-keyset-pagination
+        v-bind="paginationData"
+        @next="fetchReplicableItems($options.NEXT)"
+        @prev="fetchReplicableItems($options.PREV)"
+      />
+    </div>
   </section>
 </template>

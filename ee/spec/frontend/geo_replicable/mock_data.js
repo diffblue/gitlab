@@ -40,12 +40,14 @@ export const MOCK_BASIC_FETCH_DATA_MAP = convertObjectPropsToCamelCase(
 
 export const MOCK_BASIC_GRAPHQL_DATA = [
   {
+    name: 'test 1',
     id: 'git/1',
     state: 'PENDING',
     lastSyncedAt: new Date().toString(),
     verifiedAt: new Date().toString(),
   },
   {
+    name: 'test 2',
     id: 'git/2',
     state: 'SYNCED',
     lastSyncedAt: null,

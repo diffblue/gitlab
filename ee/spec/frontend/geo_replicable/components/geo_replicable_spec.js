@@ -1,4 +1,4 @@
-import { GlPagination } from '@gitlab/ui';
+import { GlKeysetPagination } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
@@ -6,15 +6,13 @@ import Vuex from 'vuex';
 import GeoReplicable from 'ee/geo_replicable/components/geo_replicable.vue';
 import GeoReplicableItem from 'ee/geo_replicable/components/geo_replicable_item.vue';
 import initStore from 'ee/geo_replicable/store';
+import { PREV, NEXT } from 'ee/geo_replicable/constants';
 
 import * as types from 'ee/geo_replicable/store/mutation_types';
 import {
-  MOCK_BASIC_FETCH_DATA_MAP,
   MOCK_BASIC_GRAPHQL_DATA,
   MOCK_REPLICABLE_TYPE,
   MOCK_GRAPHQL_PAGINATION_DATA,
-  MOCK_RESTFUL_PAGINATION_DATA,
-  MOCK_GRAPHQL_REGISTRY,
 } from '../mock_data';
 
 Vue.use(Vuex);
@@ -24,7 +22,10 @@ describe('GeoReplicable', () => {
   let store;
 
   const createStore = (options) => {
-    store = initStore({ replicableType: MOCK_REPLICABLE_TYPE, graphqlFieldName: null, ...options });
+    store = initStore({
+      replicableType: MOCK_REPLICABLE_TYPE,
+      ...options,
+    });
     jest.spyOn(store, 'dispatch').mockImplementation();
   };
 
@@ -39,111 +40,60 @@ describe('GeoReplicable', () => {
   });
 
   const findGeoReplicableContainer = () => wrapper.find('section');
-  const findGlPagination = () => findGeoReplicableContainer().findComponent(GlPagination);
+  const findGlKeysetPagination = () =>
+    findGeoReplicableContainer().findComponent(GlKeysetPagination);
   const findGeoReplicableItem = () =>
     findGeoReplicableContainer().findAllComponents(GeoReplicableItem);
 
   describe('template', () => {
-    describe('with RESTful data', () => {
-      beforeEach(() => {
-        createStore();
-        store.commit(types.RECEIVE_REPLICABLE_ITEMS_SUCCESS, {
-          data: MOCK_BASIC_FETCH_DATA_MAP,
-          pagination: MOCK_RESTFUL_PAGINATION_DATA,
-        });
-        createComponent();
+    beforeEach(() => {
+      createStore();
+      store.commit(types.RECEIVE_REPLICABLE_ITEMS_SUCCESS, {
+        data: MOCK_BASIC_GRAPHQL_DATA,
+        pagination: MOCK_GRAPHQL_PAGINATION_DATA,
       });
-
-      it('renders the replicable container', () => {
-        expect(findGeoReplicableContainer().exists()).toBe(true);
-      });
-
-      describe('GeoReplicableItem', () => {
-        it('renders an instance for each replicableItem in the store', () => {
-          const replicableItemWrappers = findGeoReplicableItem();
-          const replicableItems = [...store.state.replicableItems];
-
-          for (let i = 0; i < replicableItemWrappers.length; i += 1) {
-            expect(replicableItemWrappers.at(i).props().registryId).toBe(
-              replicableItems[i].projectId,
-            );
-          }
-        });
-      });
+      createComponent();
     });
 
-    describe('with GraphQL data', () => {
-      beforeEach(() => {
-        createStore({ graphqlFieldName: MOCK_GRAPHQL_REGISTRY });
-        store.commit(types.RECEIVE_REPLICABLE_ITEMS_SUCCESS, {
-          data: MOCK_BASIC_GRAPHQL_DATA,
-          pagination: MOCK_RESTFUL_PAGINATION_DATA,
-        });
-        createComponent();
-      });
+    it('renders the replicable container', () => {
+      expect(findGeoReplicableContainer().exists()).toBe(true);
+    });
 
-      it('renders the replicable container', () => {
-        expect(findGeoReplicableContainer().exists()).toBe(true);
-      });
+    it('renders an instance for each replicableItem in the store', () => {
+      const replicableItemWrappers = findGeoReplicableItem();
+      const replicableItems = [...store.state.replicableItems];
 
-      describe('GeoReplicableItem', () => {
-        it('renders an instance for each replicableItem in the store', () => {
-          const replicableItemWrappers = findGeoReplicableItem();
-          const replicableItems = [...store.state.replicableItems];
+      for (let i = 0; i < replicableItemWrappers.length; i += 1) {
+        expect(replicableItemWrappers.at(i).props().registryId).toBe(replicableItems[i].id);
+      }
+    });
 
-          for (let i = 0; i < replicableItemWrappers.length; i += 1) {
-            expect(replicableItemWrappers.at(i).props().registryId).toBe(replicableItems[i].id);
-          }
-        });
-      });
+    it('GlKeysetPagination renders', () => {
+      createComponent();
+      expect(findGlKeysetPagination().exists()).toBe(true);
     });
   });
 
-  describe('GlPagination', () => {
-    describe('when graphqlFieldName is not defined', () => {
-      it('renders always', () => {
-        createStore();
-        createComponent();
-        expect(findGlPagination().exists()).toBe(true);
+  describe('changing the page', () => {
+    beforeEach(() => {
+      createStore();
+      store.commit(types.RECEIVE_REPLICABLE_ITEMS_SUCCESS, {
+        data: MOCK_BASIC_GRAPHQL_DATA,
+        pagination: MOCK_GRAPHQL_PAGINATION_DATA,
       });
+      createComponent();
     });
 
-    describe('when graphqlFieldName is defined', () => {
-      it('renders always', () => {
-        createStore({ graphqlFieldName: MOCK_GRAPHQL_REGISTRY });
-        createComponent();
-        expect(findGlPagination().exists()).toBe(true);
-      });
+    it('to previous page calls fetchReplicableItems with PREV', () => {
+      findGlKeysetPagination().vm.$emit('prev');
+
+      expect(store.dispatch).toHaveBeenCalledWith('fetchReplicableItems', PREV);
     });
-  });
 
-  describe.each`
-    graphqlFieldName         | currentPage | newPage | action
-    ${null}                  | ${1}        | ${2}    | ${undefined}
-    ${null}                  | ${2}        | ${1}    | ${undefined}
-    ${MOCK_GRAPHQL_REGISTRY} | ${1}        | ${2}    | ${'next'}
-    ${MOCK_GRAPHQL_REGISTRY} | ${2}        | ${1}    | ${'prev'}
-  `(`changing the page`, ({ graphqlFieldName, currentPage, newPage, action }) => {
-    describe(`when graphqlFieldName is ${graphqlFieldName}`, () => {
-      describe(`from ${currentPage} to ${newPage}`, () => {
-        beforeEach(() => {
-          createStore({ graphqlFieldName });
-          store.commit(types.RECEIVE_REPLICABLE_ITEMS_SUCCESS, {
-            data: MOCK_BASIC_FETCH_DATA_MAP,
-            pagination: { ...MOCK_GRAPHQL_PAGINATION_DATA, page: currentPage },
-          });
-          createComponent();
-          findGlPagination().vm.$emit(GlPagination.model.event, newPage);
-        });
+    it('to next page calls fetchReplicableItems with NEXT', () => {
+      findGlKeysetPagination().vm.$emit('next');
 
-        it(`should call setPage with ${newPage}`, () => {
-          expect(store.dispatch).toHaveBeenCalledWith('setPage', newPage);
-        });
-
-        it(`should call fetchReplicableItems with ${action}`, () => {
-          expect(store.dispatch).toHaveBeenCalledWith('fetchReplicableItems', action);
-        });
-      });
+      expect(store.dispatch).toHaveBeenCalledWith('fetchReplicableItems', NEXT);
     });
   });
 });

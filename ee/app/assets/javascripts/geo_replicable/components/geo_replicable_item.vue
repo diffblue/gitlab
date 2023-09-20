@@ -1,5 +1,5 @@
 <script>
-import { GlLink, GlButton } from '@gitlab/ui';
+import { GlButton } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
@@ -19,7 +19,6 @@ export default {
     lastVerified: s__('Geo|Last time verified'),
   },
   components: {
-    GlLink,
     GlButton,
     GeoReplicableTimeAgo,
     GeoReplicableStatus,
@@ -51,7 +50,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['verificationEnabled', 'useGraphQl']),
+    ...mapState(['verificationEnabled']),
     timeAgoArray() {
       return [
         {
@@ -68,13 +67,8 @@ export default {
         },
       ];
     },
-    showResyncAction() {
-      return !this.useGraphQl || this.glFeatures.geoRegistriesUpdateMutation;
-    },
-    showReverifyAction() {
-      return (
-        this.useGraphQl && this.verificationEnabled && this.glFeatures.geoRegistriesUpdateMutation
-      );
+    showActions() {
+      return this.glFeatures.geoRegistriesUpdateMutation;
     },
   },
   methods: {
@@ -91,17 +85,9 @@ export default {
       data-testid="replicable-item-header"
     >
       <geo-replicable-status :status="syncStatus" />
-      <gl-link
-        v-if="!useGraphQl"
-        class="gl-font-weight-bold gl-pr-3"
-        :href="`/${name}`"
-        target="_blank"
-        >{{ name }}</gl-link
-      >
-      <span v-if="useGraphQl" class="gl-font-weight-bold">{{ name }}</span>
-      <div v-if="showResyncAction || showReverifyAction">
+      <span class="gl-font-weight-bold">{{ name }}</span>
+      <div v-if="showActions">
         <gl-button
-          v-if="showResyncAction"
           data-testid="geo-resync-item"
           size="small"
           @click="
@@ -111,7 +97,7 @@ export default {
           {{ $options.i18n.resync }}
         </gl-button>
         <gl-button
-          v-if="showReverifyAction"
+          v-if="verificationEnabled"
           data-testid="geo-reverify-item"
           size="small"
           @click="
