@@ -338,6 +338,7 @@ export default {
               variant="confirm"
               class="gl-absolute! gl-bottom-2 gl-right-2 gl-rounded-base!"
               type="submit"
+              :aria-label="$options.i18n.GENIE_CHAT_SUBMIT_LABEL"
               :disabled="isLoading"
             />
           </template>
