@@ -273,7 +273,7 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
     let(:check_namespace_plan) { true }
 
     before do
-      stub_ee_application_setting(should_check_namespace_plan: check_namespace_plan)
+      allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_namespace_plan)
       stub_omniauth_setting(block_auto_created_users: false)
     end
 
