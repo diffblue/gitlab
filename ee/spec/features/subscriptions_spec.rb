@@ -10,9 +10,10 @@ RSpec.describe 'Subscriptions Content Security Policy', feature_category: :purch
   let_it_be(:default_csp_values) { "'self' https://some-cdn.test" }
   let_it_be(:onetrust_url) { 'https://*.onetrust.com' }
   let_it_be(:cookielaw_url) { 'https://cdn.cookielaw.org' }
-  let_it_be(:google_tag_manager_url) { '*.googletagmanager.com' }
   let_it_be(:google_analytics_url) { '*.google-analytics.com' }
   let_it_be(:google_analytics_google_url) { '*.analytics.google.com' }
+  let_it_be(:google_tag_manager_url) { '*.googletagmanager.com' }
+  let_it_be(:google_g_doubleclick_url) { '*.g.doubleclick.net' }
 
   before do
     stub_request(:get, /.*gitlab_plans.*/).to_return(status: 200, body: "{}")
@@ -43,7 +44,7 @@ RSpec.describe 'Subscriptions Content Security Policy', feature_category: :purch
     it { is_expected.to include("frame-src #{default_csp_values}") }
     it { is_expected.to include("child-src #{default_csp_values}") }
     it { is_expected.to include("connect-src #{cookielaw_url} #{onetrust_url} #{google_analytics_url} #{google_analytics_google_url} #{google_tag_manager_url}") }
-    it { is_expected.to include("img-src #{google_analytics_url} #{google_tag_manager_url}") }
+    it { is_expected.to include("img-src #{google_analytics_url} #{google_analytics_google_url} #{google_tag_manager_url} #{google_g_doubleclick_url}") }
   end
 
   context 'when just a default CSP config exists' do
@@ -55,7 +56,7 @@ RSpec.describe 'Subscriptions Content Security Policy', feature_category: :purch
 
     it { is_expected.to include("default-src #{default_csp_values}") }
     it { is_expected.to include("script-src #{default_csp_values} 'unsafe-eval' #{cookielaw_url} #{onetrust_url} #{google_tag_manager_url}") }
-    it { is_expected.to include("img-src #{default_csp_values} #{google_analytics_url} #{google_tag_manager_url}") }
+    it { is_expected.to include("img-src #{default_csp_values} #{google_analytics_url} #{google_analytics_google_url} #{google_tag_manager_url} #{google_g_doubleclick_url}") }
     it { is_expected.to include("connect-src #{default_csp_values} localhost #{cookielaw_url} #{onetrust_url} #{google_analytics_url} #{google_analytics_google_url} #{google_tag_manager_url}") }
   end
 end
