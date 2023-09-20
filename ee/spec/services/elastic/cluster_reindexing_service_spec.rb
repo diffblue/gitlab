@@ -190,29 +190,75 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
       end
 
       context 'reindexing slice failed' do
+        let(:failure_response) { { 'completed' => true, 'error' => { 'type' => 'search_phase_execution_exception' } } }
+
         before do
           cluster_reindexing_service.execute # run once to kick off reindexing for slices
 
-          allow(helper).to receive(:task_status).and_return({ 'completed' => true, 'error' => { 'type' => 'search_phase_execution_exception' } })
+          allow(helper).to receive(:task_status).and_return(failure_response)
         end
 
         context 'when retry limit is reached on a slice' do
           it 'errors and changes task state from reindexing to failed' do
-            10.times do
-              cluster_reindexing_service.execute
-            end
+            stub_const("#{described_class}::REINDEX_MAX_RETRY_LIMIT", 0)
 
             expect { cluster_reindexing_service.execute }.to change { task.reload.state }.from('reindexing').to('failure')
-            expect(task.reload.error_message).to match(/has failed with/)
+            expect(task.reload.error_message).to match(/Task failed. Retry limit reached. Aborting reindexing/)
           end
         end
 
         context 'before retry limit reached' do
-          it 'increases retry_attempt and reindexes the slice again' do
+          it 'increases retry_attempt and tries the slice again' do
             expect { cluster_reindexing_service.execute }.to change { slices.first.reload.retry_attempt }.by(1).and change { slices.first.reload.elastic_task }
             expect(task.reload.state).to eq('reindexing')
-            # once for initial reindex, once for retry
             expect(helper).to have_received(:reindex).with(from: subtask.index_name_from, to: subtask.index_name_to, max_slice: 3, slice: 0).twice
+          end
+        end
+
+        context 'when failures reported in response' do
+          let(:failure_response) do
+            {
+              completed: true,
+              response: {
+                failures: [
+                  {
+                    index: 'gitlab-test-users',
+                    id: 'user_1',
+                    cause: {
+                      type: 'strict_dynamic_mapping_exception',
+                      reason: 'mapping set to strict, dynamic introduction of [a_new_field] within [_doc] is not allowed'
+                    },
+                    status: 400
+                  },
+                  {
+                    index: 'gitlab-test-users',
+                    id: "user_2",
+                    cause: {
+                      type: 'strict_dynamic_mapping_exception',
+                      reason: 'mapping set to strict, dynamic introduction of [a_new_field] within [_doc] is not allowed'
+                    },
+                    status: 400
+                  }
+                ]
+              }
+            }.with_indifferent_access
+          end
+
+          context 'when retry limit is reached on a slice' do
+            it 'errors and changes task state from reindexing to failed' do
+              stub_const("#{described_class}::REINDEX_MAX_RETRY_LIMIT", 0)
+
+              expect { cluster_reindexing_service.execute }.to change { task.reload.state }.from('reindexing').to('failure')
+              expect(task.reload.error_message).to match(/Task failed. Retry limit reached. Aborting reindexing/)
+            end
+          end
+
+          context 'before retry limit reached' do
+            it 'increases retry_attempt and tries the slice again' do
+              expect { cluster_reindexing_service.execute }.to change { slices.first.reload.retry_attempt }.by(1).and change { slices.first.reload.elastic_task }
+              expect(task.reload.state).to eq('reindexing')
+              expect(helper).to have_received(:reindex).with(from: subtask.index_name_from, to: subtask.index_name_to, max_slice: 3, slice: 0).twice
+            end
           end
         end
       end
@@ -226,12 +272,10 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
 
         context 'when retry limit is reached on a slice' do
           it 'errors and changes task state from reindexing to failed' do
-            10.times do
-              cluster_reindexing_service.execute
-            end
+            stub_const("#{described_class}::REINDEX_MAX_RETRY_LIMIT", 0)
 
             expect { cluster_reindexing_service.execute }.to change { task.reload.state }.from('reindexing').to('failure')
-            expect(task.reload.error_message).to match(/total: \d+ is not equal/)
+            expect(task.reload.error_message).to match(/Task totals not equal. Retry limit reached. Aborting reindexing/)
           end
         end
 
