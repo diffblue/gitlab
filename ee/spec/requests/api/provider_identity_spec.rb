@@ -227,6 +227,47 @@ RSpec.describe API::ProviderIdentity, api: true, feature_category: :system_acces
           end
         end
       end
+
+      context "when DELETE uid" do
+        subject(:delete_identities) do
+          delete api("/groups/#{group.id}/#{provider_type}/#{uid}", current_user)
+        end
+
+        context "when user is not a group owner" do
+          let(:uid) { provider_extern_uid_1 }
+          let(:current_user) { maintainer }
+
+          it "throws forbidden error" do
+            delete_identities
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+
+        context "when user is a group owner" do
+          let(:current_user) { owner }
+
+          context "when invalid uid is passed" do
+            let(:uid) { "test_uid" }
+
+            it "returns not found error" do
+              delete_identities
+
+              expect(response).to have_gitlab_http_status(:not_found)
+            end
+          end
+
+          context "when valid uid is passed" do
+            let(:uid) { provider_extern_uid_1 }
+
+            it "delete the identity record" do
+              delete_identities
+
+              expect(response).to have_gitlab_http_status(:no_content)
+            end
+          end
+        end
+      end
     end
   end
 end
