@@ -20,12 +20,15 @@ class TrialRegistrationsController < RegistrationsController
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
   end
 
-  def new; end
+  override :new
+  def new
+    @resource = Users::AuthorizedBuildService.new(nil, {}).execute
+  end
 
   private
 
   def redirect_to_trial
-    redirect_to new_trial_url(params: request.query_parameters)
+    redirect_to new_trial_path(request.query_parameters)
   end
 
   override :after_sign_up_path
@@ -33,20 +36,12 @@ class TrialRegistrationsController < RegistrationsController
     ::Gitlab::Utils.add_url_parameters(super, { trial: true })
   end
 
-  def sign_up_params
-    ensure_correct_params!
-
-    if params[:user]
-      params.require(:user).permit(*sign_up_params_attributes)
-    else
-      {}
-    end
-  end
-
+  override :sign_up_params_attributes
   def sign_up_params_attributes
-    [:first_name, :last_name, :username, :email, :password, :skip_confirmation]
+    [:first_name, :last_name, :username, :email, :password]
   end
 
+  override :resource
   def resource
     @resource ||= Users::AuthorizedBuildService.new(current_user, sign_up_params).execute
   end
