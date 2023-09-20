@@ -30575,6 +30575,8 @@ CREATE UNIQUE INDEX i_bulk_import_trackers_id_batch_number ON bulk_import_batch_
 
 CREATE INDEX i_compliance_frameworks_on_id_and_created_at ON compliance_management_frameworks USING btree (id, created_at, pipeline_configuration_full_path);
 
+CREATE INDEX i_compliance_violations_for_export ON merge_requests_compliance_violations USING btree (target_project_id, id);
+
 CREATE INDEX i_compliance_violations_on_project_id_merged_at_and_id ON merge_requests_compliance_violations USING btree (target_project_id, merged_at, id);
 
 CREATE INDEX i_compliance_violations_on_project_id_reason_and_id ON merge_requests_compliance_violations USING btree (target_project_id, reason, id);
