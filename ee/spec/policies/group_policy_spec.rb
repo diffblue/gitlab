@@ -2982,81 +2982,28 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
 
     context 'for a member role with read_vulnerability true' do
-      context 'with custom_roles_on_groups FF enabled' do
-        before do
-          stub_feature_flags(custom_roles_on_groups: [parent_group])
-        end
+      let(:member_role_abilities) { { read_vulnerability: true } }
+      let(:allowed_abilities) { [:read_group_security_dashboard] }
 
-        let(:member_role_abilities) { { read_vulnerability: true } }
-        let(:allowed_abilities) { [:read_group_security_dashboard] }
+      it_behaves_like 'custom roles abilities'
 
-        it_behaves_like 'custom roles abilities'
-
-        it 'does not enable to admin_vulnerability' do
-          expect(subject).to be_disallowed(:admin_vulnerability)
-        end
-      end
-
-      context 'with custom_roles_on_groups FF disabled' do
-        before do
-          stub_feature_flags(custom_roles_on_groups: false)
-          create_member_role(group_member_guest)
-        end
-
-        let(:disallowed_abilities) do
-          [:read_vulnerability]
-        end
-
-        it { is_expected.to be_disallowed(*disallowed_abilities) }
+      it 'does not enable to admin_vulnerability' do
+        expect(subject).to be_disallowed(:admin_vulnerability)
       end
     end
 
     context 'for a member role with admin_vulnerability true' do
-      context 'with custom_roles_on_groups FF enabled' do
-        before do
-          stub_feature_flags(custom_roles_on_groups: [parent_group])
-        end
+      let(:member_role_abilities) { { read_vulnerability: true, admin_vulnerability: true } }
+      let(:allowed_abilities) { [:read_group_security_dashboard, :admin_vulnerability] }
 
-        let(:member_role_abilities) { { read_vulnerability: true, admin_vulnerability: true } }
-        let(:allowed_abilities) { [:read_group_security_dashboard, :admin_vulnerability] }
-
-        it_behaves_like 'custom roles abilities'
-      end
-
-      context 'with custom_roles_on_groups FF disabled' do
-        before do
-          stub_feature_flags(custom_roles_on_groups: false)
-          create_member_role(group_member_guest)
-        end
-
-        let(:disallowed_abilities) { [:admin_vulnerability] }
-
-        it { is_expected.to be_disallowed(*disallowed_abilities) }
-      end
+      it_behaves_like 'custom roles abilities'
     end
 
     context 'for a member role with read_dependency true' do
-      context 'with custom_roles_on_groups FF enabled' do
-        before do
-          stub_feature_flags(custom_roles_on_groups: [parent_group])
-        end
+      let(:member_role_abilities) { { read_dependency: true } }
+      let(:allowed_abilities) { [:read_dependency] }
 
-        let(:member_role_abilities) { { read_dependency: true } }
-        let(:allowed_abilities) { [:read_dependency] }
-
-        it_behaves_like 'custom roles abilities'
-      end
-
-      context 'with custom_roles_on_groups FF disabled' do
-        before do
-          stub_feature_flags(custom_roles_on_groups: false)
-          create_member_role(group_member_guest)
-        end
-
-        let(:disallowed_abilities) { [:read_dependency] }
-
-        it { is_expected.to be_disallowed(*disallowed_abilities) }
-      end
+      it_behaves_like 'custom roles abilities'
     end
   end
 end
