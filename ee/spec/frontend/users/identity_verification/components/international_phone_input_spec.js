@@ -1,12 +1,11 @@
-import { GlForm, GlButton } from '@gitlab/ui';
+import { GlForm, GlButton, GlFormInput, GlInputGroupText } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-
 import { createAlert } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
@@ -39,11 +38,11 @@ describe('International Phone input component', () => {
   const findCountrySelect = () => wrapper.findByTestId('country-form-select');
 
   const findPhoneNumberFormGroup = () => wrapper.findByTestId('phone-number-form-group');
-  const findPhoneNumberInput = () => wrapper.findByTestId('phone-number-form-input');
+  const findPhoneNumberInput = () => wrapper.findComponent(GlFormInput);
+  const findInternationalDialCode = () => wrapper.findComponent(GlInputGroupText);
 
-  const expectedCountryText = (country) =>
-    `${country.flag} ${country.name} +${country.internationalDialCode}`;
-  const expectedCountryValue = (country) => `${country.id}+${country.internationalDialCode}`;
+  const countryText = (country) =>
+    `${country.flag} ${country.name} (+${country.internationalDialCode})`;
 
   const enterPhoneNumber = (value) => findPhoneNumberInput().vm.$emit('input', value);
   const submitForm = () => findForm().vm.$emit('submit', { preventDefault: jest.fn() });
@@ -61,8 +60,8 @@ describe('International Phone input component', () => {
     return mockApollo;
   };
 
-  const createComponent = (provide = {}) => {
-    wrapper = shallowMountExtended(InternationalPhoneInput, {
+  const createComponent = (provide = {}, mountFn = shallowMountExtended) => {
+    wrapper = mountFn(InternationalPhoneInput, {
       apolloProvider: createMockApolloProvider(),
       provide: {
         phoneNumber: {
@@ -89,35 +88,70 @@ describe('International Phone input component', () => {
     });
 
     it('should have label', () => {
-      expect(findCountryFormGroup().attributes('label')).toBe(wrapper.vm.$options.i18n.dialCode);
+      expect(findCountryFormGroup().attributes('label')).toBe('Country or region');
     });
 
-    it('should filter out options without international dial code', () => {
-      expect(COUNTRIES).toHaveLength(3);
-
-      const options = findCountrySelect().findAll('option');
-
-      expect(options).toHaveLength(2);
-      expect(options.at(0).text()).toBe(expectedCountryText(mockCountry1));
-      expect(options.at(1).text()).toBe(expectedCountryText(mockCountry2));
+    it('renders a country selector listbox', () => {
+      expect(findCountrySelect().props()).toMatchObject({
+        searchable: true,
+        block: true,
+        items: [
+          {
+            value: mockCountry1.id,
+            text: countryText(mockCountry1),
+            name: mockCountry1.name,
+            internationalDialCode: mockCountry1.internationalDialCode,
+          },
+          {
+            value: mockCountry2.id,
+            text: countryText(mockCountry2),
+            name: mockCountry2.name,
+            internationalDialCode: mockCountry2.internationalDialCode,
+          },
+        ],
+      });
     });
 
     it('should have default set to US', () => {
-      expect(findCountrySelect().attributes('value')).toBe(expectedCountryValue(mockCountry1));
+      expect(findCountrySelect().attributes('selected')).toBe('US');
+      expect(findCountrySelect().props('toggleText')).toBe(countryText(mockCountry1));
     });
 
-    it('should emit the change event when a new option is selected', async () => {
-      await findCountrySelect().findAll('option').at(1).setSelected();
+    it('should render international dial code', () => {
+      createComponent({}, mountExtended);
+
+      expect(findInternationalDialCode().text()).toBe(`+${mockCountry1.internationalDialCode}`);
+    });
+
+    it('filters the country list on user search', async () => {
+      findCountrySelect().vm.$emit('search', 'AU');
       await nextTick();
 
-      expect(findCountrySelect().find('option:checked').element.value).toBe(
-        expectedCountryValue(mockCountry2),
-      );
+      expect(findCountrySelect().props('items')).toEqual([
+        {
+          value: 'AU',
+          text: countryText(mockCountry2),
+          name: mockCountry2.name,
+          internationalDialCode: mockCountry2.internationalDialCode,
+        },
+      ]);
+    });
+
+    it('updates country field with the name of selected country', async () => {
+      createComponent({}, mountExtended);
+
+      findCountrySelect().vm.$emit('select', 'AU');
+      await nextTick();
+
+      expect(findCountrySelect().props('toggleText')).toBe(countryText(mockCountry2));
+      expect(findInternationalDialCode().text()).toBe(`+${mockCountry2.internationalDialCode}`);
     });
 
     it('should render injected value', () => {
-      createComponent({ country: 'AU', internationalDialCode: '61' });
-      expect(findCountrySelect().attributes('value')).toBe(expectedCountryValue(mockCountry2));
+      createComponent({ country: 'AU' });
+
+      expect(findCountrySelect().attributes('selected')).toBe('AU');
+      expect(findCountrySelect().props('toggleText')).toBe(countryText(mockCountry2));
     });
   });
 
@@ -127,9 +161,7 @@ describe('International Phone input component', () => {
     });
 
     it('should have label', () => {
-      expect(findPhoneNumberFormGroup().attributes('label')).toBe(
-        wrapper.vm.$options.i18n.phoneNumber,
-      );
+      expect(findPhoneNumberFormGroup().attributes('label')).toBe('Phone number');
     });
 
     it('should be of type tel', () => {

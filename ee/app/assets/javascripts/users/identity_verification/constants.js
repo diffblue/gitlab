@@ -3,7 +3,6 @@ import { s__, sprintf } from '~/locale';
 // follows E.164 standard - https://en.wikipedia.org/wiki/E.164
 export const MAX_PHONE_NUMBER_LENGTH = 12;
 export const DEFAULT_COUNTRY = 'US';
-export const DEFAULT_INTERNATIONAL_DIAL_CODE = '1';
 
 export const I18N_PHONE_NUMBER_BLANK_ERROR = s__('IdentityVerification|Phone number is required.');
 export const I18N_PHONE_NUMBER_NAN_ERROR = s__(

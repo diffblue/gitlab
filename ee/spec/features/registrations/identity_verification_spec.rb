@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Identity Verification', :js, feature_category: :instance_resiliency do
   include IdentityVerificationHelpers
+  include ListboxHelpers
 
   before do
     stub_application_setting_enum('email_confirmation_setting', 'hard')
@@ -206,16 +207,19 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   end
 
   def verify_phone_number
-    phone_number = '311234567890'
+    phone_number = '400000000'
     verification_code = '4319315'
     stub_telesign_verification
 
-    page.find('[data-testid="country-form-select"]').find("option[value$='+#{phone_number.first(2)}']").select_option
-    fill_in 'phone_number', with: phone_number.from(2)
+    select_from_listbox('🇦🇺 Australia (+61)', from: '🇺🇸 United States of America (+1)')
+
+    fill_in 'phone_number', with: phone_number
     click_button s_('IdentityVerification|Send code')
 
-    expect(page).to have_content(format(s_("IdentityVerification|We've sent a verification code to +%{phoneNumber}"),
-      phoneNumber: phone_number))
+    expect(page).to have_content(
+      format(s_("IdentityVerification|We've sent a verification code to +%{phoneNumber}"),
+        phoneNumber: '61400000000')
+    )
 
     fill_in 'verification_code', with: verification_code
     click_button s_('IdentityVerification|Verify phone number')

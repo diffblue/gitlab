@@ -23829,6 +23829,11 @@ msgstr ""
 msgid "Identities"
 msgstr ""
 
+msgid "IdentityVerification|%d country found"
+msgid_plural "IdentityVerification|%d countries found"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "IdentityVerification|%{linkStart}Enter a new phone number%{linkEnd}"
 msgstr ""
 
@@ -23851,6 +23856,9 @@ msgid "IdentityVerification|Complete verification to sign in."
 msgstr ""
 
 msgid "IdentityVerification|Confirm your email address"
+msgstr ""
+
+msgid "IdentityVerification|Country or region"
 msgstr ""
 
 msgid "IdentityVerification|Didn't receive a code?"
@@ -23895,9 +23903,6 @@ msgstr ""
 msgid "IdentityVerification|If you've lost access to the email associated to this account or having trouble with the code, %{link_start}here are some other steps you can take.%{link_end}"
 msgstr ""
 
-msgid "IdentityVerification|International dial code"
-msgstr ""
-
 msgid "IdentityVerification|Maximum login attempts exceeded. Wait %{interval} and try again."
 msgstr ""
 
@@ -23920,6 +23925,9 @@ msgid "IdentityVerification|Please enter a valid email address."
 msgstr ""
 
 msgid "IdentityVerification|Resend code"
+msgstr ""
+
+msgid "IdentityVerification|Select country or region"
 msgstr ""
 
 msgid "IdentityVerification|Send a new code"
