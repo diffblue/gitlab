@@ -75,6 +75,13 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
 
   shared_examples 'success response' do
     it 'returns expected response' do
+      expect(Gitlab::AppLogger).to receive(:info).with(
+        message: 'User AddOn assignment removed',
+        user: remove_user.username.to_s,
+        add_on: add_on_purchase.add_on.name,
+        namespace: namespace.path
+      )
+
       expect do
         post_graphql_mutation(mutation, current_user: current_user)
       end.to change { add_on_purchase.assigned_users.where(user: remove_user).count }.by(-1)

@@ -28,6 +28,8 @@ module Mutations
 
           assignment.destroy!
 
+          log_event
+
           {
             add_on_purchase: add_on_purchase,
             user: user_to_be_removed,
@@ -51,6 +53,15 @@ module Mutations
 
         def feature_enabled?
           Feature.enabled?(:hamilton_seat_management)
+        end
+
+        def log_event
+          Gitlab::AppLogger.info(
+            message: 'User AddOn assignment removed',
+            user: user_to_be_removed.username.to_s,
+            add_on: add_on_purchase.add_on.name,
+            namespace: add_on_purchase.namespace.path
+          )
         end
       end
     end
