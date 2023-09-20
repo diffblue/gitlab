@@ -2,8 +2,8 @@
 
 module Types
   module Ai
-    class MessageType < Types::BaseObject
-      graphql_name 'AiMessage'
+    class DeprecatedMessageType < Types::BaseObject
+      graphql_name 'DeprecatedAiMessage'
 
       authorize :read_ai_message
 
