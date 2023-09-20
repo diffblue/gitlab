@@ -27596,9 +27596,6 @@ msgstr ""
 msgid "Learn more about shards and replicas in the %{configuration_link_start}Advanced Search configuration%{configuration_link_end} documentation. Changes don't take place until you %{recreated_link_start}recreate%{recreated_link_end} the index."
 msgstr ""
 
-msgid "Learn more in the"
-msgstr ""
-
 msgid "Learn more."
 msgstr ""
 
@@ -41673,9 +41670,6 @@ msgstr ""
 msgid "Schedules to merge this merge request (%{strategy})."
 msgstr ""
 
-msgid "Scheduling Pipelines"
-msgstr ""
-
 msgid "Scope"
 msgstr ""
 
@@ -47533,9 +47527,6 @@ msgid "The password for your GitLab account on %{link_to_gitlab} has successfull
 msgstr ""
 
 msgid "The pipeline has been deleted"
-msgstr ""
-
-msgid "The pipelines schedule runs pipelines in the future, repeatedly, for specific branches or tags. Those scheduled pipelines will inherit limited project access based on their associated user."
 msgstr ""
 
 msgid "The project has already been added to your dashboard."
@@ -56933,9 +56924,6 @@ msgid "personal access tokens"
 msgstr ""
 
 msgid "pipeline"
-msgstr ""
-
-msgid "pipeline schedules documentation"
 msgstr ""
 
 msgid "pipelineEditorWalkthrough|Let's do this!"
