@@ -24,7 +24,8 @@ RSpec.describe 'Signup', feature_category: :system_access do
   end
 
   context 'with a user cap set', :js do
-    let_it_be(:admin) { create(:user, :admin) }
+    let_it_be(:admin, freeze: true) { create(:user, :admin) }
+    let(:new_user) { build(:user) }
 
     before do
       stub_application_setting(require_admin_approval_after_user_signup: false)
@@ -32,18 +33,12 @@ RSpec.describe 'Signup', feature_category: :system_access do
       stub_application_setting(new_user_signups_cap: 3)
 
       visit new_user_registration_path
-
-      fill_in 'new_user_username', with: 'bang'
-      fill_in 'new_user_email', with: 'bigbang@example.com'
-      fill_in 'new_user_first_name', with: 'Big'
-      fill_in 'new_user_last_name', with: 'Bang'
-      fill_in 'new_user_password', with: User.random_password
     end
 
     context 'when the cap has not been reached' do
       before do
         perform_enqueued_jobs do
-          click_button 'Register'
+          fill_in_sign_up_form(new_user)
         end
       end
 
@@ -68,7 +63,7 @@ RSpec.describe 'Signup', feature_category: :system_access do
 
       it 'sends notification email to the admin', :sidekiq_inline do
         perform_enqueued_jobs do
-          click_button 'Register'
+          fill_in_sign_up_form(new_user)
         end
 
         cap_reached_notification_email = ActionMailer::Base.deliveries.find do |m|

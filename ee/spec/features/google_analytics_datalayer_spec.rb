@@ -5,9 +5,8 @@ require 'spec_helper'
 RSpec.describe 'GitLab.com Google Analytics DataLayer', :js, feature_category: :application_instrumentation do
   include JavascriptFormHelper
 
-  let!(:google_tag_manager_id) { 'GTM-WWKMTWS' }
-  let!(:user_attrs) { attributes_for(:user, first_name: 'GitLab', last_name: 'GitLab', company_name: 'GitLab', phone_number: '555-555-5555') }
-
+  let(:google_tag_manager_id) { 'GTM-WWKMTWS' }
+  let(:new_user) { build(:user) }
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
@@ -25,13 +24,7 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :js, feature_category: :
 
         prevent_submit_for('#new_new_user')
 
-        fill_in 'new_user_first_name', with: user_attrs[:first_name]
-        fill_in 'new_user_last_name',  with: user_attrs[:last_name]
-        fill_in 'new_user_username',   with: user_attrs[:username]
-        fill_in 'new_user_email',      with: user_attrs[:email]
-        fill_in 'new_user_password',   with: user_attrs[:password]
-
-        click_button 'Continue'
+        fill_in_sign_up_form(new_user, 'Continue')
 
         data_layer = execute_script('return window.dataLayer')
         last_event_in_data_layer = data_layer[-1]
@@ -48,13 +41,7 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :js, feature_category: :
 
         prevent_submit_for('#new_new_user')
 
-        fill_in 'new_user_first_name', with: user_attrs[:first_name]
-        fill_in 'new_user_last_name',  with: user_attrs[:last_name]
-        fill_in 'new_user_username',   with: user_attrs[:username]
-        fill_in 'new_user_email',      with: user_attrs[:email]
-        fill_in 'new_user_password',   with: user_attrs[:password]
-
-        click_button 'Register'
+        fill_in_sign_up_form(new_user)
 
         data_layer = execute_script('return window.dataLayer')
         last_event_in_data_layer = data_layer[-1]
