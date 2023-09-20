@@ -49,6 +49,8 @@ describe('EpicHeaderActions component', () => {
   const findNewEpicButton = () => wrapper.findByRole('link', { name: 'New epic' });
   const findNotificationToggle = () => wrapper.findComponent(SidebarSubscriptionsWidget);
   const findReopenEpicButton = () => wrapper.findByRole('button', { name: 'Reopen epic' });
+  const findActionsDropdownMobile = () => wrapper.findByTestId('actions-dropdown-mobile');
+  const findActionsDropdownDesktop = () => wrapper.findByTestId('actions-dropdown-desktop');
 
   describe('edit button', () => {
     beforeEach(() => {
@@ -134,6 +136,11 @@ describe('EpicHeaderActions component', () => {
         it('does not render the copy reference dropdown item', () => {
           expect(findCopyReferenceDropdownItem().exists()).toBe(false);
         });
+
+        it('does not pass bordered property to actions dropdown', () => {
+          expect(findActionsDropdownMobile().props('bordered')).toBe(false);
+          expect(findActionsDropdownDesktop().props('bordered')).toBe(false);
+        });
       });
 
       describe('when the flag is on', () => {
@@ -147,6 +154,11 @@ describe('EpicHeaderActions component', () => {
 
         it('renders the copy reference dropdown item', () => {
           expect(findCopyReferenceDropdownItem().exists()).toBe(true);
+        });
+
+        it('pass bordered property to actions dropdown', () => {
+          expect(findActionsDropdownMobile().props('bordered')).toBe(true);
+          expect(findActionsDropdownDesktop().props('bordered')).toBe(true);
         });
       });
     });
