@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::TrialStatus, feature_category: :experimentation_conversion do
+RSpec.describe GitlabSubscriptions::TrialStatus, feature_category: :acquisition do
   describe '#ends_on' do
     it 'exposes the passed in parameter' do
       expect(described_class.new(0, 1).ends_on).to eq(1)

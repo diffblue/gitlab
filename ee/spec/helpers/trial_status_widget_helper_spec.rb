@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe TrialStatusWidgetHelper, :saas, feature_category: :experimentation_conversion do
+RSpec.describe TrialStatusWidgetHelper, :saas, feature_category: :acquisition do
   describe 'data attributes for mounting Vue components', :freeze_time do
     let(:trial_length) { 30 } # days
     let(:trial_days_remaining) { 18 }

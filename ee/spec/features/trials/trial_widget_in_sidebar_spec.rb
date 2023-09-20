@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial Widget in Sidebar', :saas, :js, feature_category: :experimentation_conversion do
+RSpec.describe 'Trial Widget in Sidebar', :saas, :js, feature_category: :acquisition do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) do
     create(:group).tap do |record|

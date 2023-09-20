@@ -4,7 +4,7 @@ module API
   class Experiments < ::API::Base
     before { authorize_read_experiments! }
 
-    feature_category :experimentation_expansion
+    feature_category :acquisition
 
     resource :experiments do
       desc 'List all experiments' do

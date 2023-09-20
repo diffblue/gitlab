@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Experiments, feature_category: :experimentation_expansion do
+RSpec.describe API::Experiments, feature_category: :acquisition do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, name: 'GitLab.com', path: 'gitlab-com') }
 
