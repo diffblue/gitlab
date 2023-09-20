@@ -213,7 +213,7 @@ module API
     end
 
     def check_namespace_access(namespace)
-      return namespace if can?(current_user, :read_namespace, namespace)
+      return namespace if can?(current_user, :read_namespace_via_membership, namespace)
 
       not_found!('Namespace')
     end

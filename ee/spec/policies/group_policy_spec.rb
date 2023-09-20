@@ -2512,6 +2512,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
           expect_disallowed(*maintainer_permissions)
           expect_disallowed(*owner_permissions)
           expect_disallowed(:read_namespace)
+          expect_disallowed(:read_namespace_via_membership)
         end
       end
     end
