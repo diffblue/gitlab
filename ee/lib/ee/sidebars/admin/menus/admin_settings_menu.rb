@@ -22,9 +22,7 @@ module EE
           private
 
           def roles_and_permissions_menu_item
-            unless ::Feature.enabled?(:custom_roles_ui_self_managed) && ::License.feature_available?(:custom_roles)
-              return ::Sidebars::NilMenuItem.new(item_id: :roles_and_permissions)
-            end
+            return ::Sidebars::NilMenuItem.new(item_id: :roles_and_permissions) unless custom_roles_enabled?
 
             ::Sidebars::MenuItem.new(
               title: _('Roles and Permissions'),
@@ -32,6 +30,10 @@ module EE
               active_routes: { path: 'admin/application_settings/roles_and_permissions#index' },
               item_id: :roles_and_permissions
             )
+          end
+
+          def custom_roles_enabled?
+            ::Feature.enabled?(:custom_roles_ui_self_managed) && ::License.feature_available?(:custom_roles)
           end
 
           def advanced_search_menu_item

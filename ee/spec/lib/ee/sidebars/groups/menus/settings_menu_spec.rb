@@ -27,33 +27,35 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
       describe 'Roles and permissions menu', feature_category: :user_management do
         let(:item_id) { :roles_and_permissions }
 
-        before do
-          stub_licensed_features(custom_roles: true)
-        end
-
-        it { is_expected.to be_present }
-
-        context 'when `custom_roles_ui_saas` feature flag is disabled' do
+        context 'when custom_roles feature is licensed' do
           before do
-            stub_feature_flags(custom_roles_ui_saas: false)
+            stub_licensed_features(custom_roles: true)
           end
 
-          it { is_expected.not_to be_present }
-        end
+          it { is_expected.to be_present }
 
-        context 'when it is not a root group' do
-          let_it_be_with_refind(:subgroup) do
-            create(:group, :private, parent: group).tap do |g|
-              g.add_owner(owner)
+          context 'when `custom_roles_ui_saas` feature flag is disabled' do
+            before do
+              stub_feature_flags(custom_roles_ui_saas: false)
             end
+
+            it { is_expected.not_to be_present }
           end
 
-          let(:container) { subgroup }
+          context 'when it is not a root group' do
+            let_it_be_with_refind(:subgroup) do
+              create(:group, :private, parent: group).tap do |g|
+                g.add_owner(owner)
+              end
+            end
 
-          it { is_expected.not_to be_present }
+            let(:container) { subgroup }
+
+            it { is_expected.not_to be_present }
+          end
         end
 
-        context 'when custome_roles feature is not included in the license' do
+        context 'when custom_roles feature is not licensed' do
           before do
             stub_licensed_features(custom_roles: false)
           end

@@ -38,10 +38,7 @@ module EE
           private
 
           def roles_and_permissions_menu_item
-            unless ::Feature.enabled?(:custom_roles_ui_saas, context.group) &&
-                context.group.root? && context.group.licensed_feature_available?(:custom_roles)
-              return ::Sidebars::NilMenuItem.new(item_id: :roles_and_permissions)
-            end
+            return ::Sidebars::NilMenuItem.new(item_id: :roles_and_permissions) unless custom_roles_enabled?
 
             ::Sidebars::MenuItem.new(
               title: _('Roles and Permissions'),
@@ -49,6 +46,11 @@ module EE
               active_routes: { path: 'roles_and_permissions#index' },
               item_id: :roles_and_permissions
             )
+          end
+
+          def custom_roles_enabled?
+            ::Feature.enabled?(:custom_roles_ui_saas, context.group) &&
+              context.group.root? && context.group.licensed_feature_available?(:custom_roles)
           end
 
           def ldap_sync_menu_item
