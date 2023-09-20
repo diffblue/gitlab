@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Company Information', :js, :saas, feature_category: :experimentation_adoption do
+RSpec.describe 'Company Information', :js, :saas, feature_category: :activation do
   include SaasRegistrationHelpers
 
   let_it_be(:user) { create(:user) }

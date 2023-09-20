@@ -5,7 +5,7 @@ module Projects
     class DiscoverController < Projects::ApplicationController
       include SecurityAndCompliancePermissions
 
-      feature_category :experimentation_activation
+      feature_category :activation
       urgency :low
 
       def show
