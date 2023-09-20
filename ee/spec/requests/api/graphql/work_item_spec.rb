@@ -5,26 +5,27 @@ require 'spec_helper'
 RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
   include GraphqlHelpers
 
-  let_it_be(:guest) { create(:user) }
-  let_it_be(:developer) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :private, group: group) }
+  let_it_be(:guest) { create(:user).tap { |u| group.add_guest(u) } }
+  let_it_be(:developer) { create(:user).tap { |u| group.add_developer(u) } }
   let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: project.group)) }
-  # rubocop:disable Layout/LineLength
-  let_it_be(:work_item) { create(:work_item, project: project, description: '- List item', weight: 1, iteration: iteration) }
-  # rubocop:enable Layout/LineLength
+  let_it_be(:project_work_item) do
+    create(:work_item, project: project, description: '- List item', weight: 1, iteration: iteration)
+  end
+
+  let_it_be(:group_work_item) do
+    create(:work_item, :group_level, namespace: group)
+  end
+
   let(:current_user) { guest }
+  let(:work_item) { project_work_item }
   let(:work_item_data) { graphql_data['workItem'] }
   let(:work_item_fields) { all_graphql_fields_for('WorkItem') }
   let(:global_id) { work_item.to_gid.to_s }
 
   let(:query) do
     graphql_query_for('workItem', { 'id' => global_id }, work_item_fields)
-  end
-
-  before_all do
-    project.add_guest(guest)
-    project.add_developer(developer)
   end
 
   context 'when the user can read the work item' do
@@ -597,9 +598,17 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
         let_it_be(:related_item) { create(:work_item, project: project) }
         let_it_be(:blocked_item) { create(:work_item, project: project) }
         let_it_be(:blocking_item) { create(:work_item, project: project) }
-        let_it_be(:link1) { create(:work_item_link, source: work_item, target: related_item, link_type: 'relates_to') }
-        let_it_be(:link2) { create(:work_item_link, source: work_item, target: blocked_item, link_type: 'blocks') }
-        let_it_be(:link3) { create(:work_item_link, source: blocking_item, target: work_item, link_type: 'blocks') }
+        let_it_be(:link1) do
+          create(:work_item_link, source: project_work_item, target: related_item, link_type: 'relates_to')
+        end
+
+        let_it_be(:link2) do
+          create(:work_item_link, source: project_work_item, target: blocked_item, link_type: 'blocks')
+        end
+
+        let_it_be(:link3) do
+          create(:work_item_link, source: blocking_item, target: project_work_item, link_type: 'blocks')
+        end
 
         let(:filter_type) { 'RELATED' }
         let(:work_item_fields) do
@@ -672,6 +681,31 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
 
             expect { post_graphql(query, current_user: current_user) }.to issue_same_number_of_queries_as(control_count)
             expect_graphql_errors_to_be_empty
+          end
+        end
+
+        context 'when work item belongs to a group' do
+          let(:work_item) { group_work_item }
+
+          before do
+            create(:work_item_link, source: work_item, target: related_item, link_type: 'relates_to')
+            create(:work_item_link, source: work_item, target: blocked_item, link_type: 'blocks')
+            create(:work_item_link, source: blocking_item, target: work_item, link_type: 'blocks')
+          end
+
+          it 'returns widget information' do
+            post_graphql(query, current_user: current_user)
+
+            expect(work_item_data).to include(
+              'widgets' => include(
+                hash_including(
+                  'type' => 'LINKED_ITEMS',
+                  'blocked' => true,
+                  'blockedByCount' => 1,
+                  'blockingCount' => 1
+                )
+              )
+            )
           end
         end
 
