@@ -110,6 +110,11 @@ module EE
 
     class_methods do
       # This is an ActiveRecord scope in CE
+      def with_web_entity_associations
+        super.preload(target_project: :invited_groups)
+      end
+
+      # This is an ActiveRecord scope in CE
       def with_api_entity_associations
         super.preload(
           :blocking_merge_requests,

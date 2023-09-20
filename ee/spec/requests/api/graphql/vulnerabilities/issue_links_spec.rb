@@ -90,19 +90,20 @@ RSpec.describe 'Query.vulnerabilities.issueLinks', feature_category: :vulnerabil
       # 13) Select route
       # 14) Select vulnerability occurrences
       # 15) Select vulnerability reads
-      # 15) Select vulnerability scanners
-      # 16) Select vulnerability identifiers join table
-      # 17) Select vulnerability identifiers
-      # 18) Select namespace
-      # 19) Authorization check
-      # 20) Select issue links
-      # 21) Select issues
-      # 22) Select issue project
-      # 23) Select issue user
-      # 24) Select project features
-      # 25) Loading the project authorizations
-      # 26) Loading the namespace
-      expect { query_issue_links }.not_to exceed_query_limit(27)
+      # 16) Select vulnerability scanners
+      # 17) Select vulnerability identifiers join table
+      # 18) Select vulnerability identifiers
+      # 19) Select namespace
+      # 20) Select group links
+      # 21) Select project features
+      # 22) Authorization check
+      # 23) Select issue links
+      # 24) Select issues
+      # 25) Select issue project
+      # 26) Loading the project authorizations
+      # 27) Loading the namespace
+      # 28) Loading the user
+      expect { query_issue_links }.not_to exceed_query_limit(28)
     end
   end
 

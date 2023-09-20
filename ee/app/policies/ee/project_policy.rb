@@ -200,10 +200,15 @@ module EE
         next unless @user.is_a?(User)
         next if @user.can_admin_all_resources?
 
-        root_namespace = @subject.root_ancestor
-        next unless root_namespace.group_namespace? && root_namespace.unique_project_download_limit_enabled?
+        groups = @subject.invited_groups + [@subject.group]
+        groups.compact!
+        next if groups.empty?
 
-        @user.banned_from_namespace?(root_namespace)
+        groups.any? do |group|
+          next unless group.root_ancestor.unique_project_download_limit_enabled?
+
+          @user.banned_from_namespace?(group.root_ancestor)
+        end
       end
 
       rule { membership_locked_via_parent_group }.policy do

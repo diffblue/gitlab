@@ -16,7 +16,7 @@ module EE
 
       override :with_web_entity_associations
       def with_web_entity_associations
-        super.preload(project: [group: [:saml_provider]])
+        super.preload(project: [:invited_groups, { group: [:saml_provider] }])
       end
     end
 

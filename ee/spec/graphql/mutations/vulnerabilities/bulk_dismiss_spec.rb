@@ -40,7 +40,7 @@ RSpec.describe Mutations::Vulnerabilities::BulkDismiss, feature_category: :vulne
         queries.occurrences_starting_with('INSERT INTO "vulnerability_state_transitions"').values.sum
       ).to eq(1)
       expect(queries.occurrences_starting_with('INSERT INTO "notes"').values.sum).to eq(1)
-      expect(queries.occurrences_starting_with('SELECT "namespaces"').values.sum).to eq(2)
+      expect(queries.occurrences_starting_with('SELECT "namespaces"').values.sum).to eq(3)
       expect(queries.occurrences_starting_with('SELECT "project_features"').values.sum).to eq(1)
       expect(queries.occurrences_starting_with('SELECT "vulnerabilities"').values.sum).to eq(1)
       expect(queries.occurrences_starting_with('SELECT "projects"').values.sum).to eq(1)
