@@ -1,0 +1,8 @@
+mutation replicableTypeBulkUpdate(
+  $action: GeoRegistriesBulkAction!
+  $registryClass: GeoRegistryClass!
+) {
+  geoRegistriesBulkUpdate(input: { action: $action, registryClass: $registryClass }) {
+    errors
+  }
+}
