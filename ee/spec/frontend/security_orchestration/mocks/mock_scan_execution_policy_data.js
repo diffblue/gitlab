@@ -77,6 +77,7 @@ export const mockProjectScanExecutionPolicy = {
   name: mockDastScanExecutionObject.name,
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDastScanExecutionManifest,
+  editPath: '/policies/policy-name/edit?type="scan_execution_policy"',
   enabled: true,
   source: {
     __typename: 'ProjectSecurityPolicySource',
@@ -91,6 +92,7 @@ export const mockGroupScanExecutionPolicy = {
   name: mockDastScanExecutionObject.name,
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockDastScanExecutionManifest,
+  editPath: '/policies/policy-name/edit?type="scan_execution_policy"',
   enabled: false,
   source: {
     __typename: 'GroupSecurityPolicySource',

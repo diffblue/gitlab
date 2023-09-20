@@ -7,7 +7,8 @@ describe('PolicyDetails', () => {
   let wrapper;
 
   const initialPolicy = {
-    name: 'test policy/test approval',
+    name: 'test policy approval',
+    editPath: `/policy/path/-/security/policies/test policy approval/edit?type=scan_result_policy`,
     isSelected: true,
     rules: [
       {
@@ -58,11 +59,7 @@ describe('PolicyDetails', () => {
     });
 
     it('renders a link to policy path', () => {
-      const policyPath = `/policy/path/-/security/policies/${encodeURIComponent(
-        initialPolicy.name,
-      )}/edit?type=scan_result_policy`;
-
-      expect(findLink().attributes('href')).toBe(policyPath);
+      expect(findLink().attributes('href')).toBe(initialPolicy.editPath);
     });
 
     describe('with an inherited policy', () => {
@@ -71,11 +68,7 @@ describe('PolicyDetails', () => {
       });
 
       it('renders a link to policy path', () => {
-        const policyPath = `/groups/policy/path/-/security/policies/${encodeURIComponent(
-          initialPolicy.name,
-        )}/edit?type=scan_result_policy`;
-
-        expect(findLink().attributes('href')).toBe(policyPath);
+        expect(findLink().attributes('href')).toBe(initialPolicy.editPath);
       });
     });
   });

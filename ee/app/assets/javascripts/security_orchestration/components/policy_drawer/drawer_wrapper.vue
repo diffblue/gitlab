@@ -53,11 +53,6 @@ export default {
       required: false,
       default: '',
     },
-    editPolicyPath: {
-      type: String,
-      required: false,
-      default: '',
-    },
     disableScanPolicyUpdate: {
       type: Boolean,
       required: false,
@@ -118,7 +113,7 @@ export default {
           data-testid="edit-button"
           category="primary"
           variant="confirm"
-          :href="editPolicyPath"
+          :href="policy.editPath"
           :disabled="isPolicyInherited"
           >{{ s__('SecurityOrchestration|Edit policy') }}</gl-button
         >

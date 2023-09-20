@@ -3,7 +3,6 @@ import { intersection } from 'lodash';
 import { GlIcon, GlLink, GlLoadingIcon, GlSprintf, GlTable, GlTooltipDirective } from '@gitlab/ui';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { createAlert } from '~/alert';
-import { mergeUrlParams } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DATE_ONLY_FORMAT } from '~/lib/utils/datetime_utility';
@@ -12,7 +11,6 @@ import groupScanExecutionPoliciesQuery from '../../graphql/queries/group_scan_ex
 import projectScanResultPoliciesQuery from '../../graphql/queries/project_scan_result_policies.query.graphql';
 import groupScanResultPoliciesQuery from '../../graphql/queries/group_scan_result_policies.query.graphql';
 import { getPolicyType } from '../../utils';
-import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import DrawerWrapper from '../policy_drawer/drawer_wrapper.vue';
 import { getPolicyListUrl, isPolicyInherited, policyHasNamespace } from '../utils';
 import {
@@ -158,20 +156,6 @@ export default {
     },
     hasSelectedPolicy() {
       return Boolean(this.selectedPolicy);
-    },
-    editPolicyPath() {
-      if (this.hasSelectedPolicy) {
-        const parameters = {
-          type: POLICY_TYPE_COMPONENT_OPTIONS[this.policyType]?.urlParameter,
-          ...(this.selectedPolicy.kind && { kind: this.selectedPolicy.kind }),
-        };
-        return mergeUrlParams(
-          parameters,
-          this.newPolicyPath.replace('new', `${encodeURIComponent(this.selectedPolicy.name)}/edit`),
-        );
-      }
-
-      return '';
     },
     typeLabel() {
       if (this.namespaceType === NAMESPACE_TYPES.GROUP) {
@@ -371,7 +355,6 @@ export default {
       :open="hasSelectedPolicy"
       :policy="selectedPolicy"
       :policy-type="policyType"
-      :edit-policy-path="editPolicyPath"
       :disable-scan-policy-update="disableScanPolicyUpdate"
       data-testid="policyDrawer"
       @close="deselectPolicy"

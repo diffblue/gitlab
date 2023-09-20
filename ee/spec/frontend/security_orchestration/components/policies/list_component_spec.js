@@ -288,10 +288,10 @@ describe('List component', () => {
   });
 
   describe.each`
-    description         | policy                                  | policyType         | editPolicyPath
-    ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]} | ${'scanExecution'} | ${`${namespacePath}/-/security/policies/${encodeURIComponent(mockScanExecutionPoliciesResponse[0].name)}/edit?type=scan_execution_policy`}
-    ${'scan result'}    | ${mockScanResultPoliciesResponse[0]}    | ${'scanResult'}    | ${`${namespacePath}/-/security/policies/${encodeURIComponent(mockScanResultPoliciesResponse[0].name)}/edit?type=scan_result_policy`}
-  `('given there is a $description policy selected', ({ policy, policyType, editPolicyPath }) => {
+    description         | policy                                  | policyType
+    ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]} | ${'scanExecution'}
+    ${'scan result'}    | ${mockScanResultPoliciesResponse[0]}    | ${'scanResult'}
+  `('given there is a $description policy selected', ({ policy, policyType }) => {
     beforeEach(() => {
       mountShallowWrapper();
       findPoliciesTable().vm.$emit('row-selected', [policy]);
@@ -301,7 +301,6 @@ describe('List component', () => {
       const editorDrawer = findPolicyDrawer();
       expect(editorDrawer.exists()).toBe(true);
       expect(editorDrawer.props()).toMatchObject({
-        editPolicyPath,
         open: true,
         policy,
         policyType,

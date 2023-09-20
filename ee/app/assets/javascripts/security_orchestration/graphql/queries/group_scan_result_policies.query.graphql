@@ -10,6 +10,7 @@ query groupScanResultPolicies(
       nodes {
         name
         yaml
+        editPath
         enabled
         updatedAt
         userApprovers {

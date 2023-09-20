@@ -14,7 +14,6 @@ describe('DrawerWrapper component', () => {
   const factory = ({ mountFn = shallowMountExtended, propsData, stubs = {} } = {}) => {
     wrapper = mountFn(DrawerWrapper, {
       propsData: {
-        editPolicyPath: '/policies/policy-name/edit?type="scanExecution"',
         open: true,
         ...propsData,
       },
@@ -36,7 +35,9 @@ describe('DrawerWrapper component', () => {
     it('renders edit button', () => {
       const button = findEditButton();
       expect(button.exists()).toBe(true);
-      expect(button.attributes().href).toBe('/policies/policy-name/edit?type="scanExecution"');
+      expect(button.attributes().href).toBe(
+        '/policies/policy-name/edit?type="scan_execution_policy"',
+      );
     });
   };
 

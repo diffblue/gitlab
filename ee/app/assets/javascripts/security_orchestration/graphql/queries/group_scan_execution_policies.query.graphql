@@ -10,6 +10,7 @@ query groupScanExecutionPolicies(
       nodes {
         name
         yaml
+        editPath
         enabled
         source {
           ...SecurityPolicySource
