@@ -26,6 +26,32 @@ RSpec.describe ::WorkItems::ParentLink, feature_category: :portfolio_management 
           expect(subject.errors.full_messages).to include('Work item already assigned to an epic')
         end
       end
+
+      context 'when assigning parent from a different resource parent' do
+        let_it_be(:issue) { create(:work_item, :issue, project: project) }
+        let_it_be(:epic) { create(:work_item, :epic, namespace: create(:group)) }
+
+        let(:restriction) do
+          WorkItems::HierarchyRestriction
+            .find_by_parent_type_id_and_child_type_id(epic.work_item_type_id, issue.work_item_type_id)
+        end
+
+        it 'is valid when cross-hierarchy is enabled' do
+          restriction.update!(cross_hierarchy_enabled: true)
+          link = build(:parent_link, work_item_parent: epic, work_item: issue)
+
+          expect(link).to be_valid
+          expect(link.errors).to be_empty
+        end
+
+        it 'is not valid when cross-hierarchy is not enabled' do
+          restriction.update!(cross_hierarchy_enabled: false)
+          link = build(:parent_link, work_item_parent: epic, work_item: issue)
+
+          expect(link).not_to be_valid
+          expect(link.errors[:work_item_parent]).to include('parent must be in the same project or group as child.')
+        end
+      end
     end
   end
 end
