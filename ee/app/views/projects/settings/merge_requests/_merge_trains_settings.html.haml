@@ -7,3 +7,8 @@
     s_('ProjectSettings|Enable merge trains'),
     help_text: s_('ProjectSettings|Merge requests approved for merge are queued, and pipelines validate the combined results of the source and target branches before merge. %{link_start}What are merge trains?%{link_end}').html_safe % { link_start: merge_trains_help_link_start, link_end: '</a>'.html_safe },
     checkbox_options: { class: 'js-merge-options-merge-trains', data: { qa_selector: 'merge_trains_checkbox' } }
+  - if Feature.enabled?(:merge_trains_skip_train)
+    = form.gitlab_ui_checkbox_component :merge_trains_skip_train_allowed,
+      s_('ProjectSettings|Allow skipping the merge train'),
+      help_text: s_('ProjectSettings|Merge requests can be set to merge immediately without interrupting the merge train. Commits in earlier merge train pipelines might not get validated with immediately merged commits.'),
+      checkbox_options: { class: 'js-merge-options-merge-trains-skip-train-allowed' }

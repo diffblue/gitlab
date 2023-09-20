@@ -129,6 +129,37 @@ RSpec.describe Projects::Settings::MergeRequestsController, feature_category: :c
       end
     end
 
+    context 'when merge_trains_skip_train_allowed param is specified' do
+      let(:params) { { merge_trains_skip_train_allowed: true } }
+      let(:ci_settings) { project.ci_cd_settings }
+
+      let(:request) do
+        put :update, params: { namespace_id: project.namespace, project_id: project, project: params }
+      end
+
+      before do
+        stub_licensed_features(merge_pipelines: true, merge_trains: true)
+      end
+
+      it 'updates the attribute' do
+        request
+
+        expect(ci_settings.merge_trains_skip_train_allowed).to be_truthy
+      end
+
+      context 'when license is not sufficient' do
+        before do
+          stub_licensed_features(merge_trains: false)
+        end
+
+        it 'does not update the attribute' do
+          request
+
+          expect(ci_settings.merge_trains_skip_train_allowed).to be_falsy
+        end
+      end
+    end
+
     context 'when only_allow_merge_if_all_status_checks_passed param is specified' do
       let(:params) { { project_setting_attributes: { only_allow_merge_if_all_status_checks_passed: true } } }
 

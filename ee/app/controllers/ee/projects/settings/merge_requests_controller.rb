@@ -50,6 +50,7 @@ module EE
 
           attrs << %i[merge_pipelines_enabled] if allow_merge_pipelines_params?
           attrs << %i[merge_trains_enabled] if allow_merge_trains_params?
+          attrs << %i[merge_trains_skip_train_allowed] if allow_merge_trains_params?
           attrs << %i[only_allow_merge_if_all_status_checks_passed] if allow_external_status_checks?
 
           attrs += merge_request_rules_params

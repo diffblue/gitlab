@@ -42,6 +42,7 @@ module EE
             optional :merge_requests_template, type: String, desc: 'Default description for merge requests. Description is parsed with GitLab Flavored Markdown.'
             optional :merge_pipelines_enabled, type: Grape::API::Boolean, desc: 'Enable merged results pipelines.'
             optional :merge_trains_enabled, type: Grape::API::Boolean, desc: 'Enable merge trains.'
+            optional :merge_trains_skip_train_allowed, type: Grape::API::Boolean, desc: 'Allow merge train merge requests to be merged without waiting for pipelines to finish.'
           end
         end
 
@@ -66,6 +67,7 @@ module EE
               :merge_requests_template,
               :merge_pipelines_enabled,
               :merge_trains_enabled,
+              :merge_trains_skip_train_allowed,
               :requirements_access_level
             ]
           end

@@ -15,8 +15,11 @@ RSpec.describe Mutations::Ci::ProjectCiCdSettingsUpdate, feature_category: :cont
   before do
     stub_licensed_features(merge_pipelines: true, merge_trains: true)
     stub_feature_flags(disable_merge_trains: false)
-    project.merge_pipelines_enabled = nil
-    project.merge_trains_enabled = false
+    project.update!(
+      merge_pipelines_enabled: nil,
+      merge_trains_enabled: false,
+      merge_trains_skip_train_allowed: false
+    )
   end
 
   describe '#resolve' do
@@ -51,6 +54,18 @@ RSpec.describe Mutations::Ci::ProjectCiCdSettingsUpdate, feature_category: :cont
       it 'enables merge pipelines and merge trains' do
         expect(project.merge_pipelines_enabled?).to eq(true)
         expect(project.merge_trains_enabled?).to eq(true)
+      end
+    end
+
+    context 'when merge_trains_skip_train_allowed is set to true' do
+      let(:mutation_params) do
+        {
+          merge_trains_skip_train_allowed: true
+        }
+      end
+
+      it 'updates the value' do
+        expect(project.ci_cd_settings.merge_trains_skip_train_allowed?).to eq(true)
       end
     end
   end

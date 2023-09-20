@@ -333,6 +333,7 @@ module EE
 
       delegate :merge_pipelines_enabled, :merge_pipelines_enabled=, to: :ci_cd_settings, allow_nil: true
       delegate :merge_trains_enabled, :merge_trains_enabled=, to: :ci_cd_settings, allow_nil: true
+      delegate :merge_trains_skip_train_allowed, :merge_trains_skip_train_allowed=, to: :ci_cd_settings, allow_nil: true
 
       delegate :auto_rollback_enabled, :auto_rollback_enabled=, to: :ci_cd_settings, allow_nil: true
 
@@ -1109,6 +1110,12 @@ module EE
       return false unless ci_cd_settings
 
       ci_cd_settings.merge_trains_enabled?
+    end
+
+    def merge_trains_skip_train_allowed?
+      return false unless ci_cd_settings
+
+      ci_cd_settings.merge_trains_skip_train_allowed?
     end
 
     def auto_rollback_enabled?

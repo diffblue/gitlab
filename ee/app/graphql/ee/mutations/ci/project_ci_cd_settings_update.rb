@@ -15,10 +15,19 @@ module EE
           argument :merge_trains_enabled, GraphQL::Types::Boolean,
             required: false,
             description: 'Indicates if merge trains are enabled for the project.'
+
+          argument :merge_trains_skip_train_allowed, GraphQL::Types::Boolean,
+            required: false,
+            description: 'Indicates whether an option is allowed to merge without refreshing the merge train. ' \
+                         'Ignored unless the `merge_trains_skip_train` feature flag is also enabled.'
         end
 
         override :resolve
         def resolve(full_path:, **args)
+          if ::Feature.disabled?(:merge_trains_skip_train, project(full_path))
+            args.delete(:merge_trains_skip_train_allowed)
+          end
+
           super.tap do |result|
             ci_cd_settings = result[:ci_cd_settings]
             audit_project = ci_cd_settings.project

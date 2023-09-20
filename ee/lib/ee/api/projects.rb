@@ -127,6 +127,7 @@ module EE
 
             attrs.delete(:merge_pipelines_enabled) unless project.feature_available?(:merge_pipelines)
             attrs.delete(:merge_trains_enabled) unless project.feature_available?(:merge_trains)
+            attrs.delete(:merge_trains_skip_train_allowed) unless project.feature_available?(:merge_trains)
           end
 
           def check_audit_events_available!(project)
