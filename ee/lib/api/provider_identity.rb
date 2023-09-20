@@ -67,6 +67,24 @@ module API
               render_api_error!(identity.errors.full_messages.join(",").to_s, 400)
             end
           end
+
+          desc 'Delete the Provider identity' do
+            success EE::API::Entities::IdentityDetail
+          end
+
+          params do
+            requires :uid, type: String, desc: "Current external UID of the user"
+          end
+
+          delete ':uid', format: false, requirements: { uid: API::NO_SLASH_URL_PART_REGEX } do
+            group = find_group(params[:id])
+            identity = find_provider_identity(provider_type, params[:uid], group)
+
+            not_found!('Identity') unless identity
+
+            identity.delete
+            no_content!
+          end
         end
       end
     end
