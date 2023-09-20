@@ -21,7 +21,7 @@ review merge requests in Visual Studio Code.
 <i class="fa fa-youtube-play youtube" aria-hidden="true"></i>
 For an overview, see [Merge request review](https://www.youtube.com/watch?v=2MayfXKpU08&list=PLFGfElNsQthYDx0A_FaNNfUm9NHsK6zED&index=183).
 
-## Suggested reviewers **(ULTIMATE SAAS)**
+## GitLab Duo Suggested Reviewers **(ULTIMATE SAAS)**
 
 > - [Introduced](https://gitlab.com/groups/gitlab-org/modelops/applied-ml/review-recommender/-/epics/3) in GitLab 15.4 as a [Beta](../../../../policy/experiment-beta-support.md#beta) feature [with a flag](../../../../administration/feature_flags.md) named `suggested_reviewers_control`. Disabled by default.
 > - [Enabled on GitLab.com](https://gitlab.com/gitlab-org/gitlab/-/issues/368356) in GitLab 15.6.
@@ -34,18 +34,18 @@ To suggest reviewers, GitLab uses:
 - The changes in the merge request
 - The project's contribution graph
 
-Suggested Reviewers also integrates with Code Owners, profile status, and merge request rules, helping you make a more informed decision when choosing reviewers that can meet your review criteria.
+GitLab Duo Suggested Reviewers also integrates with Code Owners, profile status, and merge request rules, helping you make a more informed decision when choosing reviewers that can meet your review criteria.
 
 ![Suggested Reviewers](img/suggested_reviewers_v16_3.png)
 
-For more information, see [Data usage in Suggested Reviewers](data_usage.md).
+For more information, see [Data usage in GitLab Duo Suggested Reviewers](data_usage.md).
 
-### Enable suggested reviewers
+### Enable Suggested Reviewers
 
-Project Maintainers or Owners can enable suggested reviewers by visiting
+Project Maintainers or Owners can enable Suggested Reviewers by visiting
 the [project settings](../../settings/index.md).
 
-Enabling suggested reviewers triggers GitLab to create an ML model for your
+Enabling Suggested Reviewers triggers GitLab to create an ML model for your
 project that is used to generate reviewers. The larger your project, the longer
 this process can take. Usually, the model is ready to generate suggestions
 within a few hours.
@@ -199,7 +199,7 @@ If you have a review in progress, you can also add a comment from the **Overview
 
 When editing the **Reviewers** field in a new or existing merge request, GitLab
 displays the name of the matching [approval rule](../approvals/rules.md)
-below the name of each suggested reviewer. [Code Owners](../../codeowners/index.md) are displayed as `Codeowner` without group detail.
+below the name of each reviewer. [Code Owners](../../codeowners/index.md) are displayed as `Codeowner` without group detail.
 
 This example shows reviewers and approval rules when creating a new merge request:
 
