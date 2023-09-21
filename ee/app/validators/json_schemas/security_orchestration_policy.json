@@ -749,6 +749,9 @@
               },
               "require_password_to_approve": {
                 "type": "boolean"
+              },
+              "block_unprotecting_branches": {
+                "type": "boolean"
               }
             }
           }

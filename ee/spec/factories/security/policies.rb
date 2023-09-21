@@ -108,7 +108,8 @@ FactoryBot.define do
           prevent_approval_by_author: true,
           prevent_approval_by_commit_author: true,
           remove_approvals_with_new_commit: true,
-          require_password_to_approve: true
+          require_password_to_approve: true,
+          block_unprotecting_branches: true
         }
       end
     end
