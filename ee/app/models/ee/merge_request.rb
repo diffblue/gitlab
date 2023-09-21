@@ -437,7 +437,18 @@ module EE
       target_project.merge_train_for(target_branch)
     end
 
+    override :should_be_rebased?
+    def should_be_rebased?
+      super && !on_current_ff_train?
+    end
+
     private
+
+    def on_current_ff_train?
+      return false unless on_train? && merge_train_car.pipeline&.sha == merge_params.dig('train_ref', 'commit_sha')
+
+      ::Feature.enabled?(:fast_forward_merge_trains_support, target_project)
+    end
 
     def has_approved_license_check?
       if rule = approval_rules.license_compliance.last
