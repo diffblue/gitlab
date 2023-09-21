@@ -7127,6 +7127,29 @@ Input type: `UploadDeleteInput`
 | <a id="mutationuploaddeleteerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationuploaddeleteupload"></a>`upload` | [`FileUpload`](#fileupload) | Deleted upload. |
 
+### `Mutation.userAchievementPrioritiesUpdate`
+
+WARNING:
+**Introduced** in 16.5.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Input type: `UserAchievementPrioritiesUpdateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationuserachievementprioritiesupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationuserachievementprioritiesupdateuserachievementids"></a>`userAchievementIds` | [`[AchievementsUserAchievementID!]!`](#achievementsuserachievementid) | Global IDs of the user achievements being prioritized, ordered from highest to lowest priority. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationuserachievementprioritiesupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationuserachievementprioritiesupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationuserachievementprioritiesupdateuserachievements"></a>`userAchievements` | [`[UserAchievement!]!`](#userachievement) | Updated user achievements. |
+
 ### `Mutation.userAchievementsDelete`
 
 WARNING:
@@ -25186,6 +25209,7 @@ Represents a recorded measurement (object count) for the Admins.
 | <a id="userachievementawardedbyuser"></a>`awardedByUser` | [`UserCore!`](#usercore) | Awarded by. |
 | <a id="userachievementcreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp the achievement was created. |
 | <a id="userachievementid"></a>`id` | [`AchievementsUserAchievementID!`](#achievementsuserachievementid) | ID of the user achievement. |
+| <a id="userachievementpriority"></a>`priority` | [`Int`](#int) | Priority of the user achievement. |
 | <a id="userachievementrevokedat"></a>`revokedAt` | [`Time`](#time) | Timestamp the achievement was revoked. |
 | <a id="userachievementrevokedbyuser"></a>`revokedByUser` | [`UserCore`](#usercore) | Revoked by. |
 | <a id="userachievementupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp the achievement was last updated. |
