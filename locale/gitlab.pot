@@ -48106,6 +48106,9 @@ msgstr ""
 msgid "This %{issuable} is locked. Only project members can comment."
 msgstr ""
 
+msgid "This %{issuable} would exceed the maximum number of linked %{issuables} (%{limit})."
+msgstr ""
+
 msgid "This %{noteableTypeText} is %{confidentialLinkStart}confidential%{confidentialLinkEnd} and %{lockedLinkStart}locked%{lockedLinkEnd}."
 msgstr ""
 
@@ -48305,9 +48308,6 @@ msgid "This epic cannot be added. You don't have access to perform this action."
 msgstr ""
 
 msgid "This epic does not exist or you don't have sufficient permission."
-msgstr ""
-
-msgid "This epic would exceed maximum number of related epics."
 msgstr ""
 
 msgid "This feature requires local storage to be enabled"
@@ -53532,9 +53532,6 @@ msgid "Work item promoted successfully."
 msgstr ""
 
 msgid "Work items are already linked"
-msgstr ""
-
-msgid "WorkItems|This work item would exceed the maximum number of linked items."
 msgstr ""
 
 msgid "WorkItem|%{count} more assignees"

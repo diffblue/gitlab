@@ -590,6 +590,8 @@ module EE
     end
 
     def unauthorized_related_epics
+      return ::Epic.none if new_record?
+
       select_for_related_epics =
         ::Epic.select(['epics.*', 'related_epic_links.id AS related_epic_link_id',
                        'related_epic_links.link_type as related_epic_link_type_value',
@@ -623,6 +625,10 @@ module EE
 
       unfiltered_epics = self.class.where(id: blocking_epics_ids)
       self.class.epics_readable_by_user(unfiltered_epics, user)
+    end
+
+    def linked_items_count
+      unauthorized_related_epics.count
     end
 
     def total_issue_weight_and_count
