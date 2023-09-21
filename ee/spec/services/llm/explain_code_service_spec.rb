@@ -58,18 +58,6 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
         it_behaves_like 'llm service does not cache user request'
       end
 
-      context 'when explain_code_snippet feature flag is disabled' do
-        before do
-          stub_feature_flags(explain_code_snippet: false)
-        end
-
-        it 'returns an error' do
-          expect(Llm::CompletionWorker).not_to receive(:perform_async)
-
-          expect(subject.execute).to be_error
-        end
-      end
-
       context 'when explain_code licensed feature is disabled' do
         before do
           stub_licensed_features(explain_code: false)

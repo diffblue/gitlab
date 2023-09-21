@@ -10,7 +10,7 @@ module Llm
 
     def valid?
       super &&
-        Feature.enabled?(:explain_code_snippet, user) &&
+        Feature.enabled?(:openai_experimentation, user) &&
         resource.licensed_feature_available?(:explain_code) &&
         Gitlab::Llm::StageCheck.available?(resource, :explain_code)
     end
