@@ -319,6 +319,12 @@ module EE
       epic_issue.present?
     end
 
+    def has_parent_link?
+      existing_relation = ::WorkItems::ParentLink.find_by_work_item_id(id)
+
+      existing_relation.present?
+    end
+
     def licensed_feature_available?(feature)
       return project.licensed_feature_available?(feature) if project
 

@@ -61,4 +61,18 @@ RSpec.describe 'Query.issue(id)', feature_category: :team_planning do
       expect(issue_data['epic']).to be_present
     end
   end
+
+  context 'when issue has a parent link' do
+    let_it_be(:work_item_issue) { create(:work_item, :issue, project: project) }
+    let_it_be(:issue) { Issue.find(work_item_issue.id) }
+    let(:issue_fields) { ['hasParent'] }
+
+    it 'returns hasParent as `true`' do
+      project.add_developer(current_user)
+      create(:parent_link, work_item: work_item_issue, work_item_parent: create(:work_item, :epic, project: project))
+      post_graphql(query, current_user: current_user)
+
+      expect(issue_data['hasParent']).to eq(true)
+    end
+  end
 end
