@@ -34,19 +34,14 @@ RSpec.describe Llm::TanukiBot::UpdateWorker, feature_category: :ai_abstraction_l
     end
 
     describe 'checks' do
-      using RSpec::Parameterized::TableSyntax
-
-      where(:openai_experimentation_enabled, :tanuki_bot_enabled, :feature_available) do
-        false | false | false
-        false | true | false
-        true | false | false
+      where(:openai_experimentation_enabled) do
+        [[false], [true]]
       end
 
       with_them do
         before do
           stub_feature_flags(openai_experimentation: openai_experimentation_enabled)
-          stub_feature_flags(tanuki_bot: tanuki_bot_enabled)
-          allow(License).to receive(:feature_available?).with(:ai_tanuki_bot).and_return(feature_available)
+          allow(License).to receive(:feature_available?).with(:ai_tanuki_bot).and_return(false)
         end
 
         it 'does not make a call to the embedding API or update the record' do

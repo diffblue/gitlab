@@ -38,18 +38,6 @@ RSpec.describe Llm::TanukiBotService, :saas, feature_category: :global_search do
       end
     end
 
-    context 'when tanuki_bot feature flag is disabled' do
-      before do
-        stub_feature_flags(tanuki_bot: false)
-      end
-
-      it 'returns an error' do
-        expect(Llm::CompletionWorker).not_to receive(:perform_async)
-
-        expect(subject.execute).to be_error
-      end
-    end
-
     context 'when tanuki_bot licensed feature is disabled' do
       before do
         stub_licensed_features(ai_tanuki_bot: false)
