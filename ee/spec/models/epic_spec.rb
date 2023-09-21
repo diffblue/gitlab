@@ -1206,6 +1206,12 @@ RSpec.describe Epic, feature_category: :portfolio_management do
       it 'returns readable related epics of the epic' do
         expect(epic.related_epics(user)).to contain_exactly(public_epic, sub_epic)
       end
+
+      context 'when epic is a new record' do
+        let(:new_epic) { build(:epic, group: group) }
+
+        it { expect(new_epic.related_epics(user)).to be_empty }
+      end
     end
 
     context 'when epics feature is disabled' do
@@ -1532,5 +1538,22 @@ RSpec.describe Epic, feature_category: :portfolio_management do
     let_it_be_with_reload(:resource) { create(:epic, group: group, parent: parent_epic) }
 
     it_behaves_like 'an exportable', restricted_association: :parent
+  end
+
+  describe '#linked_items_count' do
+    let_it_be(:epic1) { create(:epic, group: group) }
+    let_it_be(:epic2) { create(:epic, group: group) }
+    let_it_be(:epic3) { create(:epic, group: group) }
+    let_it_be(:epic4) { build(:epic, group: group) }
+
+    it 'returns number of epics linked to the epic' do
+      create(:related_epic_link, source: epic1, target: epic2)
+      create(:related_epic_link, source: epic1, target: epic3)
+
+      expect(epic1.linked_items_count).to eq(2)
+      expect(epic2.linked_items_count).to eq(1)
+      expect(epic3.linked_items_count).to eq(1)
+      expect(epic4.linked_items_count).to eq(0)
+    end
   end
 end
