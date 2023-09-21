@@ -83,7 +83,6 @@ RSpec.describe 'Dashboard todos', feature_category: :team_planning do
     let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be(:project) { create(:project, group: namespace) }
     let_it_be(:merge_request) { create(:merge_request, :skip_diff_creation, source_project: project) }
-    let_it_be(:merge_request_diff) { create(:merge_request_diff, merge_request: merge_request) }
     let_it_be(:todo) { create(:todo, :review_requested, user: user, project: project, target: merge_request) }
 
     before_all do
@@ -118,7 +117,7 @@ RSpec.describe 'Dashboard todos', feature_category: :team_planning do
       let!(:diff_summary) do
         create(
           :merge_request_diff_llm_summary,
-          merge_request_diff: merge_request_diff
+          merge_request_diff: merge_request.merge_request_diff
         )
       end
 
@@ -137,7 +136,6 @@ RSpec.describe 'Dashboard todos', feature_category: :team_planning do
     let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be(:project) { create(:project, group: namespace) }
     let_it_be(:merge_request) { create(:merge_request, :skip_diff_creation, source_project: project) }
-    let_it_be(:merge_request_diff) { create(:merge_request_diff, merge_request: merge_request) }
     let_it_be(:review) { create(:review, merge_request: merge_request) }
     let_it_be(:todo) do
       create(
@@ -182,7 +180,7 @@ RSpec.describe 'Dashboard todos', feature_category: :team_planning do
       let!(:review_summary) do
         create(
           :merge_request_review_llm_summary,
-          merge_request_diff: merge_request_diff,
+          merge_request_diff: merge_request.merge_request_diff,
           review: review
         )
       end
