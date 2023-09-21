@@ -25968,6 +25968,9 @@ msgstr ""
 msgid "IssueBoards|No matching boards found"
 msgstr ""
 
+msgid "IssueBoards|Select board"
+msgstr ""
+
 msgid "IssueBoards|Some of your boards are hidden, add a license to see them again."
 msgstr ""
 

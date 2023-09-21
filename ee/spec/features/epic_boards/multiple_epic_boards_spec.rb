@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'epic boards', :js, feature_category: :portfolio_management do
+  include ListboxHelpers
   # please do not switch below `let!` to `let_it_be` due to potential flakiness.
   # see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/122712#note_1420351482
   let!(:user)        { create(:user) }
@@ -35,7 +36,7 @@ RSpec.describe 'epic boards', :js, feature_category: :portfolio_management do
 
     it 'switches current epic board' do
       in_boards_switcher_dropdown do
-        click_button epic_board2.name
+        select_listbox_item(epic_board2.name)
       end
 
       wait_for_requests
@@ -89,7 +90,7 @@ RSpec.describe 'epic boards', :js, feature_category: :portfolio_management do
 
     wait_for_requests
 
-    dropdown_selector = '[data-testid="boards-selector"] .dropdown-menu'
+    dropdown_selector = '[data-testid="boards-selector"] .gl-new-dropdown'
     page.within(dropdown_selector) do
       yield
     end
