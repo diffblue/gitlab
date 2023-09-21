@@ -19,69 +19,26 @@ exports[`MetricChart component template when isLoading is false and chart data i
 
 exports[`MetricChart component template when isLoading is false and chartData is not empty and metricTypes exist matches the snapshot 1`] = `
 <div>
-  <gl-dropdown-stub
+  <gl-collapsible-listbox-stub
     category="primary"
-    class="mb-4 metric-dropdown"
-    clearalltext="Clear all"
-    clearalltextclass="gl-px-5"
+    class="gl-mb-4 metric-dropdown"
+    fluidwidth="true"
     headertext=""
-    hideheaderborder="true"
-    highlighteditemstitle="Selected"
-    highlighteditemstitleclass="gl-px-5"
-    menu-class="w-100 mw-100"
+    icon=""
+    ischeckcentered="true"
+    items="[object Object],[object Object]"
+    noresultstext="No results found"
+    placement="left"
+    positioningstrategy="absolute"
+    resetbuttonlabel=""
+    searchplaceholder="Search"
+    selected=""
+    showselectallbuttonlabel=""
     size="medium"
-    splithref=""
-    text="Please select a metric"
-    toggleclass="dropdown-menu-toggle w-100"
+    toggleclass="dropdown-menu-toggle gl-w-full!"
+    toggletext="Please select a metric"
     variant="default"
-  >
-    <gl-dropdown-item-stub
-      active-class="is-active"
-      avatarurl=""
-      class="w-100"
-      iconcolor=""
-      iconname=""
-      iconrightarialabel=""
-      iconrightname=""
-      secondarytext=""
-    >
-      <span
-        class="d-flex"
-      >
-        <gl-icon-stub
-          arialabel="Selected"
-          class="flex-shrink-0 gl-mr-2 invisible"
-          name="mobile-issue-close"
-          size="16"
-          title="Selected"
-        />
-        Time from last commit to merge
-      </span>
-    </gl-dropdown-item-stub>
-    <gl-dropdown-item-stub
-      active-class="is-active"
-      avatarurl=""
-      class="w-100"
-      iconcolor=""
-      iconname=""
-      iconrightarialabel=""
-      iconrightname=""
-      secondarytext=""
-    >
-      <span
-        class="d-flex"
-      >
-        <gl-icon-stub
-          arialabel="Selected"
-          class="flex-shrink-0 gl-mr-2 invisible"
-          name="mobile-issue-close"
-          size="16"
-          title="Selected"
-        />
-        Time from first comment to last commit
-      </span>
-    </gl-dropdown-item-stub>
-  </gl-dropdown-stub>
+  />
   <div>
     mockChart
   </div>
