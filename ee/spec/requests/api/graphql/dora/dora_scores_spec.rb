@@ -5,9 +5,11 @@ require 'spec_helper'
 RSpec.describe 'Query.[group](fullPath).doraPerformanceScoreCounts', :freeze_time, feature_category: :dora_metrics do
   include GraphqlHelpers
 
+  # rubocop:disable RSpec/MultipleMemoizedHelpers
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }
-  let_it_be(:project_1) { create(:project, group: group) }
+  let_it_be(:ruby_topic) { create(:topic, name: "ruby") }
+  let_it_be(:project_1) { create(:project, group: group, topics: [ruby_topic]) }
   let_it_be(:project_2) { create(:project, group: group) }
   let_it_be(:project_3) { create(:project, group: group) }
   let_it_be(:project_4) { create(:project, group: subgroup) }
@@ -17,9 +19,10 @@ RSpec.describe 'Query.[group](fullPath).doraPerformanceScoreCounts', :freeze_tim
 
   let(:post_query) { post_graphql(query, current_user: current_user) }
   let(:path_prefix) { [:group, :doraPerformanceScoreCounts, :nodes] }
+  let(:filter_params) { {} }
   let(:query) do
     graphql_query_for(:group, { fullPath: group.full_path },
-      query_graphql_field(:doraPerformanceScoreCounts, query_body))
+      query_graphql_field(:doraPerformanceScoreCounts, filter_params, query_body))
   end
 
   let(:data) { graphql_data_at(*path_prefix) }
@@ -183,37 +186,78 @@ RSpec.describe 'Query.[group](fullPath).doraPerformanceScoreCounts', :freeze_tim
 
       it_behaves_like 'a working graphql query'
 
-      it 'returns the correct data' do
-        expect(data).to match_array([
-          {
-            'metricName' => "lead_time_for_changes",
-            'lowProjectsCount' => 0,
-            'mediumProjectsCount' => 2,
-            'highProjectsCount' => 1,
-            "noDataProjectsCount" => 1
-          },
-          {
-            'metricName' => "deployment_frequency",
-            'lowProjectsCount' => 2,
-            'mediumProjectsCount' => 0,
-            'highProjectsCount' => 1,
-            "noDataProjectsCount" => 1
-          },
-          {
-            'metricName' => "change_failure_rate",
-            'lowProjectsCount' => 1,
-            'mediumProjectsCount' => 0,
-            'highProjectsCount' => 3,
-            "noDataProjectsCount" => 0
-          },
-          {
-            'metricName' => "time_to_restore_service",
-            'lowProjectsCount' => 0,
-            'mediumProjectsCount' => 1,
-            'highProjectsCount' => 2,
-            "noDataProjectsCount" => 1
-          }
-        ])
+      context 'when no filters are applied' do
+        let(:filter_params) { {} }
+
+        it 'returns the correct data' do
+          expect(data).to match_array([
+            {
+              'metricName' => "lead_time_for_changes",
+              'lowProjectsCount' => 0,
+              'mediumProjectsCount' => 2,
+              'highProjectsCount' => 1,
+              "noDataProjectsCount" => 1
+            },
+            {
+              'metricName' => "deployment_frequency",
+              'lowProjectsCount' => 2,
+              'mediumProjectsCount' => 0,
+              'highProjectsCount' => 1,
+              "noDataProjectsCount" => 1
+            },
+            {
+              'metricName' => "change_failure_rate",
+              'lowProjectsCount' => 1,
+              'mediumProjectsCount' => 0,
+              'highProjectsCount' => 3,
+              "noDataProjectsCount" => 0
+            },
+            {
+              'metricName' => "time_to_restore_service",
+              'lowProjectsCount' => 0,
+              'mediumProjectsCount' => 1,
+              'highProjectsCount' => 2,
+              "noDataProjectsCount" => 1
+            }
+          ])
+        end
+      end
+
+      context 'when filters are applied' do
+        let(:filter_params) { { projectFilters: { topic: [ruby_topic.name] } } }
+
+        it 'returns the correct data' do
+          expect(data).to match_array([
+            {
+              'metricName' => "lead_time_for_changes",
+              'lowProjectsCount' => 0,
+              'mediumProjectsCount' => 0,
+              'highProjectsCount' => 1,
+              "noDataProjectsCount" => 0
+            },
+            {
+              'metricName' => "deployment_frequency",
+              'lowProjectsCount' => 0,
+              'mediumProjectsCount' => 0,
+              'highProjectsCount' => 1,
+              "noDataProjectsCount" => 0
+            },
+            {
+              'metricName' => "change_failure_rate",
+              'lowProjectsCount' => 1,
+              'mediumProjectsCount' => 0,
+              'highProjectsCount' => 0,
+              "noDataProjectsCount" => 0
+            },
+            {
+              'metricName' => "time_to_restore_service",
+              'lowProjectsCount' => 0,
+              'mediumProjectsCount' => 1,
+              'highProjectsCount' => 0,
+              "noDataProjectsCount" => 0
+            }
+          ])
+        end
       end
 
       context 'when no metric count fields are requested' do
@@ -235,4 +279,5 @@ RSpec.describe 'Query.[group](fullPath).doraPerformanceScoreCounts', :freeze_tim
       end
     end
   end
+  # rubocop:enable RSpec/MultipleMemoizedHelpers
 end
