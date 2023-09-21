@@ -22,11 +22,13 @@ You can configure an [external issue tracker](external-issue-tracker.md) and use
 ## Authentication providers
 
 You can integrate GitLab with authentication providers like LDAP and SAML.
+
 For more information, see [GitLab authentication and authorization](../administration/auth).
 
 ## Security improvements
 
 Solutions like Akismet and reCAPTCHA are available for spam protection.
+
 You can also integrate GitLab with the following security partners:
 
 <!-- vale gitlab.Spelling = NO -->
