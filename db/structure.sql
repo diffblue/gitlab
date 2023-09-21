@@ -646,6 +646,14 @@ CREATE TABLE p_batched_git_ref_updates_deletions (
 )
 PARTITION BY LIST (partition_id);
 
+CREATE TABLE p_ci_finished_build_ch_sync_events (
+    build_id bigint NOT NULL,
+    partition bigint DEFAULT 1 NOT NULL,
+    build_finished_at timestamp without time zone NOT NULL,
+    processed boolean DEFAULT false NOT NULL
+)
+PARTITION BY LIST (partition);
+
 CREATE TABLE projects_visits (
     id bigint NOT NULL,
     entity_id bigint NOT NULL,
@@ -28615,6 +28623,9 @@ ALTER TABLE ONLY organizations
 ALTER TABLE ONLY p_batched_git_ref_updates_deletions
     ADD CONSTRAINT p_batched_git_ref_updates_deletions_pkey PRIMARY KEY (id, partition_id);
 
+ALTER TABLE ONLY p_ci_finished_build_ch_sync_events
+    ADD CONSTRAINT p_ci_finished_build_ch_sync_events_pkey PRIMARY KEY (build_id, partition);
+
 ALTER TABLE ONLY p_ci_job_annotations
     ADD CONSTRAINT p_ci_job_annotations_pkey PRIMARY KEY (id, partition_id);
 
@@ -31364,6 +31375,8 @@ CREATE INDEX index_ci_editor_ai_messages_created_at ON ci_editor_ai_conversation
 CREATE INDEX index_ci_editor_ai_messages_on_user_project_and_created_at ON ci_editor_ai_conversation_messages USING btree (user_id, project_id, created_at);
 
 CREATE INDEX index_ci_editor_ai_messages_project_id ON ci_editor_ai_conversation_messages USING btree (project_id);
+
+CREATE INDEX index_ci_finished_build_ch_sync_events_for_partitioned_query ON ONLY p_ci_finished_build_ch_sync_events USING btree (((build_id % (100)::bigint)), build_id) WHERE (processed = false);
 
 CREATE INDEX index_ci_freeze_periods_on_project_id ON ci_freeze_periods USING btree (project_id);
 
