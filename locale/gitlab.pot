@@ -34952,7 +34952,7 @@ msgstr ""
 msgid "Pipeline|We are currently unable to fetch pipeline data"
 msgstr ""
 
-msgid "Pipeline|You’re about to stop pipeline #%{pipelineId}."
+msgid "Pipeline|You're about to stop pipeline #%{pipelineId}."
 msgstr ""
 
 msgid "Pipeline|for"
