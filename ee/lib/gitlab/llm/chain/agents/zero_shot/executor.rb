@@ -129,7 +129,6 @@ module Gitlab
 
             def picked_tool_action(tool_class)
               logger.info(message: "Picked tool", tool: tool_class.to_s)
-              return unless Feature.enabled?(:ai_tool_info, context.current_user)
 
               response_handler.execute(
                 response: Gitlab::Llm::Chain::ToolResponseModifier.new(tool_class),
