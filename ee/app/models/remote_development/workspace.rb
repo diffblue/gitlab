@@ -45,8 +45,10 @@ module RemoteDevelopment
     scope :by_project_ids, ->(ids) { where(project_id: ids) }
     scope :with_actual_states, ->(actual_states) { where(actual_state: actual_states) }
     scope :without_terminated, -> do
-      where.not(desired_state: RemoteDevelopment::Workspaces::States::TERMINATED)
-           .where.not(actual_state: RemoteDevelopment::Workspaces::States::TERMINATED)
+      where.not(
+        desired_state: RemoteDevelopment::Workspaces::States::TERMINATED,
+        actual_state: RemoteDevelopment::Workspaces::States::TERMINATED
+      )
     end
 
     scope :ordered_by_id, -> { order(:id) }
