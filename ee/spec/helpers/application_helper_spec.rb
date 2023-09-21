@@ -377,4 +377,12 @@ RSpec.describe ApplicationHelper do
       end
     end
   end
+
+  describe '#add_page_specific_style' do
+    it 'only adds the same style to a page once' do
+      expect(helper).to receive(:stylesheet_link_tag).with('a/path', any_args).once
+
+      2.times { helper.add_page_specific_style('a/path') }
+    end
+  end
 end
