@@ -29,7 +29,7 @@
                 .col-sm-6
                   = f.text_field :name, class: 'form-control gl-form-input', placeholder: _('eg. dev/*')
               .form-group.row
-                = f.label :target_branch, _("Targe branch"), class: 'col-sm-12'
+                = f.label :target_branch, _("Target branch"), class: 'col-sm-12'
                 .col-sm-6
                   = f.hidden_field :target_branch
                   #js-target-branch{ data: { project_id: @project.id } }

@@ -46685,9 +46685,6 @@ msgstr ""
 msgid "TanukiBot|What is a fork?"
 msgstr ""
 
-msgid "Targe branch"
-msgstr ""
-
 msgid "Target"
 msgstr ""
 
