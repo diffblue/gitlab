@@ -26,13 +26,7 @@ jest.mock('~/vue_shared/issuable/list/constants', () => ({
 }));
 
 const mockRawEpic = {
-  ...pick(mockFormattedEpic, [
-    'title',
-    'titleHtml',
-    'webUrl',
-    'userDiscussionsCount',
-    'confidential',
-  ]),
+  ...pick(mockFormattedEpic, ['title', 'webUrl', 'userDiscussionsCount', 'confidential']),
   author: mockAuthor,
   labels: {
     nodes: [...mockLabels.map((label) => ({ ...label, color: '#D9C2EE', __typename: 'Label' }))],
