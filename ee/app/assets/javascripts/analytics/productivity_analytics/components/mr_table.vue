@@ -1,13 +1,11 @@
 <script>
-import { GlDropdown, GlDropdownItem, GlIcon } from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import Pagination from '~/vue_shared/components/pagination_links.vue';
 import MergeRequestTableRow from './mr_table_row.vue';
 
 export default {
   components: {
-    GlDropdown,
-    GlDropdownItem,
-    GlIcon,
+    GlCollapsibleListbox,
     MergeRequestTableRow,
     Pagination,
   },
@@ -40,13 +38,16 @@ export default {
     showPagination() {
       return this.pageInfo && this.pageInfo.total;
     },
+    listBoxColumnOptions() {
+      return this.columnOptions.map(({ key, label }) => ({
+        value: key,
+        text: label,
+      }));
+    },
   },
   methods: {
     onPageChange(page) {
       this.$emit('pageChange', page);
-    },
-    isSelectedMetric(metric) {
-      return this.metricType === metric;
     },
   },
 };
@@ -64,31 +65,18 @@ export default {
             <div class="d-flex">
               <span class="d-none d-md-flex metric-col">{{ __('Time to merge') }}</span>
 
-              <gl-dropdown
-                class="w-100 metric-col"
-                toggle-class="dropdown-menu-toggle w-100"
-                menu-class="w-100 mw-100"
-                :text="metricDropdownLabel"
-              >
-                <gl-dropdown-item
-                  v-for="option in columnOptions"
-                  :key="option.key"
-                  active-class="is-active"
-                  class="w-100"
-                  @click="$emit('columnMetricChange', option.key)"
-                >
-                  <span class="d-flex">
-                    <gl-icon
-                      class="flex-shrink-0 gl-mr-2"
-                      :class="{
-                        invisible: !isSelectedMetric(option.key),
-                      }"
-                      name="mobile-issue-close"
-                    />
-                    {{ option.label }}
-                  </span>
-                </gl-dropdown-item>
-              </gl-dropdown>
+              <gl-collapsible-listbox
+                block
+                fluid-width
+                class="metric-col"
+                toggle-class="dropdown-menu-toggle gl-w-full!"
+                placement="right"
+                is-check-centered
+                :items="listBoxColumnOptions"
+                :selected="metricType"
+                :toggle-text="metricDropdownLabel"
+                @select="$emit('columnMetricChange', $event)"
+              />
             </div>
           </div>
         </div>

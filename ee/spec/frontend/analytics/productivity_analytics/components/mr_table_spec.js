@@ -1,4 +1,4 @@
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import MergeRequestTable from 'ee/analytics/productivity_analytics/components/mr_table.vue';
@@ -28,9 +28,7 @@ describe('MergeRequestTable component', () => {
 
   const findMergeRequestTableRows = () => wrapper.findAllComponents(MergeRequestTableRow);
   const findTableHeader = () => wrapper.find('.table-row-header');
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
-  const findFirstDropdownItem = () => findDropdownItems().at(0);
+  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
 
   beforeEach(() => {
     factory();
@@ -52,7 +50,9 @@ describe('MergeRequestTable component', () => {
     });
 
     it('renders a dropdown item for each item in columnOptions', () => {
-      expect(findDropdownItems()).toHaveLength(Object.keys(defaultProps.columnOptions).length);
+      expect(findDropdown().props('items')).toHaveLength(
+        Object.keys(defaultProps.columnOptions).length,
+      );
     });
 
     it('renders a row for every MR', () => {
@@ -70,7 +70,7 @@ describe('MergeRequestTable component', () => {
 
   describe('columnMetricChange', () => {
     it('emits the metric key when item is selected from the dropdown', async () => {
-      findFirstDropdownItem().vm.$emit('click');
+      findDropdown().vm.$emit('select', defaultProps.columnOptions[0].key);
 
       await nextTick();
       expect(wrapper.emitted().columnMetricChange[0]).toEqual(['time_to_first_comment']);
