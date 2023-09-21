@@ -130,6 +130,7 @@ export const ANALYTICS_FIELDS = [
 
 export const NEW_DASHBOARD = () => ({
   title: '',
+  description: '',
   panels: [],
   userDefined: true,
 });

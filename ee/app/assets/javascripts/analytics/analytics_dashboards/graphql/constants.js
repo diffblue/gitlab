@@ -1,2 +1,1 @@
-export const TYPENAME_PRODUCT_ANALYTICS_DASHBOARD = 'CustomizableDashboards';
-export const TYPENAME_PRODUCT_ANALYTICS_DASHBOARD_CONNECTION = 'CustomizableDashboardsConnection';
+export const TYPENAME_ANALYTICS_DASHBOARD_PANEL = 'CustomizableDashboardPanel';

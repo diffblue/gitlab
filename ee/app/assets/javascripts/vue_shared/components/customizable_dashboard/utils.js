@@ -1,15 +1,12 @@
+import produce from 'immer';
 import isEmpty from 'lodash/isEmpty';
 import uniqueId from 'lodash/uniqueId';
-import customizableDashboardFragment from 'ee/analytics/analytics_dashboards/graphql/fragments/customizable_dashboard.fragment.graphql';
-import {
-  TYPENAME_PRODUCT_ANALYTICS_DASHBOARD,
-  TYPENAME_PRODUCT_ANALYTICS_DASHBOARD_CONNECTION,
-} from 'ee/analytics/analytics_dashboards/graphql/constants';
+import { TYPENAME_ANALYTICS_DASHBOARD_PANEL } from 'ee/analytics/analytics_dashboards/graphql/constants';
+import getProductAnalyticsDashboardQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_product_analytics_dashboard.query.graphql';
+import getAllProductAnalyticsDashboardsQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_product_analytics_dashboards.query.graphql';
 import { queryToObject } from '~/lib/utils/url_utility';
 import { formatDate, parsePikadayDate } from '~/lib/utils/datetime_utility';
 import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import {
   convertObjectPropsToCamelCase,
   convertObjectPropsToSnakeCase,
@@ -111,57 +108,108 @@ export const getDashboardConfig = (hydratedDashboard) => {
 };
 
 /**
- * Adds/updates a dashboard detail in cache from getProductAnalyticsDashboard:{slug}
+ * Updates a dashboard detail in cache from getProductAnalyticsDashboard:{slug}
  */
-const updateDashboardDetailsApolloCache = (apolloClient, projectRef, dashboardRef, dashboard) => {
-  apolloClient.writeFragment({
-    id: dashboardRef,
-    fragment: customizableDashboardFragment,
-    data: {
-      project: { id: projectRef },
+const updateDashboardDetailsApolloCache = (
+  apolloClient,
+  dashboard,
+  dashboardSlug,
+  namespaceFullPath,
+) => {
+  const getDashboardDetailsQuery = {
+    query: getProductAnalyticsDashboardQuery,
+    variables: {
+      projectPath: namespaceFullPath,
+      slug: dashboardSlug,
+    },
+  };
+  const sourceData = apolloClient.readQuery(getDashboardDetailsQuery);
+  if (!sourceData) {
+    // Dashboard details not yet in cache, must be a new dashboard, nothing to update
+    return;
+  }
+
+  const data = produce(sourceData, (draftState) => {
+    const { nodes } = draftState.project.customizableDashboards;
+    const updateIndex = nodes.findIndex(({ slug }) => slug === dashboardSlug);
+
+    if (updateIndex < 0) return;
+
+    const updateNode = nodes[updateIndex];
+
+    nodes.splice(updateIndex, 1, {
+      ...updateNode,
       ...dashboard,
       panels: {
-        __typename: TYPENAME_PRODUCT_ANALYTICS_DASHBOARD_CONNECTION,
-        nodes: dashboard.panels.map((panel) => ({
-          ...panel,
-        })),
+        ...updateNode.panels,
+        nodes:
+          dashboard.panels?.map((panel) => {
+            const { id, ...panelRest } = panel;
+            return { __typename: TYPENAME_ANALYTICS_DASHBOARD_PANEL, ...panelRest };
+          }) || [],
       },
-    },
+    });
+  });
+
+  apolloClient.writeQuery({
+    ...getDashboardDetailsQuery,
+    data,
   });
 };
 
 /**
- * Links a newly created dashboard to the project in cache from getAllProductAnalyticsDashboards
+ * Adds/updates a newly created dashboard to the dashboards list cache from getAllProductAnalyticsDashboards
  */
-const updateDashboardsListApolloCache = (apolloClient, projectRef, dashboardRef) => {
-  apolloClient.cache.modify({
-    id: projectRef,
-    fields: {
-      customizableDashboards(existing) {
-        // eslint-disable-next-line no-underscore-dangle
-        if (existing.nodes.find((existingDashboard) => existingDashboard.__ref === dashboardRef)) {
-          return existing;
-        }
-
-        return {
-          ...existing,
-          nodes: [...existing.nodes, { __ref: dashboardRef }],
-        };
-      },
+const updateDashboardsListApolloCache = (
+  apolloClient,
+  dashboardSlug,
+  dashboard,
+  namespaceFullPath,
+) => {
+  const getDashboardListQuery = {
+    query: getAllProductAnalyticsDashboardsQuery,
+    variables: {
+      projectPath: namespaceFullPath,
     },
+  };
+  const sourceData = apolloClient.readQuery(getDashboardListQuery);
+  if (!sourceData) {
+    // Dashboard list not yet loaded in cache, nothing to update
+    return;
+  }
+
+  const data = produce(sourceData, (draftState) => {
+    const { panels, ...dashboardWithoutPanels } = dashboard;
+    const { nodes } = draftState.project.customizableDashboards;
+
+    const updateIndex = nodes.findIndex(({ slug }) => slug === dashboardSlug);
+
+    // Add new dashboard if it doesn't exist
+    if (updateIndex < 0) {
+      nodes.push(dashboardWithoutPanels);
+      return;
+    }
+
+    nodes.splice(updateIndex, 1, {
+      ...nodes[updateIndex],
+      ...dashboardWithoutPanels,
+    });
+  });
+
+  apolloClient.writeQuery({
+    ...getDashboardListQuery,
+    data,
   });
 };
 
-export const updateApolloCache = (apolloClient, projectId, dashboardSlug, dashboard) => {
-  const projectRef = apolloClient.cache.identify({
-    __typename: TYPENAME_PROJECT,
-    id: convertToGraphQLId(TYPENAME_PROJECT, projectId),
-  });
-  const dashboardRef = apolloClient.cache.identify({
-    __typename: TYPENAME_PRODUCT_ANALYTICS_DASHBOARD,
-    slug: dashboardSlug,
-  });
-
-  updateDashboardDetailsApolloCache(apolloClient, projectRef, dashboardRef, dashboard);
-  updateDashboardsListApolloCache(apolloClient, projectRef, dashboardRef);
+export const updateApolloCache = (
+  apolloClient,
+  projectId,
+  dashboardSlug,
+  dashboard,
+  namespaceFullPath,
+) => {
+  // TODO: modify to support removing dashboards from cache https://gitlab.com/gitlab-org/gitlab/-/issues/425513
+  updateDashboardDetailsApolloCache(apolloClient, dashboard, dashboardSlug, namespaceFullPath);
+  updateDashboardsListApolloCache(apolloClient, dashboardSlug, dashboard, namespaceFullPath);
 };

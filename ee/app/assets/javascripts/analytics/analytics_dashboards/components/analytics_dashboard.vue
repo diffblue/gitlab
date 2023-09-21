@@ -177,7 +177,13 @@ export default {
           this.$toast.show(s__('Analytics|Dashboard was saved successfully'));
 
           const client = this.$apollo.getClient();
-          updateApolloCache(client, this.namespaceId, dashboardSlug, dashboard);
+          updateApolloCache(
+            client,
+            this.namespaceId,
+            dashboardSlug,
+            dashboard,
+            this.namespaceFullPath,
+          );
 
           if (this.isNewDashboard) {
             // We redirect now to the new route
