@@ -16,8 +16,6 @@ RSpec.describe 'New/edit issue', :js, feature_category: :team_planning do
   let!(:label2)    { create(:label, project: project) }
   let!(:issue)     { create(:issue, project: project, assignees: [user], milestone: milestone) }
 
-  let(:visible_label_selection_on_metadata) { false }
-
   before do
     project.add_maintainer(user)
     project.add_maintainer(user2)
@@ -25,7 +23,6 @@ RSpec.describe 'New/edit issue', :js, feature_category: :team_planning do
     allow_any_instance_of(ApplicationHelper).to receive(:collapsed_sidebar?).and_return(true)
 
     stub_licensed_features(multiple_issue_assignees: true)
-    stub_feature_flags(visible_label_selection_on_metadata: visible_label_selection_on_metadata)
     gitlab_sign_in(user)
   end
 
@@ -118,14 +115,20 @@ RSpec.describe 'New/edit issue', :js, feature_category: :team_planning do
       expect(find('input[name="issue[milestone_id]"]', visible: false).value).to match(milestone.id.to_s)
       expect(page).to have_button milestone.title
 
-      click_button 'Labels'
-      click_link label.title
-      click_link label2.title
-      click_button 'Close'
+      click_button _('Select label')
+      wait_for_all_requests
+      within_testid('sidebar-labels') do
+        click_button label.title
+        click_button label2.title
+        click_button _('Close')
+        wait_for_requests
+      end
 
       expect(page).to have_button label.title
-      expect(page.all('input[name="issue[label_ids][]"]', visible: false)[1].value).to match(label.id.to_s)
-      expect(page.all('input[name="issue[label_ids][]"]', visible: false)[2].value).to match(label2.id.to_s)
+      within_testid('embedded-labels-list') do
+        expect(page).to have_content(label.title)
+        expect(page).to have_content(label2.title)
+      end
 
       fill_in 'issue_weight', with: '1'
       click_button 'Create issue'
