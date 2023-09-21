@@ -849,25 +849,76 @@ RSpec.describe User, feature_category: :system_access do
         it 'only templates in publicly visible groups with projects are available' do
           expect(available_subgroups).to match_array([subgroup_1, subsubgroup_1, subsubgroup_4])
         end
+
+        context 'when feature flag "project_templates_without_min_access" is disabled' do
+          before do
+            stub_feature_flags(project_templates_without_min_access: false)
+          end
+
+          it 'returns an empty collection' do
+            expect(available_subgroups).to be_empty
+          end
+        end
       end
 
       context 'when a user is a member of the groups' do
         subject(:available_subgroups) { user.available_subgroups_with_custom_project_templates }
 
-        where(:access_level) do
-          [:guest, :reporter, :developer, :maintainer, :owner]
-        end
-
-        with_them do
-          before do
-            group_1.add_member(user, access_level)
-            group_2.add_member(user, access_level)
-            group_3.add_member(user, access_level)
-            group_4.add_member(user, access_level)
+        context 'when the access level is not sufficient' do
+          where(:access_level) do
+            [:guest, :reporter]
           end
 
-          it 'the templates in groups with projects are available' do
-            expect(available_subgroups).to match_array([subgroup_1, subgroup_2, subsubgroup_1, subsubgroup_4])
+          with_them do
+            before do
+              group_1.add_member(user, access_level)
+              group_2.add_member(user, access_level)
+              group_3.add_member(user, access_level)
+              group_4.add_member(user, access_level)
+            end
+
+            it 'the templates in groups with projects are available' do
+              expect(available_subgroups).to match_array([subgroup_1, subgroup_2, subsubgroup_1, subsubgroup_4])
+            end
+
+            context 'when feature flag "project_templates_without_min_access" is disabled' do
+              before do
+                stub_feature_flags(project_templates_without_min_access: false)
+              end
+
+              it 'returns an empty collection' do
+                expect(available_subgroups).to be_empty
+              end
+            end
+          end
+        end
+
+        context 'when the access level is enough' do
+          where(:access_level) do
+            [:developer, :maintainer, :owner]
+          end
+
+          with_them do
+            before do
+              group_1.add_member(user, access_level)
+              group_2.add_member(user, access_level)
+              group_3.add_member(user, access_level)
+              group_4.add_member(user, access_level)
+            end
+
+            it 'the templates in groups with projects are available' do
+              expect(available_subgroups).to match_array([subgroup_1, subgroup_2, subsubgroup_1, subsubgroup_4])
+            end
+
+            context 'when feature flag "project_templates_without_min_access" is disabled' do
+              before do
+                stub_feature_flags(project_templates_without_min_access: false)
+              end
+
+              it 'the templates in groups with projects are available' do
+                expect(available_subgroups).to match_array([subgroup_1, subgroup_2, subsubgroup_1, subsubgroup_4])
+              end
+            end
           end
         end
       end

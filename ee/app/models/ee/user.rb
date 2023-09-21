@@ -301,7 +301,9 @@ module EE
     def available_subgroups_with_custom_project_templates(group_id = nil)
       found_groups = GroupsWithTemplatesFinder.new(self, group_id).execute
 
-      ::GroupsFinder.new(self)
+      params = ::Feature.enabled?(:project_templates_without_min_access, self) ? {} : { min_access_level: ::Gitlab::Access::DEVELOPER }
+
+      ::GroupsFinder.new(self, params)
         .execute
         .where(id: found_groups.select(:custom_project_templates_group_id))
         .preload(:projects)
