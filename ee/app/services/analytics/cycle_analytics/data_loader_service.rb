@@ -11,8 +11,8 @@ module Analytics
       EVENTS_LIMIT = 25
 
       CONFIG_MAPPING = {
-        Issue => { event_model: IssueStageEvent, project_column: :project_id }.freeze,
-        MergeRequest => { event_model: MergeRequestStageEvent, project_column: :target_project_id }.freeze
+        Issue => { event_model: IssueStageEvent }.freeze,
+        MergeRequest => { event_model: MergeRequestStageEvent }.freeze
       }.freeze
 
       def initialize(group:, model:, context: Analytics::CycleAnalytics::AggregationContext.new)
@@ -67,7 +67,9 @@ module Analytics
         opts = {
           in_operator_optimization_options: {
             array_scope: group.all_projects.select(:id),
-            array_mapping_scope: -> (id_expression) { model.where(model.arel_table[project_column].eq(id_expression)) }
+            array_mapping_scope: -> (id_expression) {
+                                   model.where(model.arel_table[event_model.project_column].eq(id_expression))
+                                 }
           }
         }
 
@@ -82,7 +84,7 @@ module Analytics
         events.each_slice(EVENTS_LIMIT) do |event_slice|
           scope = model.join_project.id_in(loaded_records.pluck(:id))
 
-          current_select_columns = select_columns # default SELECT columns
+          current_select_columns = event_model.select_columns # default SELECT columns
           # Add the stage timestamp columns to the SELECT
           event_slice.each do |event|
             scope = event.include_in(scope)
@@ -122,7 +124,9 @@ module Analytics
               milestone_id: record['milestone_id'],
               state_id: record['state_id'],
               start_event_timestamp: start_event,
-              end_event_timestamp: end_event
+              end_event_timestamp: end_event,
+              weight: record['weight'],
+              sprint_id: record['sprint_id']
             }
 
             if data.size == UPSERT_LIMIT
@@ -135,17 +139,6 @@ module Analytics
         @upsert_count += event_model.upsert_data(data) if data.any?
       end
 
-      def select_columns
-        [
-          model.arel_table[:id],
-          model.arel_table[project_column].as('project_id'),
-          model.arel_table[:milestone_id],
-          model.arel_table[:author_id],
-          model.arel_table[:state_id],
-          Project.arel_table[:parent_id].as('group_id')
-        ]
-      end
-
       # rubocop: disable CodeReuse/ActiveRecord
       def cursor_for_node(record)
         scope, _ = Gitlab::Pagination::Keyset::SimpleOrderBuilder.build(iterator_base_scope)
@@ -153,10 +146,6 @@ module Analytics
         order.cursor_attributes_for_node(record)
       end
       # rubocop: enable CodeReuse/ActiveRecord
-
-      def project_column
-        CONFIG_MAPPING.fetch(model).fetch(:project_column)
-      end
 
       def event_model
         CONFIG_MAPPING.fetch(model).fetch(:event_model)

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
+RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :value_stream_management do
   let_it_be_with_refind(:top_level_group) { create(:group) }
 
   describe 'validations' do
@@ -195,9 +195,10 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
     end
 
     context 'when Issue data is present' do
-      let_it_be(:issue1) { create(:issue, project: project1, closed_at: 5.minutes.from_now) }
+      let_it_be(:iteration) { create(:iteration, group: top_level_group) }
+      let_it_be(:issue1) { create(:issue, project: project1, closed_at: 5.minutes.from_now, weight: 5) }
       let_it_be(:issue2) { create(:issue, project: project1, closed_at: 5.minutes.from_now) }
-      let_it_be(:issue3) { create(:issue, project: project2, closed_at: 5.minutes.from_now) }
+      let_it_be(:issue3) { create(:issue, project: project2, closed_at: 5.minutes.from_now, weight: 2, iteration: iteration) }
       # invalid the creation time would be later than closed_at, this should not be aggregated
       let_it_be(:issue4) { create(:issue, project: project2, closed_at: 5.minutes.ago) }
 
@@ -210,7 +211,9 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
             issue.project_id,
             issue.created_at,
             issue.closed_at,
-            issue.state_id
+            issue.state_id,
+            issue.weight,
+            issue.sprint_id
           ]
         end
 
@@ -224,7 +227,9 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService do
             event.project_id,
             event.start_event_timestamp,
             event.end_event_timestamp,
-            Analytics::CycleAnalytics::IssueStageEvent.states[event.state_id]
+            Analytics::CycleAnalytics::IssueStageEvent.states[event.state_id],
+            event.weight,
+            event.sprint_id
           ]
         end
 
