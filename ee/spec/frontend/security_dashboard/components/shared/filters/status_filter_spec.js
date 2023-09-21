@@ -2,7 +2,7 @@ import { GlCollapsibleListbox } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import StatusFilter, {
   GROUPS,
-} from 'ee/security_dashboard/components/shared/filters/status_with_dismissal_filter.vue';
+} from 'ee/security_dashboard/components/shared/filters/status_filter.vue';
 import { ALL_ID as ALL_STATUS_VALUE } from 'ee/security_dashboard/components/shared/filters/constants';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
