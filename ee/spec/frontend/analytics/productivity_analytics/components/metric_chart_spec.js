@@ -1,4 +1,4 @@
-import { GlLoadingIcon, GlDropdown, GlDropdownItem, GlAlert, GlIcon } from '@gitlab/ui';
+import { GlLoadingIcon, GlCollapsibleListbox, GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import MetricChart from 'ee/analytics/productivity_analytics/components/metric_chart.vue';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
@@ -34,8 +34,7 @@ describe('MetricChart component', () => {
 
   const findLoadingIndicator = () => wrapper.findComponent(GlLoadingIcon);
   const findInfoMessage = () => wrapper.findComponent(GlAlert);
-  const findMetricDropdown = () => wrapper.findComponent(GlDropdown);
-  const findMetricDropdownItems = () => findMetricDropdown().findAllComponents(GlDropdownItem);
+  const findMetricDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findChartSlot = () => wrapper.findComponent({ ref: 'chart' });
 
   describe('template', () => {
@@ -143,35 +142,43 @@ describe('MetricChart component', () => {
           });
 
           it('renders a dropdown item for each item in metricTypes', () => {
-            expect(findMetricDropdownItems()).toHaveLength(2);
+            expect(findMetricDropdown().props('items')).toHaveLength(2);
           });
 
           it('should emit `metricTypeChange` event when dropdown item gets clicked', () => {
-            findMetricDropdownItems().at(0).vm.$emit('click');
+            findMetricDropdown().vm.$emit('select', metricTypes[0].key);
 
             expect(wrapper.emitted('metricTypeChange')).toEqual([['time_to_merge']]);
           });
 
           it('should render the default dropdown label', () => {
-            expect(findMetricDropdown().attributes('text')).toContain('Please select a metric');
+            expect(findMetricDropdown().props('toggleText')).toContain('Please select a metric');
           });
 
           describe('and a metric is selected', () => {
-            beforeEach(async () => {
-              await wrapper.setProps({ selectedMetric: 'time_to_last_commit' });
+            beforeEach(() => {
+              factory({
+                ...defaultProps,
+                metricTypes,
+                chartData,
+                selectedMetric: 'time_to_last_commit',
+              });
             });
 
             it('should only set `invisible` class on the icon of first dropdown item', () => {
-              const iconInvisibility = findMetricDropdownItems().wrappers.map((item) =>
-                item.findComponent(GlIcon).classes('invisible'),
-              );
-
-              expect(iconInvisibility).toEqual([true, false]);
+              expect(findMetricDropdown().props('selected')).toBe(metricTypes[1].key);
             });
 
             it('renders the correct text in the dropdown', () => {
-              expect(findMetricDropdown().attributes('text')).toBe(
+              expect(findMetricDropdown().props('toggleText')).toBe(
                 'Time from first comment to last commit',
+              );
+            });
+
+            it('should render correct items', () => {
+              expect(findMetricDropdown().props('selected')).toBe(metricTypes[1].key);
+              expect(findMetricDropdown().props('items')).toEqual(
+                metricTypes.map(({ key, label }) => ({ value: key, text: label })),
               );
             });
           });
