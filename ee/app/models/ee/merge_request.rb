@@ -159,8 +159,8 @@ module EE
       )
     end
 
-    override :mergeability_checks
-    def mergeability_checks
+    override :mergeable_state_checks
+    def mergeable_state_checks
       [
         ::MergeRequests::Mergeability::CheckApprovedService,
         ::MergeRequests::Mergeability::CheckDeniedPoliciesService,
