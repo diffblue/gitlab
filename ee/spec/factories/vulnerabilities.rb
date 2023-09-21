@@ -11,6 +11,7 @@ FactoryBot.define do
     report_type { :sast }
     description { "Description of #{title}" }
     present_on_default_branch { true }
+    cvss { [] }
 
     trait :detected do
       state { :detected }

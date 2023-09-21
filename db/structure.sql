@@ -24696,7 +24696,8 @@ CREATE TABLE vulnerabilities (
     resolved_on_default_branch boolean DEFAULT false NOT NULL,
     present_on_default_branch boolean DEFAULT true NOT NULL,
     detected_at timestamp with time zone DEFAULT now(),
-    finding_id bigint
+    finding_id bigint,
+    cvss jsonb DEFAULT '[]'::jsonb
 );
 
 CREATE SEQUENCE vulnerabilities_id_seq
