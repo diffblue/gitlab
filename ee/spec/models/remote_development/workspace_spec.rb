@@ -121,4 +121,40 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
       end
     end
   end
+
+  describe 'scopes' do
+    describe '.without_terminated' do
+      let(:actual_and_desired_state_running_workspace) do
+        create(
+          :workspace,
+          actual_state: RemoteDevelopment::Workspaces::States::RUNNING,
+          desired_state: RemoteDevelopment::Workspaces::States::RUNNING
+        )
+      end
+
+      let(:desired_state_terminated_workspace) do
+        create(:workspace, desired_state: RemoteDevelopment::Workspaces::States::TERMINATED)
+      end
+
+      let(:actual_state_terminated_workspace) do
+        create(:workspace, actual_state: RemoteDevelopment::Workspaces::States::TERMINATED)
+      end
+
+      let(:actual_and_desired_state_terminated_workspace) do
+        create(
+          :workspace,
+          actual_state: RemoteDevelopment::Workspaces::States::TERMINATED,
+          desired_state: RemoteDevelopment::Workspaces::States::TERMINATED
+        )
+      end
+
+      it 'returns workspaces who do not have desired_state and actual_state as Terminated' do
+        subject
+        expect(described_class.without_terminated).to include(actual_and_desired_state_running_workspace)
+        expect(described_class.without_terminated).to include(desired_state_terminated_workspace)
+        expect(described_class.without_terminated).to include(actual_state_terminated_workspace)
+        expect(described_class.without_terminated).not_to include(actual_and_desired_state_terminated_workspace)
+      end
+    end
+  end
 end
