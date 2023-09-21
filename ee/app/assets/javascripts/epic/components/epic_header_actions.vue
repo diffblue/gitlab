@@ -177,7 +177,11 @@ export default {
         />
       </gl-disclosure-dropdown-group>
 
-      <gl-disclosure-dropdown-group :group="actionsDropdownGroupMobile" bordered />
+      <gl-disclosure-dropdown-group
+        data-testid="actions-dropdown-mobile"
+        :group="actionsDropdownGroupMobile"
+        :bordered="showNotificationToggle"
+      />
       <gl-disclosure-dropdown-group v-if="canDestroy" bordered>
         <gl-disclosure-dropdown-item v-gl-modal="$options.deleteModalId">
           <template #list-item>
@@ -232,7 +236,11 @@ export default {
         />
       </gl-disclosure-dropdown-group>
 
-      <gl-disclosure-dropdown-group :group="actionsDropdownGroupDesktop" bordered />
+      <gl-disclosure-dropdown-group
+        data-testid="actions-dropdown-desktop"
+        :group="actionsDropdownGroupDesktop"
+        :bordered="showNotificationToggle"
+      />
 
       <gl-disclosure-dropdown-group v-if="canDestroy" bordered>
         <gl-disclosure-dropdown-item v-gl-modal="$options.deleteModalId">
