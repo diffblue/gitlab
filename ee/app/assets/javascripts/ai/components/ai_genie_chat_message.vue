@@ -2,6 +2,8 @@
 import { renderMarkdown } from '~/notes/utils';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { renderGFM } from '~/behaviors/markdown/render_gfm';
+import UserFeedback from 'ee/ai/components/user_feedback.vue';
+import DocumentationSources from 'ee/ai/components/ai_genie_chat_message_sources.vue';
 import { GENIE_CHAT_MODEL_ROLES } from '../constants';
 
 const concatIndicesUntilEmpty = (arr) => {
@@ -15,9 +17,14 @@ const concatIndicesUntilEmpty = (arr) => {
 export default {
   name: 'AiGenieChatMessage',
   messageChunks: [],
+  components: {
+    DocumentationSources,
+    UserFeedback,
+  },
   directives: {
     SafeHtml,
   },
+  inject: ['trackingEventName'],
   props: {
     message: {
       type: Object,
@@ -40,6 +47,9 @@ export default {
     },
     isUserMessage() {
       return this.message.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.user;
+    },
+    sources() {
+      return this.message.extras?.sources;
     },
   },
   watch: {
@@ -86,11 +96,13 @@ export default {
     }"
   >
     <div ref="content" v-safe-html="messageContent"></div>
-    <slot
-      v-if="isAssistantMessage"
-      name="feedback"
-      :prompt-location="promptLocation"
-      :message="message"
-    ></slot>
+
+    <template v-if="isAssistantMessage">
+      <documentation-sources v-if="sources" :sources="sources" />
+
+      <div class="gl-display-flex gl-align-items-flex-end gl-mt-4">
+        <user-feedback :event-name="trackingEventName" :prompt-location="promptLocation" />
+      </div>
+    </template>
   </div>
 </template>
