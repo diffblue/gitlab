@@ -109,6 +109,7 @@ module API
           requires :current_file, type: Hash do
             requires :file_name, type: String, limit: 255, desc: 'The name of the current file'
             requires :content_above_cursor, type: String, limit: 100_000, desc: 'The content above cursor'
+            optional :content_below_cursor, type: String, limit: 100_000, desc: 'The content below cursor'
           end
           optional :intent, type: String, values:
             [
@@ -134,7 +135,8 @@ module API
           end
 
           safe_params = declared_params(params).merge(
-            skip_generate_comment_prefix: Feature.enabled?(:code_generation_no_comment_prefix, current_user)
+            skip_generate_comment_prefix: Feature.enabled?(:code_generation_no_comment_prefix, current_user),
+            model_family: Feature.enabled?(:code_completion_anthropic, current_user) ? :anthropic : :vertex_ai
           )
           task = ::CodeSuggestions::TaskSelector.task(
             params: safe_params,
