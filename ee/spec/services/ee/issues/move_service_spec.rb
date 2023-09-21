@@ -121,7 +121,7 @@ RSpec.describe Issues::MoveService, feature_category: :team_planning do
         end
 
         it_behaves_like 'internal event tracking' do
-          let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC }
+          let(:event) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC }
           let(:project) { new_project }
           let(:namespace) { project.namespace }
         end

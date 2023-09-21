@@ -74,7 +74,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
     end
 
     it_behaves_like 'internal event tracking' do
-      let(:action) { described_class::EPIC_CREATED }
+      let(:event) { described_class::EPIC_CREATED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -86,7 +86,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
     end
 
     it_behaves_like 'internal event tracking' do
-      let(:action) { described_class::EPIC_TITLE_CHANGED }
+      let(:event) { described_class::EPIC_TITLE_CHANGED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity
@@ -98,7 +98,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
     end
 
     it_behaves_like 'internal event tracking' do
-      let(:action) { described_class::EPIC_DESCRIPTION_CHANGED }
+      let(:event) { described_class::EPIC_DESCRIPTION_CHANGED }
     end
 
     it_behaves_like 'does not track with namespace when feature flag is disabled', :track_epics_activity

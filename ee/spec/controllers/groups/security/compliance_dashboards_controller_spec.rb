@@ -32,7 +32,7 @@ RSpec.describe Groups::Security::ComplianceDashboardsController, feature_categor
 
         it_behaves_like 'internal event tracking' do
           let(:namespace) { group }
-          let(:action) { 'g_compliance_dashboard' }
+          let(:event) { 'g_compliance_dashboard' }
         end
       end
 
