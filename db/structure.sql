@@ -24058,7 +24058,8 @@ CREATE TABLE user_achievements (
     revoked_by_user_id bigint,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    revoked_at timestamp with time zone
+    revoked_at timestamp with time zone,
+    priority integer
 );
 
 CREATE SEQUENCE user_achievements_id_seq
