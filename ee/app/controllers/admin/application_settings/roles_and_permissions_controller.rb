@@ -7,8 +7,6 @@ module Admin
 
       before_action :ensure_custom_roles_available!
 
-      def index; end
-
       private
 
       def ensure_custom_roles_available!
