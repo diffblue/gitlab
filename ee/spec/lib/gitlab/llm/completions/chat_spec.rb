@@ -175,44 +175,6 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
       it_behaves_like 'success'
     end
 
-    context 'when epic identifier flag is switched off' do
-      before do
-        stub_feature_flags(chat_epic_identifier: false)
-      end
-
-      it 'calls zero shot agent with tools without epic identifier' do
-        tools = [
-          ::Gitlab::Llm::Chain::Tools::JsonReader,
-          ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
-          ::Gitlab::Llm::Chain::Tools::GitlabDocumentation,
-          ::Gitlab::Llm::Chain::Tools::CiEditorAssistant
-        ]
-        expected_params = [
-          user_input: content,
-          tools: match_array(tools),
-          context: context,
-          response_handler: response_handler,
-          stream_response_handler: stream_response_handler
-        ]
-
-        expect_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor, *expected_params) do |instance|
-          expect(instance).to receive(:execute).and_return(answer)
-        end
-        expect(response_handler).to receive(:execute)
-        expect(::Gitlab::Llm::ResponseService).to receive(:new).with(context, { request_id: 'uuid' })
-          .and_return(response_handler)
-        expect(chat_response_handler).to receive(:execute)
-        expect(::Gitlab::Llm::ChatResponseService).to receive(:new).with(context, { request_id: 'uuid' })
-          .and_return(chat_response_handler)
-        expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
-          .with(current_user: user, container: expected_container, resource: resource,
-            ai_request: ai_request, extra_resource: extra_resource)
-          .and_return(context)
-
-        subject
-      end
-    end
-
     context 'when ci_editor_assistant_tool flag is switched off' do
       before do
         stub_feature_flags(ci_editor_assistant_tool: false)
