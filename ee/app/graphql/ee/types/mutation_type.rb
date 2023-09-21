@@ -32,6 +32,7 @@ module EE
         mount_mutation ::Mutations::Iterations::Cadences::Create
         mount_mutation ::Mutations::Iterations::Cadences::Update
         mount_mutation ::Mutations::Iterations::Cadences::Destroy
+        mount_mutation ::Mutations::MemberRoles::Update
         mount_mutation ::Mutations::RequirementsManagement::CreateRequirement
         mount_mutation ::Mutations::RequirementsManagement::ExportRequirements
         mount_mutation ::Mutations::RequirementsManagement::UpdateRequirement

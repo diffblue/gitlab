@@ -17,16 +17,35 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
     it { is_expected.to validate_inclusion_of(:base_access_level).in_array(described_class::LEVELS) }
 
     context 'for attributes_locked_after_member_associated' do
-      context 'when assigned to member' do
-        it 'cannot be changed' do
-          member_role.save!
-          member_role.members << create(:project_member)
+      before do
+        member_role.base_access_level = ProjectMember::GUEST
+        member_role.read_vulnerability = true
+        member_role.save!
 
+        member_role.read_vulnerability = false
+        member_role.name = 'new name'
+        member_role.description = 'new description'
+      end
+
+      context 'when assigned to member' do
+        before do
+          member_role.members << create(
+            :project_member, :guest, project: create(:project, group: member_role.namespace)
+          )
+        end
+
+        it 'cannot be changed when abilities change' do
           expect(member_role).not_to be_valid
           expect(member_role.errors.messages[:base]).to include(s_(
             "MemberRole|cannot be changed because it is already assigned to a user. " \
             "Please create a new Member Role instead"
           ))
+        end
+
+        it 'can be changed when only name and description change' do
+          member_role.read_vulnerability = true
+
+          expect(member_role).to be_valid
         end
       end
 
