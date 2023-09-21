@@ -37,7 +37,7 @@ RSpec.describe ResourceIterationEvent, :snowplow, feature_category: :team_planni
     let(:issue) { create(:issue) }
 
     it_behaves_like 'internal event tracking' do
-      let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ITERATION_CHANGED }
+      let(:event) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ITERATION_CHANGED }
       let(:project) { issue.project }
       let(:user) { issue.author }
       let(:namespace) { project.namespace }

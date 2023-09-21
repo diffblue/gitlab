@@ -394,7 +394,7 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
             end
 
             it_behaves_like 'internal event tracking' do
-              let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ADDED_TO_EPIC }
+              let(:event) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ADDED_TO_EPIC }
             end
           end
 
@@ -433,7 +433,7 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
             end
 
             it_behaves_like 'internal event tracking' do
-              let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC }
+              let(:event) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC }
             end
           end
 
@@ -550,7 +550,7 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
             end
 
             it_behaves_like 'internal event tracking' do
-              let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_REMOVED_FROM_EPIC }
+              let(:event) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_REMOVED_FROM_EPIC }
             end
           end
 

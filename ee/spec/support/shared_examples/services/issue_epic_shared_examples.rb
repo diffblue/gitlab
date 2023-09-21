@@ -72,7 +72,7 @@ RSpec.shared_examples 'issue with epic_id parameter' do
         end
 
         it_behaves_like 'internal event tracking' do
-          let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ADDED_TO_EPIC }
+          let(:event) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ADDED_TO_EPIC }
           let(:namespace) { project.namespace }
           subject(:service_action) { execute }
         end
@@ -120,7 +120,7 @@ RSpec.shared_examples 'issue with epic_id parameter' do
         end
 
         it_behaves_like 'internal event tracking' do
-          let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ADDED_TO_EPIC }
+          let(:event) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ADDED_TO_EPIC }
           let(:namespace) { project.namespace }
           subject(:service_action) { execute }
         end

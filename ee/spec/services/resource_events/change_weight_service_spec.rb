@@ -81,7 +81,7 @@ RSpec.describe ResourceEvents::ChangeWeightService, feature_category: :team_plan
     end
 
     it_behaves_like 'internal event tracking' do
-      let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_WEIGHT_CHANGED }
+      let(:event) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_WEIGHT_CHANGED }
       let(:project) { issue.project }
       let(:namespace) { project.namespace }
     end

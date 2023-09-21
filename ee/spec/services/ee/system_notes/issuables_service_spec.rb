@@ -51,7 +51,7 @@ RSpec.describe ::SystemNotes::IssuablesService, feature_category: :team_planning
       end
 
       it_behaves_like 'internal event tracking' do
-        let(:action) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_HEALTH_STATUS_CHANGED }
+        let(:event) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_HEALTH_STATUS_CHANGED }
         let(:user) { author }
         let(:namespace) { project.namespace }
       end
