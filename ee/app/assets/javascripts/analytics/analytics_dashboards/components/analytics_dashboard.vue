@@ -1,6 +1,5 @@
 <script>
-import * as Sentry from '@sentry/browser';
-import { GlEmptyState, GlSkeletonLoader, GlAlert, GlLink, GlSprintf } from '@gitlab/ui';
+import { GlEmptyState, GlSkeletonLoader } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import { s__ } from '~/locale';
@@ -24,11 +23,8 @@ export default {
   name: 'AnalyticsDashboard',
   components: {
     CustomizableDashboard,
-    GlAlert,
     GlEmptyState,
-    GlLink,
     GlSkeletonLoader,
-    GlSprintf,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: {
@@ -70,7 +66,7 @@ export default {
       editingEnabled: this.glFeatures.combinedAnalyticsDashboardsEditor,
       changesSaved: false,
       alert: null,
-      dashboardError: null,
+      hasDashboardError: false,
     };
   },
   computed: {
@@ -126,8 +122,19 @@ export default {
         this.breadcrumbState.updateName(this.initialDashboard?.title || '');
       },
       error(error) {
-        this.dashboardError = error;
-        Sentry.captureException(error);
+        this.showError({
+          error,
+          capture: true,
+          message: s__(
+            'Analytics|Something went wrong while loading the dashboard. Refresh the page to try again or see %{linkStart}troubleshooting documentation%{linkEnd}.',
+          ),
+          messageLinks: {
+            link: helpPagePath('user/analytics/analytics_dashboards', {
+              anchor: '#troubleshooting',
+            }),
+          },
+        });
+        this.hasDashboardError = true;
       },
     },
     availableVisualizations: {
@@ -201,45 +208,30 @@ export default {
         if (error.response?.status === HTTP_STATUS_BAD_REQUEST) {
           // We can assume bad request errors are a result of user error.
           // We don't need to capture these errors and can render the message to the user.
-          this.showError(error, false, error.response?.data?.message);
+          this.showError({ error, capture: false, message: error.response?.data?.message });
         } else {
-          this.showError(error, true);
+          this.showError({ error, capture: true });
         }
       } finally {
         this.isSaving = false;
       }
     },
-    showError(error, capture, message) {
+    showError({ error, capture, message, messageLinks }) {
       this.alert = createAlert({
         message: message || s__('Analytics|Error while saving dashboard'),
+        messageLinks,
         error,
         captureError: capture,
       });
     },
   },
-  troubleshootingDashboardDocsPath: helpPagePath('user/analytics/analytics_dashboards', {
-    anchor: '#troubleshooting',
-  }),
 };
 </script>
 
 <template>
   <div>
-    <gl-alert v-if="dashboardError" variant="danger" class="gl-mt-5">
-      <gl-sprintf
-        :message="
-          s__(
-            'Analytics|Something went wrong while loading the dashboard. Refresh the page to try again or see %{linkStart}troubleshooting documentation%{linkEnd}.',
-          )
-        "
-      >
-        <template #link="{ content }">
-          <gl-link :href="$options.troubleshootingDashboardDocsPath">{{ content }}</gl-link>
-        </template>
-      </gl-sprintf>
-    </gl-alert>
     <customizable-dashboard
-      v-else-if="initialDashboard"
+      v-if="initialDashboard"
       :initial-dashboard="initialDashboard"
       :available-visualizations="availableVisualizations"
       :default-filters="defaultFilters"
@@ -259,7 +251,7 @@ export default {
       :primary-button-text="s__('Analytics|View available dashboards')"
       :primary-button-link="backUrl"
     />
-    <div v-else class="gl-mt-7">
+    <div v-else-if="!hasDashboardError" class="gl-mt-7">
       <gl-skeleton-loader />
     </div>
   </div>

@@ -1,5 +1,4 @@
-import * as Sentry from '@sentry/browser';
-import { GlAlert, GlSkeletonLoader, GlEmptyState } from '@gitlab/ui';
+import { GlSkeletonLoader, GlEmptyState } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import {
@@ -8,7 +7,7 @@ import {
   HTTP_STATUS_BAD_REQUEST,
 } from '~/lib/utils/http_status';
 import { createAlert } from '~/alert';
-import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import getProductAnalyticsDashboardQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_product_analytics_dashboard.query.graphql';
 import getAvailableVisualizations from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_product_analytics_visualizations.query.graphql';
@@ -31,8 +30,6 @@ import {
   TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE,
 } from '../mock_data';
-
-jest.mock('@sentry/browser');
 
 const mockAlertDismiss = jest.fn();
 jest.mock('~/alert', () => ({
@@ -61,7 +58,6 @@ describe('AnalyticsDashboard', () => {
   const findDashboard = () => wrapper.findComponent(CustomizableDashboard);
   const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
-  const findErrorAlert = () => wrapper.findComponent(GlAlert);
 
   const mockSaveDashboardImplementation = async (responseCallback) => {
     saveCustomDashboard.mockImplementation(responseCallback);
@@ -105,7 +101,6 @@ describe('AnalyticsDashboard', () => {
     glFeatures = {
       combinedAnalyticsDashboardsEditor: false,
     },
-    mountFn = shallowMountExtended,
   } = {}) => {
     const mocks = {
       $toast: {
@@ -128,7 +123,7 @@ describe('AnalyticsDashboard', () => {
       [getAvailableVisualizations, mockAvailableVisualizationsHandler],
     ]);
 
-    wrapper = mountFn(AnalyticsDashboard, {
+    wrapper = shallowMountExtended(AnalyticsDashboard, {
       apolloProvider: mockApollo,
       propsData: {
         ...props,
@@ -209,7 +204,7 @@ describe('AnalyticsDashboard', () => {
     beforeEach(() => {
       mockAnalyticsDashboardsHandler = jest.fn().mockRejectedValue(error);
 
-      createWrapper({ mountFn: mountExtended });
+      createWrapper();
       return waitForPromises();
     });
 
@@ -219,17 +214,17 @@ describe('AnalyticsDashboard', () => {
       expect(breadcrumbState.updateName).toHaveBeenCalledWith('');
     });
 
-    it('renders an error message', () => {
-      const alert = findErrorAlert();
-
-      expect(alert.exists()).toBe(true);
-      expect(alert.text()).toContain(
-        'Something went wrong while loading the dashboard. Refresh the page to try again or see troubleshooting documentation',
-      );
-    });
-
-    it(`captures the exception in in Sentry`, () => {
-      expect(Sentry.captureException).toHaveBeenCalledWith(error);
+    it('creates an alert', () => {
+      expect(createAlert).toHaveBeenCalledWith({
+        message: expect.stringContaining(
+          'Something went wrong while loading the dashboard. Refresh the page to try again',
+        ),
+        messageLinks: {
+          link: '/help/user/analytics/analytics_dashboards#troubleshooting',
+        },
+        captureError: true,
+        error,
+      });
     });
   });
 
