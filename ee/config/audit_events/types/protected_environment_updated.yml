@@ -1,0 +1,9 @@
+---
+name: protected_environment_updated
+description: This event is triggered when a protected environment is updated.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/415603
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/131484
+feature_category: environment_management
+milestone: '16.5'
+saved_to_database: true
+streamed: true
