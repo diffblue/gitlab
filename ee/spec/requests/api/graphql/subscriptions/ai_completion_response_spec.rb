@@ -55,8 +55,6 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
 
   shared_examples 'on success' do
     it 'receives data' do
-      expect(ai_completion_response['responseBody']).to eq(content)
-      expect(ai_completion_response['responseBodyHtml']).to eq(content_html)
       expect(ai_completion_response['content']).to eq(content)
       expect(ai_completion_response['contentHtml']).to eq(content_html)
       expect(ai_completion_response['role']).to eq('ASSISTANT')
@@ -135,8 +133,6 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
     <<~SUBSCRIPTION
       subscription {
         aiCompletionResponse(#{build_arguments(params.merge(user_id: requested_user&.to_gid))}) {
-          responseBody
-          responseBodyHtml
           content
           contentHtml
           role

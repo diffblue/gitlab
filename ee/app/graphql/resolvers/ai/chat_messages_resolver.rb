@@ -2,14 +2,14 @@
 
 module Resolvers
   module Ai
-    class MessagesResolver < BaseResolver
-      type Types::Ai::ChatMessageType, null: false
+    class ChatMessagesResolver < BaseResolver
+      type Types::Ai::MessageType, null: false
 
       argument :request_ids, [GraphQL::Types::ID],
         required: false,
         description: 'Array of request IDs to fetch.'
 
-      argument :roles, [Types::Ai::ChatMessageRoleEnum],
+      argument :roles, [Types::Ai::MessageRoleEnum],
         required: false,
         description: 'Array of roles to fetch.'
 

@@ -3,7 +3,7 @@
 module Subscriptions
   class AiCompletionResponse < BaseSubscription
     include Gitlab::Graphql::Laziness
-    payload_type ::Types::Ai::AiResponseType
+    payload_type ::Types::Ai::MessageType
 
     argument :resource_id, Types::GlobalIDType[::Ai::Model],
       required: false,

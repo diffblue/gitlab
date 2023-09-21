@@ -99,8 +99,8 @@ module EE
               description: 'Instance level external audit event destinations.',
               resolver: ::Resolvers::AuditEvents::InstanceExternalAuditEventDestinationsResolver
 
-        field :ai_messages, ::Types::Ai::ChatMessageType.connection_type,
-              resolver: ::Resolvers::Ai::MessagesResolver,
+        field :ai_messages, ::Types::Ai::MessageType.connection_type,
+              resolver: ::Resolvers::Ai::ChatMessagesResolver,
               alpha: { milestone: '16.1' },
               description: 'Find GitLab Duo Chat messages.'
 

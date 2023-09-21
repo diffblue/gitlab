@@ -2,7 +2,7 @@
 
 module Types
   module Ai
-    class MessageTypesEnum < BaseEnum
+    class MessageTypeEnum < BaseEnum
       graphql_name 'AiMessageType'
       description 'Types of messages returned from AI features.'
 
