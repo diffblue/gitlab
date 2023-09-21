@@ -2,14 +2,21 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder do
+RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, feature_category: :value_stream_management do
   let_it_be(:group) { create(:group) }
+  let_it_be(:user) { create(:user).tap { |u| group.add_developer(u) } }
   let_it_be(:sub_group) { create(:group, parent: group) }
   let_it_be(:project_1) { create(:project, group: sub_group) }
   let_it_be(:project_2) { create(:project, group: sub_group) }
 
   let_it_be(:other_group) { create(:group) }
   let_it_be(:other_project) { create(:project, group: other_group) }
+
+  let_it_be(:iteration) { create(:iteration, group: group) }
+  let_it_be(:epic) { create(:epic, group: group) }
+
+  let_it_be(:issue_with_epic) { create(:issue, project: project_2) }
+  let_it_be(:award_emoji) { create(:award_emoji, name: 'thumbsup', user: user, awardable: issue_with_epic) }
 
   let_it_be(:stage) do
     create(:cycle_analytics_stage,
@@ -26,7 +33,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder d
            project_id: project_1.id,
            start_event_timestamp: 4.weeks.ago,
            end_event_timestamp: 1.week.ago,
-           issue_id: 1
+           sprint_id: iteration.id,
+           issue_id: create(:issue, project: project_1).id
           )
   end
 
@@ -37,7 +45,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder d
            project_id: project_2.id,
            start_event_timestamp: 2.weeks.ago,
            end_event_timestamp: 1.week.ago,
-           issue_id: 2
+           weight: 5,
+           issue_id: issue_with_epic.id
           )
   end
 
@@ -46,12 +55,15 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder d
            stage_event_hash_id: stage.stage_event_hash_id,
            group_id: other_group.id,
            project_id: other_project.id,
-           issue_id: 3
+           issue_id: create(:issue, project: other_project).id
           )
   end
 
+  let_it_be(:epic_issue) { create(:epic_issue, epic: epic, issue: issue_with_epic) }
+
   let(:params) do
     {
+      current_user: user,
       from: 1.year.ago.to_date,
       to: Date.today,
       sort: :end_event_timestamp,
@@ -72,6 +84,70 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder d
     params[:project_ids] = [project_1.id, other_project.id]
 
     expect(issue_ids).to eq([stage_event_1.issue_id])
+  end
+
+  context 'when filtering by weight' do
+    it 'filters by weight' do
+      params[:weight] = 5
+
+      expect(issue_ids).to eq([stage_event_2.issue_id])
+    end
+
+    context 'when no records matching the query' do
+      it 'returns no results' do
+        params[:weight] = 0
+
+        expect(issue_ids).to eq([])
+      end
+    end
+  end
+
+  context 'when filtering by iteration_id' do
+    it 'filters by iteration_id' do
+      params[:iteration_id] = iteration.id
+
+      expect(issue_ids).to eq([stage_event_1.issue_id])
+    end
+
+    context 'when no records matching the query' do
+      it 'returns no results' do
+        params[:iteration_id] = non_existing_record_id
+
+        expect(issue_ids).to eq([])
+      end
+    end
+  end
+
+  context 'when filtering by epic_id' do
+    it 'filters by epic_id' do
+      params[:epic_id] = epic.id
+
+      expect(issue_ids).to eq([stage_event_2.issue_id])
+    end
+
+    context 'when no records matching the query' do
+      it 'returns no results' do
+        params[:epic_id] = non_existing_record_id
+
+        expect(issue_ids).to eq([])
+      end
+    end
+  end
+
+  context 'when filtering by my_reaction_emoji' do
+    it 'filters by my_reaction_emoji' do
+      params[:my_reaction_emoji] = 'thumbsup'
+
+      expect(issue_ids).to eq([stage_event_2.issue_id])
+    end
+
+    context 'when no records matching the query' do
+      it 'returns no results' do
+        params[:my_reaction_emoji] = 'unknown_emoji'
+
+        expect(issue_ids).to eq([])
+      end
+    end
   end
 
   describe '#build_sorted_query' do

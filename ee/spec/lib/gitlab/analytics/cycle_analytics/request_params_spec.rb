@@ -14,16 +14,15 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
     ]
   end
 
+  let(:request_params) { described_class.new(params) }
   let(:project_ids) { root_group_projects.collect(&:id) }
   let(:namespace) { root_group }
 
-  subject { described_class.new(params) }
+  subject { request_params }
 
   before do
     root_group.add_owner(user)
   end
-
-  it_behaves_like 'unlicensed cycle analytics request params'
 
   context 'when Namespaces::ProjectNamespace is given' do
     it_behaves_like 'unlicensed cycle analytics request params' do
@@ -38,7 +37,11 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
         created_before: '2019-03-01',
         project_ids: [2, 3],
         namespace: namespace,
-        current_user: user
+        current_user: user,
+        weight: 1,
+        epic_id: 2,
+        iteration_id: 3,
+        my_reaction_emoji: 'tumbsup'
       }
     end
 
@@ -48,6 +51,14 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
 
     it 'is valid' do
       expect(subject).to be_valid
+    end
+
+    describe '#to_data_collector_params' do
+      subject(:data_collector_params) { described_class.new(params).to_data_collector_params }
+
+      it 'contains also the licensed filters' do
+        expect(data_collector_params.keys).to include(:weight, :epic_id, :iteration_id, :my_reaction_emoji)
+      end
     end
 
     describe 'optional `project_ids`' do
@@ -121,7 +132,11 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
           label_name: %w[label1 label2],
           author_username: 'author',
           stage_id: stage.id,
-          value_stream: stage.value_stream
+          value_stream: stage.value_stream,
+          epic_id: 1,
+          iteration_id: 2,
+          my_reaction_emoji: 'thumbsup',
+          weight: 5
         )
       end
 
@@ -133,6 +148,10 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
         expect(subject[:labels]).to eq('["label1","label2"]')
         expect(subject[:author]).to eq('author')
         expect(subject[:stage]).to eq(%|{"id":#{stage.id},"title":"#{stage.name}"}|)
+        expect(subject[:epic_id]).to eq(1)
+        expect(subject[:iteration_id]).to eq(2)
+        expect(subject[:my_reaction_emoji]).to eq('thumbsup')
+        expect(subject[:weight]).to eq(5)
       end
     end
 

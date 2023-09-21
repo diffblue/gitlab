@@ -17,10 +17,28 @@ module EE
               attrs[:enable_tasks_by_type_chart] = 'true' if group.present?
               attrs[:enable_customizable_stages] = 'true' if licensed?
               attrs[:enable_projects_filter] = 'true' if group.present?
+
+              add_licensed_filter_params!(attrs)
+            end
+          end
+
+          override :to_data_collector_params
+          def to_data_collector_params
+            super.tap do |attrs|
+              add_licensed_filter_params!(attrs)
             end
           end
 
           private
+
+          def add_licensed_filter_params!(attrs)
+            return unless licensed?
+
+            attrs[:weight] = weight if weight.present?
+            attrs[:epic_id] = epic_id if epic_id.present?
+            attrs[:my_reaction_emoji] = my_reaction_emoji if my_reaction_emoji.present?
+            attrs[:iteration_id] = iteration_id if iteration_id.present?
+          end
 
           override :namespace_attributes
           def namespace_attributes

@@ -5,7 +5,11 @@ module EE::Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder
 
   override :build
   def build
-    filter_by_project_ids(super)
+    query = filter_by_project_ids(super)
+    query = filter_by_weight(query)
+    query = filter_by_iteration(query)
+    query = filter_by_epic(query)
+    filter_by_my_reaction_emoji(query)
   end
 
   # rubocop: disable CodeReuse/ActiveRecord
@@ -18,15 +22,50 @@ module EE::Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder
       array_mapping_scope: method(:in_optimization_array_mapping_scope)
     ).execute
   end
-  # rubocop: enable CodeReuse/ActiveRecord
 
   private
+
+  def filter_by_weight(query)
+    return query unless issue_based_stage?
+    return query unless params[:weight]
+
+    query.where(weight: params[:weight])
+  end
+
+  def filter_by_iteration(query)
+    return query unless issue_based_stage?
+    return query unless params[:iteration_id]
+
+    query.where(sprint_id: params[:iteration_id])
+  end
+
+  def filter_by_epic(query)
+    return query unless issue_based_stage?
+    return query unless params[:epic_id]
+
+    query.joins(:epic_issue).where(epic_issues: { epic_id: params[:epic_id] })
+  end
+
+  def filter_by_my_reaction_emoji(query)
+    return query unless issue_based_stage?
+    return query unless params[:my_reaction_emoji]
+
+    query.awarded(
+      params[:current_user],
+      params[:my_reaction_emoji],
+      ::Issue.name,
+      :issue_id
+    )
+  end
+
+  def issue_based_stage?
+    stage.subject_class == ::Issue
+  end
 
   def in_optimization_array_scope
     projects_filter_present? ? project_ids : stage.parent.self_and_descendant_ids.reselect(:id)
   end
 
-  # rubocop: disable CodeReuse/ActiveRecord
   def in_optimization_array_mapping_scope(id_expression)
     issuable_id_column = projects_filter_present? ? :project_id : :group_id
     stage_event_model.where(stage_event_model.arel_table[issuable_id_column].eq(id_expression))
