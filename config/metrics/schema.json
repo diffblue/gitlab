@@ -93,8 +93,7 @@
       "items": {
         "type": "object",
         "required": [
-          "name",
-          "unique"
+          "name"
         ],
         "properties": {
           "name": {
