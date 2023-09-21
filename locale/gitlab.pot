@@ -52522,6 +52522,9 @@ msgstr ""
 msgid "Vulnerability|Explain this vulnerability and how to mitigate it with AI"
 msgstr ""
 
+msgid "Vulnerability|Explain vulnerability"
+msgstr ""
+
 msgid "Vulnerability|External Security Report"
 msgstr ""
 
@@ -52667,9 +52670,6 @@ msgid "Vulnerability|Training"
 msgstr ""
 
 msgid "Vulnerability|Training not available for this vulnerability."
-msgstr ""
-
-msgid "Vulnerability|Try it out"
 msgstr ""
 
 msgid "Vulnerability|URL:"
