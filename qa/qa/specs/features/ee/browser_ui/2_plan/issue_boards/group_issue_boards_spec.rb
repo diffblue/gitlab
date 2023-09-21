@@ -27,9 +27,9 @@ module QA
         Page::Component::IssueBoard::Show.perform do |show|
           show.click_boards_dropdown_button
 
-          expect(show.boards_dropdown_content).to have_content(board_1)
-          expect(show.boards_dropdown_content).to have_content(board_2)
-          expect(show.boards_dropdown_content).to have_content(board_3)
+          expect(show.boards_dropdown).to have_content(board_1)
+          expect(show.boards_dropdown).to have_content(board_2)
+          expect(show.boards_dropdown).to have_content(board_3)
         end
       end
 

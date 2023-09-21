@@ -442,7 +442,7 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
 
   def click_on_create_new_board
     page.within '[data-testid="boards-selector"]' do
-      find('.dropdown-menu-toggle').click
+      find('[data-testid="boards-dropdown"]').click
       wait_for_requests
 
       click_button 'Create new board'

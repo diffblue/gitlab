@@ -22,7 +22,7 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
 
   let(:edit_board) { find('.btn', text: 'Edit board') }
   let(:view_scope) { find('.btn', text: 'View scope') }
-  let(:board_title) { find('.boards-selector-wrapper .dropdown-menu-toggle') }
+  let(:board_title) { find('.boards-selector-wrapper .gl-new-dropdown-toggle') }
   let(:filtered_search) { find('[data-testid="issue-board-filtered-search"]') }
   let(:filter_input) { find('.gl-filtered-search-last-item') }
   let(:filter_first_suggestion) { find('.gl-filtered-search-suggestion-list').first('.gl-filtered-search-suggestion') }
@@ -653,7 +653,7 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
 
   def click_on_create_new_board
     page.within '[data-testid="boards-selector"]' do
-      find('.dropdown-menu-toggle').click
+      find('.gl-new-dropdown-toggle').click
       wait_for_requests
 
       click_button 'Create new board'

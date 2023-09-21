@@ -1,5 +1,5 @@
-import { GlDropdown } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
+import { GlCollapsibleListbox } from '@gitlab/ui';
+import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 // eslint-disable-next-line no-restricted-imports
@@ -46,7 +46,7 @@ describe('BoardsSelector', () => {
     });
   };
 
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
+  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
 
   const projectBoardsQueryHandlerSuccess = jest
     .fn()
@@ -79,7 +79,7 @@ describe('BoardsSelector', () => {
       [groupRecentBoardsQuery, groupRecentBoardsQueryHandlerSuccess],
     ]);
 
-    wrapper = mount(BoardsSelector, {
+    wrapper = shallowMount(BoardsSelector, {
       store,
       apolloProvider: fakeApollo,
       propsData: {
@@ -130,8 +130,8 @@ describe('BoardsSelector', () => {
 
         await nextTick();
 
-        // Emits gl-dropdown show event to simulate the dropdown is opened at initialization time
-        findDropdown().vm.$emit('show');
+        // Emits gl-listbox shown event to simulate the dropdown is opened at initialization time
+        findDropdown().vm.$emit('shown');
 
         await nextTick();
 
@@ -160,8 +160,8 @@ describe('BoardsSelector', () => {
 
         await nextTick();
 
-        // Emits gl-dropdown show event to simulate the dropdown is opened at initialization time
-        findDropdown().vm.$emit('show');
+        // Emits gl-listbox shown event to simulate the dropdown is opened at initialization time
+        findDropdown().vm.$emit('shown');
 
         await waitForPromises();
 
