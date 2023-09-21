@@ -7,7 +7,6 @@ import LoadingError from 'ee/security_dashboard/components/pipeline/loading_erro
 import SecurityDashboardTable from 'ee/security_dashboard/components/pipeline/security_dashboard_table.vue';
 import SecurityDashboard from 'ee/security_dashboard/components/pipeline/security_dashboard_vuex.vue';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
-import IssueModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import VulnerabilityFindingModal from 'ee/security_dashboard/components/pipeline/vulnerability_finding_modal.vue';
 import { TEST_HOST } from 'helpers/test_constants';
 import axios from '~/lib/utils/axios_utils';
@@ -18,7 +17,6 @@ import {
   HTTP_STATUS_NOT_FOUND,
   HTTP_STATUS_UNAUTHORIZED,
 } from '~/lib/utils/http_status';
-import waitForPromises from 'helpers/wait_for_promises';
 
 Vue.use(Vuex);
 
@@ -53,9 +51,6 @@ describe('Security Dashboard component', () => {
           sourceBranch,
         },
         vulnerabilitiesEndpoint,
-        glFeatures: {
-          standaloneFindingModal: true,
-        },
         ...provide,
       },
       propsData: {
@@ -151,100 +146,6 @@ describe('Security Dashboard component', () => {
         );
       });
     });
-
-    describe('with "standaloneFindingModal" feature flag disabled', () => {
-      beforeEach(() => {
-        createComponent({
-          provide: {
-            glFeatures: {
-              standaloneFindingModal: false,
-            },
-          },
-        });
-      });
-
-      it('renders the issue modal', () => {
-        expect(wrapper.findComponent(IssueModal).exists()).toBe(true);
-      });
-
-      it.each`
-        emittedModalEvent                      | eventPayload | expectedDispatchedAction                        | expectedActionPayload
-        ${'addDismissalComment'}               | ${'foo'}     | ${'vulnerabilities/addDismissalComment'}        | ${{ comment: 'foo', vulnerability: 'bar' }}
-        ${'editVulnerabilityDismissalComment'} | ${undefined} | ${'vulnerabilities/openDismissalCommentBox'}    | ${undefined}
-        ${'showDismissalDeleteButtons'}        | ${undefined} | ${'vulnerabilities/showDismissalDeleteButtons'} | ${undefined}
-        ${'hideDismissalDeleteButtons'}        | ${undefined} | ${'vulnerabilities/hideDismissalDeleteButtons'} | ${undefined}
-        ${'deleteDismissalComment'}            | ${undefined} | ${'vulnerabilities/deleteDismissalComment'}     | ${{ vulnerability: 'bar' }}
-        ${'closeDismissalCommentBox'}          | ${undefined} | ${'vulnerabilities/closeDismissalCommentBox'}   | ${undefined}
-        ${'createMergeRequest'}                | ${undefined} | ${'vulnerabilities/createMergeRequest'}         | ${{ vulnerability: 'bar' }}
-        ${'createNewIssue'}                    | ${undefined} | ${'vulnerabilities/createIssue'}                | ${{ vulnerability: 'bar' }}
-        ${'dismissVulnerability'}              | ${'bar'}     | ${'vulnerabilities/dismissVulnerability'}       | ${{ comment: 'bar', vulnerability: 'bar' }}
-        ${'openDismissalCommentBox'}           | ${undefined} | ${'vulnerabilities/openDismissalCommentBox'}    | ${undefined}
-        ${'revertDismissVulnerability'}        | ${undefined} | ${'vulnerabilities/revertDismissVulnerability'} | ${{ vulnerability: 'bar' }}
-        ${'downloadPatch'}                     | ${undefined} | ${'vulnerabilities/downloadPatch'}              | ${{ vulnerability: 'bar' }}
-      `(
-        'dispatches the "$expectedDispatchedAction" action when the modal emits a "$emittedModalEvent" event',
-        ({ emittedModalEvent, eventPayload, expectedDispatchedAction, expectedActionPayload }) => {
-          store.state.vulnerabilities.modal.vulnerability = 'bar';
-
-          jest.spyOn(store, 'dispatch').mockImplementation(() => Promise.resolve());
-          wrapper.findComponent(IssueModal).vm.$emit(emittedModalEvent, eventPayload);
-
-          expect(store.dispatch).toHaveBeenCalledWith(
-            expectedDispatchedAction,
-            expectedActionPayload,
-          );
-        },
-      );
-
-      it.each`
-        emittedModalEvent               | eventPayload
-        ${'dismissVulnerability'}       | ${'bar'}
-        ${'addDismissalComment'}        | ${'foo'}
-        ${'deleteDismissalComment'}     | ${undefined}
-        ${'revertDismissVulnerability'} | ${undefined}
-      `(
-        'emits a hide modal event when modal does not have an error and "$emittedModalEvent" is called',
-        async ({ emittedModalEvent, eventPayload }) => {
-          const rootWrapper = createWrapper(wrapper.vm.$root);
-
-          expect(rootWrapper.emitted(BV_HIDE_MODAL)).toBeUndefined();
-          jest.spyOn(store, 'dispatch').mockImplementation(() => Promise.resolve());
-          wrapper.findComponent(IssueModal).vm.$emit(emittedModalEvent, eventPayload);
-          await waitForPromises();
-
-          expect(rootWrapper.emitted(BV_HIDE_MODAL)[0]).toContain(VULNERABILITY_MODAL_ID);
-        },
-      );
-    });
-  });
-
-  describe('issue modal', () => {
-    it('does not render the issue modal when the standalone findings feature flag is disabled', () => {
-      createComponent();
-      expect(wrapper.findComponent(IssueModal).exists()).toBe(false);
-    });
-
-    describe('with "standalone findings" feature flag disabled', () => {
-      it.each`
-        givenState                                                                               | expectedProps
-        ${{ modal: { vulnerability: 'foo' } }}                                                   | ${{ modal: { vulnerability: 'foo' }, canCreateIssue: false, canDismissVulnerability: false, isCreatingIssue: false, isDismissingVulnerability: false, isCreatingMergeRequest: false, isLoadingAdditionalInfo: false }}
-        ${{ modal: { vulnerability: { create_vulnerability_feedback_issue_path: 'foo' } } }}     | ${expect.objectContaining({ canCreateIssue: true })}
-        ${{ modal: { vulnerability: { create_jira_issue_url: 'foo' } } }}                        | ${expect.objectContaining({ canCreateIssue: true })}
-        ${{ modal: { vulnerability: { create_vulnerability_feedback_dismissal_path: 'foo' } } }} | ${expect.objectContaining({ canDismissVulnerability: true })}
-        ${{ isCreatingIssue: true }}                                                             | ${expect.objectContaining({ isCreatingIssue: true })}
-        ${{ isDismissingVulnerability: true }}                                                   | ${expect.objectContaining({ isDismissingVulnerability: true })}
-        ${{ isCreatingMergeRequest: true }}                                                      | ${expect.objectContaining({ isCreatingMergeRequest: true })}
-      `(
-        'passes right props to issue modal with state $givenState',
-        async ({ givenState, expectedProps }) => {
-          createComponent({ provide: { glFeatures: { standaloneFindingModal: false } } });
-          Object.assign(store.state.vulnerabilities, givenState);
-          await nextTick();
-
-          expect(wrapper.findComponent(IssueModal).props()).toStrictEqual(expectedProps);
-        },
-      );
-    });
   });
 
   describe('on error', () => {
@@ -258,7 +159,7 @@ describe('Security Dashboard component', () => {
     it('does not emit a hide modal event when modal has error', () => {
       const rootWrapper = createWrapper(wrapper.vm.$root);
 
-      expect(wrapper.findComponent(IssueModal).exists()).toBe(false);
+      expect(wrapper.findComponent(VulnerabilityFindingModal).exists()).toBe(false);
       expect(rootWrapper.emitted(BV_HIDE_MODAL)).toBeUndefined();
     });
 
