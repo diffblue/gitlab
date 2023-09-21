@@ -626,6 +626,7 @@ describe('CustomizableDashboard', () => {
               {
                 slug: 'new_title',
                 title: 'New Title',
+                description: '',
                 panels: [expect.any(Object)],
                 userDefined: true,
               },

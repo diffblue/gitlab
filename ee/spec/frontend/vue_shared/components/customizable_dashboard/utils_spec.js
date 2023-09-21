@@ -15,17 +15,21 @@ import {
   DATE_RANGE_OPTIONS,
   DEFAULT_SELECTED_OPTION_INDEX,
 } from 'ee/vue_shared/components/customizable_dashboard/filters/constants';
-import customizableDashboardFragment from 'ee/analytics/analytics_dashboards/graphql/fragments/customizable_dashboard.fragment.graphql';
-
+import getProductAnalyticsDashboardQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_product_analytics_dashboard.query.graphql';
+import getAllProductAnalyticsDashboardsQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_product_analytics_dashboards.query.graphql';
 import { createMockClient } from 'helpers/mock_apollo_helper';
-import { TYPENAME_PRODUCT_ANALYTICS_DASHBOARD } from 'ee/analytics/analytics_dashboards/graphql/constants';
-import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
 import {
   CATEGORY_SINGLE_STATS,
   CATEGORY_CHARTS,
   CATEGORY_TABLES,
 } from 'ee/vue_shared/components/customizable_dashboard/constants';
+import {
+  TEST_CUSTOM_DASHBOARDS_PROJECT,
+  TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE,
+  TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
+  TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
+  getGraphQLDashboard,
+} from 'ee_jest/analytics/analytics_dashboards/mock_data';
 import { mockDateRangeFilterChangePayload, dashboard } from './mock_data';
 
 const option = DATE_RANGE_OPTIONS[0];
@@ -187,74 +191,153 @@ describe('getDashboardConfig', () => {
 
 describe('updateApolloCache', () => {
   let apolloClient;
-  let mockWriteFragment;
+  let mockReadQuery;
+  let mockWriteQuery;
   const projectId = '1';
   const dashboardSlug = 'analytics_overview';
-  const dashboardRef = `${TYPENAME_PRODUCT_ANALYTICS_DASHBOARD}:{"slug":"${dashboardSlug}" }`;
-  const projectRef = `${TYPENAME_PROJECT}:${convertToGraphQLId(TYPENAME_PROJECT, projectId)}`;
+  const projectFullpath = TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath;
+
+  const setMockCache = (mockDashboardDetails, mockDashboardsList) => {
+    mockReadQuery.mockImplementation(({ query }) => {
+      if (query === getProductAnalyticsDashboardQuery) {
+        return mockDashboardDetails;
+      }
+      if (query === getAllProductAnalyticsDashboardsQuery) {
+        return mockDashboardsList;
+      }
+
+      return null;
+    });
+  };
 
   beforeEach(() => {
-    apolloClient = createMockClient(
-      [],
-      {},
-      {
-        dataIdFromObject: jest.fn(({ slug }) => (slug ? dashboardRef : projectRef)),
-      },
-    );
+    apolloClient = createMockClient();
 
-    mockWriteFragment = jest.fn();
-    apolloClient.writeFragment = mockWriteFragment;
+    mockReadQuery = jest.fn();
+    mockWriteQuery = jest.fn();
+    apolloClient.readQuery = mockReadQuery;
+    apolloClient.writeQuery = mockWriteQuery;
   });
 
-  it('adds a new dashboard fragment to the cache', () => {
-    updateApolloCache(apolloClient, projectId, dashboardSlug, dashboard);
+  describe('dashboard details cache', () => {
+    it('updates an existing dashboard', () => {
+      const existingDashboard = getGraphQLDashboard(
+        {
+          slug: 'some_existing_dash',
+          title: 'some existing title',
+        },
+        false,
+      );
+      const existingDetailsCache = {
+        ...TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE.data,
+      };
+      existingDetailsCache.project.customizableDashboards.nodes = [existingDashboard];
 
-    expect(mockWriteFragment).toHaveBeenCalledWith(
-      expect.objectContaining({
-        id: dashboardRef,
-        fragment: customizableDashboardFragment,
-        data: expect.objectContaining({
-          slug: dashboardSlug,
-          title: dashboard.title,
-          panels: expect.objectContaining({
-            nodes: expect.arrayContaining([
-              expect.objectContaining({
-                visualization: expect.objectContaining({
-                  type: 'LineChart',
-                  slug: 'cube_line_chart',
-                  title: 'Cube line chart',
-                }),
+      setMockCache(existingDetailsCache, null);
+
+      updateApolloCache(
+        apolloClient,
+        projectId,
+        existingDashboard.slug,
+        {
+          ...existingDashboard,
+          title: 'some new title',
+        },
+        projectFullpath,
+      );
+
+      expect(mockWriteQuery).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: getProductAnalyticsDashboardQuery,
+          data: expect.objectContaining({
+            project: expect.objectContaining({
+              customizableDashboards: expect.objectContaining({
+                nodes: expect.arrayContaining([
+                  expect.objectContaining({
+                    title: 'some new title',
+                  }),
+                ]),
               }),
-              expect.objectContaining({
-                visualization: expect.objectContaining({
-                  type: 'LineChart',
-                  slug: 'cube_line_chart',
-                  title: 'Cube line chart',
-                }),
-              }),
-            ]),
+            }),
           }),
         }),
-      }),
-    );
+      );
+    });
+
+    it('does not update for new dashboards where cache is empty', () => {
+      setMockCache(null, TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data);
+
+      updateApolloCache(apolloClient, projectId, dashboardSlug, dashboard, projectFullpath);
+
+      expect(mockWriteQuery).not.toHaveBeenCalledWith(
+        expect.objectContaining({ query: getProductAnalyticsDashboardQuery }),
+      );
+    });
   });
 
-  it('links new dashboard to project', () => {
-    apolloClient.cache.modify = jest.fn();
+  describe('dashboards list', () => {
+    it('adds a new dashboard to the dashboards list', () => {
+      setMockCache(null, TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data);
 
-    updateApolloCache(apolloClient, projectId, dashboardSlug, dashboard);
+      updateApolloCache(apolloClient, projectId, dashboardSlug, dashboard, projectFullpath);
 
-    expect(apolloClient.cache.modify).toHaveBeenCalledWith(
-      expect.objectContaining({
-        id: projectRef,
-      }),
-    );
+      expect(mockWriteQuery).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: getAllProductAnalyticsDashboardsQuery,
+          data: expect.objectContaining({
+            project: expect.objectContaining({
+              customizableDashboards: expect.objectContaining({
+                nodes: expect.arrayContaining([
+                  expect.objectContaining({
+                    slug: dashboardSlug,
+                  }),
+                ]),
+              }),
+            }),
+          }),
+        }),
+      );
+    });
 
-    const modifyCallback = apolloClient.cache.modify.mock.calls[0][0].fields.customizableDashboards;
+    it('updates an existing dashboard on the dashboards list', () => {
+      setMockCache(null, TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE.data);
 
-    const modifiedData = modifyCallback({ nodes: [{ __ref: 'some/existing/dashboardRef' }] });
-    expect(modifiedData).toEqual({
-      nodes: [{ __ref: 'some/existing/dashboardRef' }, { __ref: dashboardRef }],
+      const existingDashboards =
+        TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE.data.project.customizableDashboards.nodes;
+
+      const updatedDashboard = {
+        ...existingDashboards.at(0),
+        title: 'some new title',
+      };
+
+      updateApolloCache(apolloClient, projectId, dashboardSlug, updatedDashboard, projectFullpath);
+
+      expect(mockWriteQuery).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: getAllProductAnalyticsDashboardsQuery,
+          data: expect.objectContaining({
+            project: expect.objectContaining({
+              customizableDashboards: expect.objectContaining({
+                nodes: expect.arrayContaining([
+                  expect.objectContaining({
+                    title: 'some new title',
+                  }),
+                ]),
+              }),
+            }),
+          }),
+        }),
+      );
+    });
+
+    it('does not update dashboard list cache when it has not yet been populated', () => {
+      setMockCache(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE.data, null);
+
+      updateApolloCache(apolloClient, projectId, dashboardSlug, dashboard, projectFullpath);
+
+      expect(mockWriteQuery).not.toHaveBeenCalledWith(
+        expect.objectContaining({ query: getAllProductAnalyticsDashboardsQuery }),
+      );
     });
   });
 });

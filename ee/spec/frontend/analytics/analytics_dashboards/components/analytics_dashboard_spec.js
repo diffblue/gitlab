@@ -462,9 +462,15 @@ describe('AnalyticsDashboard', () => {
         await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
         await waitForPromises();
 
-        expect(updateApolloCache).toHaveBeenCalledWith(expect.any(Object), namespaceId, slug, {
-          panels: [],
-        });
+        expect(updateApolloCache).toHaveBeenCalledWith(
+          expect.any(Object),
+          namespaceId,
+          slug,
+          {
+            panels: [],
+          },
+          TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        );
       });
     });
 
