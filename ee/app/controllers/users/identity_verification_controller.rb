@@ -105,6 +105,7 @@ module Users
     def success
       return redirect_to identity_verification_path unless @user.identity_verified?
 
+      accept_pending_invitations(user: @user)
       sign_in(@user)
       session.delete(:verification_user_id)
       set_redirect_url
@@ -244,7 +245,6 @@ module Users
 
     def confirm_user
       @user.confirm
-      accept_pending_invitations(user: @user)
       log_event(:email, :success)
     end
 

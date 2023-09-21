@@ -282,14 +282,6 @@ feature_category: :system_access do
         expect { do_request }.to change { user.reload.confirmed_at }.from(nil).to(Time.current)
       end
 
-      it 'accepts pending invitations' do
-        member_invite = create(:project_member, :invited, invite_email: user.email)
-
-        do_request
-
-        expect(member_invite.reload).not_to be_invite
-      end
-
       it_behaves_like 'logs and tracks the event', :email, :success
 
       it 'renders the result as json' do
@@ -589,6 +581,7 @@ feature_category: :system_access do
   describe 'GET success' do
     let(:stored_user_return_to_path) { '/user/return/to/path' }
     let(:user) { confirmed_user }
+    let!(:member_invite) { create(:project_member, :invited, invite_email: user.email) }
 
     before do
       stub_session(verification_user_id: user.id, user_return_to: stored_user_return_to_path)
@@ -601,6 +594,10 @@ feature_category: :system_access do
       it 'redirects back to identity_verification_path' do
         expect(response).to redirect_to(identity_verification_path)
       end
+    end
+
+    it 'accepts pending invitations' do
+      expect(member_invite.reload).not_to be_invite
     end
 
     it 'signs in the user' do
