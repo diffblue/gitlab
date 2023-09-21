@@ -6,8 +6,9 @@ RSpec.describe MergeRequest::ReviewLlmSummaryPolicy, feature_category: :code_rev
   let_it_be_with_reload(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
-  let_it_be(:mr_diff) { create(:merge_request_diff, merge_request: merge_request) }
-  let_it_be(:mr_review_summary) { create(:merge_request_review_llm_summary, merge_request_diff: mr_diff) }
+  let_it_be(:mr_review_summary) do
+    create(:merge_request_review_llm_summary, merge_request_diff: merge_request.merge_request_diff)
+  end
 
   subject(:policy) { described_class.new(user, mr_review_summary) }
 
