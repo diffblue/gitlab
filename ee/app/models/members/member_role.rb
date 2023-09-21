@@ -76,6 +76,10 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
       .to_sentence
   end
 
+  def self.declarative_policy_class
+    'Members::MemberRolePolicy'
+  end
+
   class << self
     def elevating_permissions
       ALL_CUSTOMIZABLE_PERMISSIONS.keys - CUSTOMIZABLE_PERMISSIONS_EXEMPT_FROM_CONSUMING_SEAT
@@ -126,6 +130,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
 
   def attributes_locked_after_member_associated
     return unless members.present?
+    return if changed_attributes.except('name', 'description').empty?
 
     errors.add(
       :base,
