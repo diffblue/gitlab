@@ -270,11 +270,7 @@ export default {
             :messages="conversation"
             :show-delimiter="index > 0"
             class="gl-display-flex gl-flex-direction-column gl-justify-content-end"
-          >
-            <template #feedback="{ message, promptLocation }">
-              <slot name="feedback" :prompt-location="promptLocation" :message="message"></slot>
-            </template>
-          </ai-genie-chat-conversation>
+          />
 
           <template v-if="!hasMessages && !isLoading">
             <div key="empty-state" class="gl-display-flex gl-flex-grow-1">

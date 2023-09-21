@@ -11,13 +11,7 @@ import { i18n, GENIE_CHAT_MODEL_ROLES, GENIE_CHAT_RESET_MESSAGE } from 'ee/ai/co
 describe('AiGenieChat', () => {
   let wrapper;
 
-  const createComponent = ({
-    propsData = {},
-    data = {},
-    scopedSlots = {},
-    slots = {},
-    glFeatures = {},
-  } = {}) => {
+  const createComponent = ({ propsData = {}, data = {}, slots = {}, glFeatures = {} } = {}) => {
     jest.spyOn(AiGenieLoader.methods, 'computeTransitionWidth').mockImplementation();
 
     wrapper = shallowMountExtended(AiGenieChat, {
@@ -27,7 +21,6 @@ describe('AiGenieChat', () => {
           ...data,
         };
       },
-      scopedSlots,
       slots,
       stubs: {
         AiGenieLoader,

@@ -1,20 +1,18 @@
 <script>
-import { GlIcon, GlLink } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
-import { __, s__, n__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { helpCenterState } from '~/super_sidebar/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
-import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import Tracking from '~/tracking';
 import { i18n, GENIE_CHAT_RESET_MESSAGE } from 'ee/ai/constants';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
-import { SOURCE_TYPES, TANUKI_BOT_TRACKING_EVENT_NAME } from '../constants';
+import { TANUKI_BOT_TRACKING_EVENT_NAME } from '../constants';
 
 export default {
   name: 'TanukiBotChatApp',
@@ -34,14 +32,15 @@ export default {
       __('How do I create a template?'),
     ],
   },
-  trackingEventName: TANUKI_BOT_TRACKING_EVENT_NAME,
   components: {
-    GlIcon,
     AiGenieChat,
-    GlLink,
-    UserFeedback,
   },
   mixins: [glFeatureFlagMixin(), Tracking.mixin()],
+  provide() {
+    return {
+      trackingEventName: TANUKI_BOT_TRACKING_EVENT_NAME,
+    };
+  },
   props: {
     userId: {
       type: String,
@@ -154,38 +153,6 @@ export default {
     closeDrawer() {
       this.helpCenterState.showTanukiBotChatDrawer = false;
     },
-    getSourceIcon(sourceType) {
-      const currentSourceType = Object.values(SOURCE_TYPES).find(
-        ({ value }) => value === sourceType,
-      );
-
-      return currentSourceType?.icon;
-    },
-    getSourceTitle({ title, source_type: sourceType, stage, group, date, author }) {
-      if (title) {
-        return title;
-      }
-
-      if (sourceType === SOURCE_TYPES.DOC.value) {
-        if (stage && group) {
-          return `${stage} / ${group}`;
-        }
-      }
-
-      if (sourceType === SOURCE_TYPES.BLOG.value) {
-        if (date && author) {
-          return `${date} / ${author}`;
-        }
-      }
-
-      return this.$options.i18n.source;
-    },
-    messageHasSources(msg) {
-      return msg.extras?.sources?.length > 0;
-    },
-    messageSourceLabel(msg) {
-      return n__('TanukiBot|Source', 'TanukiBot|Sources', msg.extras?.sources?.length);
-    },
   },
 };
 </script>
@@ -204,36 +171,6 @@ export default {
     >
       <template #title>
         {{ $options.i18n.gitlabChat }}
-      </template>
-
-      <template #feedback="{ message, promptLocation }">
-        <div
-          v-if="messageHasSources(message)"
-          class="gl-mt-4 gl-mr-3 gl-text-gray-600"
-          data-testid="tanuki-bot-chat-message-sources"
-        >
-          <span>{{ messageSourceLabel(message) }}:</span>
-          <ul class="gl-list-style-none gl-p-0 gl-m-0">
-            <li
-              v-for="(source, index) in message.extras.sources"
-              :key="index"
-              class="gl-display-flex gl-pt-3"
-            >
-              <gl-icon
-                v-if="source.source_type"
-                :name="getSourceIcon(source.source_type)"
-                class="gl-flex-shrink-0 gl-mr-2"
-              />
-              <gl-link :href="source.source_url">{{ getSourceTitle(source) }}</gl-link>
-            </li>
-          </ul>
-        </div>
-        <div class="gl-display-flex gl-align-items-flex-end gl-mt-4">
-          <user-feedback
-            :event-name="$options.trackingEventName"
-            :prompt-location="promptLocation"
-          />
-        </div>
       </template>
     </ai-genie-chat>
   </div>

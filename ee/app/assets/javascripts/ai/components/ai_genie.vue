@@ -7,7 +7,6 @@ import { generateExplainCodePrompt, generateChatPrompt } from 'ee/ai/utils';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import {
   i18n,
@@ -27,7 +26,6 @@ export default {
     GlButton,
     AiGenieChat,
     CodeBlockHighlighted,
-    UserFeedback,
     GlAlert,
   },
   directives: {
@@ -35,6 +33,11 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   mixins: [glFeatureFlagsMixin()],
+  provide() {
+    return {
+      trackingEventName: EXPLAIN_CODE_TRACKING_EVENT_NAME,
+    };
+  },
   inject: ['resourceId', 'userId'],
   props: {
     containerSelector: {
@@ -251,9 +254,6 @@ export default {
         >
           <p v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_NOTICE"></p>
         </gl-alert>
-      </template>
-      <template #feedback="{ promptLocation }">
-        <user-feedback :event-name="$options.trackingEventName" :prompt-location="promptLocation" />
       </template>
     </ai-genie-chat>
   </div>

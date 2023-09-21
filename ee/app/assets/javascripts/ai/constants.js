@@ -81,4 +81,20 @@ export const FEEDBACK_OPTIONS = [
 ];
 
 export const EXPLAIN_CODE_TRACKING_EVENT_NAME = 'explain_code_blob_viewer';
+export const TANUKI_BOT_TRACKING_EVENT_NAME = 'ask_gitlab_chat';
 export const GENIE_CHAT_RESET_MESSAGE = '/reset';
+
+export const DOCUMENTATION_SOURCE_TYPES = {
+  HANDBOOK: {
+    value: 'handbook',
+    icon: 'book',
+  },
+  DOC: {
+    value: 'doc',
+    icon: 'documents',
+  },
+  BLOG: {
+    value: 'blog',
+    icon: 'list-bulleted',
+  },
+};

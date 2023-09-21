@@ -395,7 +395,7 @@ describe('AiGenie', () => {
     });
   });
 
-  it('renders the User Feedback component for every assistent mesage', () => {
+  it('renders the User Feedback component for every assistant mesage', () => {
     createComponent({
       data: {
         // the first 2 messages will be ignored in the component

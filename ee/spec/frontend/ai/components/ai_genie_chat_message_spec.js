@@ -2,7 +2,9 @@ import { nextTick } from 'vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import AiGenieChatMessage from 'ee/ai/components/ai_genie_chat_message.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
+import UserFeedback from 'ee/ai/components/user_feedback.vue';
+import DocumentationSources from 'ee/ai/components/ai_genie_chat_message_sources.vue';
+import { TANUKI_BOT_TRACKING_EVENT_NAME } from 'ee/ai/constants';
 import { renderGFM } from '~/behaviors/markdown/render_gfm';
 import {
   MOCK_USER_MESSAGE,
@@ -16,16 +18,21 @@ describe('AiGenieChatMessage', () => {
   let wrapper;
 
   const findContent = () => wrapper.findComponent({ ref: 'content' });
+  const findDocumentSources = () => wrapper.findComponent(DocumentationSources);
+  const findUserFeedback = () => wrapper.findComponent(UserFeedback);
 
   const createComponent = ({
     propsData = { message: MOCK_USER_MESSAGE },
-    scopedSlots = {},
     options = {},
+    provides = {},
   } = {}) => {
     wrapper = shallowMountExtended(AiGenieChatMessage, {
       ...options,
       propsData,
-      scopedSlots,
+      provide: {
+        trackingEventName: TANUKI_BOT_TRACKING_EVENT_NAME,
+        ...provides,
+      },
     });
   };
 
@@ -50,54 +57,72 @@ describe('AiGenieChatMessage', () => {
       expect(wrapper.text()).toBe(MOCK_USER_MESSAGE.content);
     });
 
-    const slotContent = 'As Gregor Samsa awoke one morning from uneasy dreams';
+    describe('user message', () => {
+      it('does not render the documentation sources component', () => {
+        expect(findDocumentSources().exists()).toBe(false);
+      });
 
-    describe('the feedback slot', () => {
-      const slotElement = `<template>${slotContent}</template>`;
+      it('does not render the user feedback component', () => {
+        expect(findUserFeedback().exists()).toBe(false);
+      });
+    });
 
-      it.each`
-        role                                | expectedToContainSlotContent
-        ${GENIE_CHAT_MODEL_ROLES.user}      | ${false}
-        ${GENIE_CHAT_MODEL_ROLES.system}    | ${false}
-        ${GENIE_CHAT_MODEL_ROLES.assistant} | ${true}
-      `(
-        'renders the content passed to the "feedback" slot when role is $role',
-        async ({ role, expectedToContainSlotContent }) => {
+    describe('assistant message', () => {
+      beforeEach(async () => {
+        createComponent({
+          propsData: { message: MOCK_TANUKI_MESSAGE },
+        });
+        await waitForPromises();
+      });
+
+      it('renders the documentation sources component by default', () => {
+        expect(findDocumentSources().exists()).toBe(true);
+      });
+
+      it.each([null, undefined, ''])(
+        'does not render sources component when `sources` is %s',
+        (sources) => {
           createComponent({
             propsData: {
               message: {
-                ...MOCK_USER_MESSAGE,
-                role,
+                ...MOCK_TANUKI_MESSAGE,
+                extras: {
+                  sources,
+                },
               },
             },
-            scopedSlots: { feedback: slotElement },
           });
-          await waitForPromises();
-          if (expectedToContainSlotContent) {
-            expect(wrapper.text()).toContain(slotContent);
-          } else {
-            expect(wrapper.text()).toBe(MOCK_USER_MESSAGE.content);
-          }
+          expect(findDocumentSources().exists()).toBe(false);
         },
       );
 
-      it('sends correct `message` in the `slotProps` for the components users to consume', () => {
+      it('renders the user feedback component', () => {
+        expect(findUserFeedback().exists()).toBe(true);
+      });
+    });
+
+    describe('User Feedback component integration', () => {
+      it('correctly sets the default tracking event', async () => {
         createComponent({
           propsData: {
-            message: {
-              ...MOCK_TANUKI_MESSAGE,
-              content: slotContent,
-            },
-            promptLocation: 'foo',
-          },
-          scopedSlots: {
-            feedback: `<template #feedback="slotProps">
-              Hello {{ slotProps.message.content }} and {{ slotProps.promptLocation }}
-              </template>
-            `,
+            message: MOCK_TANUKI_MESSAGE,
           },
         });
-        expect(wrapper.text()).toContain(`Hello ${slotContent} and foo`);
+        await waitForPromises();
+        expect(findUserFeedback().props('eventName')).toBe(TANUKI_BOT_TRACKING_EVENT_NAME);
+      });
+
+      it('correctly sets the tracking event', async () => {
+        createComponent({
+          propsData: {
+            message: MOCK_TANUKI_MESSAGE,
+          },
+          provides: {
+            trackingEventName: 'foo',
+          },
+        });
+        await waitForPromises();
+        expect(findUserFeedback().props('eventName')).toBe('foo');
       });
     });
   });

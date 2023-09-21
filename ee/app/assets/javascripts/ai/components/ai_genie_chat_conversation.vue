@@ -49,10 +49,6 @@ export default {
       :message="msg"
       :prompt-location="getPromptLocation(index)"
       :is-last-message="isLastMessage(index)"
-    >
-      <template #feedback="{ message, promptLocation }">
-        <slot name="feedback" :prompt-location="promptLocation" :message="message"></slot>
-      </template>
-    </ai-genie-chat-message>
+    />
   </div>
 </template>
