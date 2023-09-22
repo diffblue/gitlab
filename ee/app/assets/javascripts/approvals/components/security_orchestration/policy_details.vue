@@ -2,6 +2,7 @@
 import { GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { humanizeRules } from 'ee/security_orchestration/components/policy_drawer/scan_result/utils';
+import { policyHasNamespace } from 'ee/security_orchestration/components/utils';
 import PolicyApprovals from 'ee/security_orchestration/components/policy_drawer/scan_result/policy_approvals.vue';
 
 export default {
@@ -30,10 +31,13 @@ export default {
         this.policy.name,
       )}/edit?type=scan_result_policy`;
     },
+    policyHasNamespace() {
+      return policyHasNamespace(this.policy?.source);
+    },
     policyPath() {
       return this.policy.source.inherited
-        ? `groups/${this.policy.source.namespace.fullPath}`
-        : `${this.policy.source.project.fullPath}`;
+        ? `groups/${this.policy.source?.namespace?.fullPath}`
+        : `${this.policy.source.project?.fullPath}`;
     },
     approvers() {
       return this.policy.approvers;
@@ -61,7 +65,7 @@ export default {
             </li>
           </ul>
         </div>
-        <div class="gl-text-right">
+        <div v-if="policyHasNamespace" class="gl-text-right">
           <gl-link :href="policyEditPath" target="_blank">
             {{ $options.i18n.policyDetails }}
           </gl-link>

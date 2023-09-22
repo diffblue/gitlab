@@ -1,13 +1,14 @@
 <script>
 import { GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { getPolicyListUrl, isPolicyInherited } from '../utils';
+import { getPolicyListUrl, isPolicyInherited, policyHasNamespace } from '../utils';
 import {
   DEFAULT_DESCRIPTION_LABEL,
   DESCRIPTION_TITLE,
   ENABLED_LABEL,
   GROUP_TYPE_LABEL,
   INHERITED_LABEL,
+  INHERITED_SHORT_LABEL,
   NOT_ENABLED_LABEL,
   PROJECT_TYPE_LABEL,
   SOURCE_TITLE,
@@ -30,6 +31,7 @@ export default {
     sourceTitle: SOURCE_TITLE,
     statusTitle: STATUS_TITLE,
     inheritedLabel: INHERITED_LABEL,
+    inheritedShortLabel: INHERITED_SHORT_LABEL,
     groupTypeLabel: GROUP_TYPE_LABEL,
     projectTypeLabel: PROJECT_TYPE_LABEL,
   },
@@ -53,6 +55,9 @@ export default {
   computed: {
     isInherited() {
       return isPolicyInherited(this.policy.source);
+    },
+    policyHasNamespace() {
+      return policyHasNamespace(this.policy.source);
     },
     sourcePolicyListUrl() {
       return getPolicyListUrl({ namespacePath: this.policy.source.namespace.fullPath });
@@ -91,13 +96,19 @@ export default {
 
     <info-row :label="$options.i18n.sourceTitle">
       <div data-testid="policy-source">
-        <gl-sprintf v-if="isInherited" :message="$options.i18n.inheritedLabel">
+        <gl-sprintf
+          v-if="isInherited && policyHasNamespace"
+          :message="$options.i18n.inheritedLabel"
+        >
           <template #namespace>
             <gl-link :href="sourcePolicyListUrl" target="_blank">
               {{ policy.source.namespace.name }}
             </gl-link>
           </template>
         </gl-sprintf>
+        <span v-else-if="isInherited && !policyHasNamespace">{{
+          $options.i18n.inheritedShortLabel
+        }}</span>
         <span v-else>{{ typeLabel }}</span>
       </div>
     </info-row>

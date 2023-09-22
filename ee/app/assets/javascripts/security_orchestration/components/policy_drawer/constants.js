@@ -20,6 +20,8 @@ export const INHERITED_LABEL = s__(
   'SecurityOrchestration|This policy is inherited from %{namespace}',
 );
 
+export const INHERITED_SHORT_LABEL = s__('SecurityOrchestration|This policy is inherited');
+
 export const GROUP_TYPE_LABEL = s__('SecurityOrchestration|This is a group-level policy');
 
 export const PROJECT_TYPE_LABEL = s__('SecurityOrchestration|This is a project-level policy');

@@ -6,6 +6,7 @@ import {
   getSchemaUrl,
   isPolicyInherited,
   getSinglePolicySchema,
+  policyHasNamespace,
 } from 'ee/security_orchestration/components/utils';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
@@ -45,6 +46,19 @@ describe(isPolicyInherited, () => {
     ${{ inherited: true }}  | ${true}
   `('returns `$output` when passed `$input`', ({ input, output }) => {
     expect(isPolicyInherited(input)).toBe(output);
+  });
+});
+
+describe(policyHasNamespace, () => {
+  it.each`
+    input                              | output
+    ${undefined}                       | ${false}
+    ${{}}                              | ${false}
+    ${{ namespace: undefined }}        | ${false}
+    ${{ namespace: {} }}               | ${true}
+    ${{ namespace: { name: 'name' } }} | ${true}
+  `('returns `$output` when passed `$input`', ({ input, output }) => {
+    expect(policyHasNamespace(input)).toBe(output);
   });
 });
 

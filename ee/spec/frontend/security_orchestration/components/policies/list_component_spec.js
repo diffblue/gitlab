@@ -31,6 +31,7 @@ import {
 import {
   mockScanResultPoliciesResponse,
   mockGroupScanResultPolicy,
+  mockProjectScanResultPolicy,
 } from '../../mocks/mock_scan_result_policy_data';
 
 Vue.use(VueApollo);
@@ -252,6 +253,34 @@ describe('List component', () => {
     });
 
     it('renders when the policy is inherited', () => {
+      expect(trimText(findPolicySourceCells().at(1).text())).toBe(
+        'Inherited from parent-group-name',
+      );
+    });
+
+    it('renders inherited policy without namespace', async () => {
+      mountWrapper({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+        },
+        handlers: {
+          groupScanResultPolicies: projectScanResultPolicies([
+            {
+              ...mockProjectScanResultPolicy,
+              ...{
+                source: {
+                  __typename: 'GroupSecurityPolicySource',
+                  inherited: true,
+                  namespace: undefined,
+                },
+              },
+            },
+          ]),
+        },
+      });
+
+      await waitForPromises();
+
       expect(trimText(findPolicySourceCells().at(1).text())).toBe(
         'Inherited from parent-group-name',
       );

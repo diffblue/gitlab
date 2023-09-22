@@ -14,7 +14,7 @@ import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { removeUnnecessaryDashes } from '../../utils';
 import { POLICIES_LIST_CONTAINER_CLASS, POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
-import { getPolicyListUrl, isPolicyInherited } from '../utils';
+import { getPolicyListUrl, isPolicyInherited, policyHasNamespace } from '../utils';
 import ScanExecutionDrawer from './scan_execution/details_drawer.vue';
 import ScanResultDrawer from './scan_result/details_drawer.vue';
 
@@ -67,6 +67,9 @@ export default {
   computed: {
     isPolicyInherited() {
       return isPolicyInherited(this.policy.source);
+    },
+    policyHasNamespace() {
+      return policyHasNamespace(this.policy.source);
     },
     policyComponent() {
       return policyComponent[this.policyType] || null;
@@ -121,7 +124,7 @@ export default {
         >
       </span>
       <gl-tooltip
-        v-if="isPolicyInherited"
+        v-if="isPolicyInherited && policyHasNamespace"
         :target="() => $refs.editButton"
         data-testid="edit-button-tooltip"
         placement="bottom"
