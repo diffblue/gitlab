@@ -17,7 +17,6 @@ module Gitlab
         data = {
           id: SecureRandom.uuid,
           request_id: options[:request_id],
-          model_name: resource&.class&.name,
           content: response_modifier.response_body,
           errors: response_modifier.errors,
           role: options[:role] || ChatMessage::ROLE_ASSISTANT,
