@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
 require_relative 'subscription_portal_helpers'
+require 'support/helpers/email_helpers'
 
 module SaasRegistrationHelpers
   include IdentityVerificationHelpers
   include SubscriptionPortalHelpers
+  include EmailHelpers
+  include IdentityVerificationHelpers
 
   def user
     User.find_by(email: user_email)
@@ -25,8 +28,8 @@ module SaasRegistrationHelpers
   end
 
   def expect_to_see_account_confirmation_page
-    expect(page).to have_content('Almost there')
-    expect(page).to have_content('Please check your email')
+    expect(page).to have_content('Help us keep GitLab secure')
+    expect(page).to have_content('Verify email address')
   end
 
   def expect_to_see_welcome_form_for_invites
@@ -43,18 +46,19 @@ module SaasRegistrationHelpers
   end
 
   def confirm_account
-    token = user.confirmation_token
-    visit user_confirmation_path(confirmation_token: token)
+    verify_code(confirmation_code)
+
+    expect_verification_completed
   end
 
   def regular_sign_up(params = {}, password: User.random_password)
-    user_signs_up(params)
+    perform_enqueued_jobs do
+      user_signs_up(params, password: password)
+    end
 
     expect_to_see_account_confirmation_page
 
     confirm_account
-
-    user_signs_in(password: password)
   end
 
   def subscription_regular_sign_up
@@ -65,8 +69,6 @@ module SaasRegistrationHelpers
     expect_to_see_account_confirmation_page
 
     confirm_account
-
-    user_signs_in
   end
 
   def sso_sign_up(params = {}, name: 'Registering User')
@@ -86,8 +88,8 @@ module SaasRegistrationHelpers
     expect_verification_completed
   end
 
-  def user_signs_up(params = {})
-    new_user = build(:user, name: 'Registering User', email: user_email)
+  def user_signs_up(params = {}, password: User.random_password)
+    new_user = build(:user, name: 'Registering User', email: user_email, password: password)
 
     visit new_user_registration_path(params)
 
@@ -146,8 +148,6 @@ module SaasRegistrationHelpers
     expect_to_see_account_confirmation_page
 
     confirm_account
-
-    user_signs_in
   end
 
   def sso_trial_registration_sign_up(params = {}, name: 'Registering User')
@@ -205,7 +205,9 @@ module SaasRegistrationHelpers
   def user_signs_up_through_trial_registration
     new_user = build(:user, name: 'Registering User', email: user_email)
 
-    fill_in_sign_up_form(new_user, 'Continue')
+    perform_enqueued_jobs do
+      fill_in_sign_up_form(new_user, 'Continue')
+    end
   end
 
   def ensure_onboarding
@@ -228,7 +230,9 @@ module SaasRegistrationHelpers
 
     visit new_subscriptions_path(plan_id: 'bronze_id')
 
-    fill_in_sign_up_form(new_user, 'Register')
+    perform_enqueued_jobs do
+      fill_in_sign_up_form(new_user, 'Register')
+    end
   end
 
   def glm_params

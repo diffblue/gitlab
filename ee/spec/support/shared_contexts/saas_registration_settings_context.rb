@@ -22,10 +22,9 @@ RSpec.shared_context 'with saas settings for registration flows', shared_context
     stub_application_setting_enum('email_confirmation_setting', 'hard')
 
     stub_feature_flags(
-      # our focus isn't around arkose/signup challenges, so we'll omit those
+      # our focus isn't around the arkose challenge, so we'll omit it
       arkose_labs_signup_challenge: false,
-      # currently being rolled out, not yet on in prod
-      identity_verification: false,
+      identity_verification: true,
       gitlab_gtm_datalayer: true,
       gtm_nonce: true
     )
