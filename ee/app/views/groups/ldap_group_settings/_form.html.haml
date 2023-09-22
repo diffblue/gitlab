@@ -1,9 +1,0 @@
-%section.ldap-group-settings
-  = gitlab_ui_form_for(group, url: group_ldap_settings_url(group), method: :put) do |f|
-    .form-holder
-      .form-group.row
-        .col-sm-10
-          = f.gitlab_ui_checkbox_component :unlock_membership_to_ldap,
-            _('Allow owners to manually add users outside of LDAP')
-    .form-actions
-      = f.submit _('Save'), pajamas_button: true
