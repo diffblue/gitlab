@@ -25,7 +25,11 @@ module QA
         project&.remove_via_api!
       end
 
-      it 'allows multiple approval rules with users and groups', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347771' do
+      it 'allows multiple approval rules with users and groups', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347771',
+        quarantine: {
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/425787',
+          type: :flaky
+        } do
         # Create a merge request with 2 rules
         merge_request = Resource::MergeRequest.fabricate_via_browser_ui! do |resource|
           resource.title = 'Add a new feature'
