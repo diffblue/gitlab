@@ -45,18 +45,18 @@ class Gitlab::Seeder::CustomizableCycleAnalytics
         seed_issue_based_stages!
         seed_issue_label_based_stages!
 
-        seed_merge_request_based_stages!
-
         if Gitlab.ee?
           travel_back
           create_value_stream_aggregation(project.group)
           Gitlab::Seeder::DoraMetrics.new(project: project).execute
         end
-
-        puts "."
-        puts "Successfully seeded '#{group.full_path}' group for Custom Value Stream Management!"
-        puts "URL: #{Rails.application.routes.url_helpers.group_url(group)}"
       end
+
+      seed_merge_request_based_stages!
+
+      puts "."
+      puts "Successfully seeded '#{group.full_path}' group for Custom Value Stream Management!"
+      puts "URL: #{Rails.application.routes.url_helpers.group_url(group)}"
     end
   end
 
@@ -258,16 +258,18 @@ class Gitlab::Seeder::CustomizableCycleAnalytics
 
   def create_developers!
     5.times do |i|
-      user = FactoryBot.create(
+      developer = FactoryBot.create(
         :user,
         name: "VSM User#{i}",
         username: "vsm-user-#{i}-#{suffix}",
         email: "vsm-user-#{i}@#{suffix}.com"
       )
 
-      project.group&.add_developer(user)
-      project.add_developer(user)
+      project.group&.add_developer(developer)
+      project.add_developer(developer)
     end
+
+    project.group&.add_developer(user)
 
     AuthorizedProjectUpdate::ProjectRecalculateService.new(project).execute
   end
