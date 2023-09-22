@@ -8,8 +8,8 @@
           = sprite_icon('tanuki-ai', css_class: 'gl-text-gray-500!')
       .gl-display-flex.gl-w-full
         .gl-line-height-normal.gl-md-display-flex.gl-align-items-center.gl-flex-grow-1
-          %span.gl-font-weight-bold= _('Latest AI-generated summary')
-          = render Pajamas::BadgeComponent.new(_('Experiment'), size: 'sm', variant: 'neutral', class: 'gl-ml-3')
+          %span.gl-font-weight-bold.gl-mr-3= _('Latest AI-generated summary')
+          = render Pajamas::BadgeComponent.new(_('Experiment'), size: 'sm', variant: 'neutral')
         .gl-border-l-1.gl-border-l-solid.gl-border-gray-100.gl-ml-3.gl-pl-3.gl-h-6
           = render Pajamas::ButtonComponent.new(variant: :default, category: :tertiary, size: :small, button_options: { class: 'btn-icon js-toggle-button has-tooltip', title: _('Expand AI-generated summary'), 'data-expand-title': _('Expand AI-generated summary'), 'data-collapse-title': _('Collapse AI-generated summary'), 'data-triggers': 'hover', 'data-toggle-open-class': 'is-selected' }) do
             .js-sidebar-expand= sprite_icon('chevron-lg-down')
