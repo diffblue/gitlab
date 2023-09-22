@@ -58,6 +58,9 @@ module EE
 
       root_namespace = project.root_ancestor
       size_checker = root_namespace.root_storage_size
+
+      return unless size_checker.enforce_limit?
+
       error_message_object = size_checker.error_message
 
       return error_message_object.push_warning if size_checker.usage_ratio >= 0.95 && size_checker.usage_ratio < 1
