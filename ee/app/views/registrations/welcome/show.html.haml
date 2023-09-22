@@ -18,7 +18,7 @@
       - else
         %p.gl-text-center= html_escape(_('%{gitlab_experience_text}. Don\'t worry, this information isn\'t shared outside of your self-managed GitLab instance.')) % { gitlab_experience_text: gitlab_experience_text }
       = gitlab_ui_form_for(current_user,
-        url: users_sign_up_welcome_path(welcome_update_params),
+        url: users_sign_up_welcome_path(glm_tracking_params.merge(params.permit(:trial))),
         html: { class: 'gl-w-full! gl-p-5 js-users-signup-welcome',
                 'aria-live' => 'assertive',
                 data: { testid: 'welcome-form' } }) do |f|
@@ -30,14 +30,13 @@
               .form-group.col-sm-12
                 = f.label :role, _('Role'), class: 'label-bold'
                 = f.select :role, ::User.roles.keys.map { |role| [role.titleize, role] }, { include_blank: _('Select a role') }, class: 'form-control js-user-role-dropdown', required: true, data: { qa_selector: 'role_dropdown' }
-            = render_if_exists "registrations/welcome/jobs_to_be_done", f: f
-            = render_if_exists "registrations/welcome/setup_for_company", f: f
-            = render_if_exists "registrations/welcome/joining_project"
-            = render_if_exists "registrations/welcome/opt_in_to_email"
+            = render 'jobs_to_be_done', f: f
+            = render 'setup_for_company', f: f
+            = render 'joining_project'
+            = render 'opt_in_to_email'
             .row
               .form-group.col-sm-12.gl-mb-0
-                - if partial_exists? "registrations/welcome/button"
-                  = render "registrations/welcome/button"
-                - else
-                  = render Pajamas::ButtonComponent.new(block: true, type: :submit, variant: :confirm, button_options: { class: 'gl-mb-0', data: { qa_selector: 'get_started_button' }}) do
-                    = _('Get started!')
+                = render Pajamas::ButtonComponent.new(variant: :confirm, block: true,
+                  button_options: { type: :submit, data: { qa_selector: 'get_started_button' },
+                  class: 'js-trial-welcome-btn'}) do
+                  = welcome_submit_button_text

@@ -12,27 +12,16 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
 
     subject(:get_show) { get :show, params: show_params }
 
-    before do
-      sign_in(user)
+    context 'without a signed in user' do
+      it { is_expected.to redirect_to new_user_registration_path }
     end
 
-    it { is_expected.to render_template(:show) }
-
-    it 'tracks render event' do
-      get_show
-
-      expect_snowplow_event(
-        category: 'registrations:welcome:show',
-        action: 'render',
-        user: user,
-        label: 'free_registration'
-      )
-    end
-
-    context 'when in invitation flow' do
+    context 'with signed in user' do
       before do
-        create(:group_member, source: group, user: user)
+        sign_in(user)
       end
+
+      it { is_expected.to render_template(:show) }
 
       it 'tracks render event' do
         get_show
@@ -41,95 +30,112 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
           category: 'registrations:welcome:show',
           action: 'render',
           user: user,
-          label: 'invite_registration'
+          label: 'free_registration'
         )
       end
-    end
 
-    context 'when in trial flow', :saas do
-      let(:show_params) { { trial: 'true' } }
+      context 'when in invitation flow' do
+        before do
+          create(:group_member, source: group, user: user)
+        end
 
-      it 'tracks render event' do
-        get_show
-
-        expect_snowplow_event(
-          category: 'registrations:welcome:show',
-          action: 'render',
-          user: user,
-          label: 'trial_registration'
-        )
-      end
-    end
-
-    context 'when completed welcome step' do
-      context 'when setup_for_company is set to true' do
-        let_it_be(:user) { create(:user, setup_for_company: true) }
-
-        it 'does not track render event' do
+        it 'tracks render event' do
           get_show
 
-          expect_no_snowplow_event(
+          expect_snowplow_event(
             category: 'registrations:welcome:show',
             action: 'render',
             user: user,
-            label: 'free_registration'
+            label: 'invite_registration'
           )
         end
       end
 
-      context 'when setup_for_company is set to false' do
+      context 'when in trial flow', :saas do
+        let(:show_params) { { trial: 'true' } }
+
+        it 'tracks render event' do
+          get_show
+
+          expect_snowplow_event(
+            category: 'registrations:welcome:show',
+            action: 'render',
+            user: user,
+            label: 'trial_registration'
+          )
+        end
+      end
+
+      context 'when completed welcome step' do
+        context 'when setup_for_company is set to true' do
+          let_it_be(:user) { create(:user, setup_for_company: true) }
+
+          it 'does not track render event' do
+            get_show
+
+            expect_no_snowplow_event(
+              category: 'registrations:welcome:show',
+              action: 'render',
+              user: user,
+              label: 'free_registration'
+            )
+          end
+        end
+
+        context 'when setup_for_company is set to false' do
+          before do
+            user.update!(setup_for_company: false)
+            sign_in(user)
+          end
+
+          it { is_expected.to redirect_to(dashboard_projects_path) }
+        end
+      end
+
+      context 'when 2FA is required from group' do
         before do
-          user.update!(setup_for_company: false)
+          user = create(:user, require_two_factor_authentication_from_group: true)
           sign_in(user)
         end
 
-        it { is_expected.to redirect_to(dashboard_projects_path) }
-      end
-    end
-
-    context 'when 2FA is required from group' do
-      before do
-        user = create(:user, require_two_factor_authentication_from_group: true)
-        sign_in(user)
+        it 'does not perform a redirect' do
+          expect(subject).not_to redirect_to(profile_two_factor_auth_path)
+        end
       end
 
-      it 'does not perform a redirect' do
-        expect(subject).not_to redirect_to(profile_two_factor_auth_path)
-      end
-    end
-
-    context 'when welcome step is completed' do
-      before do
-        user.update!(setup_for_company: true)
-      end
-
-      context 'when user is confirmed' do
+      context 'when welcome step is completed' do
         before do
-          sign_in(user)
+          user.update!(setup_for_company: true)
         end
 
-        it { is_expected.to render_template(:show) }
-      end
+        context 'when user is confirmed' do
+          before do
+            sign_in(user)
+          end
 
-      context 'when user is not confirmed' do
-        before do
-          stub_application_setting_enum('email_confirmation_setting', 'hard')
-
-          sign_in(user)
-
-          user.update!(confirmed_at: nil)
+          it { is_expected.to render_template(:show) }
         end
 
-        it { is_expected.to redirect_to user_session_path }
+        context 'when user is not confirmed' do
+          before do
+            stub_application_setting_enum('email_confirmation_setting', 'hard')
+
+            sign_in(user)
+
+            user.update!(confirmed_at: nil)
+          end
+
+          it { is_expected.to redirect_to user_session_path }
+        end
       end
-    end
 
-    render_views
+      render_views
 
-    it 'has the expected submission url' do
-      get_show
+      it 'has the expected submission url' do
+        get_show
 
-      expect(response.body).to include("action=\"#{users_sign_up_welcome_path}\"")
+        expect(response.body).to include("action=\"#{users_sign_up_welcome_path}\"")
+      end
     end
   end
 
@@ -166,7 +172,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
         context 'when on gitlab.com', :saas do
           context 'when registration_objective field is provided' do
             it 'sets the registration_objective' do
-              subject
+              patch_update
 
               expect(controller.current_user.registration_objective).to eq('code_storage')
             end
@@ -215,7 +221,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
         end
 
         context 'when onboarding is enabled', :saas do
-          let(:user) do
+          let_it_be(:user) do
             create(:user, onboarding_in_progress: true).tap do |record|
               create(:user_detail, user: record, onboarding_step_url: '_url_')
             end

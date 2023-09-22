@@ -12,7 +12,7 @@ RSpec.describe 'registrations/welcome/show', :saas, feature_category: :onboardin
   before do
     allow(view).to receive(:onboarding_status).and_return(onboarding_status)
     allow(view).to receive(:current_user).and_return(build_stubbed(:user))
-    allow(view).to receive(:welcome_update_params).and_return({})
+    allow(view).to receive(:glm_tracking_params).and_return({})
   end
 
   context 'with basic form items' do
