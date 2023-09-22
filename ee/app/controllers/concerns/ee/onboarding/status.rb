@@ -3,8 +3,6 @@
 module EE
   module Onboarding
     module Status
-      extend ::Gitlab::Utils::Override
-
       PRODUCT_INTERACTION = {
         free: 'Personal SaaS Registration',
         trial: 'SaaS Trial',
@@ -12,25 +10,12 @@ module EE
         lead: 'SaaS Registration'
       }.freeze
 
-      module ClassMethods
-        extend ::Gitlab::Utils::Override
+      TRACKING_LABEL = {
+        free: 'free_registration',
+        trial: 'trial_registration',
+        invite: 'invite_registration'
+      }.freeze
 
-        override :tracking_label
-        def tracking_label
-          super.merge(
-            {
-              trial: 'trial_registration',
-              invite: 'invite_registration'
-            }
-          )
-        end
-      end
-
-      def self.prepended(base)
-        base.singleton_class.prepend ClassMethods
-      end
-
-      override :continue_full_onboarding?
       def continue_full_onboarding?
         !subscription? &&
           !invite? &&
@@ -61,22 +46,22 @@ module EE
       end
 
       def tracking_label
-        return self.class.tracking_label[:trial] if trial?
-        return self.class.tracking_label[:invite] if invite?
+        return TRACKING_LABEL[:trial] if trial?
+        return TRACKING_LABEL[:invite] if invite?
 
-        self.class.tracking_label[:free]
+        TRACKING_LABEL[:free]
       end
 
       def group_creation_tracking_label
-        return self.class.tracking_label[:trial] if trial_onboarding_flow? || trial?
+        return TRACKING_LABEL[:trial] if trial_onboarding_flow? || trial?
 
-        self.class.tracking_label[:free]
+        TRACKING_LABEL[:free]
       end
 
       def onboarding_tracking_label
-        return self.class.tracking_label[:trial] if trial_onboarding_flow?
+        return TRACKING_LABEL[:trial] if trial_onboarding_flow?
 
-        self.class.tracking_label[:free]
+        TRACKING_LABEL[:free]
       end
 
       def trial_onboarding_flow?

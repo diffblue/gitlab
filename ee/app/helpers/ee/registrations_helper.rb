@@ -18,6 +18,11 @@ module EE
       }
     end
 
+    override :oauth_tracking_label
+    def oauth_tracking_label
+      ::Onboarding::Status::TRACKING_LABEL[:free]
+    end
+
     override :register_omniauth_params
     def register_omniauth_params(local_assigns)
       super.merge(glm_tracking_params.to_h).merge(local_assigns.slice(:trial))
