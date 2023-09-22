@@ -1,8 +1,17 @@
 <script>
-import { GlAlert, GlTable, GlIcon, GlLink, GlBadge, GlLoadingIcon } from '@gitlab/ui';
+import {
+  GlAlert,
+  GlTable,
+  GlIcon,
+  GlLink,
+  GlBadge,
+  GlLoadingIcon,
+  GlKeysetPagination,
+} from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import getProjectComplianceStandardsAdherence from '../../graphql/compliance_standards_adherence.query.graphql';
+import { DEFAULT_PAGINATION_CURSORS, GRAPHQL_PAGE_SIZE } from '../../constants';
 import {
   FAIL_STATUS,
   STANDARDS_ADHERENCE_CHECK_LABELS,
@@ -22,6 +31,7 @@ export default {
     GlLink,
     GlBadge,
     GlLoadingIcon,
+    GlKeysetPagination,
     FixSuggestionsSidebar,
   },
   props: {
@@ -35,9 +45,13 @@ export default {
       hasStandardsAdherenceFetchError: false,
       adherences: {
         list: [],
+        pageInfo: {},
       },
       drawerId: null,
       drawerAdherence: {},
+      paginationCursors: {
+        ...DEFAULT_PAGINATION_CURSORS,
+      },
     };
   },
   apollo: {
@@ -46,12 +60,14 @@ export default {
       variables() {
         return {
           fullPath: this.groupPath,
+          ...this.paginationCursors,
         };
       },
       update(data) {
-        const { nodes } = data?.group?.projectComplianceStandardsAdherence || {};
+        const { nodes, pageInfo } = data?.group?.projectComplianceStandardsAdherence || {};
         return {
           list: nodes,
+          pageInfo,
         };
       },
       error(e) {
@@ -66,6 +82,10 @@ export default {
     },
     showDrawer() {
       return this.drawerId !== null;
+    },
+    showPagination() {
+      const { hasPreviousPage, hasNextPage } = this.adherences.pageInfo || {};
+      return hasPreviousPage || hasNextPage;
     },
   },
   methods: {
@@ -98,6 +118,20 @@ export default {
     closeDrawer() {
       this.drawerAdherence = {};
       this.drawerId = null;
+    },
+    loadPrevPage(startCursor) {
+      this.paginationCursors = {
+        before: startCursor,
+        after: null,
+        last: GRAPHQL_PAGE_SIZE,
+      };
+    },
+    loadNextPage(endCursor) {
+      this.paginationCursors = {
+        before: null,
+        after: endCursor,
+        first: GRAPHQL_PAGE_SIZE,
+      };
     },
   },
   fields: [
@@ -204,5 +238,15 @@ export default {
       :adherence="drawerAdherence"
       @close="closeDrawer"
     />
+    <div v-if="showPagination" class="gl-display-flex gl-justify-content-center">
+      <gl-keyset-pagination
+        v-bind="adherences.pageInfo"
+        :disabled="isLoading"
+        :prev-text="__('Prev')"
+        :next-text="__('Next')"
+        @prev="loadPrevPage"
+        @next="loadNextPage"
+      />
+    </div>
   </section>
 </template>

@@ -1,4 +1,4 @@
-import { GlAlert, GlLoadingIcon, GlTable, GlLink } from '@gitlab/ui';
+import { GlAlert, GlLoadingIcon, GlTable, GlLink, GlKeysetPagination } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
 import * as Sentry from '@sentry/browser';
@@ -34,6 +34,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
   const findFirstTableRow = () => findTableRows().at(1);
   const findFirstTableRowData = () => findFirstTableRow().findAll('td');
   const findViewDetails = () => wrapper.findComponent(GlLink);
+  const findPagination = () => wrapper.findComponent(GlKeysetPagination);
 
   const openSidebar = async () => {
     await findViewDetails().trigger('click');
@@ -170,6 +171,66 @@ describe('ComplianceStandardsAdherenceTable component', () => {
           'Jul 1, 2023',
           'View details',
         ]);
+      });
+    });
+
+    describe('pagination', () => {
+      describe('when there is more than one page of standards adherence checks available', () => {
+        it('shows the pagination button', () => {
+          expect(findPagination().exists()).toBe(true);
+        });
+
+        describe('when the next page has been selected', () => {
+          beforeEach(async () => {
+            findPagination().vm.$emit('next', 'next-value');
+
+            await nextTick();
+          });
+
+          it('updates and calls the graphql query', () => {
+            expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
+            expect(mockGraphQlSuccess).toHaveBeenCalledWith({
+              after: 'next-value',
+              before: null,
+              first: 20,
+              fullPath: 'example-group',
+            });
+          });
+        });
+
+        describe('when the prev page has been selected', () => {
+          beforeEach(() => {
+            findPagination().vm.$emit('prev', 'prev-value');
+          });
+
+          it('updates and calls the graphql query', () => {
+            expect(mockGraphQlSuccess).toHaveBeenCalledWith({
+              after: null,
+              before: 'prev-value',
+              last: 20,
+              fullPath: 'example-group',
+            });
+          });
+        });
+      });
+
+      describe('when there is only one page of standards adherence checks available', () => {
+        beforeEach(() => {
+          const response = createComplianceAdherencesResponse({
+            pageInfo: {
+              hasNextPage: false,
+              hasPreviousPage: false,
+            },
+          });
+          const mockResolver = jest.fn().mockResolvedValue(response);
+
+          createComponent({ resolverMock: mockResolver });
+          return waitForPromises();
+        });
+
+        it('does not show the pagination', () => {
+          expect(findPagination().exists()).toBe(false);
+        });
       });
     });
   });
