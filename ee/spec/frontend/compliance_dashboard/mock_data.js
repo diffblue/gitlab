@@ -62,6 +62,7 @@ export const createComplianceAdherence = (id, checkName) => ({
 export const createComplianceAdherencesResponse = ({
   count = 1,
   checkName = 'PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR',
+  pageInfo = {},
 } = {}) => ({
   data: {
     group: {
@@ -72,6 +73,14 @@ export const createComplianceAdherencesResponse = ({
         nodes: Array(count)
           .fill(null)
           .map((_, id) => createComplianceAdherence(id, checkName)),
+        pageInfo: {
+          endCursor: 'abc',
+          hasNextPage: true,
+          hasPreviousPage: false,
+          startCursor: 'abc',
+          __typename: 'PageInfo',
+          ...pageInfo,
+        },
       },
     },
   },
@@ -144,7 +153,7 @@ export const createComplianceViolationsResponse = ({ count = 1, pageInfo = {} } 
         pageInfo: {
           endCursor: 'abc',
           hasNextPage: true,
-          hasPreviousPage: false,
+          hasPreviousPage: true,
           startCursor: 'abc',
           __typename: 'PageInfo',
           ...pageInfo,

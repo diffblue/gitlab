@@ -1,7 +1,20 @@
-query getProjectComplianceStandardsAdherence($fullPath: ID!) {
+#import "~/graphql_shared/fragments/page_info.fragment.graphql"
+
+query getProjectComplianceStandardsAdherence(
+  $fullPath: ID!
+  $after: String
+  $before: String
+  $first: Int
+  $last: Int
+) {
   group(fullPath: $fullPath) {
     id
-    projectComplianceStandardsAdherence {
+    projectComplianceStandardsAdherence(
+      after: $after
+      before: $before
+      first: $first
+      last: $last
+    ) {
       nodes {
         id
         updatedAt
@@ -22,6 +35,9 @@ query getProjectComplianceStandardsAdherence($fullPath: ID!) {
             }
           }
         }
+      }
+      pageInfo {
+        ...PageInfo
       }
     }
   }
