@@ -3,7 +3,7 @@ import {
   anyMergeRequestBuildRule,
   securityScanBuildRule,
   licenseScanBuildRule,
-} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
+} from 'ee/security_orchestration/components/policy_editor/scan_result/lib/rules';
 import {
   ANY_UNSIGNED_COMMIT,
   ALL_PROTECTED_BRANCHES,
@@ -17,7 +17,7 @@ import {
 import {
   AGE_MONTH,
   AGE_WEEK,
-} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
+} from 'ee/security_orchestration/components/policy_editor/scan_result/rule/scan_filters/constants';
 
 const {
   branch_type: defaultSecurityScanBranchType,
