@@ -144,4 +144,23 @@ describe('DrawerWrapper component', () => {
       expect(findTooltip().exists()).toBe(true);
     });
   });
+
+  describe('policy without source namespace', () => {
+    it('should not render tooltip for policy without namespace', () => {
+      factory({
+        propsData: {
+          policy: {
+            ...mockGroupScanExecutionPolicy,
+            source: {
+              __typename: 'GroupSecurityPolicySource',
+              inherited: true,
+              namespace: undefined,
+            },
+          },
+        },
+      });
+
+      expect(findTooltip().exists()).toBe(false);
+    });
+  });
 });

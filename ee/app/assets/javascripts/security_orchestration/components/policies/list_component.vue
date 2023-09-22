@@ -14,7 +14,7 @@ import groupScanResultPoliciesQuery from '../../graphql/queries/group_scan_resul
 import { getPolicyType } from '../../utils';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import DrawerWrapper from '../policy_drawer/drawer_wrapper.vue';
-import { getPolicyListUrl, isPolicyInherited } from '../utils';
+import { getPolicyListUrl, isPolicyInherited, policyHasNamespace } from '../utils';
 import {
   POLICY_SOURCE_OPTIONS,
   POLICY_TYPE_FILTER_OPTIONS,
@@ -242,10 +242,14 @@ export default {
   },
   methods: {
     policyListUrlArgs(source) {
-      return { namespacePath: source.namespace.fullPath };
+      return { namespacePath: source?.namespace?.fullPath || '' };
+    },
+    getPolicyText(source) {
+      return source?.namespace?.name || '';
     },
     getPolicyListUrl,
     isPolicyInherited,
+    policyHasNamespace,
     presentPolicyDrawer(rows) {
       if (rows.length === 0) return;
 
@@ -271,6 +275,7 @@ export default {
   dateTimeFormat: DATE_ONLY_FORMAT,
   i18n: {
     inheritedLabel: s__('SecurityOrchestration|Inherited from %{namespace}'),
+    inheritedShortLabel: s__('SecurityOrchestration|Inherited'),
     statusEnabled: __('Enabled'),
     statusDisabled: __('Disabled'),
     groupTypeLabel: s__('SecurityOrchestration|This group'),
@@ -326,13 +331,19 @@ export default {
       </template>
 
       <template #cell(source)="{ value: source }">
-        <gl-sprintf v-if="isPolicyInherited(source)" :message="$options.i18n.inheritedLabel">
+        <gl-sprintf
+          v-if="isPolicyInherited(source) && policyHasNamespace(source)"
+          :message="$options.i18n.inheritedLabel"
+        >
           <template #namespace>
             <gl-link :href="getPolicyListUrl(policyListUrlArgs(source))" target="_blank">
-              {{ source.namespace.name }}
+              {{ getPolicyText(source) }}
             </gl-link>
           </template>
         </gl-sprintf>
+        <span v-else-if="isPolicyInherited(source) && !policyHasNamespace(source)">{{
+          $options.i18n.inheritedShortLabel
+        }}</span>
         <span v-else>{{ typeLabel }}</span>
       </template>
 

@@ -98,4 +98,34 @@ describe('DrawerLayout component', () => {
       expect(findSourceSection().text()).toBe(GROUP_TYPE_LABEL);
     });
   });
+
+  describe('policy without source namespace', () => {
+    it.each`
+      namespaceType              | inherited | expectedResult
+      ${NAMESPACE_TYPES.GROUP}   | ${true}   | ${'This policy is inherited'}
+      ${NAMESPACE_TYPES.PROJECT} | ${true}   | ${'This policy is inherited'}
+      ${NAMESPACE_TYPES.GROUP}   | ${false}  | ${'This is a group-level policy'}
+      ${NAMESPACE_TYPES.PROJECT} | ${false}  | ${'This is a project-level policy'}
+    `(
+      'should not render link for policies without namespace',
+      ({ namespaceType, inherited, expectedResult }) => {
+        factory({
+          propsData: {
+            policy: {
+              ...mockProjectScanExecutionPolicy,
+              source: {
+                __typename: 'GroupSecurityPolicySource',
+                inherited,
+                namespace: undefined,
+              },
+            },
+          },
+          provide: { namespaceType },
+        });
+
+        expect(findLink().exists()).toBe(false);
+        expect(findSourceSection().text()).toBe(expectedResult);
+      },
+    );
+  });
 });

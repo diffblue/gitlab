@@ -25,6 +25,9 @@ describe('PolicyDetails', () => {
       project: {
         fullPath: 'policy/path',
       },
+      namespace: {
+        name: 'policy-name',
+      },
     },
   };
 
@@ -89,6 +92,23 @@ describe('PolicyDetails', () => {
 
     it('does not render a link to the policy path', () => {
       expect(findLink().exists()).toBe(false);
+    });
+  });
+
+  describe('policy without namesapce', () => {
+    it.each`
+      namespace                                 | linkVisible
+      ${{ namespace: { name: 'policy-name' } }} | ${true}
+      ${{ namespace: undefined }}               | ${false}
+    `('should hide link for policy without namespace', ({ namespace, linkVisible }) => {
+      factory({
+        source: {
+          inherited: true,
+          ...namespace,
+        },
+      });
+
+      expect(findLink().exists()).toBe(linkVisible);
     });
   });
 });

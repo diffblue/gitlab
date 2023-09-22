@@ -19,13 +19,8 @@ export const getSchemaUrl = ({ namespacePath, namespaceType }) => {
   return joinPaths(policyListUrl, 'schema');
 };
 
-export const isPolicyInherited = (source) => {
-  if (source?.inherited === true) {
-    return true;
-  }
-
-  return false;
-};
+export const isPolicyInherited = (source) => source?.inherited === true;
+export const policyHasNamespace = (source) => Boolean(source?.namespace);
 
 export const getSinglePolicySchema = async ({ namespacePath, namespaceType, policyType }) => {
   try {
