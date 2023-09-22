@@ -696,6 +696,72 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
           end
         end
       end
+
+      describe 'hierarchy widget' do
+        let_it_be(:parent_epic) { create(:work_item, :epic, project: project) }
+        let_it_be(:epic) { create(:work_item, :epic, project: project) }
+        let_it_be(:child_issue1) { create(:work_item, :issue, project: project) }
+        let_it_be(:child_issue2) { create(:work_item, :issue, project: project) }
+
+        let(:current_user) { developer }
+        let(:global_id) { epic.to_gid.to_s }
+        let(:work_item_fields) do
+          <<~GRAPHQL
+            id
+            widgets {
+              ... on WorkItemWidgetHierarchy {
+                parent {
+                  id
+                  webUrl
+                }
+                children {
+                  nodes {
+                    id
+                    webUrl
+                  }
+                }
+              }
+            }
+          GRAPHQL
+        end
+
+        before do
+          create(:parent_link, work_item_parent: parent_epic, work_item: epic)
+          create(:parent_link, work_item_parent: epic, work_item: child_issue1)
+          create(:parent_link, work_item_parent: epic, work_item: child_issue2)
+        end
+
+        it 'returns widget information' do
+          post_graphql(query, current_user: current_user)
+
+          expect(work_item_data).to include(
+            'id' => epic.to_gid.to_s,
+            'widgets' => include(
+              hash_including(
+                'parent' => {
+                  'id' => parent_epic.to_gid.to_s,
+                  'webUrl' => format_url("work_items/#{parent_epic.iid}")
+                },
+                'children' => { 'nodes' => match_array(
+                  [
+                    hash_including(
+                      'id' => child_issue1.to_gid.to_s,
+                      'webUrl' => format_url("issues/#{child_issue1.iid}")
+                    ),
+                    hash_including(
+                      'id' => child_issue2.to_gid.to_s,
+                      'webUrl' => format_url("issues/#{child_issue2.iid}")
+                    )
+                  ]) }
+              )
+            )
+          )
+        end
+
+        def format_url(sufix)
+          "#{Gitlab.config.gitlab.url}/#{epic.project.full_path}/-/#{sufix}"
+        end
+      end
     end
   end
 end
