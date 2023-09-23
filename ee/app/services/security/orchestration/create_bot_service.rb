@@ -3,28 +3,30 @@
 module Security
   module Orchestration
     class CreateBotService
-      attr_reader :project, :current_user
+      attr_reader :project, :current_user, :skip_authorization
 
-      def initialize(project, current_user)
+      def initialize(project, current_user, skip_authorization: false)
         @project = project
         @current_user = current_user
+        @skip_authorization = skip_authorization
       end
 
       def execute
         return if project.security_policy_bot.present?
 
-        raise Gitlab::Access::AccessDeniedError unless current_user.can?(:admin_project_member, project)
+        if !skip_authorization && !current_user&.can?(:admin_project_member, project)
+          raise Gitlab::Access::AccessDeniedError
+        end
 
         User.transaction do
           bot_user = ::Users::AuthorizedCreateService.new(
             current_user,
             bot_user_params
           ).execute
-
           Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.temporary_ignore_tables_in_transaction(
             %w[members notification_settings events user_interacted_projects], url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/424290'
           ) do
-            project.add_guest(bot_user, current_user: current_user)
+            project.add_guest(bot_user, current_user: !skip_authorization && current_user)
           end
         end
       end

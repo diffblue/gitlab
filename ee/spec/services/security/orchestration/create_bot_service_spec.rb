@@ -4,16 +4,48 @@ require 'spec_helper'
 
 RSpec.describe Security::Orchestration::CreateBotService, feature_category: :security_policy_management do
   let_it_be(:project) { create(:project) }
+  let_it_be(:user) { create(:user) }
   let!(:security_orchestration_policy_configuration) do
     create(:security_orchestration_policy_configuration, project: project)
   end
 
-  let_it_be(:current_user) { create(:user) }
+  let(:skip_authorization) { false }
+  let(:current_user) { user }
 
-  subject(:execute_service) { described_class.new(project, current_user).execute }
+  subject(:execute_service) do
+    described_class.new(project, current_user, skip_authorization: skip_authorization).execute
+  end
 
-  it 'raises an error', :aggregate_failures do
-    expect { execute_service }.to raise_error(Gitlab::Access::AccessDeniedError)
+  context 'when current_user is missing' do
+    let(:current_user) { nil }
+
+    it 'raises an error', :aggregate_failures do
+      expect { execute_service }.to raise_error(Gitlab::Access::AccessDeniedError)
+    end
+
+    context 'when skipping authorization' do
+      let(:skip_authorization) { true }
+
+      it 'creates and assigns a bot user', :aggregate_failures do
+        expect { execute_service }.to change { User.count }.by(1)
+        expect(project.security_policy_bot).to be_present
+      end
+    end
+  end
+
+  context 'when current_user cannot manage members' do
+    it 'raises an error', :aggregate_failures do
+      expect { execute_service }.to raise_error(Gitlab::Access::AccessDeniedError)
+    end
+
+    context 'when skipping authorization' do
+      let(:skip_authorization) { true }
+
+      it 'creates and assigns a bot user', :aggregate_failures do
+        expect { execute_service }.to change { User.count }.by(1)
+        expect(project.reload.security_policy_bot).to be_present
+      end
+    end
   end
 
   context 'when current_user can manage members' do
