@@ -13,6 +13,10 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
     let(:schedule_id) { schedule.id }
     let(:worker) { described_class.new }
 
+    before do
+      allow(Security::OrchestrationConfigurationCreateBotWorker).to receive(:perform_async)
+    end
+
     context 'when schedule exists' do
       context 'when schedule is created for security orchestration policy configuration in namespace' do
         context 'when next_run_at is in future' do
@@ -28,18 +32,20 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
         end
 
         context 'when next_run_at is in the past' do
-          let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
-
           before do
             schedule.update_column(:next_run_at, 1.minute.ago)
           end
 
-          context 'when there is not a security_policy_bot in the project' do
-            it 'does not invoke the rule schedule worker for any projects in the group' do
-              expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async)
+          it 'creates async new policy bot user only when it is missing for the project' do
+            expect(Security::OrchestrationConfigurationCreateBotWorker).to receive(:perform_async).with(project_1.id, nil)
+            expect(Security::OrchestrationConfigurationCreateBotWorker).to receive(:perform_async).with(project_2.id, nil)
+            expect { worker.perform(schedule_id) }.not_to change { User.count }
+          end
 
-              worker.perform(schedule_id)
-            end
+          it 'does not invoke the rule schedule worker when there is no security policy bot' do
+            expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async)
+
+            worker.perform(schedule_id)
           end
 
           it 'updates next run at value' do
@@ -49,13 +55,21 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
           end
 
           context 'when there is a security_policy_bot in the project' do
+            let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
+
             before_all do
               project_1.add_guest(security_policy_bot)
             end
 
-            it 'invokes the rule schedule worker as the bot and does not schedule otherwise' do
+            it 'creates async new policy bot user only when it is missing for the project' do
+              expect(Security::OrchestrationConfigurationCreateBotWorker).not_to receive(:perform_async).with(project_1.id, nil)
+              expect(Security::OrchestrationConfigurationCreateBotWorker).to receive(:perform_async).with(project_2.id, nil)
+              expect { worker.perform(schedule_id) }.not_to change { User.count }
+            end
+
+            it 'invokes the rule schedule worker as the bot user only when it is created for the project' do
               expect(Security::ScanExecutionPolicies::RuleScheduleWorker).to receive(:perform_async).with(project_1.id, security_policy_bot.id, schedule.id)
-              expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async).with(project_2.id, anything, anything)
+              expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async).with(project_2.id, anything, schedule.id)
 
               worker.perform(schedule_id)
             end

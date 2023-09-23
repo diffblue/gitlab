@@ -15,11 +15,14 @@ module Security
 
       return if project.nil?
 
-      current_user = User.find_by_id(current_user_id)
+      skip_authorization = current_user_id.nil?
+      current_user = User.find_by_id(current_user_id) if current_user_id
 
-      return if current_user.nil?
+      return if !skip_authorization && current_user.nil?
 
-      Security::Orchestration::CreateBotService.new(project, current_user).execute
+      Security::Orchestration::CreateBotService
+        .new(project, current_user, skip_authorization: skip_authorization)
+        .execute
     rescue Gitlab::Access::AccessDeniedError
       # Rescue errors to avoid worker retry
     end

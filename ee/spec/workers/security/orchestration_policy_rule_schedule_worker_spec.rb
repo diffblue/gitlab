@@ -10,38 +10,29 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
 
     subject(:worker) { described_class.new }
 
+    before do
+      allow(Security::OrchestrationConfigurationCreateBotWorker).to receive(:perform_async)
+    end
+
     context 'when schedule exists' do
       before do
         schedule.update_column(:next_run_at, 1.minute.ago)
       end
 
       context 'when schedule is created for security orchestration policy configuration in project' do
-        let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
-
-        context 'when a project does not have a security_policy_bot' do
-          it 'does not invoke the rule schedule worker' do
-            expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async)
-
-            worker.perform
-          end
+        it 'creates async new policy bot user only when it is missing for the project' do
+          expect(Security::OrchestrationConfigurationCreateBotWorker).to receive(:perform_async).with(project.id, nil)
+          expect { worker.perform }.not_to change { User.count }
         end
 
-        context 'when a project does have a security_policy_bot' do
-          before do
-            security_orchestration_policy_configuration.project.add_guest(security_policy_bot)
-          end
+        it 'does not invoke the rule schedule worker when there is no security policy bot' do
+          expect(Security::ScanExecutionPolicies::RuleScheduleWorker).not_to receive(:perform_async)
 
-          it 'invokes the rule schedule worker' do
-            expect(Security::ScanExecutionPolicies::RuleScheduleWorker).to receive(:perform_async).with(schedule.security_orchestration_policy_configuration.project.id, security_policy_bot.id, schedule.id)
-
-            worker.perform
-          end
-        end
-
-        it 'updates next run at value' do
           worker.perform
+        end
 
-          expect(schedule.reload.next_run_at).to be > Time.zone.now
+        it 'does not update next run at value' do
+          expect { worker.perform }.not_to change { schedule.reload.next_run_at }
         end
 
         context 'when project is marked for deletion' do
@@ -60,12 +51,18 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
       end
 
       context 'when policy has a security_policy_bot user' do
-        let_it_be(:security_policy_bot) { create(:user, :security_policy_bot) }
+        let_it_be(:security_policy_bot) { create(:user, user_type: :security_policy_bot) }
         let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration) }
         let_it_be(:schedule) { create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: security_orchestration_policy_configuration) }
 
         before do
           security_orchestration_policy_configuration.project.add_guest(security_policy_bot)
+        end
+
+        it 'updates next run at value' do
+          worker.perform
+
+          expect(schedule.reload.next_run_at).to be > Time.zone.now
         end
 
         it 'invokes the rule schedule worker with the bot user' do
