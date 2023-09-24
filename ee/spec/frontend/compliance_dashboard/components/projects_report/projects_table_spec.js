@@ -14,9 +14,9 @@ import {
   createProjectSetComplianceFrameworkResponse,
 } from 'ee_jest/compliance_dashboard/mock_data';
 import FrameworkBadge from 'ee/compliance_dashboard/components/shared/framework_badge.vue';
-import FrameworkSelectionBox from 'ee/compliance_dashboard/components/frameworks_report/framework_selection_box.vue';
-import ProjectsTable from 'ee/compliance_dashboard/components/frameworks_report/projects_table.vue';
-import SelectionOperations from 'ee/compliance_dashboard/components/frameworks_report/selection_operations.vue';
+import FrameworkSelectionBox from 'ee/compliance_dashboard/components/projects_report/framework_selection_box.vue';
+import ProjectsTable from 'ee/compliance_dashboard/components/projects_report/projects_table.vue';
+import SelectionOperations from 'ee/compliance_dashboard/components/projects_report/selection_operations.vue';
 import { mapProjects } from 'ee/compliance_dashboard/graphql/mappers';
 
 import setComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/set_compliance_framework.mutation.graphql';

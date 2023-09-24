@@ -4,8 +4,8 @@ import { nextTick } from 'vue';
 import { createComplianceFrameworksResponse } from 'ee_jest/compliance_dashboard/mock_data';
 
 import { validFetchResponse as getComplianceFrameworksResponse } from 'ee_jest/groups/settings/compliance_frameworks/mock_data';
-import SelectionOperations from 'ee/compliance_dashboard/components/frameworks_report/selection_operations.vue';
-import FrameworkSelectionBox from 'ee/compliance_dashboard/components/frameworks_report/framework_selection_box.vue';
+import SelectionOperations from 'ee/compliance_dashboard/components/projects_report/selection_operations.vue';
+import FrameworkSelectionBox from 'ee/compliance_dashboard/components/projects_report/framework_selection_box.vue';
 
 describe('SelectionOperations component', () => {
   let wrapper;

@@ -12327,7 +12327,7 @@ msgstr ""
 msgid "ComplianceReport|Select at least one project to apply the bulk action"
 msgstr ""
 
-msgid "ComplianceReport|Unable to load the compliance framework report. Refresh the page and try again."
+msgid "ComplianceReport|Unable to load the compliance framework projects report. Refresh the page and try again."
 msgstr ""
 
 msgid "ComplianceReport|Unable to load the compliance violations report. Refresh the page and try again."

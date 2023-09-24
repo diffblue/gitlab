@@ -6,7 +6,7 @@ module QA
       module Group
         module Compliance
           class Show < QA::Page::Base
-            view 'ee/app/assets/javascripts/compliance_dashboard/components/frameworks_report/projects_table.vue' do
+            view 'ee/app/assets/javascripts/compliance_dashboard/components/projects_report/projects_table.vue' do
               element :project_name_link
               element :project_path_content
               element :project_frameworks_row

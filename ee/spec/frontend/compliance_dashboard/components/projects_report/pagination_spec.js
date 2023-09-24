@@ -5,7 +5,7 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import PageSizeSelector from '~/vue_shared/components/page_size_selector.vue';
 import { NEXT, PREV } from '~/vue_shared/components/pagination/constants';
 
-import Pagination from 'ee/compliance_dashboard/components/frameworks_report/pagination.vue';
+import Pagination from 'ee/compliance_dashboard/components/projects_report/pagination.vue';
 
 describe('Pagination component', () => {
   let wrapper;
