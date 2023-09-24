@@ -309,7 +309,7 @@ Returns [`EpicList`](#epiclist).
 
 ### `Query.explainVulnerabilityPrompt`
 
-Explain This Vulnerability Prompt for a specified Vulnerability.
+GitLab Duo Vulnerability summary prompt for a specified vulnerability.
 
 WARNING:
 **Introduced** in 16.2.
@@ -1782,7 +1782,7 @@ Input type: `CiAiGenerateConfigInput`
 | ---- | ---- | ----------- |
 | <a id="mutationciaigenerateconfigclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationciaigenerateconfigerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
-| <a id="mutationciaigenerateconfigusermessage"></a>`userMessage` | [`DeprecatedAiMessage`](#deprecatedaimessage) | User chat message. |
+| <a id="mutationciaigenerateconfigusermessage"></a>`userMessage` | [`DeprecatedAiMessage`](#deprecatedaimessage) | User Chat message. |
 
 ### `Mutation.ciJobTokenScopeAddProject`
 

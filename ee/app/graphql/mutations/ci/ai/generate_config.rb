@@ -23,7 +23,7 @@ module Mutations
         field :user_message,
           Types::Ai::DeprecatedMessageType,
           null: true,
-          description: 'User chat message.'
+          description: 'User Chat message.'
 
         def resolve(project_path:, user_content:)
           verify_rate_limit!
