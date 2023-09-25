@@ -1,4 +1,4 @@
-import { GlFormInput, GlButton, GlDropdownItem, GlDropdown, GlSearchBoxByType } from '@gitlab/ui';
+import { GlFormInput, GlCollapsibleListbox, GlButton } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -30,10 +30,6 @@ describe('RelatedItemsTree', () => {
         propsData: {
           isSubmitting,
         },
-        stubs: {
-          GlDropdown,
-          GlSearchBoxByType,
-        },
       });
     };
 
@@ -42,10 +38,7 @@ describe('RelatedItemsTree', () => {
     const findAllButtons = () => wrapper.findAllComponents(GlButton);
     const findSubmitButton = () => findAllButtons().at(0);
     const findCancelButton = () => findAllButtons().at(1);
-    const findDropdown = () => wrapper.findComponent(GlDropdown);
-    const findAllDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
-    const findGlSearchBoxByType = () => wrapper.findComponent(GlSearchBoxByType);
-    const findParentGroupItem = () => wrapper.findByTestId('parent-group-item');
+    const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
 
     beforeEach(() => {
       mock = new MockAdapter(axios);
@@ -59,7 +52,7 @@ describe('RelatedItemsTree', () => {
     describe('computed', () => {
       describe('isSubmitButtonDisabled', () => {
         it('returns true when either `inputValue` prop is empty or `isSubmitting` prop is true', () => {
-          expect(wrapper.vm.isSubmitButtonDisabled).toBe(true);
+          expect(findSubmitButton().props('disabled')).toBe(true);
         });
 
         it('returns false when either `inputValue` prop is non-empty or `isSubmitting` prop is false', async () => {
@@ -84,32 +77,29 @@ describe('RelatedItemsTree', () => {
 
       describe('dropdownPlaceholderText', () => {
         it('returns parent group name when no group is selected', () => {
-          expect(findDropdown().props('text')).toBe(mockParentItem.groupName);
+          expect(findDropdown().props('toggleText')).toBe(mockParentItem.groupName);
         });
 
         it('returns group name when a group is selected', () => {
-          findAllDropdownItems().at(0).vm.$emit('click');
-          expect(findDropdown().props('text')).toBe('GitLab Org');
+          findDropdown().vm.$emit('select', 1);
+          expect(findDropdown().props('toggleText')).toBe('GitLab Org');
         });
       });
 
       describe('canShowParentGroup', () => {
         it.each`
-          searchTerm                  | expected
-          ${undefined}                | ${true}
-          ${'FooBar'}                 | ${false}
-          ${mockParentItem.groupName} | ${true}
-        `(
-          'returns `$expected` when searchTerm is $searchTerm',
-          async ({ searchTerm, expected }) => {
-            createComponent();
+          searchTerm                  | expectedLength
+          ${undefined}                | ${1}
+          ${'FooBar'}                 | ${0}
+          ${mockParentItem.groupName} | ${1}
+        `('has parent item after filtering', async ({ searchTerm, expectedLength }) => {
+          createComponent();
 
-            findGlSearchBoxByType().vm.$emit('input', searchTerm);
-            await waitForPromises();
+          findDropdown().vm.$emit('search', searchTerm);
+          await waitForPromises();
 
-            expect(findParentGroupItem().exists()).toBe(expected);
-          },
-        );
+          expect(findDropdown().props('items')).toHaveLength(expectedLength);
+        });
       });
     });
 
@@ -143,7 +133,7 @@ describe('RelatedItemsTree', () => {
         it('fetches descendant groups based on searchTerm', () => {
           const handleDropdownShow = jest.spyOn(store, 'dispatch').mockImplementation(jest.fn());
 
-          findDropdown().vm.$emit('show');
+          findDropdown().vm.$emit('shown');
 
           expect(handleDropdownShow).toHaveBeenCalledWith('fetchDescendantGroups', {
             groupId: undefined,
@@ -164,7 +154,7 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders parent group item as the first dropdown item', () => {
-        expect(findAllDropdownItems().at(0).text()).toContain(mockParentItem.groupName);
+        expect(findDropdown().props('toggleText')).toContain(mockParentItem.groupName);
       });
     });
   });

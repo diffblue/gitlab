@@ -1,13 +1,6 @@
 <script>
-import {
-  GlAvatar,
-  GlButton,
-  GlFormInput,
-  GlDropdown,
-  GlSearchBoxByType,
-  GlDropdownItem,
-  GlLoadingIcon,
-} from '@gitlab/ui';
+import { GlAvatarLabeled, GlButton, GlFormInput, GlCollapsibleListbox } from '@gitlab/ui';
+import { debounce } from 'lodash';
 import fuzzaldrinPlus from 'fuzzaldrin-plus';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
@@ -18,13 +11,10 @@ import { SEARCH_DEBOUNCE } from '../constants';
 
 export default {
   components: {
+    GlAvatarLabeled,
     GlButton,
     GlFormInput,
-    GlDropdown,
-    GlSearchBoxByType,
-    GlDropdownItem,
-    GlAvatar,
-    GlLoadingIcon,
+    GlCollapsibleListbox,
   },
   props: {
     isSubmitting: {
@@ -56,11 +46,8 @@ export default {
     dropdownPlaceholderText() {
       return this.selectedGroup?.name || this.parentItem?.groupName || __('Search a group');
     },
-    canRenderNoResults() {
-      return !this.descendantGroupsFetchInProgress && !this.descendantGroups?.length;
-    },
-    canRenderSearchResults() {
-      return !this.descendantGroupsFetchInProgress;
+    selectedGroupId() {
+      return this.selectedGroup?.id || this.parentItem?.numericalId;
     },
     canShowParentGroup() {
       if (!this.searchTerm) {
@@ -69,19 +56,34 @@ export default {
 
       return fuzzaldrinPlus.filter([this.parentItem.groupName], this.searchTerm).length === 1;
     },
+    listBoxItems() {
+      const items = [];
+
+      if (this.canShowParentGroup) {
+        items.push({
+          value: this.parentItem.numericalId,
+          text: this.parentItem.groupName,
+          name: this.parentItem.groupName,
+          path: this.parentItem.fullPath,
+        });
+      }
+
+      return [
+        ...items,
+        ...this.descendantGroups.map((group) => ({ value: group.id, text: group.name, ...group })),
+      ];
+    },
   },
   watch: {
     searchTerm() {
       this.handleDropdownShow();
     },
-
-    descendantGroupsFetchInProgress(value) {
-      if (!value) {
-        this.$nextTick(() => {
-          this.$refs.searchInputField.focusInput();
-        });
-      }
-    },
+  },
+  created() {
+    this.handleSearch = debounce(this.setSearchTerm, SEARCH_DEBOUNCE);
+  },
+  destroyed() {
+    this.handleSearch.cancel();
   },
   mounted() {
     this.$nextTick()
@@ -107,8 +109,13 @@ export default {
       } = this;
       this.fetchDescendantGroups({ groupId, search: searchTerm });
     },
+    setSearchTerm(term = '') {
+      this.searchTerm = term.trim();
+    },
+    selectGroup(groupId) {
+      this.selectedGroup = this.descendantGroups.find(({ id }) => id === groupId);
+    },
   },
-  debounce: SEARCH_DEBOUNCE,
   AVATAR_SHAPE_OPTION_RECT,
 };
 </script>
@@ -131,70 +138,31 @@ export default {
       </div>
       <div class="col-sm">
         <label class="label-bold">{{ __('Group') }}</label>
-
-        <gl-dropdown
+        <gl-collapsible-listbox
           block
-          :text="dropdownPlaceholderText"
           class="dropdown-descendant-groups"
-          menu-class="w-100 gl-pt-0"
-          @show="handleDropdownShow"
+          searchable
+          is-check-centered
+          fluid-width
+          :items="listBoxItems"
+          :searching="descendantGroupsFetchInProgress"
+          :selected="selectedGroupId"
+          :toggle-text="dropdownPlaceholderText"
+          @search="handleSearch"
+          @shown="handleDropdownShow"
+          @select="selectGroup"
         >
-          <gl-search-box-by-type
-            ref="searchInputField"
-            v-model.trim="searchTerm"
-            :disabled="descendantGroupsFetchInProgress"
-            :debounce="$options.debounce"
-          />
-
-          <gl-loading-icon
-            v-show="descendantGroupsFetchInProgress"
-            class="projects-fetch-loading align-items-center p-2"
-            size="lg"
-          />
-
-          <template v-if="canRenderSearchResults">
-            <gl-dropdown-item
-              v-if="canShowParentGroup"
-              data-testid="parent-group-item"
-              class="w-100"
-              @click="selectedGroup = null"
-            >
-              <gl-avatar
-                :entity-name="parentItem.groupName"
-                :shape="$options.AVATAR_SHAPE_OPTION_RECT"
-                :size="32"
-                class="d-inline-flex"
-              />
-              <div class="d-inline-flex flex-column">
-                {{ parentItem.groupName }}
-                <div class="text-secondary">{{ parentItem.fullPath }}</div>
-              </div>
-            </gl-dropdown-item>
-
-            <gl-dropdown-item
-              v-for="group in descendantGroups"
-              :key="group.id"
-              class="w-100"
-              @click="selectedGroup = group"
-            >
-              <gl-avatar
-                :src="group.avatar_url"
-                :entity-name="group.name"
-                :shape="$options.AVATAR_SHAPE_OPTION_RECT"
-                :size="32"
-                class="d-inline-flex"
-              />
-              <div class="d-inline-flex flex-column">
-                {{ group.name }}
-                <div class="text-secondary">{{ group.path }}</div>
-              </div>
-            </gl-dropdown-item>
+          <template #list-item="{ item }">
+            <gl-avatar-labeled
+              :entity-name="item.name"
+              :label="item.name"
+              :sub-label="item.path"
+              :src="item.avatar_url"
+              :size="32"
+              :shape="$options.AVATAR_SHAPE_OPTION_RECT"
+            />
           </template>
-
-          <gl-dropdown-item v-if="canRenderNoResults && !canShowParentGroup">{{
-            __('No matching results')
-          }}</gl-dropdown-item>
-        </gl-dropdown>
+        </gl-collapsible-listbox>
       </div>
     </div>
 
