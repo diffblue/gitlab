@@ -3,8 +3,9 @@
 module Types
   module Ai
     # rubocop: disable Graphql/AuthorizeTypes
-    class AiResponseType < BaseObject
-      graphql_name 'AiResponse'
+    class MessageType < Types::BaseObject
+      graphql_name 'AiMessage'
+      description "AI features communication message"
 
       # rubocop:disable GraphQL/FieldHashKey
       field :id,
@@ -14,7 +15,7 @@ module Types
 
       field :request_id, GraphQL::Types::String,
         null: true,
-        description: 'ID of the original request.'
+        description: 'UUID of the original request. Shared between chat prompt and response.'
 
       field :content, GraphQL::Types::String,
         null: true,
@@ -24,36 +25,26 @@ module Types
         null: true,
         description: 'Response content as HTML.'
 
-      field :response_body, GraphQL::Types::String,
-        null: true,
-        description: 'Response body from AI API.',
-        deprecated: { reason: 'Moved to content attribute', milestone: '16.4' }, hash_key: :content
-
-      field :response_body_html, GraphQL::Types::String,
-        null: true,
-        description: 'Response body HTML.',
-        deprecated: { reason: 'Moved to contentHtml attribute', milestone: '16.4' }
-
       field :role,
-        Types::Ai::ChatMessageRoleEnum,
+        Types::Ai::MessageRoleEnum,
         null: false,
-        description: 'Message role.'
+        description: 'Message owner role.'
 
       field :timestamp,
         Types::TimeType,
         null: false,
-        description: 'Message timestamp.'
+        description: 'Message creation timestamp.'
 
       field :chunk_id,
         GraphQL::Types::Int,
         null: true,
-        description: 'Incremental ID for a chunk from a streamed response. Null when it is not a streamed response.'
+        description: 'Incremental ID for a chunk from a streamed message. Null when it is not a streamed message.'
 
       field :errors, [GraphQL::Types::String],
         null: true,
-        description: 'Errors return by AI API as response.'
+        description: 'Message errors.'
 
-      field :type, Types::Ai::MessageTypesEnum,
+      field :type, Types::Ai::MessageTypeEnum,
         null: true,
         description: 'Message type.'
 
@@ -63,7 +54,7 @@ module Types
         description: 'Extra message metadata.'
 
       def id
-        object[:id] # Temporary solution before we introduce AiMessage model.
+        object.is_a?(Hash) ? object[:id] : super # Temporary solution before we introduce AiMessage model.
       end
 
       def content_html
@@ -75,11 +66,11 @@ module Types
           skip_project_check: true
         }
 
-        Banzai.render_and_post_process(object[:content], banzai_options)
-      end
+        # ChatMessage is an object already while AiResponse is still a hash.
+        # This is temporary solution before we introduce unified AiMessage model.
+        content = object.is_a?(Hash) ? object[:content] : object.content
 
-      def response_body_html
-        content_html
+        Banzai.render_and_post_process(content, banzai_options)
       end
     end
     # rubocop: enable Graphql/AuthorizeTypes
