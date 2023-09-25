@@ -1,0 +1,64 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#directoryObjects",
+  "@odata.nextLink": "https://graph.microsoft.com/v1.0/users/user_id/transitiveMemberOf?$top=999&$skiptoken=RFNwdAoAAQAAAAAAAAAAFA",
+  "value": [
+    {
+      "@odata.type": "#microsoft.graph.group",
+      "id": "1ae25d00-68e2-4116-8e52-1013675c9ffd",
+      "deletedDateTime": null,
+      "classification": null,
+      "createdDateTime": "2023-06-16T16:56:22Z",
+      "creationOptions": [
+
+      ],
+      "description": "My first GitLab Group in Azure",
+      "displayName": "My GitLab Group",
+      "expirationDateTime": null,
+      "groupTypes": [
+
+      ],
+      "isAssignableToRole": null,
+      "mail": null,
+      "mailEnabled": false,
+      "mailNickname": "f0e11352-d",
+      "membershipRule": null,
+      "membershipRuleProcessingState": null,
+      "onPremisesDomainName": null,
+      "onPremisesLastSyncDateTime": null,
+      "onPremisesNetBiosName": null,
+      "onPremisesSamAccountName": null,
+      "onPremisesSecurityIdentifier": null,
+      "onPremisesSyncEnabled": null,
+      "preferredDataLocation": null,
+      "preferredLanguage": null,
+      "proxyAddresses": [
+
+      ],
+      "renewedDateTime": "2023-06-16T16:56:22Z",
+      "resourceBehaviorOptions": [
+
+      ],
+      "resourceProvisioningOptions": [
+
+      ],
+      "securityEnabled": true,
+      "securityIdentifier": "S-1-12-1-451042560-1091987682-319836814-4255079527",
+      "theme": null,
+      "visibility": null,
+      "serviceProvisioningErrors": [
+
+      ],
+      "onPremisesProvisioningErrors": [
+
+      ]
+    },
+    {
+      "@odata.type": "#microsoft.graph.directoryRole",
+      "id": "fdfaed4b-5b82-4986-84e2-6bdd4a40f1d9",
+      "deletedDateTime": null,
+      "description": null,
+      "displayName": null,
+      "roleTemplateId": null
+    }
+  ]
+}
