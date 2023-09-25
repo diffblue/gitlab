@@ -808,7 +808,9 @@ RSpec.describe API::Helpers, feature_category: :shared do
   end
 
   shared_examples '#order_options_with_tie_breaker' do
-    subject { Class.new.include(described_class).new.order_options_with_tie_breaker }
+    subject { Class.new.include(described_class).new.order_options_with_tie_breaker(**reorder_params) }
+
+    let(:reorder_params) { {} }
 
     before do
       allow_any_instance_of(described_class).to receive(:params).and_return(params)
@@ -852,11 +854,25 @@ RSpec.describe API::Helpers, feature_category: :shared do
   describe '#order_options_with_tie_breaker' do
     include_examples '#order_options_with_tie_breaker'
 
-    context 'with created_at order given' do
-      let(:params) { { order_by: 'created_at', sort: 'asc' } }
+    context 'by default' do
+      context 'with created_at order given' do
+        let(:params) { { order_by: 'created_at', sort: 'asc' } }
 
-      it 'converts to id' do
-        is_expected.to eq({ 'id' => 'asc' })
+        it 'converts to id' do
+          is_expected.to eq({ 'id' => 'asc' })
+        end
+      end
+    end
+
+    context 'when override_created_at is false' do
+      let(:reorder_params) { { override_created_at: false } }
+
+      context 'with created_at order given' do
+        let(:params) { { order_by: 'created_at', sort: 'asc' } }
+
+        it 'does not convert to id' do
+          is_expected.to eq({ "created_at" => "asc", "id" => "asc" })
+        end
       end
     end
   end
