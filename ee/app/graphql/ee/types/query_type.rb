@@ -33,7 +33,7 @@ module EE
               null: true,
               calls_gitaly: true,
               alpha: { milestone: '16.2' },
-              description: "Explain This Vulnerability Prompt for a specified Vulnerability",
+              description: "GitLab Duo Vulnerability summary prompt for a specified vulnerability",
               resolver: ::Resolvers::Ai::ExplainVulnerabilityPromptResolver
         field :geo_node, ::Types::Geo::GeoNodeType,
               null: true,
