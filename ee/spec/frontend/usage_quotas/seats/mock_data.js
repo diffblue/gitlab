@@ -208,53 +208,6 @@ export const mockTableItems = [
   },
 ];
 
-export const mockAddOnEligibleUsers = {
-  data: {
-    namespace: {
-      id: 'gid://gitlab/Group/1',
-      addOnEligibleUsers: {
-        edges: [
-          {
-            node: {
-              id: 'gid://gitlab/User/1',
-              username: 'userone',
-              name: 'User One',
-              publicEmail: null,
-              avatarUrl: 'path/to/img_userone',
-              webUrl: 'path/to/userone',
-              lastActivityOn: '2023-08-25',
-              addOnAssignments: { nodes: [{ addOnPurchase: { name: 'CODE_SUGGESTIONS' } }] },
-            },
-          },
-          {
-            node: {
-              id: 'gid://gitlab/User/2',
-              username: 'usertwo',
-              name: 'User Two',
-              publicEmail: null,
-              avatarUrl: 'path/to/img_usertwo',
-              webUrl: 'path/to/usertwo',
-              lastActivityOn: '2023-08-22',
-              addOnAssignments: { nodes: [] },
-            },
-          },
-        ],
-      },
-    },
-  },
-};
-
-export const mockNoAddOnEligibleUsers = {
-  data: {
-    namespace: {
-      id: 'gid://gitlab/Group/176',
-      addOnEligibleUsers: {
-        edges: [],
-      },
-    },
-  },
-};
-
 export const mockUserSubscription = {
   plan: {
     code: null,
