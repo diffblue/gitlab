@@ -132,3 +132,5 @@ module Registrations
     strong_memoize_attr :onboarding_status
   end
 end
+
+Registrations::WelcomeController.prepend_mod
