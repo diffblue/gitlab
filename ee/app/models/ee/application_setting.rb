@@ -571,7 +571,7 @@ module EE
           allow_localhost: true,
           dns_rebind_protection: false)
       end
-    rescue ::Gitlab::UrlBlocker::BlockedUrlError
+    rescue ::Gitlab::HTTP_V2::UrlBlocker::BlockedUrlError
       errors.add(:elasticsearch_url, "only supports valid HTTP(S) URLs.")
     end
 
