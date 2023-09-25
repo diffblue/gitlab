@@ -1,21 +1,5 @@
 import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
 
-export const assignedAddonData = {
-  data: {
-    namespace: {
-      id: 'gid://gitlab/Group/13',
-      addOnPurchase: {
-        id: 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/3',
-        name: ADD_ON_CODE_SUGGESTIONS,
-        assignedQuantity: 5,
-        purchasedQuantity: 20,
-        __typename: 'AddOnPurchase',
-      },
-      __typename: 'Namespace',
-    },
-  },
-};
-
 export const noAssignedAddonData = {
   data: {
     namespace: {
@@ -53,6 +37,80 @@ export const purchasedAddonFuzzyData = {
         __typename: 'AddOnPurchase',
       },
       __typename: 'Namespace',
+    },
+  },
+};
+
+export const mockNoAddOnEligibleUsers = {
+  data: {
+    namespace: {
+      id: 'gid://gitlab/Group/176',
+      addOnEligibleUsers: {
+        edges: [],
+      },
+    },
+  },
+};
+
+const eligibleUsers = [
+  {
+    node: {
+      id: 'gid://gitlab/User/1',
+      username: 'userone',
+      name: 'User One',
+      publicEmail: null,
+      avatarUrl: 'path/to/img_userone',
+      webUrl: 'path/to/userone',
+      lastActivityOn: '2023-08-25',
+      addOnAssignments: { nodes: [{ addOnPurchase: { name: 'CODE_SUGGESTIONS' } }] },
+    },
+  },
+  {
+    node: {
+      id: 'gid://gitlab/User/2',
+      username: 'usertwo',
+      name: 'User Two',
+      publicEmail: null,
+      avatarUrl: 'path/to/img_usertwo',
+      webUrl: 'path/to/usertwo',
+      lastActivityOn: '2023-08-22',
+      addOnAssignments: { nodes: [] },
+    },
+  },
+];
+
+export const mockAddOnEligibleUsers = {
+  data: {
+    namespace: {
+      id: 'gid://gitlab/Group/1',
+      addOnEligibleUsers: {
+        edges: eligibleUsers,
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          startCursor: 'start-cursor',
+          endCursor: 'end-cursor',
+          __typename: 'PageInfo',
+        },
+      },
+    },
+  },
+};
+
+export const mockPaginatedAddOnEligibleUsers = {
+  data: {
+    namespace: {
+      id: 'gid://gitlab/Group/1',
+      addOnEligibleUsers: {
+        edges: eligibleUsers,
+        pageInfo: {
+          hasNextPage: true,
+          hasPreviousPage: true,
+          startCursor: 'start-cursor',
+          endCursor: 'end-cursor',
+          __typename: 'PageInfo',
+        },
+      },
     },
   },
 };

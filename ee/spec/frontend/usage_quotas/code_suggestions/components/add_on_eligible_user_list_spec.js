@@ -1,4 +1,10 @@
-import { GlAvatarLabeled, GlAvatarLink, GlSkeletonLoader, GlTable } from '@gitlab/ui';
+import {
+  GlAvatarLabeled,
+  GlAvatarLink,
+  GlSkeletonLoader,
+  GlKeysetPagination,
+  GlTable,
+} from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
@@ -10,13 +16,17 @@ import waitForPromises from 'helpers/wait_for_promises';
 import {
   mockAddOnEligibleUsers,
   mockNoAddOnEligibleUsers,
-} from 'ee_jest/usage_quotas/seats/mock_data';
+  mockPaginatedAddOnEligibleUsers,
+} from 'ee_jest/usage_quotas/code_suggestions/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/add_on_eligible_users.query.graphql';
 import {
   ADD_ON_ELIGIBLE_USERS_FETCH_ERROR_CODE,
   ADD_ON_ERROR_DICTIONARY,
 } from 'ee/usage_quotas/error_constants';
+import { scrollToElement } from '~/lib/utils/common_utils';
+
+jest.mock('~/lib/utils/common_utils');
 
 Vue.use(VueApollo);
 
@@ -28,10 +38,20 @@ describe('Add On Eligible User List', () => {
   const fullPath = 'namespace/full-path';
   const addOnPurchaseId = 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/1';
   const error = new Error('Error');
+  const defaultQueryVariables = {
+    fullPath,
+    addOnType: 'CODE_SUGGESTIONS',
+    sort: 'LAST_ACTIVITY_ON_DESC',
+    addOnPurchaseIds: [addOnPurchaseId],
+    first: 20,
+  };
 
   const addOnEligibleUsersDataHandler = jest.fn().mockResolvedValue(mockAddOnEligibleUsers);
   const noAddOnEligibleUsersDataHandler = jest.fn().mockResolvedValue(mockNoAddOnEligibleUsers);
   const addOnEligibleUsersErrorHandler = jest.fn().mockRejectedValue(error);
+  const paginatedAddOnEligibleUsersDataHandler = jest
+    .fn()
+    .mockResolvedValue(mockPaginatedAddOnEligibleUsers);
 
   const createMockApolloProvider = (handler = noAddOnEligibleUsersDataHandler) =>
     createMockApollo([[getAddOnEligibleUsers, handler]]);
@@ -58,6 +78,7 @@ describe('Add On Eligible User List', () => {
   const findAddOnEligibleUsersFetchError = () =>
     wrapper.findByTestId('add-on-eligible-users-fetch-error');
   const findAddOnAssignmentError = () => wrapper.findByTestId('add-on-assignment-error');
+  const findPagination = () => wrapper.findComponent(GlKeysetPagination);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
 
   const serializeUser = (rowWrapper) => {
@@ -154,12 +175,7 @@ describe('Add On Eligible User List', () => {
         });
 
         it('calls addOnEligibleUsers query with appropriate params', () => {
-          expect(addOnEligibleUsersDataHandler).toHaveBeenCalledWith({
-            fullPath,
-            addOnType: 'CODE_SUGGESTIONS',
-            sort: 'LAST_ACTIVITY_ON_DESC',
-            addOnPurchaseIds: [addOnPurchaseId],
-          });
+          expect(addOnEligibleUsersDataHandler).toHaveBeenCalledWith(defaultQueryVariables);
         });
 
         describe('when there is an error fetching add on eligible users', () => {
@@ -225,6 +241,10 @@ describe('Add On Eligible User List', () => {
 
           expect(findAddOnAssignmentError().exists()).toBe(false);
         });
+
+        it('scrolls to the top of the table', () => {
+          expect(scrollToElement).toHaveBeenCalled();
+        });
       });
     });
   });
@@ -258,6 +278,65 @@ describe('Add On Eligible User List', () => {
 
       it('displays the loading state', () => {
         expect(findSkeletonLoader().exists()).toBe(true);
+      });
+    });
+  });
+
+  describe('pagination', () => {
+    describe('when more pages exist', () => {
+      beforeEach(async () => {
+        await createComponent({
+          handler: paginatedAddOnEligibleUsersDataHandler,
+        });
+      });
+
+      it('pagination is rendered with correct values', () => {
+        expect(findPagination().props()).toMatchObject({
+          hasNextPage: true,
+          hasPreviousPage: true,
+          startCursor: 'start-cursor',
+          endCursor: 'end-cursor',
+        });
+      });
+
+      it('triggers a call to addOnEligibleUsers with appropriate params on next', async () => {
+        findPagination().vm.$emit('next');
+        await waitForPromises();
+
+        expect(paginatedAddOnEligibleUsersDataHandler).toHaveBeenCalledWith({
+          ...defaultQueryVariables,
+          nextPageCursor: 'end-cursor',
+        });
+      });
+
+      it('triggers a call to addOnEligibleUsers with appropriate params on prev', async () => {
+        findPagination().vm.$emit('prev');
+        await waitForPromises();
+
+        expect(paginatedAddOnEligibleUsersDataHandler).toHaveBeenLastCalledWith({
+          ...defaultQueryVariables,
+          first: undefined,
+          last: 20,
+          prevPageCursor: 'start-cursor',
+        });
+      });
+    });
+
+    describe('when only one page of results exists', () => {
+      it('does not render pagination', async () => {
+        await createComponent({
+          handler: addOnEligibleUsersDataHandler,
+        });
+
+        expect(findPagination().exists()).toBe(false);
+      });
+    });
+
+    describe('when loading', () => {
+      it('does not render pagination', () => {
+        createComponent();
+
+        expect(findPagination().exists()).toBe(false);
       });
     });
   });

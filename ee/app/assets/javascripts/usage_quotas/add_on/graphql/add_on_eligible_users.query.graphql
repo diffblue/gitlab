@@ -1,11 +1,24 @@
+#import "~/graphql_shared/fragments/page_info.fragment.graphql"
+
 query getAddOnEligibleUsers(
   $fullPath: ID!
   $sort: UserSort!
   $addOnType: GitlabSubscriptionsAddOnType!
+  $first: Int
+  $last: Int
+  $prevPageCursor: String
+  $nextPageCursor: String
 ) {
   namespace(fullPath: $fullPath) {
     id
-    addOnEligibleUsers(addOnType: $addOnType, sort: $sort) @client {
+    addOnEligibleUsers(
+      addOnType: $addOnType
+      sort: $sort
+      first: $first
+      last: $last
+      after: $nextPageCursor
+      before: $prevPageCursor
+    ) @client {
       edges {
         node {
           id
@@ -23,6 +36,9 @@ query getAddOnEligibleUsers(
             }
           }
         }
+      }
+      pageInfo {
+        ...PageInfo
       }
     }
   }

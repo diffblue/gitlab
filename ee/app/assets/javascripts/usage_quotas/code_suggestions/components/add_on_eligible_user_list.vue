@@ -5,6 +5,7 @@ import {
   GlSkeletonLoader,
   GlTable,
   GlTooltipDirective,
+  GlKeysetPagination,
 } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { fetchPolicies } from '~/lib/graphql';
@@ -17,7 +18,10 @@ import {
   ADD_ON_ELIGIBLE_USERS_FETCH_ERROR_CODE,
 } from 'ee/usage_quotas/error_constants';
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
+import { scrollToElement } from '~/lib/utils/common_utils';
 import CodeSuggestionsAddonAssignment from './code_suggestions_addon_assignment.vue';
+
+const PER_PAGE = 20;
 
 export default {
   name: 'AddOnEligibleUserList',
@@ -29,6 +33,7 @@ export default {
     ErrorAlert,
     GlAvatarLabeled,
     GlAvatarLink,
+    GlKeysetPagination,
     GlSkeletonLoader,
     GlTable,
   },
@@ -45,6 +50,8 @@ export default {
       addOnEligibleUsersFetchError: undefined,
       addOnAssignmentError: undefined,
       sortOption: 'LAST_ACTIVITY_ON_DESC',
+      pageInfo: undefined,
+      cursor: { first: PER_PAGE },
     };
   },
   addOnErrorDictionary: ADD_ON_ERROR_DICTIONARY,
@@ -84,6 +91,7 @@ export default {
         return this.queryVariables;
       },
       update({ namespace }) {
+        this.pageInfo = namespace?.addOnEligibleUsers?.pageInfo;
         return namespace?.addOnEligibleUsers?.edges?.map((edge) => ({
           ...edge.node,
           username: `@${edge.node.username}`,
@@ -103,7 +111,17 @@ export default {
         addOnType: ADD_ON_CODE_SUGGESTIONS,
         addOnPurchaseIds: [this.addOnPurchaseId],
         sort: this.sortOption,
+        ...this.cursor,
       };
+    },
+    showPagination() {
+      if (this.isLoaderShown || !this.pageInfo) {
+        return false;
+      }
+
+      const { hasNextPage, hasPreviousPage } = this.pageInfo;
+
+      return hasNextPage || hasPreviousPage;
     },
     emptyText() {
       return s__('Billing|No users to display.');
@@ -113,14 +131,26 @@ export default {
     },
   },
   methods: {
+    nextPage() {
+      this.cursor = { first: PER_PAGE };
+      this.cursor.nextPageCursor = this.pageInfo.endCursor;
+    },
+    prevPage() {
+      this.cursor = { last: PER_PAGE };
+      this.cursor.prevPageCursor = this.pageInfo.startCursor;
+    },
     handleAddOnAssignmentError(errorCode) {
       this.addOnAssignmentError = errorCode;
+      this.scrollToTop();
     },
     clearAddOnEligibleUsersFetchError() {
       this.addOnEligibleUsersFetchError = undefined;
     },
     clearAddOnAssignmentError() {
       this.addOnAssignmentError = undefined;
+    },
+    scrollToTop() {
+      scrollToElement(this.$el);
     },
   },
 };
@@ -207,5 +237,8 @@ export default {
         </span>
       </template>
     </gl-table>
+    <div v-if="showPagination" class="gl-display-flex gl-justify-content-center gl-mt-5">
+      <gl-keyset-pagination v-bind="pageInfo" @prev="prevPage" @next="nextPage" />
+    </div>
   </section>
 </template>
