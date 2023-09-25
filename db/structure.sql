@@ -23650,6 +23650,7 @@ CREATE TABLE subscription_add_on_purchases (
     quantity integer NOT NULL,
     expires_on date NOT NULL,
     purchase_xid text NOT NULL,
+    last_assigned_users_refreshed_at timestamp with time zone,
     CONSTRAINT check_3313c4d200 CHECK ((char_length(purchase_xid) <= 255))
 );
 
