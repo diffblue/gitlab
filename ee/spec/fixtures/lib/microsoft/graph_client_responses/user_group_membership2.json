@@ -3,15 +3,15 @@
   "value": [
     {
       "@odata.type": "#microsoft.graph.group",
-      "id": "1ae25d00-68e2-4116-8e52-1013675c9ffd",
+      "id": "7ee5afca-9a1f-4a95-b939-d6e38f395022",
       "deletedDateTime": null,
       "classification": null,
       "createdDateTime": "2023-06-16T16:56:22Z",
       "creationOptions": [
 
       ],
-      "description": "My first GitLab Group in Azure",
-      "displayName": "My GitLab Group",
+      "description": "My second GitLab Group in Azure",
+      "displayName": "My GitLab Group 2",
       "expirationDateTime": null,
       "groupTypes": [
 
@@ -19,7 +19,7 @@
       "isAssignableToRole": null,
       "mail": null,
       "mailEnabled": false,
-      "mailNickname": "f0e11352-d",
+      "mailNickname": "f0e11352-e",
       "membershipRule": null,
       "membershipRuleProcessingState": null,
       "onPremisesDomainName": null,

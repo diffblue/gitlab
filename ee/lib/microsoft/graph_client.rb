@@ -4,6 +4,8 @@ module Microsoft
   class GraphClient < Gitlab::HTTP
     attr_accessor :access_token, :client_id, :client_secret, :tenant_id, :application
 
+    PAGE_SIZE = 999
+
     def initialize(application)
       self.access_token = find_or_initialize_access_token(application)
       self.tenant_id = application.tenant_xid
@@ -27,19 +29,24 @@ module Microsoft
       access_token.save
     end
 
-    def user_group_memberships(user_id)
-      validate_or_update_token!
-
-      self.class.get(user_group_membership_endpoint(user_id), default_request_args)
-    end
-
     def user_group_membership_object_ids(user_id)
-      response = user_group_memberships(user_id)
-      raw_groups = response['value'] if response['@odata.context'] == directory_odata_context
+      group_ids = Set.new
+      next_link = nil
 
-      return [] unless raw_groups&.any?
+      loop do
+        response = user_group_memberships(user_id, next_link: next_link)
+        break unless response.success?
 
-      raw_groups.filter_map { |raw_group| raw_group['id'] if raw_group['@odata.type'] == group_odata_type }
+        next_link = response['@odata.nextLink']
+        raw_data = response['value'] if response['@odata.context'] == directory_odata_context
+        break unless raw_data
+
+        group_ids += raw_data.filter_map { |raw_data| raw_data['id'] if raw_data['@odata.type'] == group_odata_type }
+
+        break unless next_link
+      end
+
+      group_ids
     end
 
     def graph_users_endpoint
@@ -51,10 +58,17 @@ module Microsoft
     end
 
     def user_group_membership_endpoint(user_id)
-      "#{graph_users_endpoint}/#{user_id}/transitiveMemberOf"
+      "#{graph_users_endpoint}/#{user_id}/transitiveMemberOf?$top=#{PAGE_SIZE}"
     end
 
     private
+
+    def user_group_memberships(user_id, next_link: nil)
+      validate_or_update_token!
+
+      endpoint = next_link || user_group_membership_endpoint(user_id)
+      self.class.get(endpoint, default_request_args)
+    end
 
     def token_endpoint_data
       {

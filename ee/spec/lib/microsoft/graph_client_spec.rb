@@ -40,12 +40,17 @@ RSpec.describe Microsoft::GraphClient, :aggregate_failures, feature_category: :s
       it 'returns group object ids' do
         stub_get_request(
           url: client.user_group_membership_endpoint('user_id'),
-          response_body: File.read('ee/spec/fixtures/lib/microsoft/graph_client_responses/user_group_membership.json'),
+          response_body: File.read('ee/spec/fixtures/lib/microsoft/graph_client_responses/user_group_membership1.json'),
+          response_status: 200
+        )
+        stub_get_request(
+          url: "#{client.user_group_membership_endpoint('user_id')}&$skiptoken=RFNwdAoAAQAAAAAAAAAAFA",
+          response_body: File.read('ee/spec/fixtures/lib/microsoft/graph_client_responses/user_group_membership2.json'),
           response_status: 200
         )
 
         expect(client.user_group_membership_object_ids('user_id'))
-          .to match_array(['1ae25d00-68e2-4116-8e52-1013675c9ffd'])
+          .to match_array(%w[1ae25d00-68e2-4116-8e52-1013675c9ffd 7ee5afca-9a1f-4a95-b939-d6e38f395022])
       end
 
       context 'when the user does not exist in Azure' do
