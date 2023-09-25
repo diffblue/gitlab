@@ -6,14 +6,20 @@ RSpec.describe Security::ScanResultPolicies::GeneratePolicyViolationCommentServi
   let_it_be(:project) { create(:project) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project) }
   let(:report_type) { 'scan_finding' }
+  let(:requires_approval) { true }
 
   describe '#execute' do
     subject(:execute) { service.execute }
 
     let_it_be(:bot_user) { Users::Internal.security_bot }
 
-    let(:service) { described_class.new(merge_request, report_type, violated_policy) }
+    let(:service) { described_class.new(merge_request, params) }
+    let(:params) do
+      { 'report_type' => report_type, 'violated_policy' => violated_policy, requires_approval: requires_approval }
+    end
+
     let(:expected_violation_note) { 'Policy violation(s) detected' }
+    let(:expected_optional_approvals_note) { 'Consider including optional reviewers' }
     let(:expected_fixed_note) { 'Security policy violations have been resolved' }
 
     shared_examples 'successful service response' do
@@ -76,6 +82,19 @@ RSpec.describe Security::ScanResultPolicies::GeneratePolicyViolationCommentServi
         end
       end
 
+      context 'when policy has been violated with optional approvals' do
+        let(:violated_policy) { true }
+        let(:requires_approval) { false }
+
+        it_behaves_like 'successful service response'
+
+        it 'creates a comment' do
+          note = merge_request.notes.last
+          expect(note.note).to include(expected_optional_approvals_note, report_type)
+          expect(note.author).to eq(bot_user)
+        end
+      end
+
       context 'when there was no policy violation' do
         let(:violated_policy) { false }
 
@@ -113,6 +132,27 @@ RSpec.describe Security::ScanResultPolicies::GeneratePolicyViolationCommentServi
         end
 
         context 'when the existing violation was from another report_type' do
+          let(:violated_reports) { 'license_scanning' }
+          let(:report_type) { 'scan_finding' }
+
+          it 'updates the comment with a violated note and extends existing violated reports' do
+            expect(bot_comment.note).to include(expected_violation_note)
+            expect(bot_comment.note).to include('license_scanning,scan_finding')
+          end
+        end
+      end
+
+      context 'when policy has been violated with optional approvals' do
+        let(:violated_policy) { true }
+        let(:requires_approval) { false }
+
+        it_behaves_like 'successful service response'
+
+        it 'updates the comment with a violated note' do
+          expect(bot_comment.note).to include(expected_optional_approvals_note)
+        end
+
+        context 'when the existing violation required approvals and was from another report_type' do
           let(:violated_reports) { 'license_scanning' }
           let(:report_type) { 'scan_finding' }
 

@@ -7,13 +7,14 @@ module Security
 
       LOCK_SLEEP_SEC = 0.5.seconds
 
-      attr_reader :merge_request, :project, :report_type, :violated_policy
+      attr_reader :merge_request, :project, :report_type, :violated_policy, :requires_approval
 
-      def initialize(merge_request, report_type, violated_policy)
+      def initialize(merge_request, params = {})
         @merge_request = merge_request
         @project = merge_request.project
-        @report_type = report_type
-        @violated_policy = violated_policy
+        @report_type = params['report_type']
+        @violated_policy = params['violated_policy']
+        @requires_approval = params['requires_approval']
       end
 
       def execute
@@ -45,7 +46,7 @@ module Security
       def comment
         @comment ||= PolicyViolationComment.new(existing_comment).tap do |violation_comment|
           if violated_policy
-            violation_comment.add_report_type(report_type)
+            violation_comment.add_report_type(report_type, requires_approval)
           else
             violation_comment.remove_report_type(report_type)
           end

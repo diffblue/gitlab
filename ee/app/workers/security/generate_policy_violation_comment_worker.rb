@@ -18,8 +18,7 @@ module Security
 
       result = Security::ScanResultPolicies::GeneratePolicyViolationCommentService.new(
         merge_request,
-        params['report_type'],
-        params['violated_policy']
+        params
       ).execute
 
       return unless result.error?
@@ -35,6 +34,7 @@ module Security
           merge_request_id: merge_request_id,
           violated_policy: params['violated_policy'],
           report_type: params['report_type'],
+          requires_approval: params['requires_approval'],
           message: errors
         ))
     end

@@ -52,14 +52,15 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
     context 'with license_finding security policy' do
       let(:license_states) { ['newly_detected'] }
       let(:match_on_inclusion) { true }
+      let(:approvals_required) { 1 }
 
       let(:scan_result_policy_read) do
         create(:scan_result_policy_read, license_states: license_states, match_on_inclusion: match_on_inclusion)
       end
 
       let!(:license_finding_rule) do
-        create(:report_approver_rule, :license_scanning, merge_request: merge_request, approvals_required: 1,
-          scan_result_policy_read: scan_result_policy_read)
+        create(:report_approver_rule, :license_scanning, merge_request: merge_request,
+          approvals_required: approvals_required, scan_result_policy_read: scan_result_policy_read)
       end
 
       let(:case5) { [['GPL v3', 'A'], ['MIT', 'B'], ['GPL v3', 'C'], ['Apache 2', 'D']] }
@@ -92,6 +93,12 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
         end
 
         it_behaves_like 'triggers policy bot comment', :license_scanning, true
+
+        context 'when no approvals are required' do
+          let(:approvals_required) { 0 }
+
+          it_behaves_like 'triggers policy bot comment', :license_scanning, true, requires_approval: false
+        end
 
         context 'when the approval rules had approvals previously removed and rules are violated' do
           let_it_be(:approval_project_rule) do
