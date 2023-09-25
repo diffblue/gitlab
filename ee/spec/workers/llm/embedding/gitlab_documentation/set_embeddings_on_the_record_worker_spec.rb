@@ -41,18 +41,16 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWork
     describe 'checks' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:openai_experimentation_enabled, :gitlab_duo_enabled, :vertex_embeddings_enabled, :feature_available) do
-        false | false | false | false
-        false | false | false | true
-        false | false | true  | false
-        false | true  | false | false
-        true  | false | false | false
+      where(:openai_experimentation_enabled, :vertex_embeddings_enabled, :feature_available) do
+        false | false | false
+        false | false | true
+        false | true  | false
+        true  | false | false
       end
 
       with_them do
         before do
           stub_feature_flags(openai_experimentation: openai_experimentation_enabled)
-          stub_feature_flags(gitlab_duo: gitlab_duo_enabled)
           stub_feature_flags(create_embeddings_with_vertex_ai: vertex_embeddings_enabled)
           allow(License).to receive(:feature_available?).with(:ai_chat).and_return(feature_available)
         end

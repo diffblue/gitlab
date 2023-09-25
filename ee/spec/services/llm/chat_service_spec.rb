@@ -15,16 +15,11 @@ RSpec.describe Llm::ChatService, :saas, feature_category: :shared do
 
   subject { described_class.new(user, resource, options) }
 
-  before do
-    stub_feature_flags(gitlab_duo: user)
-  end
-
   describe '#perform' do
     context 'when ai features are enabled for the group' do
       include_context 'with ai features enabled for group'
 
       before do
-        stub_feature_flags(gitlab_duo: user)
         allow(SecureRandom).to receive(:uuid).and_return('uuid')
         allow(Gitlab::Llm::StageCheck).to receive(:available?).with(group, :chat).and_return(stage_check_available)
       end
@@ -52,18 +47,6 @@ RSpec.describe Llm::ChatService, :saas, feature_category: :shared do
           it_behaves_like 'completion worker sync and async'
           it_behaves_like 'llm service caches user request'
           it_behaves_like 'service emitting message for user prompt'
-        end
-
-        context 'when gitlab_duo feature flag is disabled' do
-          before do
-            stub_feature_flags(gitlab_duo: false)
-          end
-
-          it 'returns an error' do
-            expect(Llm::CompletionWorker).not_to receive(:perform_async)
-
-            expect(subject.execute).to be_error
-          end
         end
       end
 
