@@ -298,6 +298,18 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
       let(:params) { {} }
 
       it_behaves_like 'succeeds to add to merge train'
+
+      it 'sets a default SHA' do
+        expect(::MergeTrains::AddMergeRequestService).to(
+          receive(:new).with(
+            merge_request,
+            user,
+            hash_including(sha: merge_request.diff_head_sha)
+          )
+        )
+
+        subject
+      end
     end
 
     context 'with valid parameters' do

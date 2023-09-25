@@ -121,10 +121,16 @@ module API
 
           check_sha_param!(params, merge_request)
 
+          merge_params = HashWithIndifferentAccess.new(
+            squash: params[:squash],
+            when_pipeline_succeeds: params[:when_pipeline_succeeds],
+            sha: params[:sha] || merge_request.diff_head_sha
+          )
+
           response = ::MergeTrains::AddMergeRequestService.new(
             merge_request,
             current_user,
-            params.slice(:sha, :squash, :when_pipeline_succeeds)
+            merge_params
           ).execute
 
           if response.success?
