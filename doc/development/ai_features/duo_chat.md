@@ -18,7 +18,6 @@ Use [this snippet](https://gitlab.com/gitlab-org/gitlab/-/snippets/2554994) for 
 
    ```ruby
    Feature.enable(:gitlab_duo)
-   Feature.enable(:ai_redis_cache)
    ```
 
 1. Ensure that your current branch is up-to-date with `master`.
