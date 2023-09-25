@@ -19436,6 +19436,30 @@ msgstr ""
 msgid "Experiment features' settings not allowed."
 msgstr ""
 
+msgid "ExperimentBadge|An Experiment is a feature that's in the process of being developed. It's not production-ready. We encourage users to try Experimental features and provide feedback."
+msgstr ""
+
+msgid "ExperimentBadge|An Experiment:"
+msgstr ""
+
+msgid "ExperimentBadge|Can be removed at any time."
+msgstr ""
+
+msgid "ExperimentBadge|Can cause data loss."
+msgstr ""
+
+msgid "ExperimentBadge|Experiment"
+msgstr ""
+
+msgid "ExperimentBadge|Has no support and might not be documented."
+msgstr ""
+
+msgid "ExperimentBadge|May be unstable."
+msgstr ""
+
+msgid "ExperimentBadge|What's an Experiment?"
+msgstr ""
+
 msgid "Experiments"
 msgstr ""
 
