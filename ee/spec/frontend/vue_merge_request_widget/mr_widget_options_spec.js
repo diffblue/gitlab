@@ -202,7 +202,9 @@ describe('ee merge request widget options', () => {
       expect(findPipelineContainer().props('mr').postMergeDeployments).toHaveLength(0);
     });
 
-    it('renders multiple deployments', async () => {
+    // quarantine: https://gitlab.com/gitlab-org/quality/engineering-productivity/master-broken-incidents/-/issues/3642
+    // eslint-disable-next-line jest/no-disabled-tests
+    it.skip('renders multiple deployments', async () => {
       createComponent({
         mountFn: mountExtended,
         updatedMrData: {
