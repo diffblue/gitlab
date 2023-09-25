@@ -146,4 +146,62 @@ RSpec.describe ::TodosHelper do
       helper.todo_groups_requiring_saml_reauth(todos)
     end
   end
+
+  describe '#todo_target_path_anchor' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:project) { create(:project, :repository) }
+    let_it_be(:merge_request) { create(:merge_request, source_project: project) }
+    let_it_be(:author) { create(:user) }
+
+    describe 'with a mentioned todo' do
+      let_it_be(:todo) do
+        create(:todo,
+          :mentioned,
+          user: user,
+          project: project,
+          target: merge_request,
+          author: author)
+      end
+
+      it { expect(helper.todo_target_path_anchor(todo)).to eq(nil) }
+    end
+
+    describe 'with a review requested todo' do
+      let_it_be(:todo) do
+        create(:todo,
+          :review_requested,
+          user: user,
+          project: project,
+          target: merge_request,
+          author: author)
+      end
+
+      context 'when the summarize LLM feature is disabled' do
+        before do
+          allow(::Llm::MergeRequests::SummarizeDiffService).to receive(:enabled?).and_return(false)
+        end
+
+        it { expect(helper.todo_target_path_anchor(todo)).to eq(nil) }
+      end
+
+      context 'when the summarize LLM feature is enabled' do
+        let(:summary) { instance_double('MergeRequestDiff', merge_request_diff_llm_summary: 'summary') }
+
+        before do
+          allow(merge_request).to receive(:latest_merge_request_diff).and_return(summary)
+          allow(::Llm::MergeRequests::SummarizeDiffService).to receive(:enabled?).and_return(true)
+        end
+
+        context 'without llm summary' do
+          let(:summary) { instance_double('MergeRequestDiff', merge_request_diff_llm_summary: nil) }
+
+          it { expect(helper.todo_target_path_anchor(todo)).to eq(nil) }
+        end
+
+        context 'with llm summary' do
+          it { expect(helper.todo_target_path_anchor(todo)).to eq('diff-summary') }
+        end
+      end
+    end
+  end
 end
