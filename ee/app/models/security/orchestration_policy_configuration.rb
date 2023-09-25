@@ -7,8 +7,11 @@ module Security
     include Security::ScanResultPolicy
     include EachBatch
     include Gitlab::Utils::StrongMemoize
+    include IgnorableColumns
 
     self.table_name = 'security_orchestration_policy_configurations'
+
+    ignore_column :bot_user_id, remove_with: '16.7', remove_after: '2023-11-22'
 
     CACHE_DURATION = 1.hour
     POLICY_PATH = '.gitlab/security-policies/policy.yml'
@@ -22,7 +25,6 @@ module Security
 
     belongs_to :project, inverse_of: :security_orchestration_policy_configuration, optional: true
     belongs_to :namespace, inverse_of: :security_orchestration_policy_configuration, optional: true
-    belongs_to :bot_user, class_name: 'User', foreign_key: "bot_user_id"
     belongs_to :security_policy_management_project, class_name: 'Project', foreign_key: 'security_policy_management_project_id'
 
     validates :project, uniqueness: true, if: :project
@@ -39,7 +41,6 @@ module Security
       joins(:security_policy_management_project)
         .where(arel_table[:configured_at].lt(Project.arel_table[:last_repository_updated_at]).or(arel_table[:configured_at].eq(nil)))
     end
-    scope :for_bot_user, -> (bot_user_id) { where(bot_user_id: bot_user_id) }
 
     delegate :actual_limits, :actual_plan_name, :actual_plan, to: :source
 

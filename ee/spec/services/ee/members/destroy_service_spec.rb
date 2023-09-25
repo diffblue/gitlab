@@ -198,7 +198,7 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
       let_it_be(:project) { create(:project) }
       let_it_be(:user) { create(:user, user_type: :security_policy_bot) }
       let_it_be(:member) { create(:project_member, user: user, project: project) }
-      let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, bot_user: user) }
+      let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration) }
 
       before do
         project.add_owner(current_user)
