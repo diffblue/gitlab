@@ -12,6 +12,7 @@ RSpec.describe 'Groups > Settings > Analytics Dashboards', :js, feature_category
 
   before do
     sign_in(user)
+    group.update_attribute(:experiment_features_enabled, true)
   end
 
   context 'without correct license' do
@@ -29,7 +30,6 @@ RSpec.describe 'Groups > Settings > Analytics Dashboards', :js, feature_category
   context 'with correct license' do
     before do
       stub_licensed_features(group_level_analytics_dashboard: true)
-
       visit edit_group_path(group)
     end
 
@@ -40,6 +40,16 @@ RSpec.describe 'Groups > Settings > Analytics Dashboards', :js, feature_category
         click_button 'Save changes'
 
         expect(page).to have_content(project.full_name)
+      end
+    end
+
+    context 'when experimental features are disabled' do
+      before do
+        group.update_attribute(:experiment_features_enabled, false)
+      end
+
+      it 'does not show the Analytics Dashboards config' do
+        expect(page).not_to have_content 'Analytics Dashboards'
       end
     end
   end
