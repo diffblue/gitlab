@@ -4,6 +4,7 @@ module Security
   module ScanResultPolicies
     class UpdateApprovalsService
       include Gitlab::Utils::StrongMemoize
+      include PolicyViolationCommentGenerator
 
       attr_reader :pipeline, :merge_request
 
@@ -33,7 +34,7 @@ module Security
         violated_rules, unviolated_rules = partition_rules(approval_rules)
 
         update_required_approvals(violated_rules, unviolated_rules)
-        generate_policy_bot_comment(violated_rules.any?, :scan_finding)
+        generate_policy_bot_comment(merge_request, violated_rules, :scan_finding)
       end
 
       def update_any_merge_request_rules
@@ -49,7 +50,7 @@ module Security
         end
 
         update_required_approvals(violated_rules, unviolated_rules)
-        generate_policy_bot_comment(violated_rules.any?, :any_merge_request)
+        generate_policy_bot_comment(merge_request, violated_rules, :any_merge_request)
       end
 
       private
@@ -135,14 +136,6 @@ module Security
         security_scan_types(related_target_pipeline_ids)
       end
       strong_memoize_attr :target_pipeline_security_scan_types
-
-      def generate_policy_bot_comment(violated_policy, report_type)
-        Security::GeneratePolicyViolationCommentWorker.perform_async(
-          merge_request.id,
-          { 'report_type' => Security::ScanResultPolicies::PolicyViolationComment::REPORT_TYPES[report_type],
-            'violated_policy' => violated_policy }
-        )
-      end
 
       def target_pipeline
         merge_request.latest_finished_target_branch_pipeline_for_scan_result_policy

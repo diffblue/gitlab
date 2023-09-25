@@ -3,6 +3,7 @@
 module Security
   class SyncLicenseScanningRulesService
     include ::Gitlab::Utils::StrongMemoize
+    include ::Security::ScanResultPolicies::PolicyViolationCommentGenerator
 
     def self.execute(pipeline)
       new(pipeline).execute
@@ -48,7 +49,7 @@ module Security
       end
 
       update_required_approvals(merge_request, violated_rules, unviolated_rules)
-      generate_policy_bot_comment(merge_request, violated_rules.any?)
+      generate_policy_bot_comment(merge_request, violated_rules, :license_scanning)
       log_violated_rules(merge_request, violated_rules)
     end
 
@@ -145,14 +146,6 @@ module Security
       report.license_names.concat(report.licenses.filter_map(&:id)).compact.uniq
     end
     strong_memoize_attr :license_names_from_report
-
-    def generate_policy_bot_comment(merge_request, violated_policy)
-      Security::GeneratePolicyViolationCommentWorker.perform_async(
-        merge_request.id,
-        { 'report_type' => Security::ScanResultPolicies::PolicyViolationComment::REPORT_TYPES[:license_scanning],
-          'violated_policy' => violated_policy }
-      )
-    end
 
     def log_violated_rules(merge_request, rules)
       return unless rules.any?

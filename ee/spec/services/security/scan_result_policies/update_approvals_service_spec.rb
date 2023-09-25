@@ -8,6 +8,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     let(:vulnerabilities_allowed) { 1 }
     let(:severity_levels) { %w[high unknown] }
     let(:vulnerability_states) { %w[detected newly_detected] }
+    let(:approvals_required) { 2 }
 
     let_it_be(:uuids) { Array.new(5) { SecureRandom.uuid } }
     let_it_be(:merge_request) { create(:merge_request, source_branch: 'feature-branch', target_branch: 'master') }
@@ -41,7 +42,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     let!(:report_approver_rule) do
       create(:report_approver_rule, :scan_finding,
         merge_request: merge_request,
-        approvals_required: 2,
+        approvals_required: approvals_required,
         scanners: scanners,
         vulnerabilities_allowed: vulnerabilities_allowed,
         severity_levels: severity_levels,
@@ -165,6 +166,12 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       it_behaves_like 'triggers policy bot comment', :scan_finding, false
     end
 
+    context 'when there are no required approvals' do
+      let(:approvals_required) { 0 }
+
+      it_behaves_like 'triggers policy bot comment', :scan_finding, true, requires_approval: false
+    end
+
     context 'when target pipeline is nil' do
       let_it_be(:merge_request) do
         create(:merge_request, source_branch: 'feature-branch', target_branch: 'target-branch')
@@ -217,7 +224,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
               message: 'Evaluating MR approval rules from scan result policies',
               pipeline_ids: [pipeline.id],
               target_pipeline_ids: [target_pipeline.id],
-              project_path: 'namespace1/project-1'
+              project_path: project.full_path
             ).and_call_original
 
           expect(::Gitlab::AppJsonLogger)
@@ -230,7 +237,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
               merge_request_id: merge_request.id,
               merge_request_iid: merge_request.iid,
               reason: 'scan_finding rule violated',
-              project_path: 'namespace1/project-1'
+              project_path: project.full_path
             ).and_call_original
 
           execute
@@ -508,9 +515,10 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     end
 
     describe 'any_merge_request rules' do
+      let(:approvals_required) { 2 }
       let!(:report_approver_rule) do
         create(:approval_merge_request_rule, :any_merge_request, merge_request: merge_request,
-          approval_project_rule: approval_rule, scan_result_policy_read: policy, approvals_required: 2)
+          approval_project_rule: approval_rule, scan_result_policy_read: policy, approvals_required: approvals_required)
       end
 
       let_it_be(:policy) { create(:scan_result_policy_read, commits: :any) }
@@ -522,6 +530,12 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       context 'when applied to any commits' do
         it_behaves_like 'does not update approvals_required'
         it_behaves_like 'triggers policy bot comment', :any_merge_request, true
+      end
+
+      context 'when no approvals are required' do
+        let(:approvals_required) { 0 }
+
+        it_behaves_like 'triggers policy bot comment', :any_merge_request, true, requires_approval: false
       end
 
       context 'when applied to unsigned commits' do

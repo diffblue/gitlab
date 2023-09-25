@@ -9,11 +9,14 @@ RSpec.describe Security::GeneratePolicyViolationCommentWorker, feature_category:
     let_it_be(:project) { create(:project) }
     let_it_be(:merge_request) { create(:merge_request, source_project: project) }
     let_it_be(:violated_policy) { true }
+    let_it_be(:requires_approval) { true }
     let_it_be(:report_type) do
       Security::ScanResultPolicies::PolicyViolationComment::REPORT_TYPES[:scan_finding]
     end
 
-    let_it_be(:params) { { 'report_type' => report_type, 'violated_policy' => violated_policy } }
+    let_it_be(:params) do
+      { 'report_type' => report_type, 'violated_policy' => violated_policy, 'requires_approval' => requires_approval }
+    end
 
     subject(:worker) { described_class.new }
 
@@ -22,8 +25,7 @@ RSpec.describe Security::GeneratePolicyViolationCommentWorker, feature_category:
     end
 
     it 'calls Security::ScanResultPolicies::GeneratePolicyViolationCommentService#execute' do
-      expect_next(Security::ScanResultPolicies::GeneratePolicyViolationCommentService, merge_request,
-        report_type, violated_policy)
+      expect_next(Security::ScanResultPolicies::GeneratePolicyViolationCommentService, merge_request, params)
         .to receive(:execute).and_return(ServiceResponse.success)
 
       worker.perform(merge_request.id, params)
@@ -50,6 +52,7 @@ RSpec.describe Security::GeneratePolicyViolationCommentWorker, feature_category:
           'merge_request_id' => merge_request.id,
           'report_type' => report_type,
           'violated_policy' => violated_policy,
+          'requires_approval' => requires_approval,
           'message' => 'error1, error2'
         ))
 
