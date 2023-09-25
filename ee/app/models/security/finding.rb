@@ -76,7 +76,7 @@ module Security
         Vulnerability.select(1)
           .with_states(states)
           .joins(:findings)
-          .where('vulnerability_occurrences.uuid = security_findings.uuid::text')
+          .where('vulnerability_occurrences.uuid::uuid = security_findings.uuid::uuid')
       )
 
       # If the given list of states includes `detected` we should return
@@ -90,7 +90,7 @@ module Security
       where(
         'NOT EXISTS (?)',
         Vulnerabilities::Finding.select(1)
-          .where('vulnerability_occurrences.uuid = security_findings.uuid::text')
+          .where('vulnerability_occurrences.uuid::uuid = security_findings.uuid::uuid')
       )
     end
 
@@ -100,7 +100,7 @@ module Security
         Vulnerability.select(1)
           .dismissed
           .joins(:findings)
-          .where('vulnerability_occurrences.uuid = security_findings.uuid::text')
+          .where('vulnerability_occurrences.uuid::uuid = security_findings.uuid::uuid')
       )
     end
 
