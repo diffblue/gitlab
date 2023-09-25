@@ -280,7 +280,7 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
       create(:pm_package, name: "django", purl_type: "pypi",
         other_licenses: [{ license_names: ["MIT"], versions: ["1.11.4"] }])
       create(:pm_package, name: "pytz", purl_type: "pypi",
-        other_licenses: [{ license_names: ["BSD"], versions: ["2023.3"] }])
+        other_licenses: [{ license_names: ["BSD-4-Clause"], versions: ["2023.3"] }])
       create(:pm_package, name: "github.com/google/uuid", purl_type: "golang",
         other_licenses: [{ license_names: ["OLDAP-2.4"], versions: ["v1.3.0"] }])
     end
@@ -303,7 +303,7 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
         { name: "jquery-ui", package_manager: "", version: "1.10.2", id: 6,
           licenses: [{ name: "unknown", url: nil }] },
         { name: "pytz", package_manager: "Python (python-pkg)", version: "2023.3", id: 7,
-          licenses: [{ name: "BSD-4-Clause", url: "https://spdx.org/licenses/BSD.html" }] },
+          licenses: [{ name: "BSD-4-Clause", url: "https://spdx.org/licenses/BSD-4-Clause.html" }] },
         { name: "github.com/google/uuid", package_manager: "analyzer (gobinary)", version: "v1.3.0", id: 8,
           licenses: [{ name: "Open LDAP Public License v2.4", url: "https://spdx.org/licenses/OLDAP-2.4.html" }] },
         { name: "adduser", package_manager: "debian:12.1 (apt)", version: "3.134", id: 9,
