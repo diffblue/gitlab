@@ -42,13 +42,13 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
         other_licenses: [{ license_names: ["OLDAP-2.5"], versions: ["11.12.0"] }])
     end
 
-    context 'and components to fetch are empty' do
+    context 'when components to fetch are empty' do
       let_it_be(:components_to_fetch) { [] }
 
       it { is_expected.to be_empty }
     end
 
-    context 'and components to fetch are not empty' do
+    context 'when components to fetch are not empty' do
       it 'returns only the items that matched the fetched components' do
         expect(fetch).to contain_exactly(
           have_attributes(name: "beego", purl_type: "golang", version: "v1.10.0", path: "", licenses: contain_exactly(
@@ -240,7 +240,7 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
         end
       end
 
-      context 'with load balancing enabled', :db_load_balancing do
+      context 'when load balancing enabled', :db_load_balancing do
         it 'uses the replica' do
           expect(Gitlab::Database::LoadBalancing::Session.current).to receive(:use_replicas_for_read_queries)
             .and_call_original

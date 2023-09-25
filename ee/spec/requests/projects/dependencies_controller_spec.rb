@@ -174,7 +174,7 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
 
           before do
             create(:pm_package, name: "nokogiri", purl_type: "gem",
-              other_licenses: [{ license_names: ["BSD"], versions: ["1.8.0"] }])
+              other_licenses: [{ license_names: ["BSD-4-Clause"], versions: ["1.8.0"] }])
 
             pipeline.builds << build
             get project_dependencies_path(project, format: :json)
@@ -182,7 +182,7 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
 
           it 'includes license information in response' do
             nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
-            url = "https://spdx.org/licenses/BSD.html"
+            url = "https://spdx.org/licenses/BSD-4-Clause.html"
 
             expect(nokogiri['licenses']).to include({ "name" => "BSD-4-Clause", "url" => url })
           end

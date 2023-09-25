@@ -52,7 +52,7 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
 
         before do
           create(:pm_package, name: "nokogiri", purl_type: "gem",
-            other_licenses: [{ license_names: ["BSD"], versions: ["1.8.0"] }])
+            other_licenses: [{ license_names: ["BSD-4-Clause"], versions: ["1.8.0"] }])
         end
 
         it 'reports new licenses' do
@@ -69,7 +69,7 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
         project.add_developer(contributor)
 
         create(:pm_package, name: "nokogiri", purl_type: "gem",
-          other_licenses: [{ license_names: ["BSD"], versions: ["1.8.0"] }])
+          other_licenses: [{ license_names: ["BSD-4-Clause"], versions: ["1.8.0"] }])
       end
 
       let(:service) { described_class.new(project, maintainer) }
@@ -108,10 +108,10 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
 
         before do
           create(:pm_package, name: "nokogiri", purl_type: "gem",
-            other_licenses: [{ license_names: %w[BSD MIT], versions: ["1.8.0"] }])
+            other_licenses: [{ license_names: %w[BSD-4-Clause MIT], versions: ["1.8.0"] }])
 
           create(:pm_package, name: "django", purl_type: "pypi",
-            other_licenses: [{ license_names: ["BSD", "Apache-2.0"], versions: ["1.11.4"] }])
+            other_licenses: [{ license_names: ["BSD-4-Clause", "Apache-2.0"], versions: ["1.11.4"] }])
         end
 
         it 'reports status as parsed' do
