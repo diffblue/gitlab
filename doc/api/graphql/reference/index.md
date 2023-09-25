@@ -4784,7 +4784,7 @@ Input type: `JobRetryInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationjobretryclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationjobretryid"></a>`id` | [`CiBuildID!`](#cibuildid) | ID of the job to mutate. |
+| <a id="mutationjobretryid"></a>`id` | [`CiProcessableID!`](#ciprocessableid) | ID of the job to mutate. |
 | <a id="mutationjobretryvariables"></a>`variables` | [`[CiVariableInput!]`](#civariableinput) | Variables to use when retrying a manual job. |
 
 #### Fields
@@ -29463,6 +29463,12 @@ An example `CiPipelineScheduleID` is: `"gid://gitlab/Ci::PipelineSchedule/1"`.
 A `CiPipelineScheduleVariableID` is a global ID. It is encoded as a string.
 
 An example `CiPipelineScheduleVariableID` is: `"gid://gitlab/Ci::PipelineScheduleVariable/1"`.
+
+### `CiProcessableID`
+
+A `CiProcessableID` is a global ID. It is encoded as a string.
+
+An example `CiProcessableID` is: `"gid://gitlab/Ci::Processable/1"`.
 
 ### `CiRunnerID`
 
