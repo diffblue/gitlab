@@ -349,6 +349,7 @@ gem 'sentry-sidekiq', '~> 5.8.0'
 gem 'pg_query', '~> 4.2.3'
 
 gem 'gitlab-schema-validation', path: 'gems/gitlab-schema-validation'
+gem 'gitlab-http', path: 'gems/gitlab-http'
 
 gem 'premailer-rails', '~> 1.10.3'
 

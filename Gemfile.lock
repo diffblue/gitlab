@@ -24,6 +24,16 @@ PATH
       typhoeus (~> 1.0, >= 1.0.1)
 
 PATH
+  remote: gems/gitlab-http
+  specs:
+    gitlab-http (0.1.0)
+      activesupport (~> 7.0.6)
+      httparty (~> 0.21.0)
+      ipaddress (~> 0.8.3)
+      nokogiri (~> 1.15.4)
+      railties (~> 7.0.6)
+
+PATH
   remote: gems/gitlab-rspec
   specs:
     gitlab-rspec (0.1.0)
@@ -1812,6 +1822,7 @@ DEPENDENCIES
   gitlab-dangerfiles (~> 4.0.0)
   gitlab-experiment (~> 0.8.0)
   gitlab-fog-azure-rm (~> 1.8.0)
+  gitlab-http!
   gitlab-labkit (~> 0.34.0)
   gitlab-license (~> 2.3)
   gitlab-mail_room (~> 0.0.23)
