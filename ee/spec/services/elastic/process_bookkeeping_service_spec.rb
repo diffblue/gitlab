@@ -462,6 +462,20 @@ RSpec.describe Elastic::ProcessBookkeepingService,
         expect { described_class.new.execute }.not_to exceed_all_query_limit(control)
       end
 
+      it 'does not have N+1 queries for milestones' do
+        milestones = create_list(:milestone, 2)
+
+        described_class.track!(*milestones)
+
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) { described_class.new.execute }
+
+        milestones += create_list(:milestone, 3)
+
+        described_class.track!(*milestones)
+
+        expect { described_class.new.execute }.not_to exceed_all_query_limit(control)
+      end
+
       it 'does not have N+1 queries for merge_requests' do
         merge_requests = create_list(:merge_request, 2)
 
@@ -565,7 +579,7 @@ RSpec.describe Elastic::ProcessBookkeepingService,
 
         control = ActiveRecord::QueryRecorder.new(skip_cached: false) { described_class.new.execute }
 
-        epics += create_list(:epic, 3, group: group)
+        epics += create_list(:epic, 3, group: create(:group, parent: parent_group))
 
         described_class.track!(*epics)
 
