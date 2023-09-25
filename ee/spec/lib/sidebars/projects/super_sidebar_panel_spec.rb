@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Sidebars::Projects::SuperSidebarPanel, feature_category: :navigation do
-  let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, :repository, group: group) }
 
   let(:user) { project.first_owner }
   let(:context) do
@@ -33,6 +34,7 @@ RSpec.describe Sidebars::Projects::SuperSidebarPanel, feature_category: :navigat
     allow(::Gitlab.config.registry).to receive(:enabled).and_return(true)
     # Iterations are only available in non-personal projects
     allow(project).to receive(:personal?).and_return(false)
+    allow(group.namespace_settings).to receive(:experiment_features_enabled).and_return(true)
   end
 
   it_behaves_like 'a panel with uniquely identifiable menu items'

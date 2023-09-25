@@ -32,6 +32,7 @@ RSpec.describe Sidebars::Groups::SuperSidebarPanel, feature_category: :navigatio
     allow(::Gitlab::Auth::Ldap::Config).to receive(:group_sync_enabled?).and_return(true)
     # Needed for Domain Verification entry
     allow(group).to receive(:domain_verification_available?).and_return(true)
+    group.update_attribute(:experiment_features_enabled, true)
   end
 
   it_behaves_like 'a panel with uniquely identifiable menu items'

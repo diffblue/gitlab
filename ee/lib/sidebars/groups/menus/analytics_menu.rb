@@ -211,7 +211,8 @@ module Sidebars
         def show_analytics_dashboards?
           ::Feature.enabled?(:group_analytics_dashboards, context.group) &&
             context.group.licensed_feature_available?(:group_level_analytics_dashboard) &&
-            can?(context.current_user, :read_group_analytics_dashboards, context.group)
+            can?(context.current_user, :read_group_analytics_dashboards, context.group) &&
+            context.group.root_ancestor.experiment_features_enabled
         end
 
         def dashboards_analytics_menu_item
