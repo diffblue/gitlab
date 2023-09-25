@@ -397,7 +397,7 @@ RSpec.describe Groups::UpdateService, '#execute', feature_category: :groups_and_
   context 'updating analytics_dashboards_pointer_attributes.target_project_id param' do
     let(:attrs) { { analytics_dashboards_pointer_attributes: { target_project_id: private_project.id } } }
     let(:private_project) do
-      create(:project, :private).tap do |project|
+      create(:project, :private, group: group).tap do |project|
         project.add_maintainer(user)
       end
     end
@@ -406,6 +406,17 @@ RSpec.describe Groups::UpdateService, '#execute', feature_category: :groups_and_
       update_group(group, user, attrs)
 
       expect(group.analytics_dashboards_pointer.target_project).to eq(private_project)
+    end
+
+    context 'when passing a bogus target project' do
+      let(:attrs) { { analytics_dashboards_pointer_attributes: { target_project_id: create(:project).id } } }
+
+      it 'fails' do
+        success = update_group(group, user, attrs)
+
+        expect(success).to eq(false)
+        expect(group).to be_invalid
+      end
     end
 
     context 'when pointer project is empty' do

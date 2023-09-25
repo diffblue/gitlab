@@ -5,7 +5,8 @@ require 'spec_helper'
 RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_data_management do
   using RSpec::Parameterized::TableSyntax
 
-  let_it_be_with_refind(:project) { create(:project) }
+  let_it_be(:group) { create(:group) }
+  let_it_be_with_refind(:project) { create(:project, group: group) }
 
   describe '#product_analytics_enabled?' do
     subject { project.product_analytics_enabled? }
@@ -34,7 +35,7 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
     end
 
     context 'with configuration project' do
-      let_it_be(:config_project) { create(:project, :with_product_analytics_dashboard) }
+      let_it_be(:config_project) { create(:project, :with_product_analytics_dashboard, group: group) }
 
       before do
         stub_licensed_features(product_analytics: true)
@@ -77,7 +78,7 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
       it { is_expected.to contain_exactly(a_kind_of(::ProductAnalytics::Funnel)) }
 
       context 'when the project has defined a configuration project' do
-        let_it_be(:configuration_project) { create(:project, :with_product_analytics_funnel) }
+        let_it_be(:configuration_project) { create(:project, :with_product_analytics_funnel, group: group) }
 
         before do
           project.update!(analytics_dashboards_configuration_project: configuration_project)
@@ -108,7 +109,7 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
       end
 
       context 'when the project has defined a configuration project' do
-        let_it_be(:configuration_project) { create(:project, :with_product_analytics_dashboard) }
+        let_it_be(:configuration_project) { create(:project, :with_product_analytics_dashboard, group: group) }
 
         before do
           project.update!(analytics_dashboards_configuration_project: configuration_project)

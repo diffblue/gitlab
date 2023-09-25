@@ -755,6 +755,17 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
       expect(project.analytics_dashboards_pointer.target_project).to eq(sibling_project)
     end
 
+    context 'when passing a bogus target project' do
+      let(:attrs) { { analytics_dashboards_pointer_attributes: { target_project_id: create(:project).id } } }
+
+      it 'fails' do
+        result = update_project(project, user, attrs)
+
+        expect(result[:status]).to eq(:error)
+        expect(project).to be_invalid
+      end
+    end
+
     context 'when pointer project is empty' do
       let(:existing_pointer) do
         create(:analytics_dashboards_pointer, project: project, namespace: nil, target_project: sibling_project)
