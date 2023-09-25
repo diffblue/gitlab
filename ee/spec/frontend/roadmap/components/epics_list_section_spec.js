@@ -54,25 +54,6 @@ const mockEpics = store.state.epics;
 
 store.state.childrenEpics[mockEpics[0].id] = [mockFormattedChildEpic1, mockFormattedChildEpic2];
 
-const createComponent = ({
-  epics = mockEpics,
-  timeframe = mockTimeframeMonths,
-  currentGroupId = mockGroupId,
-  presetType = PRESET_TYPES.MONTHS,
-  hasFiltersApplied = false,
-} = {}) => {
-  return shallowMountExtended(EpicsListSection, {
-    store,
-    propsData: {
-      presetType,
-      epics,
-      timeframe,
-      currentGroupId,
-      hasFiltersApplied,
-    },
-  });
-};
-
 describe('EpicsListSectionComponent', () => {
   let wrapper;
 
@@ -80,8 +61,27 @@ describe('EpicsListSectionComponent', () => {
   const findEmptyRowEl = () => wrapper.find('.epics-list-item-empty');
   const findAllEpicItems = () => wrapper.findAllComponents(EpicItem);
 
+  const createComponent = ({
+    epics = mockEpics,
+    timeframe = mockTimeframeMonths,
+    currentGroupId = mockGroupId,
+    presetType = PRESET_TYPES.MONTHS,
+    hasFiltersApplied = false,
+  } = {}) => {
+    wrapper = shallowMountExtended(EpicsListSection, {
+      store,
+      propsData: {
+        presetType,
+        epics,
+        timeframe,
+        currentGroupId,
+        hasFiltersApplied,
+      },
+    });
+  };
+
   beforeEach(() => {
-    wrapper = createComponent();
+    createComponent();
   });
 
   describe('computed', () => {
@@ -121,7 +121,7 @@ describe('EpicsListSectionComponent', () => {
       });
 
       it('should return epics which match the applied filter when one of the epic in hierarchy is not matching the filter', async () => {
-        wrapper = createComponent({ epics: mockEpicsWithSkippedParents });
+        createComponent({ epics: mockEpicsWithSkippedParents });
         store.state.epicIds = mockEpicsWithSkippedParents.map((epic) => epic.id);
 
         await nextTick();
@@ -152,8 +152,8 @@ describe('EpicsListSectionComponent', () => {
         // $nextTick call in EpicsListSectionComponent's mounted hook.
         // https://gitlab.com/gitlab-org/gitlab/-/merge_requests/27992#note_319213990
         wrapper.destroy();
-        wrapper.vm.$store.state.epicIid = undefined;
-        wrapper = createComponent();
+        store.state.epicIid = undefined;
+        createComponent();
       });
 
       it('calls action `setBufferSize` with value based on window.innerHeight and component element position', () => {
@@ -171,7 +171,7 @@ describe('EpicsListSectionComponent', () => {
 
     describe('getEmptyRowContainerStyles', () => {
       it('does not set style attribute on empty row when no epics are available to render', () => {
-        wrapper = createComponent({ epics: [] });
+        createComponent({ epics: [] });
 
         expect(findEmptyRowEl().attributes('style')).not.toBeDefined();
       });
