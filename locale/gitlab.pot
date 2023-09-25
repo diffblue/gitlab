@@ -27504,9 +27504,6 @@ msgstr ""
 msgid "Last year"
 msgstr ""
 
-msgid "LastCommit|authored"
-msgstr ""
-
 msgid "LastPushEvent|You pushed to"
 msgstr ""
 
