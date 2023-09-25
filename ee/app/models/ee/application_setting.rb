@@ -384,7 +384,7 @@ module EE
       when Array
         scope.any? { |project| elasticsearch_indexes_project?(project) }
       else
-        ::Feature.enabled?(:advanced_global_search_for_limited_indexing)
+        ::Feature.enabled?(:advanced_global_search_for_limited_indexing, type: :ops)
       end
     end
 
