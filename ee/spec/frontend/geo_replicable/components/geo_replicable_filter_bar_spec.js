@@ -4,14 +4,9 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoReplicableFilterBar from 'ee/geo_replicable/components/geo_replicable_filter_bar.vue';
-import {
-  DEFAULT_SEARCH_DELAY,
-  FILTER_OPTIONS,
-  FILTER_STATES,
-  ACTION_TYPES,
-} from 'ee/geo_replicable/constants';
+import { FILTER_OPTIONS, ACTION_TYPES } from 'ee/geo_replicable/constants';
 import { createMockDirective } from 'helpers/vue_mock_directive';
-import { MOCK_REPLICABLE_TYPE, MOCK_BASIC_FETCH_RESPONSE } from '../mock_data';
+import { MOCK_REPLICABLE_TYPE, MOCK_BASIC_GRAPHQL_DATA } from '../mock_data';
 
 Vue.use(Vuex);
 
@@ -26,8 +21,7 @@ describe('GeoReplicableFilterBar', () => {
   };
 
   const defaultState = {
-    useGraphQl: true,
-    replicableItems: MOCK_BASIC_FETCH_RESPONSE.data,
+    replicableItems: MOCK_BASIC_GRAPHQL_DATA,
     verificationEnabled: true,
   };
 
@@ -59,10 +53,6 @@ describe('GeoReplicableFilterBar', () => {
   const findReverifyAllButton = () => wrapper.findByTestId('geo-reverify-all');
   const findGlModal = () => findNavContainer().findComponent(GlModal);
 
-  const legacyFilterOptions = FILTER_OPTIONS.filter(
-    (option) => option.value !== FILTER_STATES.STARTED.value,
-  );
-
   const getFilterLabels = (filters) => {
     return filters.map((filter) => {
       if (!filter.value) {
@@ -74,82 +64,42 @@ describe('GeoReplicableFilterBar', () => {
   };
 
   describe('template', () => {
-    describe('when useGraphQl is false', () => {
-      beforeEach(() => {
-        createComponent({ useGraphQl: false });
-      });
-
-      it('renders the nav container', () => {
-        expect(findNavContainer().exists()).toBe(true);
-      });
-
-      it('renders the filter dropdown', () => {
-        expect(findGlDropdown().exists()).toBe(true);
-      });
-
-      it('renders the correct filter options', () => {
-        expect(findDropdownItemsText()).toStrictEqual(getFilterLabels(legacyFilterOptions));
-      });
-
-      it('renders the search box with debounce prop', () => {
-        expect(findGlSearchBox().exists()).toBe(true);
-        expect(findGlSearchBox().attributes('debounce')).toBe(DEFAULT_SEARCH_DELAY.toString());
-      });
+    beforeEach(() => {
+      createComponent();
     });
 
-    describe('when useGraphQl is true', () => {
-      beforeEach(() => {
-        createComponent({ useGraphQl: true });
-      });
+    it('renders the nav container', () => {
+      expect(findNavContainer().exists()).toBe(true);
+    });
 
-      it('renders the nav container', () => {
-        expect(findNavContainer().exists()).toBe(true);
-      });
+    it('renders the filter dropdown', () => {
+      expect(findGlDropdown().exists()).toBe(true);
+    });
 
-      it('renders the filter dropdown', () => {
-        expect(findGlDropdown().exists()).toBe(true);
-      });
+    it('renders the correct filter options', () => {
+      expect(findDropdownItemsText()).toStrictEqual(getFilterLabels(FILTER_OPTIONS));
+    });
 
-      it('renders the correct filter options', () => {
-        expect(findDropdownItemsText()).toStrictEqual(getFilterLabels(FILTER_OPTIONS));
-      });
-
-      it('does not render search box', () => {
-        expect(findGlSearchBox().exists()).toBe(false);
-      });
+    it('does not render search box', () => {
+      expect(findGlSearchBox().exists()).toBe(false);
     });
 
     describe.each`
-      useGraphQl | featureFlag | replicableItems                   | verificationEnabled | showResyncAll | showReverifyAll
-      ${false}   | ${false}    | ${[]}                             | ${false}            | ${false}      | ${false}
-      ${false}   | ${false}    | ${[]}                             | ${true}             | ${false}      | ${false}
-      ${false}   | ${false}    | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${false}            | ${true}       | ${false}
-      ${false}   | ${false}    | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${true}             | ${true}       | ${false}
-      ${false}   | ${true}     | ${[]}                             | ${false}            | ${false}      | ${false}
-      ${false}   | ${true}     | ${[]}                             | ${true}             | ${false}      | ${false}
-      ${false}   | ${true}     | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${false}            | ${true}       | ${false}
-      ${false}   | ${true}     | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${true}             | ${true}       | ${false}
-      ${true}    | ${false}    | ${[]}                             | ${false}            | ${false}      | ${false}
-      ${true}    | ${false}    | ${[]}                             | ${true}             | ${false}      | ${false}
-      ${true}    | ${false}    | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${false}            | ${false}      | ${false}
-      ${true}    | ${false}    | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${true}             | ${false}      | ${false}
-      ${true}    | ${true}     | ${[]}                             | ${false}            | ${false}      | ${false}
-      ${true}    | ${true}     | ${[]}                             | ${true}             | ${false}      | ${false}
-      ${true}    | ${true}     | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${false}            | ${true}       | ${false}
-      ${true}    | ${true}     | ${MOCK_BASIC_FETCH_RESPONSE.data} | ${true}             | ${true}       | ${true}
+      featureFlag | replicableItems            | verificationEnabled | showResyncAll | showReverifyAll
+      ${false}    | ${[]}                      | ${false}            | ${false}      | ${false}
+      ${false}    | ${[]}                      | ${true}             | ${false}      | ${false}
+      ${false}    | ${MOCK_BASIC_GRAPHQL_DATA} | ${false}            | ${false}      | ${false}
+      ${false}    | ${MOCK_BASIC_GRAPHQL_DATA} | ${true}             | ${false}      | ${false}
+      ${true}     | ${[]}                      | ${false}            | ${false}      | ${false}
+      ${true}     | ${[]}                      | ${true}             | ${false}      | ${false}
+      ${true}     | ${MOCK_BASIC_GRAPHQL_DATA} | ${false}            | ${true}       | ${false}
+      ${true}     | ${MOCK_BASIC_GRAPHQL_DATA} | ${true}             | ${true}       | ${true}
     `(
-      'Bulk Actions when useGraphQl is $useGraphQl and geoRegistriesUpdateMutation FF is $featureFlag',
-      ({
-        useGraphQl,
-        featureFlag,
-        replicableItems,
-        verificationEnabled,
-        showResyncAll,
-        showReverifyAll,
-      }) => {
+      'Bulk Actions when geoRegistriesUpdateMutation FF is $featureFlag',
+      ({ featureFlag, replicableItems, verificationEnabled, showResyncAll, showReverifyAll }) => {
         beforeEach(() => {
           createComponent(
-            { useGraphQl, replicableItems, verificationEnabled },
+            { replicableItems, verificationEnabled },
             { geoRegistriesUpdateMutation: featureFlag },
           );
         });
@@ -167,7 +117,7 @@ describe('GeoReplicableFilterBar', () => {
 
   describe('Status filter actions', () => {
     beforeEach(() => {
-      createComponent({ useGraphQl: true });
+      createComponent();
     });
 
     it('clicking a filter item calls setStatusFilter with value and fetchReplicableItems', () => {
@@ -182,17 +132,14 @@ describe('GeoReplicableFilterBar', () => {
     });
   });
 
+  // To be implemented via https://gitlab.com/gitlab-org/gitlab/-/issues/411982
   describe('Search box actions', () => {
     beforeEach(() => {
-      createComponent({ useGraphQl: false });
+      createComponent();
     });
 
-    it('searching calls setSearch with search and fetchReplicableItems', () => {
-      const testSearch = 'test search';
-      findGlSearchBox().vm.$emit('input', testSearch);
-
-      expect(actionSpies.setSearch).toHaveBeenCalledWith(expect.any(Object), testSearch);
-      expect(actionSpies.fetchReplicableItems).toHaveBeenCalled();
+    it('does not render GlSearchBox', () => {
+      expect(findGlSearchBox().exists()).toBe(false);
     });
   });
 

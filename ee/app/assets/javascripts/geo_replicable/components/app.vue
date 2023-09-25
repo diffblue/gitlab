@@ -37,7 +37,6 @@ export default {
 
 <template>
   <article class="geo-replicable-container">
-    <!-- Filtering not currently supported via GraphQl -->
     <geo-replicable-filter-bar />
     <gl-loading-icon v-if="isLoading" size="xl" />
     <template v-else>

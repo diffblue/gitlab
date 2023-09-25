@@ -51,13 +51,7 @@ export default {
     };
   },
   computed: {
-    ...mapState([
-      'statusFilter',
-      'searchFilter',
-      'useGraphQl',
-      'replicableItems',
-      'verificationEnabled',
-    ]),
+    ...mapState(['statusFilter', 'searchFilter', 'replicableItems', 'verificationEnabled']),
     ...mapGetters(['replicableTypeName']),
     search: {
       get() {
@@ -71,29 +65,12 @@ export default {
     hasReplicableItems() {
       return this.replicableItems.length > 0;
     },
-    showResyncAllAction() {
-      if (!this.hasReplicableItems) {
-        return false;
-      }
-
-      return !this.useGraphQl || this.glFeatures.geoRegistriesUpdateMutation;
+    showBulkActions() {
+      return this.glFeatures.geoRegistriesUpdateMutation && this.hasReplicableItems;
     },
-    showReverifyAllAction() {
-      if (!this.hasReplicableItems) {
-        return false;
-      }
-
-      return (
-        this.useGraphQl && this.verificationEnabled && this.glFeatures.geoRegistriesUpdateMutation
-      );
-    },
-    filterOptions() {
-      if (this.useGraphQl) {
-        return FILTER_OPTIONS;
-      }
-
-      // Non-GraphQL endpoint does not support `started` as a filter
-      return FILTER_OPTIONS.filter((option) => option.value !== FILTER_STATES.STARTED.value);
+    showSearch() {
+      // To be implemented via https://gitlab.com/gitlab-org/gitlab/-/issues/411982
+      return false;
     },
     modalTitle() {
       return sprintf(this.$options.i18n.modalTitle, {
@@ -122,6 +99,7 @@ export default {
   },
   actionTypes: ACTION_TYPES,
   filterStates: FILTER_STATES,
+  filterOptions: FILTER_OPTIONS,
   debounce: DEFAULT_SEARCH_DELAY,
   GEO_BULK_ACTION_MODAL_ID,
 };
@@ -133,12 +111,9 @@ export default {
       <div
         class="gl-display-flex gl-align-items-center gl-flex-direction-column gl-sm-flex-direction-row"
       >
-        <gl-dropdown
-          :text="$options.i18n.dropdownTitle"
-          :class="useGraphQl ? 'gl-w-half' : 'gl-w-full'"
-        >
+        <gl-dropdown :text="$options.i18n.dropdownTitle" class="gl-w-half">
           <gl-dropdown-item
-            v-for="filter in filterOptions"
+            v-for="filter in $options.filterOptions"
             :key="filter.value"
             :class="{ 'gl-bg-gray-50': filter.value === statusFilter }"
             @click="filterChange(filter.value)"
@@ -150,23 +125,22 @@ export default {
           </gl-dropdown-item>
         </gl-dropdown>
         <gl-search-box-by-type
-          v-if="!useGraphQl"
+          v-if="showSearch"
           v-model="search"
           :debounce="$options.debounce"
           class="gl-w-full gl-mt-3 gl-ml-0 gl-sm-mt-0 gl-sm-ml-3"
           :placeholder="$options.i18n.searchPlaceholder"
         />
       </div>
-      <div v-if="showResyncAllAction || showReverifyAllAction" class="gl-ml-auto">
+      <div v-if="showBulkActions" class="gl-ml-auto">
         <gl-button
-          v-if="showResyncAllAction"
           v-gl-modal-directive="$options.GEO_BULK_ACTION_MODAL_ID"
           data-testid="geo-resync-all"
           @click="setModalData($options.actionTypes.RESYNC_ALL)"
           >{{ $options.i18n.resyncAll }}</gl-button
         >
         <gl-button
-          v-if="showReverifyAllAction"
+          v-if="verificationEnabled"
           v-gl-modal-directive="$options.GEO_BULK_ACTION_MODAL_ID"
           data-testid="geo-reverify-all"
           @click="setModalData($options.actionTypes.REVERIFY_ALL)"

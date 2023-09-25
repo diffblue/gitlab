@@ -10,7 +10,7 @@ import GeoReplicableFilterBar from 'ee/geo_replicable/components/geo_replicable_
 import initStore from 'ee/geo_replicable/store';
 import {
   MOCK_GEO_REPLICATION_SVG_PATH,
-  MOCK_BASIC_FETCH_DATA_MAP,
+  MOCK_BASIC_GRAPHQL_DATA,
   MOCK_REPLICABLE_TYPE,
   MOCK_GRAPHQL_REGISTRY,
 } from '../mock_data';
@@ -26,7 +26,7 @@ describe('GeoReplicableApp', () => {
   };
 
   const createStore = (options) => {
-    store = initStore({ replicableType: MOCK_REPLICABLE_TYPE, graphqlFieldName: null, ...options });
+    store = initStore({ replicableType: MOCK_REPLICABLE_TYPE, ...options });
     jest.spyOn(store, 'dispatch').mockImplementation();
   };
 
@@ -46,15 +46,15 @@ describe('GeoReplicableApp', () => {
     findGeoReplicableContainer().findComponent(GeoReplicableFilterBar);
 
   describe.each`
-    isLoading | graphqlFieldName         | replicableItems              | showReplicableItems | showEmptyState | showLoader
-    ${false}  | ${null}                  | ${MOCK_BASIC_FETCH_DATA_MAP} | ${true}             | ${false}       | ${false}
-    ${false}  | ${null}                  | ${[]}                        | ${false}            | ${true}        | ${false}
-    ${false}  | ${MOCK_GRAPHQL_REGISTRY} | ${MOCK_BASIC_FETCH_DATA_MAP} | ${true}             | ${false}       | ${false}
-    ${false}  | ${MOCK_GRAPHQL_REGISTRY} | ${[]}                        | ${false}            | ${true}        | ${false}
-    ${true}   | ${null}                  | ${MOCK_BASIC_FETCH_DATA_MAP} | ${false}            | ${false}       | ${true}
-    ${true}   | ${null}                  | ${[]}                        | ${false}            | ${false}       | ${true}
-    ${true}   | ${MOCK_GRAPHQL_REGISTRY} | ${MOCK_BASIC_FETCH_DATA_MAP} | ${false}            | ${false}       | ${true}
-    ${true}   | ${MOCK_GRAPHQL_REGISTRY} | ${[]}                        | ${false}            | ${false}       | ${true}
+    isLoading | graphqlFieldName         | replicableItems            | showReplicableItems | showEmptyState | showLoader
+    ${false}  | ${null}                  | ${MOCK_BASIC_GRAPHQL_DATA} | ${true}             | ${false}       | ${false}
+    ${false}  | ${null}                  | ${[]}                      | ${false}            | ${true}        | ${false}
+    ${false}  | ${MOCK_GRAPHQL_REGISTRY} | ${MOCK_BASIC_GRAPHQL_DATA} | ${true}             | ${false}       | ${false}
+    ${false}  | ${MOCK_GRAPHQL_REGISTRY} | ${[]}                      | ${false}            | ${true}        | ${false}
+    ${true}   | ${null}                  | ${MOCK_BASIC_GRAPHQL_DATA} | ${false}            | ${false}       | ${true}
+    ${true}   | ${null}                  | ${[]}                      | ${false}            | ${false}       | ${true}
+    ${true}   | ${MOCK_GRAPHQL_REGISTRY} | ${MOCK_BASIC_GRAPHQL_DATA} | ${false}            | ${false}       | ${true}
+    ${true}   | ${MOCK_GRAPHQL_REGISTRY} | ${[]}                      | ${false}            | ${false}       | ${true}
   `(
     `template`,
     ({
