@@ -61,8 +61,7 @@ module EE
       condition(:role_enables_admin_merge_request) do
         next unless @user.is_a?(User)
 
-        ::Feature.enabled?(:admin_merge_request, subject&.project) &&
-          @user.custom_permission_for?(subject&.project, :admin_merge_request)
+        @user.custom_permission_for?(subject&.project, :admin_merge_request)
       end
 
       with_scope :subject

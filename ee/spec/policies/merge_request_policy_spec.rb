@@ -567,16 +567,6 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
         it 'enables the `approve_merge_request` ability' do
           expect(subject).to be_allowed(:approve_merge_request)
         end
-
-        context 'when the `admin_merge_request` feature flag is disabled' do
-          before do
-            stub_feature_flags(admin_merge_request: false)
-          end
-
-          it 'disables the `approve_merge_request` ability' do
-            expect(subject).to be_disallowed(:approve_merge_request)
-          end
-        end
       end
 
       context 'when the user is a member of a custom role with `admin_merge_request` disabled' do
