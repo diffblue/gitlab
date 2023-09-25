@@ -22,6 +22,7 @@ module RemoteDevelopment
     validates :user, presence: true
     validates :agent, presence: true
     validates :editor, presence: true
+    validates :personal_access_token, presence: true
 
     # Ensure that the associated agent has an existing RemoteDevelopmentAgentConfig before we allow it
     # to be used to create a new workspace

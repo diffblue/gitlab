@@ -37,13 +37,6 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillWorkspacePersonalAccessToken
         expires_at: 4.days.from_now)
     end
 
-    let!(:workspace_without_personal_access_token) do
-      workspaces_table.create!({
-        name: 'workspace1',
-        personal_access_token_id: nil
-      }.merge!(workspace_attrs))
-    end
-
     let!(:workspace_with_personal_access_token) do
       workspaces_table.create!({
         name: 'workspace2',
@@ -53,7 +46,7 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillWorkspacePersonalAccessToken
 
     let(:migration) do
       described_class.new(
-        start_id: workspace_without_personal_access_token.id,
+        start_id: workspace_with_personal_access_token.id,
         end_id: workspace_with_personal_access_token.id,
         batch_table: :workspaces,
         batch_column: :id,
@@ -61,12 +54,6 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillWorkspacePersonalAccessToken
         pause_ms: 0,
         connection: ApplicationRecord.connection
       )
-    end
-
-    it "creates a personal access token and updates the workspace" do
-      expect { migration.perform }.to change {
-                                        workspace_without_personal_access_token.reload.personal_access_token_id
-                                      }.from(nil)
     end
 
     it "does not modify workspace's existing token" do
