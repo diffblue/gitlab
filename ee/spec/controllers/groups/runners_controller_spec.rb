@@ -6,8 +6,11 @@ RSpec.describe Groups::RunnersController, feature_category: :runner_fleet do
   let_it_be(:group) { create(:group) }
   let_it_be(:owner) { create(:user) }
 
-  before do
+  before_all do
     group.add_owner(owner)
+  end
+
+  before do
     sign_in(owner)
   end
 
