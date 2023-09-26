@@ -54,7 +54,6 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
 
         data = {
           id: uuid,
-          model_name: 'MergeRequest',
           content: content,
           request_id: nil,
           role: 'assistant',
