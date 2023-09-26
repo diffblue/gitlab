@@ -9,14 +9,14 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createComplianceFrameworksResponse } from 'ee_jest/compliance_dashboard/mock_data';
 
-import ComplianceFrameworksReport from 'ee/compliance_dashboard/components/frameworks_report/report.vue';
+import ComplianceFrameworksReport from 'ee/compliance_dashboard/components/projects_report/report.vue';
 import complianceFrameworksGroupProjects from 'ee/compliance_dashboard/graphql/compliance_frameworks_group_projects.query.graphql';
 import complianceFrameworksProjectFragment from 'ee/compliance_dashboard/graphql/compliance_frameworks_project.fragment.graphql';
 
 import { ROUTE_FRAMEWORKS } from 'ee/compliance_dashboard/constants';
-import ProjectsTable from 'ee/compliance_dashboard/components/frameworks_report/projects_table.vue';
-import Pagination from 'ee/compliance_dashboard/components/frameworks_report/pagination.vue';
-import Filters from 'ee/compliance_dashboard/components/frameworks_report/filters.vue';
+import ProjectsTable from 'ee/compliance_dashboard/components/projects_report/projects_table.vue';
+import Pagination from 'ee/compliance_dashboard/components/projects_report/pagination.vue';
+import Filters from 'ee/compliance_dashboard/components/projects_report/filters.vue';
 
 Vue.use(VueApollo);
 
@@ -134,7 +134,7 @@ describe('ComplianceFrameworksReport component', () => {
 
       expect(findErrorMessage().exists()).toBe(true);
       expect(findErrorMessage().text()).toBe(
-        'Unable to load the compliance framework report. Refresh the page and try again.',
+        'Unable to load the compliance framework projects report. Refresh the page and try again.',
       );
       expect(Sentry.captureException.mock.calls[0][0].networkError).toBe(sentryError);
     });

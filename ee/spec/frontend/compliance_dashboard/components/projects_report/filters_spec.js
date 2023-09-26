@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { GlPopover, GlFilteredSearch, GlButton } from '@gitlab/ui';
-import ComplianceFrameworksFilters from 'ee/compliance_dashboard/components/frameworks_report/filters.vue';
+import ComplianceFrameworksFilters from 'ee/compliance_dashboard/components/projects_report/filters.vue';
 
 describe('ComplianceFrameworksFilters', () => {
   let wrapper;

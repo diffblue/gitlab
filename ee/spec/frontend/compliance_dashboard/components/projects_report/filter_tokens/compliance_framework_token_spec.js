@@ -9,7 +9,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { createComplianceFrameworksTokenResponse } from 'ee_jest/compliance_dashboard/mock_data';
 
 import { stubComponent } from 'helpers/stub_component';
-import ComplianceFrameworksToken from 'ee/compliance_dashboard/components/frameworks_report/filter_tokens/compliance_framework_token.vue';
+import ComplianceFrameworksToken from 'ee/compliance_dashboard/components/projects_report/filter_tokens/compliance_framework_token.vue';
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 
 Vue.use(VueApollo);

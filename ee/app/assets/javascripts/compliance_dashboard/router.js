@@ -9,7 +9,7 @@ import {
   ROUTE_VIOLATIONS,
 } from './constants';
 import ViolationsReport from './components/violations_report/report.vue';
-import FrameworksReport from './components/frameworks_report/report.vue';
+import ProjectsReport from './components/projects_report/report.vue';
 import StandardsReport from './components/standards_adherence_report/report.vue';
 
 export function createRouter(basePath, props) {
@@ -43,7 +43,7 @@ export function createRouter(basePath, props) {
     {
       path: '/frameworks',
       name: ROUTE_FRAMEWORKS,
-      component: FrameworksReport,
+      component: ProjectsReport,
       props: {
         groupPath,
         rootAncestorPath,
@@ -52,7 +52,7 @@ export function createRouter(basePath, props) {
     {
       path: '/projects',
       name: ROUTE_PROJECTS,
-      component: FrameworksReport,
+      component: ProjectsReport,
       props: {
         groupPath,
         rootAncestorPath,

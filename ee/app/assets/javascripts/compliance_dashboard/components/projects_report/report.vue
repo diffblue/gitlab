@@ -20,7 +20,7 @@ import Pagination from './pagination.vue';
 import Filters from './filters.vue';
 
 export default {
-  name: 'ComplianceFrameworkReport',
+  name: 'ComplianceFrameworkProjectsReport',
   components: {
     Filters,
     GlAlert,
@@ -175,7 +175,7 @@ export default {
   },
   i18n: {
     queryError: s__(
-      'ComplianceReport|Unable to load the compliance framework report. Refresh the page and try again.',
+      'ComplianceReport|Unable to load the compliance framework projects report. Refresh the page and try again.',
     ),
   },
 };
