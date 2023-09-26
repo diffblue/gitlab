@@ -102,6 +102,8 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
               company_name: "",
               container_id: "trial-status-sidebar-widget",
               create_hand_raise_lead_path: "/-/subscriptions/hand_raise_leads",
+              track_action: 'click_button',
+              track_label: 'trial_status_popover_hand_raise_lead_form',
               days_remaining: 15,
               first_name: user.first_name,
               glm_content: "trial-status-show-group",

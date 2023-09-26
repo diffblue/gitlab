@@ -33,6 +33,8 @@ export default {
     targetId: {},
     createHandRaiseLeadPath: {},
     trialEndDate: {},
+    trackAction: {},
+    trackLabel: {},
     user: {},
   },
   data() {
@@ -138,6 +140,7 @@ export default {
       <div data-testid="contact-sales-btn" @click="trackPageAction('contactSalesBtnClick')">
         <div
           class="js-hand-raise-lead-button"
+          data-testid="contact-sales-block"
           :data-create-hand-raise-lead-path="createHandRaiseLeadPath"
           :data-button-attributes="JSON.stringify($options.handRaiseLeadAttributes)"
           :data-namespace-id="user.namespaceId"
@@ -146,6 +149,8 @@ export default {
           :data-last-name="user.lastName"
           :data-company-name="user.companyName"
           :data-glm-content="user.glmContent"
+          :data-track-action="trackAction"
+          :data-track-label="trackLabel"
         ></div>
       </div>
 

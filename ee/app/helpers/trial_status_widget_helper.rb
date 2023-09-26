@@ -12,6 +12,8 @@ module TrialStatusWidgetHelper
     )
 
     base_attrs.merge(
+      track_action: 'click_button',
+      track_label: 'trial_status_popover_hand_raise_lead_form',
       days_remaining: trial_status.days_remaining,
       target_id: base_attrs[:container_id],
       trial_end_date: trial_status.ends_on

@@ -56,6 +56,8 @@ RSpec.describe TrialStatusWidgetHelper, :saas, feature_category: :acquisition do
             glm_content: 'trial-status-show-group',
             product_interaction: 'Hand Raise PQL',
             create_hand_raise_lead_path: '/-/subscriptions/hand_raise_leads',
+            track_action: 'click_button',
+            track_label: 'trial_status_popover_hand_raise_lead_form',
             target_id: expected_attrs[:container_id],
             trial_end_date: trial_end_date
           )
