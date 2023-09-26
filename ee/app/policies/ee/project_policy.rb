@@ -237,8 +237,7 @@ module EE
       condition(:role_enables_admin_merge_request) do
         next unless @user.is_a?(User)
 
-        ::Feature.enabled?(:admin_merge_request, subject) &&
-          @user.custom_permission_for?(project, :admin_merge_request)
+        @user.custom_permission_for?(project, :admin_merge_request)
       end
 
       desc "Custom role on project that enables admin vulnerability"
