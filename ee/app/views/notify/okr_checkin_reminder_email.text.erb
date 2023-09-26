@@ -1,0 +1,7 @@
+The following OKR requires an update <%= Date.today %>:
+
+OKR <%= @work_item.iid %>: <%= issue_reference_link(@work_item) %>
+Author:    <%= @work_item.author_name %>
+<%= assignees_label(@work_item) %>
+
+<%= @work_item.description %>

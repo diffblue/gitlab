@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe WorkItem do
+  let_it_be(:reusable_project) { create(:project) }
+
   describe '#supported_quick_action_commands' do
     subject { work_item.supported_quick_action_commands }
 
@@ -246,11 +248,10 @@ RSpec.describe WorkItem do
   end
 
   describe '#average_progress_of_children' do
-    let_it_be(:project) { create(:project) }
-    let_it_be_with_reload(:parent_work_item) { create(:work_item, :objective, project: project) }
-    let_it_be_with_reload(:child_work_item1) { create(:work_item, :objective, project: project) }
-    let_it_be_with_reload(:child_work_item2) { create(:work_item, :objective, project: project) }
-    let_it_be_with_reload(:child_work_item3) { create(:work_item, :objective, project: project) }
+    let_it_be_with_reload(:parent_work_item) { create(:work_item, :objective, project: reusable_project) }
+    let_it_be_with_reload(:child_work_item1) { create(:work_item, :objective, project: reusable_project) }
+    let_it_be_with_reload(:child_work_item2) { create(:work_item, :objective, project: reusable_project) }
+    let_it_be_with_reload(:child_work_item3) { create(:work_item, :objective, project: reusable_project) }
     let_it_be_with_reload(:child1_progress) { create(:progress, work_item: child_work_item1, progress: 20) }
     let_it_be_with_reload(:child2_progress) { create(:progress, work_item: child_work_item2, progress: 30) }
     let_it_be_with_reload(:child3_progress) { create(:progress, work_item: child_work_item3, progress: 30) }
@@ -336,5 +337,71 @@ RSpec.describe WorkItem do
           .to contain_exactly(authorized_item_b)
       end
     end
+  end
+
+  describe '.with_reminder_frequency' do
+    let(:frequency) { 'weekly' }
+    let!(:weekly_reminder_work_item) { create(:work_item, project: reusable_project) }
+    let!(:weekly_progress) { create(:progress, work_item: weekly_reminder_work_item, reminder_frequency: 'weekly') }
+    let!(:monthly_reminder_work_item) { create(:work_item, project: reusable_project) }
+    let!(:montly_progress) { create(:progress, work_item: monthly_reminder_work_item, reminder_frequency: 'monthly') }
+    let!(:no_reminder_work_item) { create(:work_item, project: reusable_project) }
+
+    subject { described_class.with_reminder_frequency(frequency) }
+
+    it { is_expected.to contain_exactly(weekly_reminder_work_item) }
+  end
+
+  describe '.without_parent' do
+    let!(:parent_work_item) { create(:work_item, :objective, project: reusable_project) }
+    let!(:work_item_with_parent) { create(:work_item, :key_result, project: reusable_project) }
+    let!(:parent_link) { create(:parent_link, work_item_parent: parent_work_item, work_item: work_item_with_parent) }
+    let!(:work_item_without_parent) { create(:work_item, :key_result, project: reusable_project) }
+
+    subject { described_class.without_parent }
+
+    it { is_expected.to contain_exactly(parent_work_item, work_item_without_parent) }
+  end
+
+  describe '.with_assignees' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:with_assignee) { create(:work_item, project: reusable_project) }
+    let_it_be(:without_assignee) { create(:work_item, :key_result, project: reusable_project) }
+
+    before_all do
+      with_assignee.assignees = [user]
+    end
+
+    subject { described_class.with_assignees }
+
+    it { is_expected.to contain_exactly(with_assignee) }
+  end
+
+  describe '.with_descendents_of' do
+    let!(:parent_work_item) { create(:work_item, :objective, project: reusable_project) }
+    let!(:work_item_with_parent) { create(:work_item, :key_result, project: reusable_project) }
+    let!(:parent_link) { create(:parent_link, work_item_parent: parent_work_item, work_item: work_item_with_parent) }
+    let!(:work_item_without_child) { create(:work_item, :key_result, project: reusable_project) }
+
+    subject { described_class.with_descendents_of([parent_work_item.id, work_item_without_child.id]) }
+
+    it { is_expected.to contain_exactly(work_item_with_parent) }
+  end
+
+  describe '.with_previous_reminder_sent_before' do
+    let!(:work_item_without_progress) { create(:work_item, :objective, project: reusable_project) }
+    let!(:work_item_with_recent_reminder) { create(:work_item, :objective, project: reusable_project) }
+    let!(:work_item_with_stale_reminder) { create(:work_item, :objective, project: reusable_project) }
+    let!(:recent_reminder) do
+      create(:progress, work_item: work_item_with_recent_reminder, last_reminder_sent_at: 1.day.ago)
+    end
+
+    let!(:stale_reminder) do
+      create(:progress, work_item: work_item_with_stale_reminder, last_reminder_sent_at: 3.days.ago)
+    end
+
+    subject { described_class.with_previous_reminder_sent_before(2.days.ago) }
+
+    it { is_expected.to contain_exactly(work_item_without_progress, work_item_with_stale_reminder) }
   end
 end

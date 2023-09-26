@@ -1,0 +1,12 @@
+%p.details
+  = sprintf(s_("OKRs|%{author_link}'s OKR %{work_item_link} requires an update."), { author_link: link_to(@author.name, user_url(@author)), work_item_link: issue_reference_link(@work_item) }).html_safe
+
+- if @work_item.assignees.any?
+  %p
+    = assignees_label(@work_item)
+%p
+  = sprintf(s_('OKRs|An update is due on: %{update_due_date}'), { update_due_date: Date.today.to_fs(:medium) }).html_safe
+
+- if @work_item.description
+  .md
+    = markdown(@work_item.description, pipeline: :email, author: @work_item.author, current_user: @user)
