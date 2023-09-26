@@ -116,15 +116,5 @@ RSpec.describe GroupsWithTemplatesFinder, :saas, feature_category: :source_code_
     end
   end
 
-  context 'when feature flag "optimize_group_template_query" is enabled' do
-    it_behaves_like 'groups_with_templates'
-  end
-
-  context 'when feature flag "optimize_group_template_query" is disabled' do
-    before do
-      stub_feature_flags(optimize_group_template_query: false)
-    end
-
-    it_behaves_like 'groups_with_templates'
-  end
+  it_behaves_like 'groups_with_templates'
 end

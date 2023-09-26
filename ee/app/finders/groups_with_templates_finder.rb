@@ -19,7 +19,7 @@ class GroupsWithTemplatesFinder
   attr_reader :user, :group_id
 
   def extended_group_search
-    if Feature.enabled?(:optimize_group_template_query, user) && Feature.enabled?(:use_traversal_ids)
+    if Feature.enabled?(:use_traversal_ids)
       plan_ids = Plan
         .by_name(GitlabSubscriptions::Features.saas_plans_with_feature(:group_project_templates))
         .pluck(:id) # rubocop: disable CodeReuse/ActiveRecord
