@@ -5,6 +5,7 @@ module Projects
     include OneTrustCSP
     include GoogleAnalyticsCSP
 
+    before_action :check_if_gl_com_or_dev
     before_action :authenticate_user! # since it is skipped in inherited controller
     before_action :owner_access!, only: :onboarding
     before_action :verify_learn_gitlab_available!, only: :show

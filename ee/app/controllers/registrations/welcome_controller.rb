@@ -9,11 +9,10 @@ module Registrations
     include ::Onboarding::Redirectable
     include ::Onboarding::SetRedirect
     include RegistrationsTracking
-    # TODO: Once this is an ee + SaaS only feature, we can remove this.
-    # To be completed in https://gitlab.com/gitlab-org/gitlab/-/issues/411858
-    skip_before_action :check_two_factor_requirement
+
     layout 'minimal'
 
+    before_action :check_if_gl_com_or_dev
     before_action only: :show do
       push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
     end

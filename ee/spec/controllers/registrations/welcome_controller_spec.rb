@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Registrations::WelcomeController, feature_category: :system_access do
+RSpec.describe Registrations::WelcomeController, :saas, feature_category: :system_access do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }
@@ -34,6 +34,14 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
         )
       end
 
+      context 'when not on gitlab.com' do
+        before do
+          allow(::Gitlab).to receive(:com?).and_return(false)
+        end
+
+        it { is_expected.to have_gitlab_http_status(:not_found) }
+      end
+
       context 'when in invitation flow' do
         before do
           create(:group_member, source: group, user: user)
@@ -51,7 +59,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
         end
       end
 
-      context 'when in trial flow', :saas do
+      context 'when in trial flow' do
         let(:show_params) { { trial: 'true' } }
 
         it 'tracks render event' do
@@ -94,7 +102,8 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
 
       context 'when 2FA is required from group' do
         before do
-          user = create(:user, require_two_factor_authentication_from_group: true)
+          stub_ee_application_setting(should_check_namespace_plan: true)
+          user = create(:user, onboarding_in_progress: true, require_two_factor_authentication_from_group: true)
           sign_in(user)
         end
 
@@ -168,20 +177,32 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
         sign_in(user)
       end
 
-      context 'with email updates' do
-        context 'when on gitlab.com', :saas do
-          context 'when registration_objective field is provided' do
-            it 'sets the registration_objective' do
-              patch_update
+      context 'when not on gitlab.com' do
+        before do
+          allow(::Gitlab).to receive(:com?).and_return(false)
+        end
 
-              expect(controller.current_user.registration_objective).to eq('code_storage')
-            end
+        it { is_expected.to have_gitlab_http_status(:not_found) }
+      end
+
+      context 'with email updates' do
+        context 'when registration_objective field is provided' do
+          it 'sets the registration_objective' do
+            patch_update
+
+            expect(controller.current_user.registration_objective).to eq('code_storage')
           end
         end
       end
 
       describe 'redirection' do
         context 'when onboarding is not enabled' do
+          before do
+            allow_next_instance_of(Onboarding::Status) do |instance|
+              allow(instance).to receive(:enabled?).and_return(false)
+            end
+          end
+
           it { is_expected.to redirect_to dashboard_projects_path }
 
           it 'tracks successful submission event' do
@@ -220,7 +241,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
           end
         end
 
-        context 'when onboarding is enabled', :saas do
+        context 'when onboarding is enabled' do
           let_it_be(:user) do
             create(:user, onboarding_in_progress: true).tap do |record|
               create(:user_detail, user: record, onboarding_step_url: '_url_')
@@ -229,6 +250,18 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
 
           before do
             stub_ee_application_setting(should_check_namespace_plan: true)
+          end
+
+          context 'when the new user already has any accepted group membership' do
+            let!(:member1) { create(:group_member, user: user) }
+
+            context 'when the member has an orphaned source at the time of the welcome' do
+              it 'redirects to the project non invite onboarding flow' do
+                member1.source.delete
+
+                expect(patch_update).to redirect_to(new_users_sign_up_group_path)
+              end
+            end
           end
 
           context 'when joining_project is "true"' do

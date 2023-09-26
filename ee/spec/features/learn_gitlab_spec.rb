@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Learn Gitlab concerns', :feature, :js, feature_category: :onboarding do
+RSpec.describe 'Learn Gitlab concerns', :feature, :js, :saas, feature_category: :onboarding do
   include Features::InviteMembersModalHelpers
 
-  context 'with an active trial', :saas do
+  context 'with an active trial' do
     let_it_be(:group) do
       create(:group_with_plan, :private, plan: :ultimate_trial_plan, trial_ends_on: 10.days.from_now).tap do |g|
         create(:onboarding_progress, namespace: g)
