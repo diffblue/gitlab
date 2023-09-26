@@ -10,9 +10,15 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
   let(:response_body) { 'Some response' }
   let(:cache_response) { false }
   let(:client_subscription_id) { nil }
+  let(:ai_action) { nil }
 
   let(:options) do
-    { request_id: 'uuid', cache_response: cache_response, client_subscription_id: client_subscription_id }
+    {
+      request_id: 'uuid',
+      cache_response: cache_response,
+      client_subscription_id: client_subscription_id,
+      ai_action: ai_action
+    }
   end
 
   let(:ai_response_json) do
@@ -78,6 +84,21 @@ RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_catego
           .to receive(:ai_completion_response)
           .with(
             { user_id: user.to_global_id, resource_id: expected_resource_gid, client_subscription_id: 'id' },
+            expected_payload
+          )
+
+        subject
+      end
+    end
+
+    context 'when ai_action is set' do
+      let(:ai_action) { 'chat' }
+
+      it 'triggers subscription including the ai_action and removes the resource_id' do
+        expect(GraphqlTriggers)
+          .to receive(:ai_completion_response)
+          .with(
+            { user_id: user.to_global_id, ai_action: 'chat' },
             expected_payload
           )
 

@@ -160,6 +160,24 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
         agent.execute
       end
+
+      it 'streams the current tool', :aggregate_failures do
+        tool_double = double
+
+        allow(Gitlab::Llm::Chain::ToolResponseModifier).to receive(:new)
+          .with(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor)
+          .and_return(tool_double)
+
+        expect(response_service_double).to receive(:execute).at_least(:once)
+        expect(stream_response_service_double).to receive(:execute).at_least(:once).with(
+          response: tool_double,
+          options: { cache_response: false, role: ::Gitlab::Llm::ChatMessage::ROLE_SYSTEM, type: 'tool' }
+        )
+
+        allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
+
+        agent.execute
+      end
     end
   end
 

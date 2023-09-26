@@ -56,6 +56,9 @@ module Llm
         GraphqlTriggers.ai_completion_response(
           { user_id: user.to_global_id, resource_id: resource&.to_global_id }, payload
         )
+
+        # Once all clients use `chat` for `ai_action` we can remove the trigger above.
+        GraphqlTriggers.ai_completion_response({ user_id: user.to_global_id, ai_action: action_name.to_s }, payload)
       end
 
       return success(payload) if no_worker_message?(message)

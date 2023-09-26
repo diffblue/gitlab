@@ -36,6 +36,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
   end
 
   let(:response_handler) { instance_double(Gitlab::Llm::ResponseService) }
+  let(:chat_response_handler) { instance_double(Gitlab::Llm::ChatResponseService) }
   let(:stream_response_handler) { nil }
 
   subject { described_class.new(nil, **params).execute(user, resource, options) }
@@ -65,6 +66,9 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
       expect(response_handler).to receive(:execute)
       expect(::Gitlab::Llm::ResponseService).to receive(:new).with(context, { request_id: 'uuid' })
         .and_return(response_handler)
+      expect(chat_response_handler).to receive(:execute)
+      expect(::Gitlab::Llm::ChatResponseService).to receive(:new).with(context, { request_id: 'uuid' })
+        .and_return(chat_response_handler)
       expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
         .with(current_user: user, container: expected_container, resource: resource, ai_request: ai_request,
           extra_resource: extra_resource)
@@ -104,6 +108,11 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
         expect(::Gitlab::Llm::ResponseService).to receive(:new).with(
           an_instance_of(Gitlab::Llm::Chain::GitlabContext), { request_id: 'uuid' }
         ).and_return(response_handler)
+
+        expect(chat_response_handler).to receive(:execute)
+        expect(::Gitlab::Llm::ChatResponseService).to receive(:new).with(
+          an_instance_of(Gitlab::Llm::Chain::GitlabContext), { request_id: 'uuid', client_subscription_id: 'someid' }
+        ).and_return(chat_response_handler)
 
         expect(::Gitlab::Llm::ResponseService).to receive(:new).with(
           an_instance_of(Gitlab::Llm::Chain::GitlabContext), { request_id: 'uuid', client_subscription_id: 'someid' }
@@ -192,6 +201,9 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
         expect(response_handler).to receive(:execute)
         expect(::Gitlab::Llm::ResponseService).to receive(:new).with(context, { request_id: 'uuid' })
           .and_return(response_handler)
+        expect(chat_response_handler).to receive(:execute)
+        expect(::Gitlab::Llm::ChatResponseService).to receive(:new).with(context, { request_id: 'uuid' })
+          .and_return(chat_response_handler)
         expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
           .with(current_user: user, container: expected_container, resource: resource,
             ai_request: ai_request, extra_resource: extra_resource)
@@ -227,6 +239,9 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
         expect(response_handler).to receive(:execute)
         expect(::Gitlab::Llm::ResponseService).to receive(:new).with(context, { request_id: 'uuid' })
           .and_return(response_handler)
+        expect(chat_response_handler).to receive(:execute)
+        expect(::Gitlab::Llm::ChatResponseService).to receive(:new).with(context, { request_id: 'uuid' })
+          .and_return(chat_response_handler)
         expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
           .with(current_user: user, container: expected_container, resource: resource,
             ai_request: ai_request, extra_resource: extra_resource)

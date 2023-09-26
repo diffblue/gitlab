@@ -11,6 +11,9 @@ RSpec.shared_examples 'service emitting message for user prompt' do
     expect(GraphqlTriggers).to receive(:ai_completion_response)
       .with({ user_id: user.to_global_id, resource_id: resource.to_global_id }, expected_subscription_params)
 
+    expect(GraphqlTriggers).to receive(:ai_completion_response)
+      .with({ user_id: user.to_global_id, ai_action: 'chat' }, expected_subscription_params)
+
     subject.execute
   end
 end

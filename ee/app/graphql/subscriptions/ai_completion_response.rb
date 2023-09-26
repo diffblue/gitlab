@@ -17,6 +17,10 @@ module Subscriptions
       required: false,
       description: 'Client generated ID that be subscribed to, to receive a response for the mutation.'
 
+    argument :ai_action, ::Types::Ai::ActionEnum,
+      required: false,
+      description: 'Name of the Ai action performed as part of the mutaton.'
+
     def authorized?(args)
       unauthorized! if current_user.nil? || args[:user_id] != current_user.to_global_id
 
