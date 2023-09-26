@@ -12,6 +12,7 @@ FactoryBot.define do
       }
     end
 
+    version { 1 }
     content { 'Some text' }
     embedding { Array.new(768, 0.3) }
   end

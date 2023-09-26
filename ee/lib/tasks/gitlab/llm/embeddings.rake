@@ -5,25 +5,18 @@ namespace :gitlab do
     namespace :embeddings do
       desc 'Extract the embeddings for selected questions into a fixture'
       task :extract_embeddings, [] => [:environment] do |_t, _args|
-        questions = [
-          "How do I change my password in GitLab",
-          "How do I fork a project?",
-          "How do I clone a repository?",
-          "How do I create a project template?"
-        ]
+        ff_state = Feature.enabled?(:use_embeddings_with_vertex)
+        Feature.disable(:use_embeddings_with_vertex) if ff_state
 
-        openai_client = ::Gitlab::Llm::OpenAi::Client.new(User.first,
-          request_timeout: ::Gitlab::Llm::TanukiBot::REQUEST_TIMEOUT, tracking_context: { action: 'openai_embeddings' })
-        embedding_ids = questions
-                          .map { |q| ::Gitlab::Llm::TanukiBot.embedding_for_question(openai_client, q) }
-                          .flat_map { |e| ::Gitlab::Llm::TanukiBot.get_nearest_neighbors(e) }
-                          .filter_map { |h| h[:id] }
+        embedding_ids = extract_embeddings_to_fixture
+
+        ff_state ? Feature.enable(:use_embeddings_with_vertex) : Feature.disable(:use_embeddings_with_vertex)
 
         sql = ::Embedding::TanukiBotMvc.select("*").where(id: embedding_ids).to_sql
-        fixture_path = Rails.root.join("ee/spec/fixtures/embeddings")
+        fixture_path = Rails.root.join("ee/spec/fixtures/openai_embeddings")
         ::Embedding::TanukiBotMvc.connection.execute("COPY (#{sql}) TO '#{fixture_path}'")
 
-        puts "Don't forget to commit the generated `ee/spec/fixtures/embeddings`."
+        puts "Don't forget to commit the generated `ee/spec/fixtures/openai_embeddings`."
       end
 
       # Warning: the task will TRUNCATE the embeddings table.
@@ -50,7 +43,7 @@ namespace :gitlab do
       end
 
       namespace :vertex do
-        desc 'Extract the embeddings for selected questions into a fixture'
+        desc 'Seed embeddings test database with pre-generated embeddings'
         task :seed, [] => [:environment] do |_t, _args|
           number_of_rows = 14010
           filename = "vertex_gitlab_docs.json"
@@ -63,6 +56,22 @@ namespace :gitlab do
             file_path = download_embeddings_file(dir, filename, url)
             create_embeddings(embeddings_model, file_path, number_of_rows)
           end
+        end
+
+        desc 'Extract the embeddings for selected questions into a fixture'
+        task :extract_embeddings, [] => [:environment] do |_t, _args|
+          ff_state = Feature.enabled?(:use_embeddings_with_vertex)
+          Feature.enable(:use_embeddings_with_vertex) unless ff_state
+
+          embedding_ids = extract_embeddings_to_fixture
+
+          ff_state ? Feature.enable(:use_embeddings_with_vertex) : Feature.disable(:use_embeddings_with_vertex)
+
+          sql = ::Embedding::Vertex::GitlabDocumentation.select("*").where(id: embedding_ids).to_sql
+          fixture_path = Rails.root.join("ee/spec/fixtures/vertex_embeddings")
+          ::Embedding::Vertex::GitlabDocumentation.connection.execute("COPY (#{sql}) TO '#{fixture_path}'")
+
+          puts "Don't forget to commit the generated `ee/spec/fixtures/vertex_embeddings`."
         end
       end
     end
@@ -104,5 +113,22 @@ def create_embeddings(embeddings_model, file_path, number_of_rows)
     if idx % 100 == 0 || idx == number_of_rows
       puts "#{idx}/#{number_of_rows} (#{((idx / number_of_rows.to_f) * 100).round(2)}%)"
     end
+  end
+end
+
+def extract_embeddings_to_fixture
+  questions = [
+    "How do I change my password in GitLab",
+    "How do I fork a project?",
+    "How do I clone a repository?",
+    "How do I create a project template?"
+  ]
+
+  questions.flat_map do |q|
+    tanuki_bot_service = ::Gitlab::Llm::TanukiBot.new(current_user: User.first, question: q)
+    question_embedding = tanuki_bot_service.embedding_for_question(q)
+    neighbour_embeddings = tanuki_bot_service.get_nearest_neighbors(question_embedding)
+
+    neighbour_embeddings.pluck(:id)
   end
 end

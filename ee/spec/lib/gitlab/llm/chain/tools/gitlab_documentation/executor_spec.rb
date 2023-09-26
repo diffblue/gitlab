@@ -6,6 +6,9 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
   describe '#execute' do
     subject(:result) { tool.execute }
 
+    let_it_be(:user) { create(:user) }
+    let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+
     let(:tool) { described_class.new(context: context, options: options) }
     let(:completion) do
       instance_double(
@@ -14,7 +17,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
       )
     end
 
-    let(:response) { Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(completion.body) }
+    let(:response) { Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(completion.body, user) }
     let(:options) { { input: "how to reset the password?" } }
     let(:context) do
       Gitlab::Llm::Chain::GitlabContext.new(
@@ -24,9 +27,6 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
         ai_request: double
       )
     end
-
-    let_it_be(:user) { create(:user) }
-    let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
 
     before do
       group.add_developer(user)

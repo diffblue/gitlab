@@ -11,24 +11,9 @@ RSpec.describe Gitlab::Llm::Anthropic::Completions::TanukiBot, feature_category:
   let(:template_class) { ::Gitlab::Llm::Anthropic::Templates::TanukiBot }
   let(:tracking_context) { { request_id: 'uuid', action: :tanuki_bot } }
 
-  let(:ai_response_body) do
-    {
-      choices: [
-        {
-          text: "some ai response text ATTRS: CNT-IDX-123"
-        }
-      ]
-    }.to_json
+  let(:ai_response) do
+    instance_double(Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot, response_body: "text", errors: [], extras: {})
   end
-
-  let(:completion) do
-    instance_double(
-      'Net::HTTPResponse',
-      body: ai_response_body
-    )
-  end
-
-  let(:ai_response) { Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(completion.body) }
 
   subject(:tanuki_bot) { described_class.new(template_class, params).execute(user, user, options) }
 
