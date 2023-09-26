@@ -176,7 +176,7 @@ module Gitlab
               blob = @context.extra_resource[:blob]
               return "" unless blob
 
-              "The current code file that user sees is #{blob.path} and has the following content\n#{blob.data}\n\n"
+              provider_prompt_class.current_code_prompt(blob)
             end
 
             PROMPT_TEMPLATE = [

@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_redis_chat, feature_category: :duo_chat do
+  include FakeBlobHelpers
+
   let_it_be(:user) { create(:user) }
 
   describe 'real requests', :real_ai_request, :saas do
@@ -65,45 +67,31 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       let(:blob) { project.repository.blob_at("master", "files/ruby/popen.rb") }
       let(:extra_resource) { { blob: blob } }
 
-      context 'when the feature flag :explain_current_blob is enabled for user' do
-        where(:input_template, :tools, :answer_match) do
-          'Explain the code'          | [] | /ruby|popen/i
-          'Explain this code'         | [] | /ruby|popen/i
-          'What is this code doing?'  | [] | /ruby|popen/i
-          'Can you explain the code ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /hello/i
-        end
-
-        with_them do
-          let(:input) { input_template }
-
-          before do
-            stub_feature_flags(explain_current_blob: user)
-          end
-
-          it_behaves_like 'successful prompt processing'
-        end
+      where(:input_template, :tools, :answer_match) do
+        'Explain the code'          | [] | /ruby|popen/i
+        'Explain this code'         | [] | /ruby|popen/i
+        'What is this code doing?'  | [] | /ruby|popen/i
+        'Can you explain the code ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /hello/i
       end
 
-      context 'when the feature flag :explain_current_blob is disabled for user' do
-        let_it_be(:other_user) { create(:user) }
+      with_them do
+        let(:input) { input_template }
 
-        # TODO: fix these exmples to expect an actual answer not a hallucination, just to make it pass!
-        where(:input_template, :tools, :answer_match) do
-          'Explain the code'          | [] | /react/i # Hallucinates by making up react code
-          'Explain this code'         | [] | /react/i # Hallucinates by making up react code
-          'What is this code doing?'  | [] | /react/i # Hallucinates by making up react code
-          'Can you explain the code ""def hello_world\\nputs(\""Hello, world!\\n\"");\nend""?' | [] | /hello/i
+        it_behaves_like 'successful prompt processing'
+      end
+
+      context 'with blob for code containing gitlab references' do
+        let(:blob) do
+          fixture = File.read('ee/spec/fixtures/llm/projects_controller.rb')
+
+          fake_blob(path: 'app/controllers/explore/projects_controller.rb', data: fixture)
         end
 
-        with_them do
-          let(:input) { input_template }
+        let(:input) { 'What is this code doing?' }
+        let(:tools) { [] }
+        let(:answer_match) { /ruby|rails/i }
 
-          before do
-            stub_feature_flags(explain_current_blob: other_user)
-          end
-
-          it_behaves_like 'successful prompt processing'
-        end
+        it_behaves_like 'successful prompt processing'
       end
     end
 

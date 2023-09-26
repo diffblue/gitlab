@@ -38,6 +38,15 @@ module Gitlab
 
                 result
               end
+
+              def self.current_code_prompt(blob)
+                <<~PROMPT
+                The current code file that user sees is #{blob.path} and has the following content:
+                <content>
+                #{blob.data}
+                </content>\n
+                PROMPT
+              end
             end
           end
         end

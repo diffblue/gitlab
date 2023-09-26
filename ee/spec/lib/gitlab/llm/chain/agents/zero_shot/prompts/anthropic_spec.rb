@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature_category: :duo_chat do
+  include FakeBlobHelpers
+
   describe '.prompt' do
     let(:prompt_version) { ::Gitlab::Llm::Chain::Agents::ZeroShot::Executor::PROMPT_TEMPLATE }
     let(:options) do
@@ -59,6 +61,18 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
       it 'includes truncated conversation history' do
         expect(subject).to start_with("Assistant: response 2\n\n")
       end
+    end
+  end
+
+  describe '.current_code_prompt' do
+    let(:project) { build(:project) }
+    let(:blob) { fake_blob(path: 'foobar.rb', data: 'puts "hello world"') }
+
+    subject(:prompt) { described_class.current_code_prompt(blob) }
+
+    it 'returns prompt' do
+      expect(prompt).to include("The current code file that user sees is foobar.rb and has the following content:")
+      expect(prompt).to include("\n<content>\nputs \"hello world\"\n</content>")
     end
   end
 end

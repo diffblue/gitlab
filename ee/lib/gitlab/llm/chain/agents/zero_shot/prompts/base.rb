@@ -15,6 +15,10 @@ module Gitlab
 
                 "#{Utils::Prompt.default_system_prompt}\n\n#{base_prompt}"
               end
+
+              def self.current_code_prompt(blob)
+                "The current code file that user sees is #{blob.path} and has the following content:\n#{blob.data}\n\n"
+              end
             end
           end
         end
