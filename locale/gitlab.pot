@@ -30780,9 +30780,6 @@ msgstr ""
 msgid "Navigation bar"
 msgstr ""
 
-msgid "Navigation sidebar"
-msgstr ""
-
 msgid "NavigationTheme|Blue"
 msgstr ""
 
