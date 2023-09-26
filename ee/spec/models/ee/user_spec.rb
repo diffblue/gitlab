@@ -1896,8 +1896,8 @@ RSpec.describe User, feature_category: :system_access do
   context 'zoekt namespaces', feature_category: :global_search do
     let_it_be(:indexed_parent_namespace) { create(:group) }
     let_it_be(:unindexed_namespace) { create(:namespace) }
-    let_it_be(:shard) { Zoekt::Shard.create!(index_base_url: 'http://example.com:1234/', search_base_url: 'http://example.com:4567/') }
-    let_it_be(:zoekt_indexed_namespace) { Zoekt::IndexedNamespace.create!(shard: shard, namespace: indexed_parent_namespace) }
+    let_it_be(:shard) { create(:zoekt_shard, index_base_url: 'http://example.com:1234/', search_base_url: 'http://example.com:4567/') }
+    let_it_be(:zoekt_indexed_namespace) { create(:zoekt_indexed_namespace, shard: shard, namespace: indexed_parent_namespace) }
 
     let(:user) { create(:user, namespace: create(:user_namespace)) }
 
