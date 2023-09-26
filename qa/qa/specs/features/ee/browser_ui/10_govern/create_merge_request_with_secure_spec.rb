@@ -50,7 +50,7 @@ module QA
         end
 
         @project.visit!
-        Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
+        Flow::Pipeline.wait_for_latest_pipeline(status: 'Passed')
 
         merge_request.visit!
       end

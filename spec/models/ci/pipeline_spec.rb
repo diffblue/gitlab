@@ -2925,7 +2925,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep, feature_category: 
       let(:pipeline) { create(:ci_pipeline, :created) }
 
       it 'returns detailed status for created pipeline' do
-        expect(subject.text).to eq s_('CiStatusText|created')
+        expect(subject.text).to eq s_('CiStatusText|Created')
       end
     end
 
@@ -2933,7 +2933,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep, feature_category: 
       let(:pipeline) { create(:ci_pipeline, status: :pending) }
 
       it 'returns detailed status for pending pipeline' do
-        expect(subject.text).to eq s_('CiStatusText|pending')
+        expect(subject.text).to eq s_('CiStatusText|Pending')
       end
     end
 
@@ -2941,7 +2941,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep, feature_category: 
       let(:pipeline) { create(:ci_pipeline, status: :running) }
 
       it 'returns detailed status for running pipeline' do
-        expect(subject.text).to eq s_('CiStatus|running')
+        expect(subject.text).to eq s_('CiStatusText|Running')
       end
     end
 
@@ -2949,7 +2949,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep, feature_category: 
       let(:pipeline) { create(:ci_pipeline, status: :success) }
 
       it 'returns detailed status for successful pipeline' do
-        expect(subject.text).to eq s_('CiStatusText|passed')
+        expect(subject.text).to eq s_('CiStatusText|Passed')
       end
     end
 
@@ -2957,7 +2957,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep, feature_category: 
       let(:pipeline) { create(:ci_pipeline, status: :failed) }
 
       it 'returns detailed status for failed pipeline' do
-        expect(subject.text).to eq s_('CiStatusText|failed')
+        expect(subject.text).to eq s_('CiStatusText|Failed')
       end
     end
 
@@ -2965,7 +2965,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep, feature_category: 
       let(:pipeline) { create(:ci_pipeline, status: :canceled) }
 
       it 'returns detailed status for canceled pipeline' do
-        expect(subject.text).to eq s_('CiStatusText|canceled')
+        expect(subject.text).to eq s_('CiStatusText|Canceled')
       end
     end
 
@@ -2973,7 +2973,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep, feature_category: 
       let(:pipeline) { create(:ci_pipeline, status: :skipped) }
 
       it 'returns detailed status for skipped pipeline' do
-        expect(subject.text).to eq s_('CiStatusText|skipped')
+        expect(subject.text).to eq s_('CiStatusText|Skipped')
       end
     end
 
@@ -2981,7 +2981,7 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep, feature_category: 
       let(:pipeline) { create(:ci_pipeline, status: :manual) }
 
       it 'returns detailed status for blocked pipeline' do
-        expect(subject.text).to eq s_('CiStatusText|blocked')
+        expect(subject.text).to eq s_('CiStatusText|Blocked')
       end
     end
 

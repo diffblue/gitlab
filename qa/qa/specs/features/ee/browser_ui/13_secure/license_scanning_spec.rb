@@ -86,7 +86,7 @@ module QA
             mr.merge_immediately!
           end
 
-          Flow::Pipeline.wait_for_latest_pipeline(status: 'passed', wait: 600)
+          Flow::Pipeline.wait_for_latest_pipeline(status: 'Passed', wait: 600)
 
           test_project.visit!
           Flow::Pipeline.visit_latest_pipeline

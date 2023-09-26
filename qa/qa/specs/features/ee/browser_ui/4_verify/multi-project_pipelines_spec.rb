@@ -22,7 +22,7 @@ module QA
 
         Flow::Login.sign_in
         upstream_project.visit!
-        Flow::Pipeline.visit_latest_pipeline(status: 'passed')
+        Flow::Pipeline.visit_latest_pipeline(status: 'Passed')
       end
 
       after do
