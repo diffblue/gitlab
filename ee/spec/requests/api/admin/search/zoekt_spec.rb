@@ -65,7 +65,9 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
 
   describe 'GET /admin/zoekt/shards' do
     let(:path) { '/admin/zoekt/shards' }
-    let!(:another_shard) { ::Zoekt::Shard.create!(index_base_url: 'http://111.111.111.111/', search_base_url: 'http://111.111.111.112/') }
+    let!(:another_shard) do
+      create(:zoekt_shard, index_base_url: 'http://111.111.111.111/', search_base_url: 'http://111.111.111.112/')
+    end
 
     it_behaves_like "GET request permissions for admin mode"
     it_behaves_like "an API that returns 401 for unauthenticated requests", :get
@@ -91,13 +93,17 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
 
   describe 'GET /admin/zoekt/shards/:shard_id/indexed_namespaces' do
     let(:path) { "/admin/zoekt/shards/#{shard_id}/indexed_namespaces" }
+    let!(:indexed_namespace) { create(:zoekt_indexed_namespace, shard: shard, namespace: namespace) }
+    let!(:another_shard) do
+      create(:zoekt_shard, index_base_url: 'http://111.111.111.198/', search_base_url: 'http://111.111.111.199/')
+    end
 
-    let!(:indexed_namespace) { ::Zoekt::IndexedNamespace.create!(shard: shard, namespace: namespace) }
-    let!(:another_indexed_namespace) { ::Zoekt::IndexedNamespace.create!(shard: shard, namespace: create(:namespace)) }
-
-    let!(:another_shard) { ::Zoekt::Shard.create!(index_base_url: 'http://111.111.111.198/', search_base_url: 'http://111.111.111.199/') }
     let!(:indexed_namespace_for_another_shard) do
-      ::Zoekt::IndexedNamespace.create!(shard: another_shard, namespace: create(:namespace))
+      create(:zoekt_indexed_namespace, shard: another_shard, namespace: create(:namespace))
+    end
+
+    let!(:another_indexed_namespace) do
+      create(:zoekt_indexed_namespace, shard: shard, namespace: create(:namespace))
     end
 
     it_behaves_like "GET request permissions for admin mode"
@@ -159,7 +165,7 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
 
     context 'when it already exists' do
       it 'returns the existing one' do
-        id = ::Zoekt::IndexedNamespace.create!(shard: shard, namespace: namespace).id
+        id = create(:zoekt_indexed_namespace, shard: shard, namespace: namespace).id
 
         put api(path, admin, admin_mode: true)
 
@@ -184,7 +190,7 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
     let(:path) { "/admin/zoekt/shards/#{shard_id}/indexed_namespaces/#{namespace_id}" }
 
     before do
-      ::Zoekt::IndexedNamespace.create!(shard: shard, namespace: namespace)
+      create(:zoekt_indexed_namespace, shard: shard, namespace: namespace)
     end
 
     it_behaves_like "DELETE request permissions for admin mode"

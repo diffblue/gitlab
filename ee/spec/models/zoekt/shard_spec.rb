@@ -9,8 +9,8 @@ RSpec.describe ::Zoekt::Shard, feature_category: :global_search do
   let(:shard) { described_class.create!(index_base_url: 'http://example.com:1234/', search_base_url: 'http://example.com:4567/') }
 
   before do
-    Zoekt::IndexedNamespace.create!(shard: shard, namespace: indexed_namespace1)
-    Zoekt::IndexedNamespace.create!(shard: shard, namespace: indexed_namespace2)
+    create(:zoekt_indexed_namespace, shard: shard, namespace: indexed_namespace1)
+    create(:zoekt_indexed_namespace, shard: shard, namespace: indexed_namespace2)
   end
 
   it 'has many indexed_namespaces' do
