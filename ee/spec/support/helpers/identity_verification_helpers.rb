@@ -57,6 +57,20 @@ module IdentityVerificationHelpers
     click_button s_('IdentityVerification|Verify email address')
   end
 
+  def confirmation_code
+    mail = find_email_for(user)
+    expect(mail.to).to match_array([user.email])
+    expect(mail.subject).to eq(s_('IdentityVerification|Confirm your email address'))
+    code = mail.body.parts.first.to_s[/\d{#{Users::EmailVerification::GenerateTokenService::TOKEN_LENGTH}}/o]
+    reset_delivered_emails!
+    code
+  end
+
+  def verify_code(code)
+    fill_in 'verification_code', with: code
+    click_button s_('IdentityVerification|Verify email address')
+  end
+
   def expect_to_see_identity_verification_page
     expect(page).to have_content(s_("IdentityVerification|For added security, you'll need to verify your identity"))
   end
