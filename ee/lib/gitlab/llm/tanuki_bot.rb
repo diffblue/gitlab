@@ -32,16 +32,48 @@ module Gitlab
         enabled_for?(user: user)
       end
 
-      # Note: a Rake task is using this class method to extract embeddings for a test fixture.
-      def self.embedding_for_question(openai_client, question)
-        embeddings_result = openai_client.embeddings(input: question, moderated: false)
-
-        embeddings_result['data'].first["embedding"]
+      def initialize(current_user:, question:, logger: nil, tracking_context: {})
+        @current_user = current_user
+        @question = question
+        @logger = logger || Gitlab::Llm::Logger.build
+        @correlation_id = Labkit::Correlation::CorrelationId.current_id
+        @tracking_context = tracking_context
       end
 
-      # Note: a Rake task is using this class method to extract embeddings for a test fixture.
-      def self.get_nearest_neighbors(embedding)
-        ::Embedding::TanukiBotMvc.current.neighbor_for(
+      def execute
+        return empty_response unless question.present?
+        return empty_response unless self.class.enabled_for?(user: current_user)
+
+        unless embeddings_model_class.any?
+          logger.debug(message: "Need to query docs but no embeddings are found")
+          return empty_response
+        end
+
+        embedding = embedding_for_question(question)
+        return empty_response if embedding.nil?
+
+        search_documents = get_nearest_neighbors(embedding)
+        return empty_response if search_documents.empty?
+
+        get_completions(search_documents)
+      end
+
+      # Note: a Rake task is using this method to extract embeddings for a test fixture.
+      def embedding_for_question(question)
+        if Feature.enabled?(:use_embeddings_with_vertex, current_user)
+          embeddings_result = vertex_client.text_embeddings(content: question)
+
+          embeddings_result['predictions'].first['embeddings']['values']
+        else
+          embeddings_result = openai_client.embeddings(input: question, moderated: false)
+
+          embeddings_result['data'].first["embedding"]
+        end
+      end
+
+      # Note: a Rake task is using this method to extract embeddings for a test fixture.
+      def get_nearest_neighbors(embedding)
+        embeddings_model_class.current.neighbor_for(
           embedding,
           limit: RECORD_LIMIT
         ).map do |item|
@@ -55,35 +87,25 @@ module Gitlab
         end
       end
 
-      def initialize(current_user:, question:, logger: nil, tracking_context: {})
-        @current_user = current_user
-        @question = question
-        @logger = logger || Gitlab::Llm::Logger.build
-        @correlation_id = Labkit::Correlation::CorrelationId.current_id
-        @tracking_context = tracking_context
-      end
-
-      def execute
-        return empty_response unless question.present?
-        return empty_response unless self.class.enabled_for?(user: current_user)
-
-        unless ::Embedding::TanukiBotMvc.any?
-          logger.debug(message: "Need to query docs but no embeddings are found")
-          return empty_response
-        end
-
-        embedding = self.class.embedding_for_question(openai_client, question)
-        return empty_response if embedding.nil?
-
-        search_documents = self.class.get_nearest_neighbors(embedding)
-        return empty_response if search_documents.empty?
-
-        get_completions(search_documents)
-      end
-
       private
 
       attr_reader :current_user, :question, :logger, :correlation_id, :tracking_context
+
+      def embeddings_model_class
+        if Feature.enabled?(:use_embeddings_with_vertex, current_user)
+          ::Embedding::Vertex::GitlabDocumentation
+        else
+          ::Embedding::TanukiBotMvc
+        end
+      end
+
+      def vertex_client
+        @vertex_client ||= ::Gitlab::Llm::VertexAi::Client.new(current_user, tracking_context: tracking_context)
+      end
+
+      def anthropic_client
+        @anthropic_client ||= ::Gitlab::Llm::Anthropic::Client.new(current_user, tracking_context: tracking_context)
+      end
 
       def openai_client
         @openai_client ||= ::Gitlab::Llm::OpenAi::Client.new(
@@ -93,15 +115,11 @@ module Gitlab
         )
       end
 
-      def client
-        @client ||= ::Gitlab::Llm::Anthropic::Client.new(current_user, tracking_context: tracking_context)
-      end
-
       def get_completions(search_documents)
         final_prompt = Gitlab::Llm::Anthropic::Templates::TanukiBot
           .final_prompt(question: question, documents: search_documents)
 
-        final_prompt_result = client.complete(
+        final_prompt_result = anthropic_client.complete(
           prompt: final_prompt[:prompt],
           options: {
             model: "claude-instant-1.1"
@@ -119,7 +137,7 @@ module Gitlab
           message: 'Final prompt request'
         })
 
-        Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(final_prompt_result.body)
+        Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(final_prompt_result.body, current_user)
       end
 
       def empty_response
