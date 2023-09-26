@@ -68,10 +68,7 @@ export default {
       default: PQL_BUTTON_TEXT,
     },
     ctaTracking: {
-      default: {
-        action: 'click_button',
-        label: PQL_BUTTON_TEXT,
-      },
+      default: {},
     },
   },
   data() {

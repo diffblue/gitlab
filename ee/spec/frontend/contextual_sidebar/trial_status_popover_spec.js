@@ -35,6 +35,8 @@ describe('TrialStatusPopover component', () => {
           targetId: 'target-element-identifier',
           createHandRaiseLeadPath: '/-/subscriptions/hand_raise_leads',
           trialEndDate: new Date('2021-02-21'),
+          trackAction: trackingEvents.contactSalesBtnClick.action,
+          trackLabel: trackingEvents.contactSalesBtnClick.label,
           user: {
             namespaceId: 'namespaceId',
             userName: 'userName',
@@ -102,6 +104,18 @@ describe('TrialStatusPopover component', () => {
   });
 
   it('tracks when the contact sales button is clicked', async () => {
+    expect(wrapper.findByTestId('contact-sales-block').attributes()).toMatchObject({
+      'data-create-hand-raise-lead-path': '/-/subscriptions/hand_raise_leads',
+      'data-namespace-id': 'namespaceId',
+      'data-user-name': 'userName',
+      'data-first-name': 'firstName',
+      'data-last-name': 'lastName',
+      'data-company-name': 'companyName',
+      'data-glm-content': 'glmContent',
+      'data-track-action': trackingEvents.contactSalesBtnClick.action,
+      'data-track-label': trackingEvents.contactSalesBtnClick.label,
+    });
+
     await wrapper.findByTestId('contact-sales-btn').trigger('click');
 
     expectTracking(trackingEvents.activeTrialCategory, trackingEvents.contactSalesBtnClick);
