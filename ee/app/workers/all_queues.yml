@@ -471,6 +471,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: cronjob:okrs_checkin_reminder_emails_cron
+  :worker_name: Okrs::CheckinReminderEmailsCronWorker
+  :feature_category: :team_planning
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: false
+  :tags: []
 - :name: cronjob:open_ai_clear_conversations
   :worker_name: OpenAi::ClearConversationsWorker
   :feature_category: :ai_abstraction_layer

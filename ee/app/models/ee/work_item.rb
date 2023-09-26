@@ -11,6 +11,25 @@ module EE
       has_one :progress, class_name: 'WorkItems::Progress', foreign_key: 'issue_id', inverse_of: :work_item
 
       delegate :reminder_frequency, to: :progress, allow_nil: true
+
+      scope :with_reminder_frequency, ->(frequency) {
+                                        joins(:progress).where(work_item_progresses: { reminder_frequency: frequency })
+                                      }
+      scope :without_parent, -> {
+                               where("NOT EXISTS (SELECT FROM work_item_parent_links WHERE work_item_id = issues.id)")
+                             }
+      scope :with_assignees, -> { joins(:issue_assignees).includes(:assignees) }
+      scope :with_descendents_of, ->(ids) {
+                                    joins(:work_item_parent).where(work_item_parent_links: { work_item_parent_id: ids })
+                                  }
+      scope :with_previous_reminder_sent_before, ->(datetime) do
+        left_joins(:progress).where(
+          "work_item_progresses.last_reminder_sent_at IS NULL
+          OR work_item_progresses.last_reminder_sent_at <= ?",
+          datetime
+        )
+      end
+      scope :grouped_by_work_item, -> { group(:id) }
     end
 
     LICENSED_WIDGETS = {
