@@ -120,6 +120,7 @@ Lint/UnusedMethodArgument:
     - 'app/models/group.rb'
     - 'app/models/integrations/bamboo.rb'
     - 'app/models/integrations/buildkite.rb'
+    - 'app/models/integrations/diffblue_cover.rb'
     - 'app/models/integrations/discord.rb'
     - 'app/models/integrations/ewm.rb'
     - 'app/models/integrations/hangouts_chat.rb'

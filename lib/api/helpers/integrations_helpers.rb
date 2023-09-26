@@ -350,6 +350,26 @@ module API
               desc: 'Custom tags in Datadog. Specify one tag per line in the format: "key:value\nkey2:value2"'
             }
           ],
+          'diffblue-cover' => [
+            {
+              required: true,
+              name: :token,
+              type: String,
+              desc: 'Diffblue Cover project GitLab token'
+            },
+            {
+              required: true,
+              name: :project_url,
+              type: String,
+              desc: 'The Diffblue Cover pipeline URL'
+            },
+            {
+              required: false,
+              name: :enable_ssl_verification,
+              type: ::Grape::API::Boolean,
+              desc: 'DEPRECATED: This parameter has no effect since SSL verification will always be enabled'
+            }
+          ],
           'discord' => [
             {
               required: true,
@@ -968,6 +988,7 @@ module API
           ::Integrations::Confluence,
           ::Integrations::CustomIssueTracker,
           ::Integrations::Datadog,
+          ::Integrations::DiffblueCover,
           ::Integrations::Discord,
           ::Integrations::DroneCi,
           ::Integrations::EmailsOnPush,
