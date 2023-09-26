@@ -26,11 +26,6 @@ export default {
     humanizedRules() {
       return humanizeRules(this.policy.rules);
     },
-    policyEditPath() {
-      return `/${this.policyPath}/-/security/policies/${encodeURIComponent(
-        this.policy.name,
-      )}/edit?type=scan_result_policy`;
-    },
     policyHasNamespace() {
       return policyHasNamespace(this.policy?.source);
     },
@@ -66,7 +61,7 @@ export default {
           </ul>
         </div>
         <div v-if="policyHasNamespace" class="gl-text-right">
-          <gl-link :href="policyEditPath" target="_blank">
+          <gl-link :href="policy.editPath" target="_blank">
             {{ $options.i18n.policyDetails }}
           </gl-link>
         </div>
