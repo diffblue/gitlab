@@ -17,6 +17,7 @@ query groupVulnerabilities(
   $sort: VulnerabilitySort
   $hasIssues: Boolean
   $hasResolution: Boolean
+  $hasMergeRequest: Boolean
   $vetEnabled: Boolean = false
   $clusterAgentId: [ClustersAgentID!]
 ) {
@@ -37,6 +38,7 @@ query groupVulnerabilities(
       sort: $sort
       hasIssues: $hasIssues
       hasResolution: $hasResolution
+      hasMergeRequest: $hasMergeRequest
       clusterAgentId: $clusterAgentId
     ) {
       nodes {
