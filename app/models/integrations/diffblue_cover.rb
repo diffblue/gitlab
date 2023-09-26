@@ -9,25 +9,6 @@ module Integrations
 
     ENDPOINT = "https://diffblue.com"
 
-    field :project_url,
-      title: -> { _('Pipeline URL') },
-      placeholder: "#{ENDPOINT}/example-org/test-pipeline",
-      exposes_secrets: true,
-      required: true
-
-    field :token,
-      type: :password,
-      title: -> { _('Token') },
-      help: -> do
-        s_('ProjectService|The token you get after you create a Buildkite pipeline with a GitLab repository.')
-      end,
-      non_empty_password_title: -> { s_('ProjectService|Enter new token') },
-      non_empty_password_help: -> { s_('ProjectService|Leave blank to use your current token.') },
-      required: true
-
-    validates :project_url, presence: true, public_url: true, if: :activated?
-    validates :token, presence: true, if: :activated?
-
     def title
       'Diffblue Cover'
     end
