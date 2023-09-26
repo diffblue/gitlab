@@ -17,18 +17,45 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
 
   let(:current_user) { nil }
   let(:requested_user) { current_user }
-  let(:subscribe) { get_subscription(requested_user, params) }
   let(:ai_completion_response) { graphql_dig_at(graphql_data(response[:result]), :ai_completion_response) }
   let(:request_id) { 'uuid' }
   let(:content) { "Some AI response #{external_issue_url}+" }
+  let(:extras) { { sources: [{ source_url: 'foo', source_some_metadata: 'bar' }] }.deep_stringify_keys }
+  let(:params) { { user_id: current_user&.to_gid, resource_id: resource.to_gid, client_subscription_id: 'id' } }
   let(:content_html) do
     "<p data-sourcepos=\"1:1-1:#{content.size}\" dir=\"auto\">Some AI response " \
       "<a href=\"#{external_issue_url}+\">#{external_issue_url}+</a></p>"
   end
 
-  let(:extras) { { sources: [{ source_url: 'foo', source_some_metadata: 'bar' }] }.deep_stringify_keys }
+  let(:subscription_query) do
+    <<~SUBSCRIPTION
+      subscription {
+        aiCompletionResponse(#{subscription_arguments}) {
+          content
+          contentHtml
+          role
+          requestId
+          errors
+          chunkId
+          extras {
+            sources
+          }
+        }
+      }
+    SUBSCRIPTION
+  end
 
-  let(:params) { { user_id: current_user&.to_gid, resource_id: resource.to_gid, client_subscription_id: 'id' } }
+  let(:subscribe) do
+    mock_channel = Graphql::Subscriptions::ActionCable::MockActionCable.get_mock_channel
+
+    GitlabSchema.execute(subscription_query, context: { current_user: current_user, channel: mock_channel })
+
+    mock_channel
+  end
+
+  let(:subscription_arguments) do
+    build_arguments(params.merge(user_id: requested_user&.to_gid))
+  end
 
   before do
     stub_const('GitlabSchema', Graphql::Subscriptions::ActionCable::MockGitlabSchema)
@@ -118,33 +145,19 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :duo_cha
 
       it_behaves_like 'on success'
     end
-  end
 
-  def get_subscription(requested_user, params)
-    mock_channel = Graphql::Subscriptions::ActionCable::MockActionCable.get_mock_channel
-    query = build_subscription_query(requested_user, params)
+    context 'when ai_action is null' do
+      let(:params) { { user_id: current_user.to_gid, ai_action: nil } }
 
-    GitlabSchema.execute(query, context: { current_user: current_user, channel: mock_channel })
+      it_behaves_like 'on success'
+    end
 
-    mock_channel
-  end
+    context 'when ai_action is set' do
+      let(:params) { { user_id: current_user.to_gid, ai_action: 'chat' } }
+      let(:subscription_arguments) { "userId: \"#{current_user.to_gid}\", aiAction: CHAT" }
 
-  def build_subscription_query(requested_user, params)
-    <<~SUBSCRIPTION
-      subscription {
-        aiCompletionResponse(#{build_arguments(params.merge(user_id: requested_user&.to_gid))}) {
-          content
-          contentHtml
-          role
-          requestId
-          errors
-          chunkId
-          extras {
-            sources
-          }
-        }
-      }
-    SUBSCRIPTION
+      it_behaves_like 'on success'
+    end
   end
 
   def build_arguments(params)

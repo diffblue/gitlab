@@ -136,6 +136,20 @@ module Gitlab
                 options: { cache_response: false, role: ::Gitlab::Llm::ChatMessage::ROLE_SYSTEM,
                            type: RESPONSE_TYPE_TOOL }
               )
+
+              # We need to stream the response for clients that already migrated to use `ai_action` and no longer
+              # use `resource_id` as an identifier. Once streaming is enabled and all clients migrated, we can
+              # remove the `response_handler` call above.
+              return unless stream_response_handler && Feature.enabled?(:stream_gitlab_duo, context.current_user)
+
+              stream_response_handler.execute(
+                response: Gitlab::Llm::Chain::ToolResponseModifier.new(tool_class),
+                options: {
+                  cache_response: false,
+                  role: ::Gitlab::Llm::ChatMessage::ROLE_SYSTEM,
+                  type: RESPONSE_TYPE_TOOL
+                }
+              )
             end
 
             def prompt_version

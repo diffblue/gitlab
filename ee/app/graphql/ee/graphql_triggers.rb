@@ -7,7 +7,8 @@ module EE
     prepended do
       def self.ai_completion_response(subscription_arguments, response)
         ::GitlabSchema.subscriptions.trigger(
-          :ai_completion_response, subscription_arguments.slice(:user_id, :resource_id, :client_subscription_id),
+          :ai_completion_response,
+          subscription_arguments.slice(:user_id, :resource_id, :client_subscription_id, :ai_action),
           response
         )
       end
