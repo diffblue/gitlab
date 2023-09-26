@@ -19,6 +19,16 @@ module EE
       super || (todo.target.is_a?(Epic) && todo.target.state == 'closed')
     end
 
+    override :todo_target_path_anchor
+    def todo_target_path_anchor(todo)
+      if todo.review_requested? && summarize_llm_enabled?(todo.target.project, current_user) &&
+          diff_llm_summary(todo.target).present?
+        return "diff-summary"
+      end
+
+      super
+    end
+
     def todo_groups_requiring_saml_reauth(todos)
       groups = todos.filter_map { |todo| todo.group || todo.project.group }.uniq
 
