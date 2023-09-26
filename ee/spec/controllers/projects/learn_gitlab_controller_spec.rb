@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::LearnGitlabController, feature_category: :onboarding do
+RSpec.describe Projects::LearnGitlabController, :saas, feature_category: :onboarding do
   let_it_be(:user) { create(:user) }
   let_it_be(:namespace) { create(:group) }
   let_it_be(:project) { create(:project, namespace: namespace) }
@@ -31,6 +31,14 @@ RSpec.describe Projects::LearnGitlabController, feature_category: :onboarding do
         end
 
         it { is_expected.to render_template(:show) }
+
+        context 'when not on gitlab.com' do
+          before do
+            allow(::Gitlab).to receive(:com?).and_return(false)
+          end
+
+          it { is_expected.to have_gitlab_http_status(:not_found) }
+        end
       end
 
       context 'when learn_gitlab is not available' do
@@ -62,6 +70,14 @@ RSpec.describe Projects::LearnGitlabController, feature_category: :onboarding do
         onboarding
 
         expect(cookies[:confetti_post_signup]).to eq('true')
+      end
+
+      context 'when not on gitlab.com' do
+        before do
+          allow(::Gitlab).to receive(:com?).and_return(false)
+        end
+
+        it { is_expected.to have_gitlab_http_status(:not_found) }
       end
     end
 
