@@ -51,6 +51,22 @@ describe('utils', () => {
         search: 'test',
       });
     });
+
+    it('should add the default period filter if not specified', () => {
+      const url = 'http://example.com/';
+      urlQueryToFilter.mockReturnValue({});
+
+      const filterObj = queryToFilterObj(url);
+
+      expect(filterObj).toEqual({
+        period: [{ operator: '=', value: '1h' }],
+        service: null,
+        operation: null,
+        traceId: null,
+        durationMs: null,
+        search: undefined,
+      });
+    });
   });
 
   describe('filterObjToQuery', () => {
@@ -135,6 +151,22 @@ describe('utils', () => {
         traceId: 'my_trace_id',
         durationMs: '500',
         search: 'test',
+      });
+    });
+
+    it('should add the default period filter it not specified', () => {
+      const mockTokens = [];
+      processFilters.mockReturnValue({});
+
+      const filterObj = filterTokensToFilterObj(mockTokens);
+
+      expect(filterObj).toEqual({
+        period: [{ operator: '=', value: '1h' }],
+        service: undefined,
+        operation: undefined,
+        traceId: undefined,
+        durationMs: undefined,
+        search: undefined,
       });
     });
   });
