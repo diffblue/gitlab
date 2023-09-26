@@ -9,9 +9,6 @@ export default {
     state.paginationData.page = 1;
     state.searchFilter = search;
   },
-  [types.SET_PAGE](state, page) {
-    state.paginationData.page = page;
-  },
   [types.REQUEST_REPLICABLE_ITEMS](state) {
     state.isLoading = true;
   },

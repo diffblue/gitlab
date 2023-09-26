@@ -1,13 +1,7 @@
-import Api from 'ee/api';
 import { createAlert } from '~/alert';
-import {
-  parseIntPagination,
-  normalizeHeaders,
-  convertObjectPropsToCamelCase,
-} from '~/lib/utils/common_utils';
 import { s__, __, sprintf } from '~/locale';
 import toast from '~/vue_shared/plugins/global_toast';
-import { FILTER_STATES, PREV, NEXT, DEFAULT_PAGE_SIZE } from '../constants';
+import { PREV, NEXT, DEFAULT_PAGE_SIZE } from '../constants';
 import buildReplicableTypeQuery from '../graphql/replicable_type_query_builder';
 import replicableTypeUpdateMutation from '../graphql/replicable_type_update_mutation.graphql';
 import replicableTypeBulkUpdateMutation from '../graphql/replicable_type_bulk_update_mutation.graphql';
@@ -30,12 +24,6 @@ export const receiveReplicableItemsError = ({ state, commit }) => {
 export const fetchReplicableItems = ({ state, dispatch }, direction) => {
   dispatch('requestReplicableItems');
 
-  return state.useGraphQl
-    ? dispatch('fetchReplicableItemsGraphQl', direction)
-    : dispatch('fetchReplicableItemsRestful');
-};
-
-export const fetchReplicableItemsGraphQl = ({ state, dispatch }, direction) => {
   let before = '';
   let after = '';
 
@@ -81,28 +69,6 @@ export const fetchReplicableItemsGraphQl = ({ state, dispatch }, direction) => {
     });
 };
 
-export const fetchReplicableItemsRestful = ({ state, dispatch }) => {
-  const { statusFilter, searchFilter, paginationData } = state;
-
-  const query = {
-    page: paginationData.page,
-    search: searchFilter || null,
-    sync_status: statusFilter === FILTER_STATES.ALL.value ? null : statusFilter,
-  };
-
-  Api.getGeoReplicableItems(state.replicableType, query)
-    .then((res) => {
-      const normalizedHeaders = normalizeHeaders(res.headers);
-      const pagination = parseIntPagination(normalizedHeaders);
-      const data = convertObjectPropsToCamelCase(res.data, { deep: true });
-
-      dispatch('receiveReplicableItemsSuccess', { data, pagination });
-    })
-    .catch(() => {
-      dispatch('receiveReplicableItemsError');
-    });
-};
-
 // Initiate All Replicable Action
 export const requestInitiateAllReplicableAction = ({ commit }) =>
   commit(types.REQUEST_INITIATE_ALL_REPLICABLE_ACTION);
@@ -135,12 +101,6 @@ export const receiveInitiateAllReplicableActionError = ({ getters, commit }, { a
 export const initiateAllReplicableAction = ({ state, dispatch }, { action }) => {
   dispatch('requestInitiateAllReplicableAction');
 
-  return state.useGraphQl
-    ? dispatch('initiateAllReplicableActionGraphQl', { action })
-    : dispatch('initiateAllReplicableActionRestful', { action });
-};
-
-export const initiateAllReplicableActionGraphQl = ({ state, dispatch }, { action }) => {
   const client = getGraphqlClient(state.geoCurrentSiteId, state.geoTargetSiteId);
 
   client
@@ -151,14 +111,6 @@ export const initiateAllReplicableActionGraphQl = ({ state, dispatch }, { action
         registryClass: state.graphqlMutationRegistryClass,
       },
     })
-    .then(() => dispatch('receiveInitiateAllReplicableActionSuccess', { action }))
-    .catch(() => {
-      dispatch('receiveInitiateAllReplicableActionError', { action });
-    });
-};
-
-export const initiateAllReplicableActionRestful = ({ state, dispatch }, { action }) => {
-  Api.initiateAllGeoReplicableSyncs(state.replicableType, action)
     .then(() => dispatch('receiveInitiateAllReplicableActionSuccess', { action }))
     .catch(() => {
       dispatch('receiveInitiateAllReplicableActionError', { action });
@@ -183,15 +135,6 @@ export const receiveInitiateReplicableActionError = ({ commit }, { name }) => {
 export const initiateReplicableAction = ({ state, dispatch }, { registryId, name, action }) => {
   dispatch('requestInitiateReplicableAction');
 
-  return state.useGraphQl
-    ? dispatch('initiateReplicableActionGraphQl', { registryId, name, action })
-    : dispatch('initiateReplicableActionRestful', { registryId, name, action });
-};
-
-export const initiateReplicableActionGraphQl = (
-  { state, dispatch },
-  { registryId, name, action },
-) => {
   const client = getGraphqlClient(state.geoCurrentSiteId, state.geoTargetSiteId);
 
   client
@@ -209,17 +152,6 @@ export const initiateReplicableActionGraphQl = (
     });
 };
 
-export const initiateReplicableActionRestful = (
-  { state, dispatch },
-  { registryId, name, action },
-) => {
-  Api.initiateGeoReplicableSync(state.replicableType, { projectId: registryId, action })
-    .then(() => dispatch('receiveInitiateReplicableActionSuccess', { name, action }))
-    .catch(() => {
-      dispatch('receiveInitiateReplicableActionError', { name });
-    });
-};
-
 // Filtering/Pagination
 export const setStatusFilter = ({ commit }, filter) => {
   commit(types.SET_STATUS_FILTER, filter);
@@ -227,8 +159,4 @@ export const setStatusFilter = ({ commit }, filter) => {
 
 export const setSearch = ({ commit }, search) => {
   commit(types.SET_SEARCH, search);
-};
-
-export const setPage = ({ commit }, page) => {
-  commit(types.SET_PAGE, page);
 };
