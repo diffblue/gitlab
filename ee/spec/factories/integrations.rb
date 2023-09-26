@@ -6,5 +6,6 @@ FactoryBot.define do
     type { 'Integrations::Github' }
     active { true }
     token { 'github-token' }
+    repository_url { 'https://github.com/owner/repository' }
   end
 end
