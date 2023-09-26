@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
 import { GlToggle } from '@gitlab/ui';
 import Vue from 'vue';
@@ -6,15 +7,24 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import CodeSuggestionsAddonAssignment from 'ee/usage_quotas/code_suggestions/components/code_suggestions_addon_assignment.vue';
 import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
+import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/add_on_eligible_users.query.graphql';
 import userAddOnAssignmentCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_create.mutation.graphql';
 import userAddOnAssignmentRemoveMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_remove.mutation.graphql';
+import {
+  mockAddOnEligibleUsers,
+  mockUserWithAddOnAssignment,
+  mockUserWithNoAddOnAssignment,
+} from 'ee_jest/usage_quotas/code_suggestions/mock_data';
 
 Vue.use(VueApollo);
+
+jest.mock('@sentry/browser');
 
 describe('CodeSuggestionsAddonAssignment', () => {
   let wrapper;
 
-  const userId = 'gid://gitlab/User/1';
+  const userIdForAssignment = mockUserWithNoAddOnAssignment.id;
+  const userIdForUnassignment = mockUserWithAddOnAssignment.id;
   const addOnPurchaseId = 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/2';
   const codeSuggestionsAddOn = { addOnPurchase: { name: ADD_ON_CODE_SUGGESTIONS } };
   const addOnPurchase = {
@@ -23,53 +33,101 @@ describe('CodeSuggestionsAddonAssignment', () => {
     purchasedQuantity: 3,
     assignedQuantity: 2,
   };
-  const addOnAssignmentSuccess = { clientMutationId: '1', errors: [], addOnPurchase };
+  const addOnEligibleUsersQueryVariables = {
+    fullPath: 'namespace/full-path',
+    addOnType: 'CODE_SUGGESTIONS',
+    addOnPurchaseIds: [addOnPurchaseId],
+  };
+  const addOnAssignmentSuccess = {
+    clientMutationId: '1',
+    errors: [],
+    addOnPurchase,
+    user: {
+      id: userIdForAssignment,
+      addOnAssignments: {
+        nodes: codeSuggestionsAddOn,
+      },
+    },
+  };
+  const addOnUnassignmentSuccess = {
+    clientMutationId: '1',
+    errors: [],
+    addOnPurchase,
+    user: {
+      id: userIdForUnassignment,
+      addOnAssignments: { nodes: [] },
+    },
+  };
   const knownAddOnAssignmentError = {
     clientMutationId: '1',
     errors: ['NO_SEATS_AVAILABLE'],
-    addOnPurchase,
+    addOnPurchase: null,
+    user: null,
   };
   const unknownAddOnAssignmentError = {
     clientMutationId: '1',
     errors: ['AN_ERROR'],
-    addOnPurchase,
+    addOnPurchase: null,
+    user: null,
   };
   const nonStringAddOnAssignmentError = {
     clientMutationId: '1',
     errors: [null],
-    addOnPurchase,
+    addOnPurchase: null,
+    user: null,
   };
 
   const assignAddOnHandler = jest.fn().mockResolvedValue({
     data: { userAddOnAssignmentCreate: addOnAssignmentSuccess },
   });
   const unassignAddOnHandler = jest.fn().mockResolvedValue({
-    data: { userAddOnAssignmentRemove: addOnAssignmentSuccess },
+    data: { userAddOnAssignmentRemove: addOnUnassignmentSuccess },
   });
 
-  const createMockApolloProvider = (addonAssignmentCreateHandler, addOnAssignmentRemoveHandler) =>
-    createMockApollo([
+  const createMockApolloProvider = (addonAssignmentCreateHandler, addOnAssignmentRemoveHandler) => {
+    const mockApollo = createMockApollo([
       [userAddOnAssignmentCreateMutation, addonAssignmentCreateHandler],
       [userAddOnAssignmentRemoveMutation, addOnAssignmentRemoveHandler],
     ]);
+
+    // Needed to check if cache update is successful on successful mutation
+    mockApollo.clients.defaultClient.cache.writeQuery({
+      query: getAddOnEligibleUsers,
+      variables: addOnEligibleUsersQueryVariables,
+      data: mockAddOnEligibleUsers.data,
+    });
+
+    return mockApollo;
+  };
+
+  let mockApolloClient;
 
   const createComponent = ({
     props = {},
     addonAssignmentCreateHandler = assignAddOnHandler,
     addOnAssignmentRemoveHandler = unassignAddOnHandler,
   }) => {
+    mockApolloClient = createMockApolloProvider(
+      addonAssignmentCreateHandler,
+      addOnAssignmentRemoveHandler,
+    );
     wrapper = shallowMount(CodeSuggestionsAddonAssignment, {
-      apolloProvider: createMockApolloProvider(
-        addonAssignmentCreateHandler,
-        addOnAssignmentRemoveHandler,
-      ),
+      apolloProvider: mockApolloClient,
       propsData: {
         addOnAssignments: [],
-        userId,
+        userId: userIdForAssignment,
         addOnPurchaseId,
+        addOnEligibleUsersQueryVariables,
         ...props,
       },
     });
+  };
+
+  const getAddOnAssignmentStatusForUserFromCache = (userId) => {
+    return mockApolloClient.clients.defaultClient.cache
+      .readQuery({ query: getAddOnEligibleUsers, variables: addOnEligibleUsersQueryVariables })
+      .namespace.addOnEligibleUsers.edges.find((edge) => edge.node.id === userId).node
+      .addOnAssignments.nodes;
   };
 
   const findToggle = () => wrapper.findComponent(GlToggle);
@@ -98,7 +156,7 @@ describe('CodeSuggestionsAddonAssignment', () => {
   describe('when assigning an addon', () => {
     beforeEach(() => {
       createComponent({
-        props: { addOnAssignments: [] },
+        props: { addOnAssignments: [], userId: userIdForAssignment },
       });
       findToggle().vm.$emit('change', true);
     });
@@ -107,10 +165,12 @@ describe('CodeSuggestionsAddonAssignment', () => {
       expect(findToggle().props('isLoading')).toBe(true);
     });
 
-    it('turns the toggle on', async () => {
+    it('updates the cache with latest add-on assignment status', async () => {
       await waitForPromises();
 
-      expect(findToggle().props('value')).toBe(true);
+      expect(getAddOnAssignmentStatusForUserFromCache(userIdForAssignment)).toEqual(
+        codeSuggestionsAddOn,
+      );
     });
 
     it('does not show loading state once updated', async () => {
@@ -121,10 +181,8 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
     it('calls addon assigment mutation with appropriate params', () => {
       expect(assignAddOnHandler).toHaveBeenCalledWith({
-        input: {
-          addOnPurchaseId,
-          userId,
-        },
+        addOnPurchaseId,
+        userId: userIdForAssignment,
       });
     });
 
@@ -189,12 +247,25 @@ describe('CodeSuggestionsAddonAssignment', () => {
 
       expect(wrapper.emitted('handleAddOnAssignmentError')).toEqual([['CANNOT_ASSIGN_ADDON']]);
     });
+
+    it('captures error on Sentry for generic errors', async () => {
+      const error = new Error('An error');
+      createComponent({
+        props: { addOnAssignments },
+        addonAssignmentCreateHandler: jest.fn().mockRejectedValue(error),
+      });
+      findToggle().vm.$emit('change', true);
+
+      await waitForPromises();
+
+      expect(Sentry.captureException).toHaveBeenCalledWith(error);
+    });
   });
 
   describe('when un-assigning an addon', () => {
     beforeEach(() => {
       createComponent({
-        props: { addOnAssignments: [codeSuggestionsAddOn] },
+        props: { addOnAssignments: [codeSuggestionsAddOn], userId: userIdForUnassignment },
       });
       findToggle().vm.$emit('change', false);
     });
@@ -203,10 +274,10 @@ describe('CodeSuggestionsAddonAssignment', () => {
       expect(findToggle().props('isLoading')).toBe(true);
     });
 
-    it('turns the toggle off', async () => {
+    it('updates the cache with latest add-on assignment status', async () => {
       await waitForPromises();
 
-      expect(findToggle().props('value')).toBe(false);
+      expect(getAddOnAssignmentStatusForUserFromCache(userIdForUnassignment)).toEqual([]);
     });
 
     it('does not show loading state once updated', async () => {
@@ -215,12 +286,10 @@ describe('CodeSuggestionsAddonAssignment', () => {
       expect(findToggle().props('isLoading')).toBe(false);
     });
 
-    it('calls addon assigment mutation with appropriate params', () => {
+    it('calls addon un-assigment mutation with appropriate params', () => {
       expect(unassignAddOnHandler).toHaveBeenCalledWith({
-        input: {
-          addOnPurchaseId,
-          userId,
-        },
+        addOnPurchaseId,
+        userId: userIdForUnassignment,
       });
     });
 
