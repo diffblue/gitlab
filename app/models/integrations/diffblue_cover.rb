@@ -3,11 +3,11 @@
 require "addressable/uri"
 
 module Integrations
-  class DiffblueCover < BaseCi
+  class DiffblueCover < Integration
     include HasWebHook
     include ReactivelyCached
 
-    ENDPOINT = "https://diffblue.com"
+    ENDPOINT = "https://ci.diffblue.com/gitlab"
 
     def title
       'Diffblue Cover'
@@ -30,7 +30,7 @@ module Integrations
     end
 
     def self.supported_events
-      %w[push merge_request tag_push]
+      %w[pipeline push merge_request tag_push]
     end
 
     # This is a stub method to work with deprecated API response
@@ -51,7 +51,7 @@ module Integrations
 
     override :hook_url
     def hook_url
-      "#{buildkite_endpoint('webhook')}/deliver/{webhook_token}"
+      "#{ENDPOINT}/deliver/{webhook_token}"
     end
 
     def url_variables
@@ -69,7 +69,7 @@ module Integrations
     end
 
     def commit_status_path(sha)
-      "#{buildkite_endpoint('gitlab')}/status/#{status_token}.json?commit=#{sha}"
+      "#{ENDPOINT}/status/#{status_token}.json?commit=#{sha}"
     end
 
     def build_page(sha, ref)
@@ -104,21 +104,6 @@ module Integrations
         token.split(':')
       else
         []
-      end
-    end
-
-    def buildkite_endpoint(subdomain = nil)
-      if subdomain.present?
-        uri = Addressable::URI.parse(ENDPOINT)
-        new_endpoint = "#{uri.scheme || 'http'}://#{subdomain}.#{uri.host}"
-
-        if uri.port.present?
-          "#{new_endpoint}:#{uri.port}"
-        else
-          new_endpoint
-        end
-      else
-        ENDPOINT
       end
     end
 
