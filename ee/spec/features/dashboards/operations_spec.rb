@@ -24,7 +24,7 @@ RSpec.describe 'Dashboard operations', :js, feature_category: :shared do
     expect(page).to have_text(pipeline.ref)
     expect(page).to have_text(pipeline.short_sha)
     expect(page).to have_text('Alerts')
-    expect(page).to have_text(pipeline.status)
+    expect(page).to have_text('Running')
   end
 
   context 'when opened on gitlab.com', :saas do
@@ -73,7 +73,7 @@ RSpec.describe 'Dashboard operations', :js, feature_category: :shared do
       expect(card).to have_text(pipeline.ref)
       expect(card).to have_text(pipeline.short_sha)
       expect(card).to have_text('Alerts')
-      expect(card).to have_text(pipeline.status)
+      expect(card).to have_text('Running')
     end
 
     def assert_masked(card, project, pipeline, group)
@@ -82,7 +82,7 @@ RSpec.describe 'Dashboard operations', :js, feature_category: :shared do
       expect(card).not_to have_text(pipeline.ref)
       expect(card).not_to have_text(pipeline.short_sha)
       expect(card).not_to have_text('Alerts')
-      expect(card).not_to have_text(pipeline.status)
+      expect(card).not_to have_text('Running')
     end
   end
 end

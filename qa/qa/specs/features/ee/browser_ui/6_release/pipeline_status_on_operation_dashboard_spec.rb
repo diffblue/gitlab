@@ -33,9 +33,9 @@ module QA
 
         EE::Page::OperationsDashboard.perform do |operation|
           {
-            'project-with-success-run' => 'passed',
-            'project-with-failed-run' => 'failed',
-            'project-with-pending-run' => 'pending',
+            'project-with-success-run' => 'Passed',
+            'project-with-failed-run' => 'Failed',
+            'project-with-pending-run' => 'Pending',
             'project-without-ci' => nil
           }.each do |project_name, status|
             project = operation.find_project_card_by_name(project_name)
