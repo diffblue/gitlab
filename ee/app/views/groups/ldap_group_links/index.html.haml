@@ -1,7 +1,4 @@
 - page_title _('LDAP Synchronization')
-- if Feature.enabled?(:ldap_settings_unlock_groups_by_owners) && ::Gitlab::CurrentSettings.allow_group_owners_to_manage_ldap
-  %h1.page-title.gl-font-size-h-display= _('LDAP group settings')
-  = render 'groups/ldap_group_settings/form', group: @group
 
 %h1.page-title.gl-font-size-h-display= _('LDAP synchronizations')
 = render 'ldap_group_links/form', group: @group

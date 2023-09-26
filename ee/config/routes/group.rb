@@ -82,8 +82,6 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       end
     end
 
-    resource :ldap_settings, only: [:update]
-
     resource :issues_analytics, only: [:show]
 
     resource :insights, only: [:show], defaults: { trailing_slash: true } do

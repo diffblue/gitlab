@@ -75,10 +75,6 @@ module EE
         ::Gitlab::CurrentSettings.lock_memberships_to_saml
       end
 
-      condition(:owners_bypass_ldap_lock) do
-        ldap_lock_bypassable?
-      end
-
       condition(:security_dashboard_enabled, scope: :subject) do
         @subject.feature_available?(:security_dashboard)
       end
@@ -408,16 +404,15 @@ module EE
 
       rule { admin | (can_owners_manage_ldap & owner) }.policy do
         enable :admin_ldap_group_links
-        enable :admin_ldap_group_settings
       end
 
-      rule { ldap_synced & ~owners_bypass_ldap_lock }.prevent :admin_group_member
+      rule { ldap_synced }.prevent :admin_group_member
 
       rule { ldap_synced & (admin | owner) }.enable :update_group_member
 
       rule { ldap_synced & (admin | (can_owners_manage_ldap & owner)) }.enable :override_group_member
 
-      rule { memberships_locked_to_ldap & ~admin & ~owners_bypass_ldap_lock }.policy do
+      rule { memberships_locked_to_ldap & ~admin }.policy do
         prevent :admin_group_member
         prevent :update_group_member
         prevent :override_group_member
@@ -611,13 +606,6 @@ module EE
       return true if user&.can_read_all_resources?
 
       super
-    end
-
-    def ldap_lock_bypassable?
-      return false unless ::Feature.enabled?(:ldap_settings_unlock_groups_by_owners)
-      return false unless ::Gitlab::CurrentSettings.allow_group_owners_to_manage_ldap?
-
-      !!subject.unlock_membership_to_ldap? && subject.owned_by?(user)
     end
 
     # Available in Core for self-managed but only paid, non-trial for .com to prevent abuse

@@ -1,8 +1,0 @@
----
-name: ldap_settings_unlock_groups_by_owners
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/26520
-rollout_issue_url:
-milestone: '12.10'
-type: development
-group: group::authentication and authorization
-default_enabled: false
