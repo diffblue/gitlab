@@ -24547,9 +24547,6 @@ msgstr ""
 msgid "InProductMarketing|Blog"
 msgstr ""
 
-msgid "InProductMarketing|Building for iOS? We've got you covered."
-msgstr ""
-
 msgid "InProductMarketing|Built-in security"
 msgstr ""
 
@@ -24562,9 +24559,6 @@ msgstr ""
 msgid "InProductMarketing|Free guest users"
 msgstr ""
 
-msgid "InProductMarketing|Get set up to build for iOS"
-msgstr ""
-
 msgid "InProductMarketing|If you don't want to receive marketing emails directly from GitLab, %{marketing_preference_link}."
 msgstr ""
 
@@ -24572,9 +24566,6 @@ msgid "InProductMarketing|If you no longer wish to receive marketing emails from
 msgstr ""
 
 msgid "InProductMarketing|Invite unlimited colleagues"
-msgstr ""
-
-msgid "InProductMarketing|Learn how to build for iOS"
 msgstr ""
 
 msgid "InProductMarketing|No credit card required"
@@ -24595,13 +24586,7 @@ msgstr ""
 msgid "InProductMarketing|Twitter"
 msgstr ""
 
-msgid "InProductMarketing|Want to get your iOS app up and running, including publishing all the way to TestFlight? Follow our guide to set up GitLab and fastlane to publish iOS apps to the App Store."
-msgstr ""
-
 msgid "InProductMarketing|Want to host GitLab on your servers?"
-msgstr ""
-
-msgid "InProductMarketing|Watch iOS building in action."
 msgstr ""
 
 msgid "InProductMarketing|YouTube"
