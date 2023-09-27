@@ -6,10 +6,6 @@ module Llm
   # Since the finder does not deal with DB resources, it's been added to spec/support/finder_collection_allowlist.yml.
   # As more resource types need to be supported (potentially), appropriate abstractions should be designed and added.
   class ExtraResourceFinder
-    # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/422133
-    # The module is meant to be used in controllers.
-    include ::ExtractsRef
-
     def initialize(current_user, referer_url)
       @current_user = current_user
       @referer_url = referer_url
@@ -68,12 +64,7 @@ module Llm
                         .first.tap { |blob_path| blob_path || "" }
       return if resource_path.empty?
 
-      extract_ref(resource_path)
-    end
-
-    # Required to use the method `extract_ref` from ExtractsRef
-    def repository_container
-      @project
+      ExtractsRef::RefExtractor.new(@project, {}).extract_ref(resource_path)
     end
   end
 end
