@@ -76,6 +76,7 @@ describe('Project Pipeline Status Component', () => {
       expect(TimeComponent.props()).toStrictEqual({
         time: defaultPipeline.createdAt,
         cssClass: '',
+        enableTruncation: false,
         dateTimeFormat: DEFAULT_DATE_TIME_FORMAT,
         tooltipPlacement: 'top',
       });
@@ -169,6 +170,7 @@ describe('Project Pipeline Status Component', () => {
       expect(TimeComponent.props()).toStrictEqual({
         time: sbomPipeline.createdAt,
         cssClass: '',
+        enableTruncation: false,
         dateTimeFormat: DEFAULT_DATE_TIME_FORMAT,
         tooltipPlacement: 'top',
       });
