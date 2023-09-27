@@ -33,7 +33,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     subject(:execute) { instance.execute }
 
     describe 'enabled_for?' do
-      describe 'when :openai_experimentation and tanuki_bot FF are true' do
+      describe 'when :openai_experimentation is true' do
         where(:feature_available, :ai_feature_enabled, :result) do
           [
             [false, false, false],
@@ -55,27 +55,16 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
         end
       end
 
-      describe 'when :openai_experimentation and tanuki_bot FF are not both true' do
-        where(:openai_experimentation, :tanuki_bot) do
-          [
-            [false, false],
-            [true, false],
-            [false, true]
-          ]
+      describe 'when openai_experimentation is false' do
+        before do
+          allow(License).to receive(:feature_available?).and_return(true)
+          allow(described_class).to receive(:ai_feature_enabled?).and_return(true)
+
+          stub_feature_flags(openai_experimentation: false)
         end
 
-        with_them do
-          before do
-            allow(License).to receive(:feature_available?).and_return(true)
-            allow(described_class).to receive(:ai_feature_enabled?).and_return(true)
-
-            stub_feature_flags(openai_experimentation: openai_experimentation)
-            stub_feature_flags(tanuki_bot: tanuki_bot)
-          end
-
-          it 'returns false' do
-            expect(described_class.enabled_for?(user: user)).to be(false)
-          end
+        it 'returns false' do
+          expect(described_class.enabled_for?(user: user)).to be(false)
         end
       end
     end
@@ -226,24 +215,13 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
             end
           end
 
-          context 'when the feature flags are disabled' do
-            using RSpec::Parameterized::TableSyntax
-
-            where(:openai_experimentation, :tanuki_bot) do
-              true  | false
-              false | true
-              false | false
+          context 'when openai_experimentation FF is disabled' do
+            before do
+              stub_feature_flags(openai_experimentation: false)
             end
 
-            with_them do
-              before do
-                stub_feature_flags(openai_experimentation: openai_experimentation)
-                stub_feature_flags(tanuki_bot: tanuki_bot)
-              end
-
-              it 'returns an empty response message' do
-                expect(execute.response_body).to eq(empty_response_message)
-              end
+            it 'returns an empty response message' do
+              expect(execute.response_body).to eq(empty_response_message)
             end
           end
 

@@ -81,20 +81,6 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
           agent.execute
         end
-
-        context 'with the ai_tool_info flag switched off' do
-          before do
-            stub_feature_flags(ai_tool_info: false)
-          end
-
-          it 'does not call response_service' do
-            expect(response_service_double).not_to receive(:execute)
-
-            allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
-
-            agent.execute
-          end
-        end
       end
 
       context 'when max iterations reached' do

@@ -13,7 +13,6 @@ import { i18n, GENIE_CHAT_RESET_MESSAGE } from 'ee/ai/constants';
 import { TANUKI_BOT_TRACKING_EVENT_NAME } from 'ee/ai/tanuki_bot/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
-import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
 import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -47,13 +46,11 @@ describe('GitLab Duo Chat', () => {
   };
 
   const subscriptionHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_SUCCESS_RES);
-  const tanukiMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
   let chatMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
   const queryHandlerMock = jest.fn().mockResolvedValue(MOCK_CHAT_CACHED_MESSAGES_RES);
 
   const createComponent = (
     initialState = {},
-    glFeatures = { gitlabDuo: true },
     propsData = { userId: MOCK_USER_ID, resourceId: MOCK_RESOURCE_ID },
   ) => {
     const store = new Vuex.Store({
@@ -66,7 +63,6 @@ describe('GitLab Duo Chat', () => {
     const apolloProvider = createMockApollo([
       [aiResponseSubscription, subscriptionHandlerMock],
       [chatMutation, chatMutationHandlerMock],
-      [tanukiBotMutation, tanukiMutationHandlerMock],
       [getAiMessages, queryHandlerMock],
     ]);
 
@@ -79,9 +75,6 @@ describe('GitLab Duo Chat', () => {
         GlSprintf,
         AiGenieChatConversation,
         AiGenieChatMessage,
-      },
-      provide: {
-        glFeatures,
       },
     });
   };
@@ -189,11 +182,10 @@ describe('GitLab Duo Chat', () => {
         it.each`
           isFlagEnabled | expectedMutation
           ${true}       | ${chatMutationHandlerMock}
-          ${false}      | ${tanukiMutationHandlerMock}
         `(
           'calls correct GraphQL mutation with fallback to userId when input is submitted and feature flag is $isFlagEnabled',
-          async ({ isFlagEnabled, expectedMutation } = {}) => {
-            createComponent({}, { gitlabDuo: isFlagEnabled }, { userId: MOCK_USER_ID, resourceId });
+          async ({ expectedMutation } = {}) => {
+            createComponent({}, { userId: MOCK_USER_ID, resourceId });
             findGenieChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.msg);
 
             await nextTick();
@@ -209,7 +201,7 @@ describe('GitLab Duo Chat', () => {
         it('once response arrives via GraphQL subscription with userId fallback calls addDuoChatMessage', () => {
           subscriptionHandlerMock.mockClear();
 
-          createComponent({ loading: true }, {}, { userId: MOCK_USER_ID, resourceId });
+          createComponent({ loading: true }, { userId: MOCK_USER_ID, resourceId });
 
           expect(subscriptionHandlerMock).toHaveBeenNthCalledWith(1, {
             userId: MOCK_USER_ID,
@@ -261,11 +253,7 @@ describe('GitLab Duo Chat', () => {
       `(`with resourceId = $resourceId`, ({ resourceId, expectedResourceId }) => {
         beforeEach(async () => {
           subscriptionHandlerMock.mockRejectedValue(error);
-          createComponent(
-            { loading: true },
-            { gitlabDuo: true },
-            { userId: MOCK_USER_ID, resourceId },
-          );
+          createComponent({ loading: true }, { userId: MOCK_USER_ID, resourceId });
 
           helpCenterState.showTanukiBotChatDrawer = true;
           await nextTick();

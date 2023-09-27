@@ -66,7 +66,7 @@ module Gitlab
 
         def tools(user)
           tools = TOOLS.dup
-          tools << ::Gitlab::Llm::Chain::Tools::EpicIdentifier if Feature.enabled?(:chat_epic_identifier, user)
+          tools << ::Gitlab::Llm::Chain::Tools::EpicIdentifier
           tools << ::Gitlab::Llm::Chain::Tools::CiEditorAssistant if Feature.enabled?(:ci_editor_assistant_tool, user)
           tools
         end

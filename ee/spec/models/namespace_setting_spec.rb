@@ -440,13 +440,12 @@ RSpec.describe NamespaceSetting do
   describe '.ai_settings_allowed?' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:check_namespace_plan, :main_feature_flag, :secondary_feature_flag, :licensed_feature, :is_root, :result) do
-      true  | true  | true  | true  | true  | true
-      false | true  | true  | true  | true  | false
-      true  | false | true  | true  | true  | false
-      true  | true  | false | true  | true  | false
-      true  | true  | true  | false | true  | false
-      true  | true  | true  | true  | false | false
+    where(:check_namespace_plan, :main_feature_flag, :licensed_feature, :is_root, :result) do
+      true  | true  | true  | true  | true
+      false | true  | true  | true  | false
+      true  | false | true  | true  | false
+      true  | true  | false | true  | false
+      true  | true  | true  | false | false
     end
 
     with_them do
@@ -456,7 +455,6 @@ RSpec.describe NamespaceSetting do
       before do
         allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_namespace_plan)
         stub_feature_flags(openai_experimentation: main_feature_flag)
-        stub_feature_flags(ai_related_settings: secondary_feature_flag)
         allow(group).to receive(:licensed_feature_available?).with(:ai_features).and_return(licensed_feature)
         allow(group).to receive(:root?).and_return(is_root)
       end

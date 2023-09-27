@@ -74,18 +74,6 @@ RSpec.describe 'AiAction for chat', :saas, feature_category: :shared do
     end
   end
 
-  context 'when gitlab_duo feature flag is disabled' do
-    before do
-      stub_feature_flags(gitlab_duo: false)
-    end
-
-    it 'returns nil' do
-      expect(Llm::CompletionWorker).not_to receive(:perform_async)
-
-      post_graphql_mutation(mutation, current_user: current_user)
-    end
-  end
-
   context 'when openai_experimentation feature flag is disabled' do
     before do
       stub_feature_flags(openai_experimentation: false)

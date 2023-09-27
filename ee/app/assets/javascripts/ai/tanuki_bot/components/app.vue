@@ -3,12 +3,10 @@
 import { mapActions, mapState } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
 import { __, s__ } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { helpCenterState } from '~/super_sidebar/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
-import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
 import Tracking from '~/tracking';
 import { i18n, GENIE_CHAT_RESET_MESSAGE } from 'ee/ai/constants';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
@@ -35,7 +33,7 @@ export default {
   components: {
     AiGenieChat,
   },
-  mixins: [glFeatureFlagMixin(), Tracking.mixin()],
+  mixins: [Tracking.mixin()],
   provide() {
     return {
       trackingEventName: TANUKI_BOT_TRACKING_EVENT_NAME,
@@ -124,10 +122,9 @@ export default {
       if (question !== GENIE_CHAT_RESET_MESSAGE) {
         this.setLoading();
       }
-      const mutation = this.glFeatures.gitlabDuo ? chatMutation : tanukiBotMutation;
       this.$apollo
         .mutate({
-          mutation,
+          mutation: chatMutation,
           variables: {
             question,
             resourceId: this.resourceId || this.userId,

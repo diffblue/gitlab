@@ -20,7 +20,6 @@ module Llm
 
         def perform(filename, update_version)
           return unless Feature.enabled?(:openai_experimentation) # this is legacy global AI toggle FF
-          return unless Feature.enabled?(:gitlab_duo) # chat specific FF
           return unless Feature.enabled?(:create_embeddings_with_vertex_ai) # embeddings supported by vertex FF
           return unless ::License.feature_available?(:ai_chat) # license check
 
