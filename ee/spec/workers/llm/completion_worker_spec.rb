@@ -33,6 +33,7 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
     shared_examples 'performs successfully' do
       it 'calls Gitlab::Llm::CompletionsFactory and tracks event', :aggregate_failures do
         completion = instance_double(Gitlab::Llm::Completions::SummarizeAllOpenNotes)
+        response_double = instance_double(Gitlab::Llm::BaseResponseModifier)
         extra_resource_finder = instance_double(::Llm::ExtraResourceFinder)
 
         expect(::Llm::ExtraResourceFinder).to receive(:new).with(user, referer_url).and_return(extra_resource_finder)
@@ -46,8 +47,9 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
         expect(completion)
           .to receive(:execute)
           .with(user, resource, options.symbolize_keys.merge(extra_resource: extra_resource))
+          .and_return(response_double)
 
-        subject
+        expect(subject).to eq(response_double)
 
         expect_snowplow_event(
           category: described_class.to_s,

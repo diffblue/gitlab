@@ -46,6 +46,8 @@ module Llm
       response = ai_completion.execute(user, resource, options)
       update_error_rate(ai_action_name, response)
       update_duration_metric(ai_action_name, ::Gitlab::Metrics::System.monotonic_time - start_time)
+
+      response
     rescue StandardError => err
       update_error_rate(ai_action_name)
 
