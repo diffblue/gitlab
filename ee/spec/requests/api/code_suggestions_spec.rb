@@ -21,6 +21,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
   let(:is_saas) { true }
 
   before do
+    stub_feature_flags(code_completion_anthropic: false)
     allow(Gitlab).to receive(:org_or_com?).and_return(is_saas)
     allow(Ability).to receive(:allowed?).and_call_original
     allow(Ability).to receive(:allowed?).with(authorized_user, :access_code_suggestions, :global)

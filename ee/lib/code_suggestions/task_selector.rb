@@ -19,13 +19,14 @@ module CodeSuggestions
     # is removed https://gitlab.com/gitlab-org/gitlab/-/issues/424879
     def self.task(params:, unsafe_passthrough_params: {})
       prefix = params.dig(:current_file, :content_above_cursor)
-
       result = CodeSuggestions::InstructionsExtractor.extract(prefix, prefix_regex(params))
-
       intent = params[:intent] || (result.empty? ? INTENT_COMPLETION : INTENT_GENERATION)
 
       if intent == INTENT_COMPLETION
-        return CodeSuggestions::Tasks::CodeCompletion.new(unsafe_passthrough_params: unsafe_passthrough_params)
+        return CodeSuggestions::Tasks::CodeCompletion.new(
+          params: params,
+          unsafe_passthrough_params: unsafe_passthrough_params
+        )
       end
 
       CodeSuggestions::Tasks::CodeGeneration::FromComment.new(
