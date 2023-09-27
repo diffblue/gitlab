@@ -110,6 +110,12 @@ module API
             requires :file_name, type: String, limit: 255, desc: 'The name of the current file'
             requires :content_above_cursor, type: String, limit: 100_000, desc: 'The content above cursor'
           end
+          optional :intent, type: String, values:
+            [
+              ::CodeSuggestions::TaskSelector::INTENT_COMPLETION,
+              ::CodeSuggestions::TaskSelector::INTENT_GENERATION
+            ],
+            desc: 'The intent of the completion request, current options are "completion" or "generation"'
         end
         post do
           if Gitlab.org_or_com?
