@@ -8,6 +8,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
 
   let(:service) { described_class.new(project, maintainer, require_recreate: require_recreate) }
   let(:require_recreate) { false }
+  let(:expected_create_mergeable_ref) { true }
 
   before do
     stub_feature_flags(disable_merge_trains: false)
@@ -44,7 +45,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
       specify do
         expect_next_instance_of(MergeTrains::CreatePipelineService, project, maintainer) do |pipeline_service|
           allow(pipeline_service).to receive(:execute) { { status: :success, pipeline: pipeline } }
-          expect(pipeline_service).to receive(:execute).with(merge_request, previous_ref)
+          expect(pipeline_service).to receive(:execute).with(merge_request, previous_ref, expected_create_mergeable_ref)
         end
 
         result = subject
@@ -60,7 +61,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
       it 'cancels and recreates a pipeline for the merge train', :sidekiq_might_not_need_inline do
         expect_next_instance_of(MergeTrains::CreatePipelineService, project, maintainer) do |pipeline_service|
           allow(pipeline_service).to receive(:execute) { { status: :success, pipeline: create(:ci_pipeline) } }
-          expect(pipeline_service).to receive(:execute).with(merge_request, previous_ref)
+          expect(pipeline_service).to receive(:execute).with(merge_request, previous_ref, expected_create_mergeable_ref)
         end
 
         result = subject
@@ -163,9 +164,9 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
     end
 
     context 'when pipeline has not been created yet' do
-      context 'when the merge request is the first queue' do
-        let(:pipeline) { create(:ci_pipeline) }
+      let(:pipeline) { create(:ci_pipeline) }
 
+      context 'when the merge request is the first queue' do
         it_behaves_like 'creates a pipeline for merge train'
 
         context 'when it failed to create a pipeline' do
@@ -179,6 +180,26 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
             let(:expected_reason) { 'failed to create pipeline' }
           end
         end
+      end
+
+      context 'when FF merge_trains_create_ref_service is disabled' do
+        let(:expected_create_mergeable_ref) { false }
+
+        before do
+          stub_feature_flags(merge_trains_create_ref_service: false)
+        end
+
+        it_behaves_like 'creates a pipeline for merge train'
+      end
+
+      context 'when FF standard_merge_train_ref_merge_commit is disabled' do
+        let(:expected_create_mergeable_ref) { false }
+
+        before do
+          stub_feature_flags(standard_merge_train_ref_merge_commit: false)
+        end
+
+        it_behaves_like 'creates a pipeline for merge train'
       end
     end
 
@@ -232,10 +253,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
 
       before do
         merge_request.merge_train_car.refresh_pipeline!(pipeline.id)
-        merge_request.merge_params.merge!(
-          'train_ref' => { 'commit_sha' => pipeline.sha },
-          'sha' => merge_request.diff_head_sha
-        )
+        merge_request.merge_params['sha'] = merge_request.diff_head_sha
         merge_request.save!
       end
 
@@ -257,25 +275,47 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
             project.repository.raw_repository.write_ref(merge_request.train_ref_path, pipeline.sha)
           end
 
-          it 'uses the FromTrainRef merge strategy', :aggregate_failures do
-            expect(merge_request).to receive(:schedule_cleanup_refs).with(only: :train)
-            expect(merge_request.merge_train_car).to receive(:start_merge!).and_call_original
-            expect(merge_request.merge_train_car).to receive(:finish_merge!).and_call_original
-            expect_next_instance_of(MergeRequests::MergeService, project: project, current_user: maintainer, params: instance_of(HashWithIndifferentAccess)) do |service|
-              expect(service).to(
-                receive(:execute).with(
-                  merge_request,
-                  skip_discussions_check: true,
-                  check_mergeability_retry_lease: true,
-                  merge_strategy: MergeRequests::MergeStrategies::FromTrainRef
-                ).and_call_original
+          context 'when it is not safe to merge directly from ref' do
+            it 'uses the default merge strategy' do
+              expect_next_instance_of(MergeRequests::MergeService, project: project, current_user: maintainer, params: instance_of(HashWithIndifferentAccess)) do |service|
+                expect(service).to receive(:execute).with(merge_request, skip_discussions_check: true, check_mergeability_retry_lease: true)
+              end
+
+              subject
+            end
+          end
+
+          context 'when it is safe to merge directly from ref' do
+            before do
+              merge_request.update!(
+                merge_params: merge_request.merge_params.merge(
+                  'train_ref' => {
+                    'commit_sha' => pipeline.sha
+                  }
+                )
               )
             end
 
-            expect { subject }.to change { merge_request.merge_train_car.status_name }.from(:fresh).to(:merged)
-            expect(subject[:status]).to eq(:success)
-            expect(subject[:message]).to eq(nil)
-            expect(merge_request.state).to eq("merged")
+            it 'uses the FromTrainRef merge strategy', :aggregate_failures do
+              expect(merge_request).to receive(:schedule_cleanup_refs).with(only: :train)
+              expect(merge_request.merge_train_car).to receive(:start_merge!).and_call_original
+              expect(merge_request.merge_train_car).to receive(:finish_merge!).and_call_original
+              expect_next_instance_of(MergeRequests::MergeService, project: project, current_user: maintainer, params: instance_of(HashWithIndifferentAccess)) do |service|
+                expect(service).to(
+                  receive(:execute).with(
+                    merge_request,
+                    skip_discussions_check: true,
+                    check_mergeability_retry_lease: true,
+                    merge_strategy: MergeRequests::MergeStrategies::FromTrainRef
+                  ).and_call_original
+                )
+              end
+
+              expect { subject }.to change { merge_request.merge_train_car.status_name }.from(:fresh).to(:merged)
+              expect(subject[:status]).to eq(:success)
+              expect(subject[:message]).to eq(nil)
+              expect(merge_request.state).to eq("merged")
+            end
           end
 
           context 'with feature flag fast_forward_merge_trains_support disabled' do

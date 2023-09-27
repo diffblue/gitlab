@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 module MergeTrains
   class CreatePipelineService < BaseService
-    def execute(merge_request, previous_ref)
+    def execute(merge_request, previous_ref, create_mergeable_ref)
       validation_status = validate(merge_request)
       return validation_status unless validation_status[:status] == :success
 
-      merge_status = create_train_ref(merge_request, previous_ref)
+      merge_status = create_train_ref(merge_request, previous_ref, create_mergeable_ref)
       return error(merge_status[:message]) unless merge_status[:status] == :success
 
       create_pipeline(merge_request, merge_status)
@@ -20,10 +20,10 @@ module MergeTrains
       success
     end
 
-    def create_train_ref(merge_request, previous_ref)
+    def create_train_ref(merge_request, previous_ref, create_mergeable_ref)
       return error('previous ref is not specified') unless previous_ref
 
-      if Feature.enabled?(:merge_trains_create_ref_service, merge_request.target_project)
+      if create_mergeable_ref
         ::MergeRequests::CreateRefService.new(
           current_user: merge_request.merge_user,
           merge_request: merge_request,

@@ -46,9 +46,51 @@ module MergeTrains
       end
     end
 
+    def merge_from_train_ref?
+      # For now, we only enable this for fast-forward merge trains
+      return false unless project.merge_requests_ff_only_enabled && Feature.enabled?(:fast_forward_merge_trains_support, project)
+
+      mergeable_sha_and_message?(merge_train_car)
+    end
+
+    def create_mergeable_train_ref?
+      # These two flags being enabled are pre-requisites
+      unless Feature.enabled?(:merge_trains_create_ref_service, merge_request.target_project) &&
+          Feature.enabled?(:standard_merge_train_ref_merge_commit, merge_request.target_project)
+        return false
+      end
+
+      # The two checks below ensure that by construction, we can safely
+      # fast-forward merge from any train ref satisfying
+      # #mergeable_from_train_ref?
+      #
+      # (1) Base case: If we're the first car, then the train ref will be based
+      # on the target branch, and is trivially mergeable.
+      return true if merge_train_car.first_car?
+
+      # (2) Recursive case: The previous MR has not been merged, so we check
+      # whether it was constructed with a mergeable train ref.
+      mergeable_sha_and_message?(merge_train_car.prev)
+    end
+
+    def mergeable_sha_and_message?(car)
+      # The commit message check guards against a very unlikely edge case in
+      # which a merge train created by MergeTrains::CreateRefService has been
+      # running since before standard merge commits were first enabled, and no
+      # merge has occurred.
+      #
+      # The train_ref commit_sha check is for mixed rollout scenarios, such as
+      # when the various feature flags are toggled, or when old code is running
+      # concurrently with new code, or when a train exists from before the
+      # instance was updated.
+      sha = car.pipeline&.sha
+      project.commit(sha)&.message != MergeTrains::MergeCommitMessage.legacy_value(merge_request, car.previous_ref) &&
+        sha == car&.merge_request&.merge_params&.dig('train_ref', 'commit_sha')
+    end
+
     def create_pipeline!
       result = MergeTrains::CreatePipelineService.new(merge_train_car.project, merge_train_car.user)
-        .execute(merge_train_car.merge_request, merge_train_car.previous_ref)
+        .execute(merge_train_car.merge_request, merge_train_car.previous_ref, create_mergeable_train_ref?)
 
       raise ProcessError, result[:message] unless result[:status] == :success
 
@@ -73,10 +115,7 @@ module MergeTrains
       merge_train_car.start_merge!
 
       merge_options = { skip_discussions_check: true, check_mergeability_retry_lease: true }
-
-      if project.merge_requests_ff_only_enabled && Feature.enabled?(:fast_forward_merge_trains_support, project)
-        merge_options[:merge_strategy] = MergeRequests::MergeStrategies::FromTrainRef
-      end
+      merge_options[:merge_strategy] = MergeRequests::MergeStrategies::FromTrainRef if merge_from_train_ref?
 
       MergeRequests::MergeService.new(project: project, current_user: merge_user, params: merge_request.merge_params.with_indifferent_access)
         .execute(merge_request, **merge_options)
