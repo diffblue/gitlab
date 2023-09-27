@@ -46,7 +46,7 @@ module EE
             end
 
             def linked_items_enabled?
-              object.work_item.project.linked_work_items_feature_flag_enabled?
+              object.work_item.resource_parent.linked_work_items_feature_flag_enabled?
             end
           end
         end
