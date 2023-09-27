@@ -2,14 +2,16 @@
 import { GridStack } from 'gridstack';
 import * as Sentry from '@sentry/browser';
 import { GlButton, GlFormInput, GlFormGroup, GlLink, GlIcon } from '@gitlab/ui';
+import { isEqual } from 'lodash';
 import { createAlert } from '~/alert';
 import { cloneWithoutReferences } from '~/lib/utils/common_utils';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { slugify } from '~/lib/utils/text_utility';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
+import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import PanelsBase from './panels_base.vue';
 import {
   GRIDSTACK_MARGIN,
@@ -20,7 +22,12 @@ import {
   DASHBOARD_DOCUMENTATION_LINKS,
 } from './constants';
 import AvailableVisualizationsDrawer from './dashboard_editor/available_visualizations_drawer.vue';
-import { filtersToQueryParams, getUniquePanelId, availableVisualizationsValidator } from './utils';
+import {
+  getDashboardConfig,
+  filtersToQueryParams,
+  getUniquePanelId,
+  availableVisualizationsValidator,
+} from './utils';
 
 export default {
   name: 'CustomizableDashboard',
@@ -85,14 +92,8 @@ export default {
     },
   },
   data() {
-    const dashboard = cloneWithoutReferences(this.initialDashboard);
-    dashboard.panels = dashboard.panels.map((panel) => ({
-      ...panel,
-      id: getUniquePanelId(),
-    }));
-
     return {
-      dashboard,
+      dashboard: this.createDraftDashboard(this.initialDashboard),
       grid: undefined,
       cssLoaded: false,
       mounted: true,
@@ -101,6 +102,7 @@ export default {
       alert: null,
       titleValidationState: null,
       visualizationDrawerOpen: false,
+      gridStackRenderKey: 0,
     };
   },
   computed: {
@@ -133,6 +135,13 @@ export default {
     },
     documentationLink() {
       return DASHBOARD_DOCUMENTATION_LINKS[this.dashboard.slug];
+    },
+    changesMade() {
+      // Compare the dashboard configs as that is what will be saved
+      return !isEqual(
+        getDashboardConfig(this.initialDashboard),
+        getDashboardConfig(this.dashboard),
+      );
     },
   },
   watch: {
@@ -167,6 +176,9 @@ export default {
         this.closeVisualizationDrawer();
       }
     },
+    initialDashboard() {
+      this.resetToIntialDashboard();
+    },
   },
   async created() {
     try {
@@ -199,6 +211,25 @@ export default {
     this.alert?.dismiss();
   },
   methods: {
+    createDraftDashboard(dashboard) {
+      const draft = cloneWithoutReferences(dashboard);
+      return {
+        ...draft,
+        // Gridstack requires unique panel IDs for mutations
+        panels: draft.panels.map((panel) => ({
+          ...panel,
+          id: getUniquePanelId(),
+        })),
+      };
+    },
+    async resetToIntialDashboard() {
+      this.dashboard = this.createDraftDashboard(this.initialDashboard);
+      // Update the element key to force re-render
+      this.gridStackRenderKey += 1;
+      await this.$nextTick();
+      // Reinitialize gridstack for the new grid items
+      this.initGridStack();
+    },
     onTitleInput() {
       // Don't validate if the title has not been submitted
       if (this.titleValidationState !== null) {
@@ -214,6 +245,7 @@ export default {
           cellHeight: GRIDSTACK_CELL_HEIGHT,
           minRow: GRIDSTACK_MIN_ROW,
           alwaysShowResizeHandle: true,
+          animate: false,
         });
 
         this.grid.on('dragstart', () => {
@@ -297,13 +329,35 @@ export default {
 
       this.$emit('save', this.dashboard.slug, this.dashboard);
     },
-    cancelEdit() {
+    async cancelEdit() {
+      if (this.changesMade) {
+        const confirmed = await this.confirmDiscardChanges();
+
+        if (!confirmed) return;
+
+        await this.resetToIntialDashboard();
+      }
+
       if (this.isNewDashboard) {
         this.$router.push('/');
         return;
       }
 
       this.editing = false;
+    },
+    async confirmDiscardChanges() {
+      const confirmText = this.isNewDashboard
+        ? s__('Analytics|Are you sure you want to cancel creating this dashboard?')
+        : s__('Analytics|Are you sure you want to cancel editing this dashboard?');
+
+      const cancelBtnText = this.isNewDashboard
+        ? s__('Analytics|Continue creating')
+        : s__('Analytics|Continue editing');
+
+      return confirmAction(confirmText, {
+        primaryBtnText: __('Discard changes'),
+        cancelBtnText,
+      });
     },
     updatePanelWithGridStackItem(item) {
       const updatedPanel = this.dashboard.panels.find((panel) => panel.id === item.id);
@@ -430,7 +484,7 @@ export default {
               {{ s__('Analytics|Add visualization') }}
             </div>
           </button>
-          <div data-testid="gridstack-grid" class="grid-stack">
+          <div :key="gridStackRenderKey" data-testid="gridstack-grid" class="grid-stack">
             <div
               v-for="panel in dashboard.panels"
               :id="panel.id"
