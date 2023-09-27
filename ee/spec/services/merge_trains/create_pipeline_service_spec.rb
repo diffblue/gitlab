@@ -18,7 +18,7 @@ RSpec.describe MergeTrains::CreatePipelineService, feature_category: :continuous
     end
 
     describe '#execute' do
-      subject { service.execute(merge_request, previous_ref) }
+      subject { service.execute(merge_request, previous_ref, create_mergeable_ref) }
 
       let!(:merge_request) do
         create(
@@ -179,7 +179,8 @@ RSpec.describe MergeTrains::CreatePipelineService, feature_category: :continuous
     end
   end
 
-  context 'when ff :merge_trains_create_ref_service is enabled' do
+  context 'when creating mergeable refs' do
+    let(:create_mergeable_ref) { true }
     let(:expected_ref_creation_service) { MergeRequests::CreateRefService }
     let(:expected_ref_creation_service_args) do
       {
@@ -194,7 +195,8 @@ RSpec.describe MergeTrains::CreatePipelineService, feature_category: :continuous
     it_behaves_like 'MergeTrains::CreatePipelineService'
   end
 
-  context 'when ff :merge_trains_create_ref_service is disabled' do
+  context 'when not creating a mergeable ref' do
+    let(:create_mergeable_ref) { false }
     let(:expected_ref_creation_service) { MergeRequests::MergeToRefService }
     let(:expected_ref_creation_service_args) do
       {
@@ -202,10 +204,6 @@ RSpec.describe MergeTrains::CreatePipelineService, feature_category: :continuous
           commit_message: MergeTrains::MergeCommitMessage.legacy_value(merge_request, previous_ref)
         )
       }
-    end
-
-    before do
-      stub_feature_flags(merge_trains_create_ref_service: false)
     end
 
     it_behaves_like 'MergeTrains::CreatePipelineService'
