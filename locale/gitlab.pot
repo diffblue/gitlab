@@ -5394,6 +5394,12 @@ msgstr ""
 msgid "Analytics|Analytics settings for '%{project_name}' were successfully updated."
 msgstr ""
 
+msgid "Analytics|Are you sure you want to cancel creating this dashboard?"
+msgstr ""
+
+msgid "Analytics|Are you sure you want to cancel editing this dashboard?"
+msgstr ""
+
 msgid "Analytics|Browser"
 msgstr ""
 
@@ -5422,6 +5428,12 @@ msgid "Analytics|Column Chart"
 msgstr ""
 
 msgid "Analytics|Configure Dashboard Project"
+msgstr ""
+
+msgid "Analytics|Continue creating"
+msgstr ""
+
+msgid "Analytics|Continue editing"
 msgstr ""
 
 msgid "Analytics|Create dashboard %{dashboardSlug}"

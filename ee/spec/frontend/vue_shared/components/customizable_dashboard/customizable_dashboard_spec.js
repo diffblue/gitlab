@@ -27,7 +27,10 @@ import {
   TEST_VISUALIZATION,
   TEST_EMPTY_DASHBOARD_SVG_PATH,
 } from 'ee_jest/analytics/analytics_dashboards/mock_data';
+import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import { dashboard, builtinDashboard, mockDateRangeFilterChangePayload } from './mock_data';
+
+jest.mock('~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal');
 
 const mockAlertDismiss = jest.fn();
 jest.mock('~/alert', () => ({
@@ -167,6 +170,7 @@ describe('CustomizableDashboard', () => {
       expect(GridStack.init).toHaveBeenCalledWith({
         alwaysShowResizeHandle: true,
         staticGrid: true,
+        animate: false,
         margin: GRIDSTACK_MARGIN,
         handle: GRIDSTACK_CSS_HANDLE,
         cellHeight: GRIDSTACK_CELL_HEIGHT,
@@ -367,9 +371,19 @@ describe('CustomizableDashboard', () => {
           expect(findCancelButton().exists()).toBe(true);
         });
 
-        describe('and the "cancel" button is clicked', () => {
+        describe('and the "cancel" button is clicked with no changes made', () => {
+          afterEach(() => {
+            confirmAction.mockReset();
+          });
+
           beforeEach(() => {
-            findCancelButton().vm.$emit('click');
+            confirmAction.mockReturnValue(new Promise(() => {}));
+
+            return findCancelButton().vm.$emit('click');
+          });
+
+          it('does not show the confirm dialog', () => {
+            expect(confirmAction).not.toHaveBeenCalled();
           });
 
           it('disables the edit state', () => {
@@ -378,6 +392,50 @@ describe('CustomizableDashboard', () => {
 
           it('sets the grid to static mode', () => {
             expect(mockGridSetStatic).toHaveBeenCalledWith(true);
+          });
+        });
+
+        describe('and the "cancel" button is clicked with changes made', () => {
+          afterEach(() => {
+            confirmAction.mockReset();
+          });
+
+          beforeEach(() => {
+            return findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
+          });
+
+          it('shows confirm modal when the title was changed', async () => {
+            confirmAction.mockReturnValue(new Promise(() => {}));
+
+            await findCancelButton().vm.$emit('click');
+
+            expect(confirmAction).toHaveBeenCalledWith(
+              'Are you sure you want to cancel editing this dashboard?',
+              {
+                cancelBtnText: 'Continue editing',
+                primaryBtnText: 'Discard changes',
+              },
+            );
+          });
+
+          it('resets the dashboard if the user confirms', async () => {
+            confirmAction.mockResolvedValue(true);
+
+            await findCancelButton().vm.$emit('click');
+            await waitForPromises();
+
+            expect(GridStack.init).toHaveBeenCalledTimes(2);
+            expect(findPanels()).toHaveLength(dashboard.panels.length);
+          });
+
+          it('does nothing if the user opts to keep editing', async () => {
+            confirmAction.mockResolvedValue(false);
+
+            await findCancelButton().vm.$emit('click');
+            await waitForPromises();
+
+            expect(GridStack.init).toHaveBeenCalledTimes(1);
+            expect(findPanels()).toHaveLength(dashboard.panels.length + 1);
           });
         });
 
@@ -494,6 +552,50 @@ describe('CustomizableDashboard', () => {
       await findCancelButton().vm.$emit('click');
 
       expect($router.push).toHaveBeenCalledWith('/');
+    });
+
+    describe('and the "cancel" button is clicked with changes made', () => {
+      afterEach(() => {
+        confirmAction.mockReset();
+      });
+
+      beforeEach(() => {
+        return findVisualizationDrawer().vm.$emit('select', [TEST_VISUALIZATION()]);
+      });
+
+      it('shows a confirmation modal for new dashboards', async () => {
+        confirmAction.mockReturnValue(new Promise(() => {}));
+
+        await findCancelButton().vm.$emit('click');
+
+        expect(confirmAction).toHaveBeenCalledWith(
+          'Are you sure you want to cancel creating this dashboard?',
+          {
+            cancelBtnText: 'Continue creating',
+            primaryBtnText: 'Discard changes',
+          },
+        );
+      });
+
+      it('routes to the dashboard listing if the user confirms', async () => {
+        confirmAction.mockResolvedValue(true);
+
+        await findCancelButton().vm.$emit('click');
+        await waitForPromises();
+
+        expect($router.push).toHaveBeenCalledWith('/');
+      });
+
+      it('does nothing if the user opts to keep creating', async () => {
+        confirmAction.mockResolvedValue(false);
+
+        await findCancelButton().vm.$emit('click');
+        await waitForPromises();
+
+        expect($router.push).not.toHaveBeenCalled();
+        expect(GridStack.init).toHaveBeenCalledTimes(1);
+        expect(findPanels()).toHaveLength(NEW_DASHBOARD().panels.length + 1);
+      });
     });
 
     it('shows the new dashboard page title', () => {
