@@ -16,6 +16,7 @@ query projectVulnerabilities(
   $sort: VulnerabilitySort
   $hasIssues: Boolean
   $hasResolution: Boolean
+  $hasMergeRequest: Boolean
   $includeExternalIssueLinks: Boolean = false
   $vetEnabled: Boolean = false
   $clusterAgentId: [ClustersAgentID!]
@@ -37,6 +38,7 @@ query projectVulnerabilities(
       sort: $sort
       hasIssues: $hasIssues
       hasResolution: $hasResolution
+      hasMergeRequest: $hasMergeRequest
       clusterAgentId: $clusterAgentId
       image: $image
     ) {
