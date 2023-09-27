@@ -208,6 +208,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     let(:prefix) { 'def is_even(n: int) ->' }
     let(:file_name) { 'test.py' }
 
+    let(:additional_params) { {} }
     let(:body) do
       {
         project_path: "gitlab-org/gitlab-shell",
@@ -216,7 +217,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           file_name: file_name,
           content_above_cursor: prefix,
           content_below_cursor: ''
-        }
+        },
+        **additional_params
       }
     end
 
@@ -355,6 +357,36 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               ).and_call_original
 
             post_api
+          end
+        end
+
+        context 'when passing intent parameter' do
+          context 'with completion intent' do
+            let(:additional_params) { { intent: 'completion' } }
+
+            it 'passes completion intent into TaskSelector.task' do
+              expect(::CodeSuggestions::TaskSelector).to receive(:task)
+               .with(
+                 params: hash_including(intent: 'completion'),
+                 unsafe_passthrough_params: kind_of(Hash)
+               ).and_call_original
+
+              post_api
+            end
+          end
+
+          context 'with generation intent' do
+            let(:additional_params) { { intent: 'generation' } }
+
+            it 'passes generation intent into TaskSelector.task' do
+              expect(::CodeSuggestions::TaskSelector).to receive(:task)
+               .with(
+                 params: hash_including(intent: 'generation'),
+                 unsafe_passthrough_params: kind_of(Hash)
+               ).and_call_original
+
+              post_api
+            end
           end
         end
       end

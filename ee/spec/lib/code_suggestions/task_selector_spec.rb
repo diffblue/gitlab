@@ -6,7 +6,15 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
   using RSpec::Parameterized::TableSyntax
 
   describe '.task' do
-    let(:params) { { skip_generate_comment_prefix: skip_comment, current_file: { content_above_cursor: prefix } } }
+    let(:intent) { nil }
+    let(:override_type) { false }
+    let(:params) do
+      {
+        skip_generate_comment_prefix: skip_comment,
+        current_file: { content_above_cursor: prefix },
+        intent: intent
+      }
+    end
 
     subject { described_class.task(params: params) }
 
@@ -57,7 +65,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         end
 
         with_them do
-          it { is_expected.to be_an_instance_of(type) }
+          it { is_expected.to be_an_instance_of(override_type || type) }
         end
       end
 
@@ -72,7 +80,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         end
 
         it 'only takes the last example in to account' do
-          expect(subject).to be_an_instance_of(CodeSuggestions::Tasks::CodeGeneration::FromComment)
+          expect(subject).to be_an_instance_of(override_type || CodeSuggestions::Tasks::CodeGeneration::FromComment)
         end
       end
 
@@ -87,7 +95,7 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
         end
 
         it 'only takes the last example in to account' do
-          expect(subject).to be_an_instance_of(CodeSuggestions::Tasks::CodeCompletion)
+          expect(subject).to be_an_instance_of(override_type || CodeSuggestions::Tasks::CodeCompletion)
         end
       end
     end
@@ -113,6 +121,39 @@ RSpec.describe CodeSuggestions::TaskSelector, feature_category: :code_suggestion
       let(:case_insensitive_prefixes) { Array.new(4, '') }
 
       it_behaves_like 'correct task detector'
+    end
+
+    context 'with intent param' do
+      let(:skip_comment) { false }
+
+      context 'with the generation intent' do
+        let(:intent) { 'generation' }
+        let(:override_type) { CodeSuggestions::Tasks::CodeGeneration::FromComment }
+        let(:generate_prefix) { '' }
+        let(:case_insensitive_prefixes) { Array.new(4, '') }
+
+        it_behaves_like 'correct task detector'
+
+        context 'when the instructions do not exist for generation' do
+          let(:prefix) { "def fibonacci(i)" }
+
+          it 'will still choose generation and set the prefix to the content' do
+            result = subject
+            expect(result).to be_an_instance_of(CodeSuggestions::Tasks::CodeGeneration::FromComment)
+
+            expect(result.send(:params)[:prefix]).to eq(prefix)
+          end
+        end
+      end
+
+      context 'with the completion intent' do
+        let(:intent) { 'completion' }
+        let(:override_type) { CodeSuggestions::Tasks::CodeCompletion }
+        let(:generate_prefix) { '' }
+        let(:case_insensitive_prefixes) { Array.new(4, '') }
+
+        it_behaves_like 'correct task detector'
+      end
     end
   end
 end
