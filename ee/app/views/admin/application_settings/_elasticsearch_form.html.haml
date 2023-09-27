@@ -8,7 +8,7 @@
   .settings-header
     %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
       = _('Advanced Search')
-    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle', data: { qa_selector: 'expand_advanced_search_button' } }) do
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle', data: { testid: 'expand-advanced-search-button' } }) do
       = expanded_by_default? ? _('Collapse') : _('Expand')
     %p.gl-text-secondary
       = _('Configure settings for Advanced Search with Elasticsearch.')
@@ -35,9 +35,9 @@
 
             .form-group
               - unless Gitlab::CurrentSettings.elasticsearch_indexing?
-                = f.gitlab_ui_checkbox_component :elasticsearch_indexing, s_('AdminSettings|Elasticsearch indexing'), checkbox_options: { data: { qa_selector: 'indexing_checkbox' } }, help_text: s_('AdminSettings|If there isn\'t any existing index, GitLab creates one.')
+                = f.gitlab_ui_checkbox_component :elasticsearch_indexing, s_('AdminSettings|Elasticsearch indexing'), checkbox_options: { data: { testid: 'indexing-checkbox' } }, help_text: s_('AdminSettings|If there isn\'t any existing index, GitLab creates one.')
               - if Gitlab::CurrentSettings.elasticsearch_indexing?
-                = f.gitlab_ui_checkbox_component :elasticsearch_indexing, s_('AdminSettings|Elasticsearch indexing'), checkbox_options: { data: { qa_selector: 'indexing_checkbox' } }
+                = f.gitlab_ui_checkbox_component :elasticsearch_indexing, s_('AdminSettings|Elasticsearch indexing'), checkbox_options: { data: { testid: 'indexing-checkbox' } }
                 = render Pajamas::ButtonComponent.new(variant: :confirm, href: admin_elasticsearch_enqueue_index_path, method: :post) do
                   = _('Index all projects')
 
@@ -48,14 +48,14 @@
               = f.gitlab_ui_checkbox_component :elasticsearch_pause_indexing, s_('AdminSettings|Pause Elasticsearch indexing'), checkbox_options: { data: { qa_selector: 'pause_checkbox' }, disabled: disable_checkbox }, help_text: pending_migration_running_and_pauses_indexing ? s_('AdminSettings|There are Advanced Search migrations pending that require indexing to pause. Indexing must remain paused until GitLab completes the migrations.') : s_('AdminSettings|Use for cluster and index migrations. When indexing is paused, GitLab still tracks changes.')
 
             .form-group
-              = f.gitlab_ui_checkbox_component :elasticsearch_search, s_('AdminSettings|Search with Elasticsearch enabled'), checkbox_options: { data: { qa_selector: 'search_checkbox' } }, help_text: s_('AdminSettings|Disable Elasticsearch until indexing completes.')
+              = f.gitlab_ui_checkbox_component :elasticsearch_search, s_('AdminSettings|Search with Elasticsearch enabled'), checkbox_options: { data: { testid: 'search-checkbox' } }, help_text: s_('AdminSettings|Disable Elasticsearch until indexing completes.')
 
             .form-group
               = f.gitlab_ui_checkbox_component :elasticsearch_requeue_workers, s_('AdminSettings|Requeue indexing workers'), checkbox_options: { data: { qa_selector: 'requeue_workers_checkbox' } }, help_text: s_('AdminSettings|Improve non-code indexing throughput by enqueuing Sidekiq jobs until all documents are processed.')
 
             .form-group
               = f.label :elasticsearch_url, 'URL', class: 'label-bold'
-              = f.text_field :elasticsearch_url, value: @application_setting.elasticsearch_url.join(', '), class: 'form-control gl-form-input', placeholder: 'http://localhost:9200, http://localhost:9201', data: { qa_selector: 'url_field' }
+              = f.text_field :elasticsearch_url, value: @application_setting.elasticsearch_url.join(', '), class: 'form-control gl-form-input', placeholder: 'http://localhost:9200, http://localhost:9201', data: { testid: 'url-field' }
               .form-text.gl-text-gray-600.gl-mt-0
                 = _('The URLs for connecting to Elasticsearch. For clustering, add the URLs separated by commas.')
 
@@ -199,7 +199,7 @@
               .form-text.gl-text-gray-600.gl-mt-0
                 = _('Required only if you are not using role instance credentials.')
 
-      = f.submit _('Save changes'), data: { qa_selector: 'submit_button' }, pajamas_button: true
+      = f.submit _('Save changes'), data: { testid: 'submit-button' }, pajamas_button: true
 
 %section.settings.as-elasticsearch-reindexing.no-animate#js-elasticsearch-reindexing{ class: ('expanded' if expanded_by_default?) }
   .settings-header

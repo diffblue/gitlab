@@ -46,7 +46,7 @@ module EE
               link: advanced_search_admin_application_settings_path,
               active_routes: { path: 'admin/application_settings#advanced_search' },
               item_id: :advanced_search,
-              container_html_options: { 'data-qa-selector': 'admin_settings_advanced_search_link' }
+              container_html_options: { testid: 'admin-settings-advanced-search-link' }
             )
           end
 
@@ -60,7 +60,7 @@ module EE
               link: templates_admin_application_settings_path,
               active_routes: { path: 'admin/application_settings#templates' },
               item_id: :admin_templates,
-              container_html_options: { 'data-qa-selector': 'admin_settings_templates_link' }
+              container_html_options: { testid: 'admin-settings-templates-link' }
             )
           end
 
@@ -74,7 +74,7 @@ module EE
               link: security_and_compliance_admin_application_settings_path,
               active_routes: { path: 'admin/application_settings#security_and_compliance' },
               item_id: :admin_security_and_compliance,
-              container_html_options: { 'data-qa-selector': 'admin_security_and_compliance_link' }
+              container_html_options: { testid: 'admin-security-and-compliance-link' }
             )
           end
         end
