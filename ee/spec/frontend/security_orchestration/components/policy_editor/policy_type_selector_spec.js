@@ -11,32 +11,70 @@ describe('PolicyTypeSelector component', () => {
       stubs: { GlCard: true },
       provide: {
         policiesPath,
+        maxScanExecutionPoliciesAllowed: 5,
+        maxScanResultPoliciesAllowed: 5,
+        maxActiveScanExecutionPoliciesReached: true,
+        maxActiveScanResultPoliciesReached: false,
         ...provide,
       },
     });
   };
 
-  describe.each`
-    id                                                          | title                                               | description
-    ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${PolicyTypeSelector.i18n.scanResultPolicyTitle}    | ${PolicyTypeSelector.i18n.scanResultPolicyDesc}
-    ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${PolicyTypeSelector.i18n.scanExecutionPolicyTitle} | ${PolicyTypeSelector.i18n.scanExecutionPolicyDesc}
-  `('selection card: $title', ({ id, title, description }) => {
-    beforeEach(() => {
-      factory();
+  const findPolicyButton = (urlParameter) => wrapper.findByTestId(`select-policy-${urlParameter}`);
+  const findMaxAllowedPolicyText = (urlParameter) =>
+    wrapper.findByTestId(`max-allowed-text-${urlParameter}`);
+
+  describe('cards', () => {
+    describe.each`
+      title                                               | description
+      ${PolicyTypeSelector.i18n.scanResultPolicyTitle}    | ${PolicyTypeSelector.i18n.scanResultPolicyDesc}
+      ${PolicyTypeSelector.i18n.scanExecutionPolicyTitle} | ${PolicyTypeSelector.i18n.scanExecutionPolicyDesc}
+    `('selection card: $title', ({ title, description }) => {
+      beforeEach(() => {
+        factory();
+      });
+
+      it(`displays the title`, () => {
+        expect(wrapper.findByText(title).exists()).toBe(true);
+      });
+
+      it(`displays the description`, () => {
+        expect(wrapper.findByText(description).exists()).toBe(true);
+      });
     });
 
-    it(`should display the title`, () => {
-      expect(wrapper.findByText(title).exists()).toBe(true);
-    });
+    describe('navigation button', () => {
+      beforeEach(() => {
+        factory();
+      });
 
-    it(`should display the description`, () => {
-      expect(wrapper.findByText(description).exists()).toBe(true);
-    });
+      it('displays the button for policy types that have not reached their max number allowed', () => {
+        expect(
+          findPolicyButton(POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter).exists(),
+        ).toBe(true);
+        expect(
+          findPolicyButton(POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter).attributes(
+            'href',
+          ),
+        ).toContain(`?type=${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}`);
+        expect(
+          findMaxAllowedPolicyText(POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter).exists(),
+        ).toBe(false);
+      });
 
-    it(`should have a button to link to the second page`, () => {
-      expect(wrapper.findByTestId(`select-policy-${id}`).attributes('href')).toContain(
-        `?type=${id}`,
-      );
+      it('displays warning text for policy types that have reached their max number allowed', () => {
+        expect(
+          findPolicyButton(POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter).exists(),
+        ).toBe(false);
+        expect(
+          findMaxAllowedPolicyText(
+            POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
+          ).exists(),
+        ).toBe(true);
+        expect(
+          findMaxAllowedPolicyText(POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter).text(),
+        ).toBe('');
+      });
     });
   });
 
