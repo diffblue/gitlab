@@ -17,17 +17,37 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::CreateService, feature
   end
 
   describe '#execute' do
+    let(:log_params) do
+      {
+        user: user.username,
+        add_on: add_on_purchase.add_on.name,
+        namespace: namespace.path
+      }
+    end
+
     shared_examples 'success response' do
       it 'creates new records' do
+        expect(Gitlab::AppLogger).to receive(:info).with(log_params.merge(message: 'User AddOn assignment created'))
+
         expect { subject }.to change { add_on_purchase.assigned_users.where(user: user).count }.by(1)
         expect(response).to be_success
       end
     end
 
-    shared_examples 'error response' do |error_message|
+    shared_examples 'error response' do |error|
       it 'does not create new records' do
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          log_params.merge(
+            {
+              message: 'User AddOn assignment creation failed',
+              error: error,
+              error_code: 422
+            }
+          )
+        )
+
         expect { subject }.not_to change { add_on_purchase.assigned_users.count }
-        expect(response.errors).to include(error_message)
+        expect(response.errors).to include(error)
       end
     end
 
@@ -137,6 +157,11 @@ RSpec.describe GitlabSubscriptions::UserAddOnAssignments::CreateService, feature
           # Mock first call to return true to pass the validate phase
           expect(service_instance).to receive(:seats_available?).and_return(true)
           expect(service_instance).to receive(:seats_available?).and_call_original
+
+          expect(Gitlab::ErrorTracking).to receive(:log_exception).with(
+            an_instance_of(described_class::NoSeatsAvailableError),
+            log_params.merge({ message: 'User AddOn assignment creation failed' })
+          )
 
           expect { subject }.not_to raise_error
           expect(response.errors).to include('NO_SEATS_AVAILABLE')
