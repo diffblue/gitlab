@@ -51,7 +51,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
       before do
         stub_licensed_features(product_analytics: licensed)
         stub_feature_flags(product_analytics_dashboards: enabled)
-        project.add_role(user, user_role)
+        project.add_role(user, user_role) # rubocop:disable RSpec/BeforeAllRoleAssignment
         project.project_setting.update!(product_analytics_instrumentation_key: snowplow_instrumentation_key)
         project.reload
       end
@@ -88,8 +88,6 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
     end
 
     before do
-      project.add_developer(user)
-
       stub_application_setting(product_analytics_enabled?: true)
       stub_licensed_features(product_analytics: true)
       stub_feature_flags(product_analytics_dashboards: true)
@@ -101,6 +99,10 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
       allow_next_instance_of(Resolvers::ProductAnalytics::StateResolver) do |instance|
         allow(instance).to receive(:initializing?).and_return(false)
       end
+    end
+
+    before_all do
+      project.add_developer(user)
     end
 
     subject do

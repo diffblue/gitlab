@@ -41,7 +41,7 @@ module Analytics
 
     def collector_host(project)
       if project?(project)
-        ProductAnalytics::Settings.for_project(project).product_analytics_data_collector_host
+        ::ProductAnalytics::Settings.for_project(project).product_analytics_data_collector_host
       else
         ::Gitlab::CurrentSettings.product_analytics_data_collector_host
       end
@@ -58,7 +58,7 @@ module Analytics
     end
 
     def product_analytics_enabled?(project)
-      ProductAnalytics::Settings.for_project(project).enabled? &&
+      ::ProductAnalytics::Settings.for_project(project).enabled? &&
         ::Feature.enabled?(:product_analytics_dashboards, project) &&
         project.licensed_feature_available?(:product_analytics) &&
         can?(current_user, :read_product_analytics, project)

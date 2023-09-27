@@ -1211,6 +1211,13 @@ module EE
       security_policy_bots.take
     end
 
+    def product_analytics_events_used(year: Time.current.year, month: Time.current.month)
+      return 0 unless ::ProductAnalytics::Settings.new(project: self).enabled?
+
+      ::Analytics::ProductAnalytics::ProjectUsageData.new(project_id: id)
+                                                     .events_stored_count(year: year, month: month)
+    end
+
     private
 
     def latest_ingested_sbom_pipeline_id_redis_key
