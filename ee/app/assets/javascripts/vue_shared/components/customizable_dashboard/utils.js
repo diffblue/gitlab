@@ -71,8 +71,10 @@ export const isEmptyPanelData = (visualizationType, data) => {
 /**
  * Validator for the availableVisualizations property
  */
-export const availableVisualizationsValidator = ({ loading, visualizations }) => {
-  return typeof loading === 'boolean' && Array.isArray(visualizations);
+export const availableVisualizationsValidator = ({ loading, hasError, visualizations }) => {
+  return (
+    typeof loading === 'boolean' && typeof hasError === 'boolean' && Array.isArray(visualizations)
+  );
 };
 
 /**

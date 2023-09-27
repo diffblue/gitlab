@@ -138,12 +138,21 @@ describe('isEmptyPanelData', () => {
 
 describe('availableVisualizationsValidator', () => {
   it('returns true when the object contains all properties', () => {
-    const result = availableVisualizationsValidator({ loading: false, visualizations: [] });
+    const result = availableVisualizationsValidator({
+      loading: false,
+      hasError: false,
+      visualizations: [],
+    });
     expect(result).toBe(true);
   });
 
-  it('returns false when the object does not contain all properties', () => {
-    const result = availableVisualizationsValidator({ visualizations: [] });
+  it.each([
+    { visualizations: [] },
+    { hasError: false },
+    { loading: true },
+    { loading: true, hasError: false },
+  ])('returns false when the object does not contain all properties', (testCase) => {
+    const result = availableVisualizationsValidator(testCase);
     expect(result).toBe(false);
   });
 });

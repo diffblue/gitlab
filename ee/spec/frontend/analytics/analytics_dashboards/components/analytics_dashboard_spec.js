@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/browser';
 import { GlSkeletonLoader, GlEmptyState } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
@@ -30,6 +31,8 @@ import {
   TEST_CUSTOM_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE,
 } from '../mock_data';
+
+jest.mock('@sentry/browser');
 
 const mockAlertDismiss = jest.fn();
 jest.mock('~/alert', () => ({
@@ -306,6 +309,41 @@ describe('AnalyticsDashboard', () => {
 
       expect(mockAvailableVisualizationsHandler).not.toHaveBeenCalled();
       expect(findDashboard().exists()).toBe(false);
+    });
+
+    describe('when available visualizations fail to load', () => {
+      const error = new Error('ruh roh some error');
+
+      beforeEach(() => {
+        mockDashboardResponse(TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+        mockAvailableVisualizationsHandler = jest.fn().mockRejectedValue(error);
+
+        createWrapper({
+          glFeatures: {
+            combinedAnalyticsDashboardsEditor: true,
+          },
+          routeSlug:
+            TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE.data.project.customizableDashboards
+              .nodes[0]?.slug,
+        });
+        return waitForPromises();
+      });
+
+      it('renders the dashboard', () => {
+        expect(findDashboard().exists()).toBe(true);
+      });
+
+      it('sets error state on the visualizations drawer', () => {
+        expect(findDashboard().props().availableVisualizations).toMatchObject({
+          loading: false,
+          hasError: true,
+          visualizations: [],
+        });
+      });
+
+      it(`should capture the exception in Sentry`, () => {
+        expect(Sentry.captureException).toHaveBeenCalledWith(error);
+      });
     });
   });
 

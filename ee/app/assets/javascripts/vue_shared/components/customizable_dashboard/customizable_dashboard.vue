@@ -462,6 +462,7 @@ export default {
         <available-visualizations-drawer
           :visualizations="availableVisualizations.visualizations"
           :loading="availableVisualizations.loading"
+          :has-error="availableVisualizations.hasError"
           :open="visualizationDrawerOpen"
           @select="addSelectedVisualizations"
           @close="closeVisualizationDrawer"

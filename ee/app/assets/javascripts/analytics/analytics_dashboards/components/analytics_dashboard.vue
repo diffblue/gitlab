@@ -1,4 +1,5 @@
 <script>
+import * as Sentry from '@sentry/browser';
 import { GlEmptyState, GlSkeletonLoader } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
@@ -58,6 +59,7 @@ export default {
       showEmptyState: false,
       availableVisualizations: {
         loading: true,
+        hasError: false,
         visualizations: [],
       },
       defaultFilters: buildDefaultDashboardFilters(window.location.search),
@@ -153,13 +155,18 @@ export default {
         const visualizations = data?.project?.customizableDashboardVisualizations?.nodes;
         return {
           loading: false,
+          hasError: false,
           visualizations,
         };
       },
       error(error) {
-        // TODO: Show user friendly errors when request fails
-        // https://gitlab.com/gitlab-org/gitlab/-/issues/425119
-        throw error;
+        this.availableVisualizations = {
+          loading: false,
+          hasError: true,
+          visualizations: [],
+        };
+
+        Sentry.captureException(error);
       },
     },
   },
