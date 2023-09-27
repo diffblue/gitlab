@@ -194,6 +194,7 @@ RSpec.describe BackfillWikiPermissionsInMainIndex, :elastic_delete_by_query, :si
 
       5.times do |_|
         migration.migrate
+        sleep 0.01
         break if old_migration_state != migration.migration_state[:projects_in_progress]
       end
 
@@ -207,6 +208,7 @@ RSpec.describe BackfillWikiPermissionsInMainIndex, :elastic_delete_by_query, :si
       old_migration_state = migration.migration_state[:projects_in_progress]
       5.times do |_|
         migration.migrate
+        sleep 0.01
         break if old_migration_state != migration.migration_state[:projects_in_progress]
       end
 
@@ -218,6 +220,7 @@ RSpec.describe BackfillWikiPermissionsInMainIndex, :elastic_delete_by_query, :si
       old_migration_state = migration.migration_state[:projects_in_progress]
       5.times do |_|
         migration.migrate
+        sleep 0.01
         break if old_migration_state != migration.migration_state[:projects_in_progress]
       end
 
@@ -229,6 +232,7 @@ RSpec.describe BackfillWikiPermissionsInMainIndex, :elastic_delete_by_query, :si
       old_migration_state = migration.migration_state[:projects_in_progress]
       5.times do |_|
         migration.migrate
+        sleep 0.01
         break if old_migration_state != migration.migration_state[:projects_in_progress]
       end
 
