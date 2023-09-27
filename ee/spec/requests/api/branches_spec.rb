@@ -32,12 +32,15 @@ RSpec.describe API::Branches, feature_category: :source_code_management do
       end
 
       context 'with blocking scan result policy' do
-        include_context 'with scan result policy blocking protected branches'
+        include_context 'with scan result policy blocking protected branches' do
+          let(:branch_name) { protected_branch.name }
+          let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: protected_branch.project) }
 
-        it 'blocks unprotecting branches' do
-          protect
+          it 'blocks unprotecting branches' do
+            protect
 
-          expect(response).to have_gitlab_http_status(:forbidden)
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
         end
       end
     end
@@ -49,12 +52,17 @@ RSpec.describe API::Branches, feature_category: :source_code_management do
     end
 
     context 'with blocking scan result policy' do
-      include_context 'with scan result policy blocking protected branches'
+      include_context 'with scan result policy blocking protected branches' do
+        let(:branch_name) { protected_branch.name }
+        let(:policy_configuration) do
+          create(:security_orchestration_policy_configuration, project: protected_branch.project)
+        end
 
-      it 'blocks unprotecting branches' do
-        unprotect
+        it 'blocks unprotecting branches' do
+          unprotect
 
-        expect(response).to have_gitlab_http_status(:forbidden)
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
       end
     end
   end
