@@ -29,14 +29,20 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
 
     context 'when feature flag "merge_when_checks_pass" is enabled' do
       before do
-        stub_feature_flags(merge_when_checks_pass: project)
+        stub_feature_flags(merge_when_checks_pass: project, additional_merge_when_checks_ready: additional_feature_flag)
+        mr_merge_if_green_enabled.update!(title: 'Draft: check') if draft_status
       end
 
-      where(:pipeline_status, :approvals_required, :result) do
-        :running | 0 | true
-        :success | 0 | false
-        :running | 1 | true
-        :success | 1 | true
+      where(:pipeline_status, :approvals_required, :draft_status, :additional_feature_flag, :result) do
+        :running | 0 | true | true | true
+        :running | 0 | false | true | true
+        :success | 0 | false | true | false
+        :success | 0 | true | true | true
+        :success | 0 | true | false | false
+        :running | 1 | true | true | true
+        :success | 1 | true | true | true
+        :success | 1 | false | true | true
+        :running | 1 | false | true | true
       end
 
       with_them do
@@ -47,13 +53,14 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
     context 'when feature flag "merge_when_checks_pass" is disabled' do
       before do
         stub_feature_flags(merge_when_checks_pass: false)
+        mr_merge_if_green_enabled.update!(title: 'Draft: check') if draft_status
       end
 
-      where(:pipeline_status, :approvals_required, :result) do
-        :running | 0 | false
-        :success | 0 | false
-        :running | 1 | false
-        :success | 1 | false
+      where(:pipeline_status, :approvals_required, :draft_status, :result) do
+        :running | 0 | true  | false
+        :success | 0 | false | false
+        :running | 1 | false | false
+        :success | 1 | true | false
       end
 
       with_them do
@@ -118,10 +125,24 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
             create(:approval, merge_request: mr_merge_if_green_enabled, user: approver2)
           end
 
-          it 'merges the merge request' do
-            expect(MergeWorker).to receive(:perform_async)
+          context 'when mr is not draft' do
+            it 'merges the merge request' do
+              expect(MergeWorker).to receive(:perform_async)
 
-            service.process(mr_merge_if_green_enabled)
+              service.process(mr_merge_if_green_enabled)
+            end
+          end
+
+          context 'when mr is draft' do
+            before do
+              mr_merge_if_green_enabled.update!(title: 'Draft: check')
+            end
+
+            it 'does not merge request' do
+              expect(MergeWorker).not_to receive(:perform_async)
+
+              service.process(mr_merge_if_green_enabled)
+            end
           end
         end
 
@@ -146,5 +167,23 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
 
   describe '#abort' do
     it_behaves_like 'auto_merge service #abort'
+  end
+
+  describe '#skip_draft_check' do
+    context 'when additional_merge_when_checks_ready is true' do
+      it 'returns true' do
+        expect(service.skip_draft_check(mr_merge_if_green_enabled)).to eq(true)
+      end
+    end
+
+    context 'when additional_merge_when_checks_ready is false' do
+      before do
+        stub_feature_flags(additional_merge_when_checks_ready: false)
+      end
+
+      it 'returns false' do
+        expect(service.skip_draft_check(mr_merge_if_green_enabled)).to eq(false)
+      end
+    end
   end
 end

@@ -2,6 +2,13 @@
 
 module AutoMerge
   class MergeWhenChecksPassService < AutoMerge::MergeWhenPipelineSucceedsService
+    extend Gitlab::Utils::Override
+
+    override :skip_draft_check
+    def skip_draft_check(merge_request)
+      Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project)
+    end
+
     private
 
     def add_system_note(merge_request)
@@ -19,7 +26,9 @@ module AutoMerge
       return false if Feature.disabled?(:merge_when_checks_pass, merge_request.project)
       return false unless merge_request.approval_feature_available?
 
-      super || !merge_request.approved?
+      super ||
+        !merge_request.approved? ||
+        (merge_request.draft? && Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project))
     end
   end
 end

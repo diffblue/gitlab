@@ -29,6 +29,7 @@ module EE
             if: -> (_) { ::Gitlab::Geo.primary? }
           store.subscribe ::MergeRequests::StreamApprovalAuditEventWorker, to: ::MergeRequests::ApprovedEvent
           store.subscribe ::MergeRequests::ProcessApprovalAutoMergeWorker, to: ::MergeRequests::ApprovedEvent
+          store.subscribe ::MergeRequests::ProcessApprovalAutoMergeWorker, to: ::MergeRequests::DraftStateChangeEvent
           store.subscribe ::PullMirrors::ReenableConfigurationWorker, to: ::GitlabSubscriptions::RenewedEvent
           store.subscribe ::Search::ElasticDefaultBranchChangedWorker,
             to: ::Repositories::DefaultBranchChangedEvent,
