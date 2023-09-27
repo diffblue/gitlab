@@ -1,5 +1,8 @@
-mutation userAddOnAssignmentCreate($input: UserAddOnAssignmentCreateInput!) {
-  userAddOnAssignmentCreate(input: $input) {
+mutation userAddOnAssignmentCreate(
+  $userId: UserID!
+  $addOnPurchaseId: GitlabSubscriptionsAddOnPurchaseID!
+) {
+  userAddOnAssignmentCreate(input: { userId: $userId, addOnPurchaseId: $addOnPurchaseId }) {
     errors
     clientMutationId
     addOnPurchase {
@@ -7,6 +10,17 @@ mutation userAddOnAssignmentCreate($input: UserAddOnAssignmentCreateInput!) {
       name
       purchasedQuantity
       assignedQuantity
+    }
+    user {
+      id
+      addOnAssignments(addOnPurchaseIds: [$addOnPurchaseId]) {
+        nodes {
+          # eslint-disable-next-line @graphql-eslint/require-id-when-available
+          addOnPurchase {
+            name
+          }
+        }
+      }
     }
   }
 }

@@ -86,7 +86,8 @@ export default {
   apollo: {
     addOnEligibleUsers: {
       query: getAddOnEligibleUsers,
-      fetchPolicy: fetchPolicies.CACHE_AND_NETWORK,
+      fetchPolicy: fetchPolicies.NETWORK_ONLY,
+      nextFetchPolicy: fetchPolicies.CACHE_FIRST,
       variables() {
         return this.queryVariables;
       },
@@ -226,6 +227,7 @@ export default {
           :user-id="item.id"
           :add-on-assignments="item.addOnAssignments"
           :add-on-purchase-id="addOnPurchaseId"
+          :add-on-eligible-users-query-variables="queryVariables"
           @handleAddOnAssignmentError="handleAddOnAssignmentError"
           @clearAddOnAssignmentError="clearAddOnAssignmentError"
         />

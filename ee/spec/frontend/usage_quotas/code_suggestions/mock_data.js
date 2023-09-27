@@ -52,31 +52,31 @@ export const mockNoAddOnEligibleUsers = {
   },
 };
 
+export const mockUserWithAddOnAssignment = {
+  id: 'gid://gitlab/User/1',
+  username: 'userone',
+  name: 'User One',
+  publicEmail: null,
+  avatarUrl: 'path/to/img_userone',
+  webUrl: 'path/to/userone',
+  lastActivityOn: '2023-08-25',
+  addOnAssignments: { nodes: [{ addOnPurchase: { name: 'CODE_SUGGESTIONS' } }] },
+};
+
+export const mockUserWithNoAddOnAssignment = {
+  id: 'gid://gitlab/User/2',
+  username: 'usertwo',
+  name: 'User Two',
+  publicEmail: null,
+  avatarUrl: 'path/to/img_usertwo',
+  webUrl: 'path/to/usertwo',
+  lastActivityOn: '2023-08-22',
+  addOnAssignments: { nodes: [] },
+};
+
 const eligibleUsers = [
-  {
-    node: {
-      id: 'gid://gitlab/User/1',
-      username: 'userone',
-      name: 'User One',
-      publicEmail: null,
-      avatarUrl: 'path/to/img_userone',
-      webUrl: 'path/to/userone',
-      lastActivityOn: '2023-08-25',
-      addOnAssignments: { nodes: [{ addOnPurchase: { name: 'CODE_SUGGESTIONS' } }] },
-    },
-  },
-  {
-    node: {
-      id: 'gid://gitlab/User/2',
-      username: 'usertwo',
-      name: 'User Two',
-      publicEmail: null,
-      avatarUrl: 'path/to/img_usertwo',
-      webUrl: 'path/to/usertwo',
-      lastActivityOn: '2023-08-22',
-      addOnAssignments: { nodes: [] },
-    },
-  },
+  { node: mockUserWithAddOnAssignment },
+  { node: mockUserWithNoAddOnAssignment },
 ];
 
 export const mockAddOnEligibleUsers = {

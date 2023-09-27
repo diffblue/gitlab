@@ -162,13 +162,20 @@ describe('Add On Eligible User List', () => {
               userId: 'gid://gitlab/User/1',
               addOnAssignments: [{ addOnPurchase: { name: 'CODE_SUGGESTIONS' } }],
               addOnPurchaseId,
+              addOnEligibleUsersQueryVariables: defaultQueryVariables,
             },
-            { userId: 'gid://gitlab/User/2', addOnAssignments: [], addOnPurchaseId },
+            {
+              userId: 'gid://gitlab/User/2',
+              addOnAssignments: [],
+              addOnPurchaseId,
+              addOnEligibleUsersQueryVariables: defaultQueryVariables,
+            },
           ];
           const actualProps = findAllCodeSuggestionsAddonComponents().wrappers.map((item) => ({
             userId: item.props('userId'),
             addOnAssignments: item.props('addOnAssignments'),
-            addOnPurchaseId,
+            addOnPurchaseId: item.props('addOnPurchaseId'),
+            addOnEligibleUsersQueryVariables: item.props('addOnEligibleUsersQueryVariables'),
           }));
 
           expect(actualProps).toMatchObject(expectedProps);
