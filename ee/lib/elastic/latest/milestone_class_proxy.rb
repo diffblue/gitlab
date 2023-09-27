@@ -19,6 +19,10 @@ module Elastic
         search(query_hash, options)
       end
 
+      def preload_indexing_data(relation)
+        relation.preload_for_indexing
+      end
+
       private
 
       def archived_filter_applicable?(options)
