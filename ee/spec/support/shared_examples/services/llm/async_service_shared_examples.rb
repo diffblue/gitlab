@@ -1,22 +1,23 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'completion worker sync and async' do
+  let(:resonse_double) { instance_double(Gitlab::Llm::BaseResponseModifier, response_body: "response") }
+  let(:expected_options) { options.merge(request_id: 'uuid') }
+
   before do
     allow(SecureRandom).to receive(:uuid).and_return('uuid')
   end
 
-  context 'when running synchronously' do
+  context 'when enabling sync execution via environment variables' do
     before do
-      options[:sync] = true
+      stub_env('LLM_DEVELOPMENT_SYNC_EXECUTION', true)
     end
 
-    it 'worker runs synchronously' do
-      expected_options = options.merge(request_id: 'uuid')
-
+    it 'runs worker synchronously' do
       expect_next_instance_of(Llm::CompletionWorker) do |worker|
         expect(worker).to receive(:perform).with(
           user.id, resource.id, resource.class.name, action_name, hash_including(**expected_options)
-        ).and_return({})
+        ).and_return(resonse_double)
       end
 
       expect(subject.execute).to be_success
@@ -25,13 +26,10 @@ RSpec.shared_examples 'completion worker sync and async' do
 
   context 'when running asynchronously' do
     before do
-      options[:sync] = false
       allow(::Llm::CompletionWorker).to receive(:perform_async)
     end
 
     it 'worker runs asynchronously with correct params' do
-      expected_options = options.merge(request_id: 'uuid')
-
       expect(::Llm::CompletionWorker)
         .to receive(:perform_async)
         .with(user.id, resource.id, resource.class.name, action_name, hash_including(**expected_options))

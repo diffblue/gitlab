@@ -70,11 +70,11 @@ module Llm
         options: options
       )
 
-      if options[:sync] == true
+      if development_sync_execution?
         response_data = ::Llm::CompletionWorker.new.perform(
           user.id, resource&.id, resource&.class&.name, action_name, options
         )
-        payload.merge!(response_data)
+        payload[:response] = response_data
       else
         ::Llm::CompletionWorker.perform_async(user.id, resource&.id, resource&.class&.name, action_name, options)
       end
@@ -113,6 +113,10 @@ module Llm
       return false if options[:internal_request]
 
       options.fetch(:cache_response, false)
+    end
+
+    def development_sync_execution?
+      Gitlab.dev_or_test_env? && Gitlab::Utils.to_boolean(ENV['LLM_DEVELOPMENT_SYNC_EXECUTION'])
     end
 
     def emit_response?(options)
