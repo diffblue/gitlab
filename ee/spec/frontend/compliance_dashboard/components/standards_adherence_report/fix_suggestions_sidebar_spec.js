@@ -1,5 +1,6 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import FixSuggestionsSidebar from 'ee/compliance_dashboard/components/standards_adherence_report/fix_suggestions_sidebar.vue';
+import { DOCS_URL_IN_EE_DIR } from '~/lib/utils/url_utility';
 
 describe('FixSuggestionsSidebar component', () => {
   let wrapper;
@@ -8,6 +9,7 @@ describe('FixSuggestionsSidebar component', () => {
   const findRequirementSectionContent = () => wrapper.findByTestId('sidebar-requirement-content');
   const findFailureSectionReasonTitle = () => wrapper.findByTestId('sidebar-failure-title');
   const findFailureSectionReasonContent = () => wrapper.findByTestId('sidebar-failure-content');
+  const findSuccessSectionReasonContent = () => wrapper.findByTestId('sidebar-success-content');
   const findHowToFixSection = () => wrapper.findByTestId('sidebar-how-to-fix');
   const findManageRulesBtn = () => wrapper.findByTestId('sidebar-mr-settings-button');
   const findLearnMoreBtn = () => wrapper.findByTestId('sidebar-mr-settings-learn-more-button');
@@ -28,7 +30,7 @@ describe('FixSuggestionsSidebar component', () => {
         propsData: {
           adherence: {
             checkName: '',
-            status: 'PASS',
+            status: 'FAIL',
             project: {
               id: 'gid://gitlab/Project/21',
               name: 'example project',
@@ -56,13 +58,13 @@ describe('FixSuggestionsSidebar component', () => {
     });
   });
 
-  describe('content for each check type', () => {
+  describe('content for each check type related to MRs', () => {
     beforeEach(() => {
       createComponent({
         propsData: {
           adherence: {
             checkName: 'PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR',
-            status: 'PASS',
+            status: 'FAIL',
             project: {
               id: 'gid://gitlab/Project/21',
               name: 'example project',
@@ -73,7 +75,7 @@ describe('FixSuggestionsSidebar component', () => {
       });
     });
 
-    describe('for checks related to MRs', () => {
+    describe('for failed checks', () => {
       describe('for the `how to fix` section', () => {
         it('has the details', () => {
           expect(findHowToFixSection().text()).toContain('Merge request approval rules');
@@ -90,22 +92,53 @@ describe('FixSuggestionsSidebar component', () => {
             'example.com/groups/example-group/example-project/-/settings/merge_requests',
           );
         });
-
-        it('has the `learn more` button', () => {
-          expect(findLearnMoreBtn().text()).toBe('Learn more');
-
-          expect(findLearnMoreBtn().attributes('href')).toBe(
-            '/help/user/project/merge_requests/approvals/rules',
-          );
-        });
       });
 
       describe.each`
-        checkName                                         | expectedRequirement                                                                    | expectedFailureReason
-        ${'PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR'}     | ${'Have a valid rule that prevents author approved merge requests'}                    | ${'No rule is configured to prevent author approved merge requests.'}
-        ${'PREVENT_APPROVAL_BY_MERGE_REQUEST_COMMITTERS'} | ${'Have a valid rule that prevents merge requests approved by committers'}             | ${'No rule configured to prevent merge requests approved by committers.'}
-        ${'AT_LEAST_TWO_APPROVALS'}                       | ${'Have a valid rule that requires any merge request to have more than two approvals'} | ${'No rule is configured to require two approvals.'}
-      `('when check is $checkName', ({ checkName, expectedRequirement, expectedFailureReason }) => {
+        checkName                                         | expectedRequirement                                                                                  | expectedFailureReason                                                        | expectedLearnMoreDocsLink
+        ${'PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR'}     | ${'Have a valid rule that prevents author-approved merge requests from being merged'}                | ${'No rule is configured to prevent author approved merge requests.'}        | ${`${DOCS_URL_IN_EE_DIR}/user/compliance/compliance_center/#prevent-authors-as-approvers`}
+        ${'PREVENT_APPROVAL_BY_MERGE_REQUEST_COMMITTERS'} | ${'Have a valid rule that prevents users from approving merge requests where they’ve added commits'} | ${'No rule is configured to prevent merge requests approved by committers.'} | ${`${DOCS_URL_IN_EE_DIR}/user/compliance/compliance_center/#prevent-committers-as-approvers`}
+        ${'AT_LEAST_TWO_APPROVALS'}                       | ${'Have a valid rule that prevents merge requests with less than two approvals from being merged'}   | ${'No rule is configured to require two approvals.'}                         | ${`${DOCS_URL_IN_EE_DIR}/user/compliance/compliance_center/#at-least-two-approvals`}
+      `(
+        'when check is $checkName',
+        ({ checkName, expectedRequirement, expectedFailureReason, expectedLearnMoreDocsLink }) => {
+          beforeEach(() => {
+            createComponent({
+              propsData: {
+                adherence: {
+                  checkName,
+                  status: 'FAIL',
+                  project: {
+                    id: 'gid://gitlab/Project/21',
+                    name: 'example project',
+                  },
+                },
+              },
+            });
+          });
+
+          it('renders the requirement', () => {
+            expect(findRequirementSectionContent().text()).toBe(expectedRequirement);
+          });
+
+          it('renders the failure reason', () => {
+            expect(findFailureSectionReasonContent().text()).toBe(expectedFailureReason);
+          });
+
+          it('renders the `learn more` button with the correct href', () => {
+            expect(findLearnMoreBtn().attributes('href')).toBe(expectedLearnMoreDocsLink);
+          });
+        },
+      );
+    });
+
+    describe('for passed checks', () => {
+      describe.each`
+        checkName                                         | expectedRequirement                                                                                  | expectedSuccessReason
+        ${'PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR'}     | ${'Have a valid rule that prevents author-approved merge requests from being merged'}                | ${'A rule is configured to prevent author approved merge requests.'}
+        ${'PREVENT_APPROVAL_BY_MERGE_REQUEST_COMMITTERS'} | ${'Have a valid rule that prevents users from approving merge requests where they’ve added commits'} | ${'A rule is configured to prevent merge requests approved by committers.'}
+        ${'AT_LEAST_TWO_APPROVALS'}                       | ${'Have a valid rule that prevents merge requests with less than two approvals from being merged'}   | ${'A rule is configured to require two approvals.'}
+      `('when check is $checkName', ({ checkName, expectedRequirement, expectedSuccessReason }) => {
         beforeEach(() => {
           createComponent({
             propsData: {
@@ -125,8 +158,8 @@ describe('FixSuggestionsSidebar component', () => {
           expect(findRequirementSectionContent().text()).toBe(expectedRequirement);
         });
 
-        it('renders the failure reason', () => {
-          expect(findFailureSectionReasonContent().text()).toBe(expectedFailureReason);
+        it('renders the success reason', () => {
+          expect(findSuccessSectionReasonContent().text()).toBe(expectedSuccessReason);
         });
       });
     });

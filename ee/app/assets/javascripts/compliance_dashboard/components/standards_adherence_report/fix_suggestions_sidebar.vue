@@ -8,9 +8,11 @@ import {
   FAIL_STATUS,
   STANDARDS_ADHERENCE_CHECK_DESCRIPTIONS,
   STANDARDS_ADHERENCE_CHECK_FAILURE_REASONS,
+  STANDARDS_ADHERENCE_CHECK_SUCCESS_REASONS,
   STANDARDS_ADHERENCE_CHECK_MR_FIX_TITLE,
   STANDARDS_ADHERENCE_CHECK_MR_FIX_FEATURES,
   STANDARDS_ADHERENCE_CHECK_LABELS,
+  STANDARDS_ADHERENCE_CHECK_MR_FIX_LEARN_MORE_DOCS_LINKS,
 } from './constants';
 
 export default {
@@ -59,6 +61,12 @@ export default {
     adherenceCheckFailureReason() {
       return STANDARDS_ADHERENCE_CHECK_FAILURE_REASONS[this.adherence.checkName];
     },
+    adherenceCheckSuccessReason() {
+      return STANDARDS_ADHERENCE_CHECK_SUCCESS_REASONS[this.adherence.checkName];
+    },
+    adherenceCheckLearnMoreLink() {
+      return STANDARDS_ADHERENCE_CHECK_MR_FIX_LEARN_MORE_DOCS_LINKS[this.adherence.checkName];
+    },
   },
   standardsAdherenceCheckMRFixTitle: STANDARDS_ADHERENCE_CHECK_MR_FIX_TITLE,
   standardsAdherenceCheckMRFixes: STANDARDS_ADHERENCE_CHECK_MR_FIX_FEATURES,
@@ -85,7 +93,7 @@ export default {
             <gl-icon name="status_success" /> {{ __('Success') }}
           </span>
 
-          <gl-link :href="project.webUrl"> {{ project.name }} </gl-link>
+          <gl-link class="gl-mx-3" :href="project.webUrl"> {{ project.name }} </gl-link>
 
           <span v-for="framework in project.complianceFrameworks.nodes" :key="framework.id">
             <gl-badge size="sm" class="gl-mt-3"> {{ framework.name }}</gl-badge>
@@ -102,14 +110,20 @@ export default {
         <span data-testid="sidebar-requirement-content">{{ adherenceCheckDescription }}</span>
       </div>
 
-      <div>
+      <div v-if="isFailedStatus">
         <h4 data-testid="sidebar-failure-title" class="gl-mt-0">
           {{ s__('ComplianceStandardsAdherence|Failure reason') }}
         </h4>
         <span data-testid="sidebar-failure-content">{{ adherenceCheckFailureReason }}</span>
       </div>
+      <div v-else>
+        <h4 data-testid="sidebar-success-title" class="gl-mt-0">
+          {{ s__('ComplianceStandardsAdherence|Success reason') }}
+        </h4>
+        <span data-testid="sidebar-success-content">{{ adherenceCheckSuccessReason }}</span>
+      </div>
 
-      <div data-testid="sidebar-how-to-fix">
+      <div v-if="isFailedStatus" data-testid="sidebar-how-to-fix">
         <div>
           <h4 class="gl-mt-0">{{ s__('ComplianceStandardsAdherence|How to fix') }}</h4>
         </div>
@@ -135,7 +149,7 @@ export default {
           </gl-button>
           <gl-button
             size="small"
-            :href="$options.projectMRSettingsDocsPath"
+            :href="adherenceCheckLearnMoreLink"
             data-testid="sidebar-mr-settings-learn-more-button"
           >
             {{ __('Learn more') }}
