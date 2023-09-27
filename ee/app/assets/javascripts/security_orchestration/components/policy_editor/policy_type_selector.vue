@@ -1,7 +1,7 @@
 <script>
 import shieldCheckIllustrationUrl from '@gitlab/svgs/dist/illustrations/secure-sm.svg?url';
 import magnifyingGlassIllustrationUrl from '@gitlab/svgs/dist/illustrations/search-sm.svg?url';
-import { GlCard, GlButton } from '@gitlab/ui';
+import { GlButton, GlCard, GlIcon, GlSprintf } from '@gitlab/ui';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { s__, __ } from '~/locale';
@@ -26,34 +26,51 @@ const i18n = {
   scanExecutionPolicyExample: s__(
     'SecurityOrchestration|Run a DAST scan with Scan Profile A and Site Profile A when a pipeline run against the main branch.',
   ),
+  maximumReachedWarning: s__(
+    'SecurityOrchestration|You already have the maximum %{maximumAllowed} %{policyType} policies.',
+  ),
 };
 
 export default {
   components: {
-    GlCard,
     GlButton,
+    GlCard,
+    GlIcon,
+    GlSprintf,
   },
   directives: {
     SafeHtml,
   },
   mixins: [glFeatureFlagsMixin()],
-  inject: ['policiesPath'],
+  inject: [
+    'maxActiveScanExecutionPoliciesReached',
+    'maxActiveScanResultPoliciesReached',
+    'maxScanExecutionPoliciesAllowed',
+    'maxScanResultPoliciesAllowed',
+    'policiesPath',
+  ],
   computed: {
     policies() {
       return [
         {
+          text: POLICY_TYPE_COMPONENT_OPTIONS.scanResult.text.toLowerCase(),
           urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter,
           title: i18n.scanResultPolicyTitle,
           description: i18n.scanResultPolicyDesc,
           example: i18n.scanResultPolicyExample,
           imageSrc: shieldCheckIllustrationUrl,
+          hasMax: this.maxActiveScanResultPoliciesReached,
+          maxPoliciesAllowed: this.maxScanResultPoliciesAllowed,
         },
         {
+          text: POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.text.toLowerCase(),
           urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
           title: i18n.scanExecutionPolicyTitle,
           description: i18n.scanExecutionPolicyDesc,
           example: i18n.scanExecutionPolicyExample,
           imageSrc: magnifyingGlassIllustrationUrl,
+          hasMax: this.maxActiveScanExecutionPoliciesReached,
+          maxPoliciesAllowed: this.maxScanExecutionPoliciesAllowed,
         },
       ];
     },
@@ -79,7 +96,7 @@ export default {
         body-class="gl-p-6 gl-display-flex gl-flex-grow-1"
       >
         <div class="gl-mr-6 gl-text-white">
-          <img aria-hidden="true" :src="option.imageSrc" />
+          <img :alt="option.title" aria-hidden="true" :src="option.imageSrc" />
         </div>
         <div class="gl-display-flex gl-flex-direction-column">
           <h4 class="gl-mt-0">{{ option.title }}</h4>
@@ -88,11 +105,24 @@ export default {
           <p class="gl-flex-grow-1">{{ option.example }}</p>
           <div>
             <gl-button
+              v-if="!option.hasMax"
               variant="confirm"
               :href="constructUrl(option.urlParameter)"
               :data-testid="`select-policy-${option.urlParameter}`"
-              >{{ $options.i18n.selectPolicy }}</gl-button
             >
+              {{ $options.i18n.selectPolicy }}
+            </gl-button>
+            <span
+              v-else
+              class="gl-text-orange-500"
+              :data-testid="`max-allowed-text-${option.urlParameter}`"
+            >
+              <gl-icon name="warning" />
+              <gl-sprintf :message="$options.i18n.maximumReachedWarning">
+                <template #maximumAllowed>{{ option.maxPoliciesAllowed }}</template>
+                <template #policyType>{{ option.text }}</template>
+              </gl-sprintf>
+            </span>
           </div>
         </div>
       </gl-card>
