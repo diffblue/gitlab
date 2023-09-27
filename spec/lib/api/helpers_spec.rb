@@ -782,12 +782,34 @@ RSpec.describe API::Helpers, feature_category: :shared do
     it 'tracks internal event' do
       expect(Gitlab::InternalEvents).to receive(:track_event).with(
         event_name,
+        send_snowplow_event: true,
         user: user,
         namespace: namespace,
         project: project
       )
 
-      helper.track_event(event_name, user: user, namespace_id: namespace.id, project_id: project.id)
+      helper.track_event(event_name,
+        user: user,
+        namespace_id: namespace.id,
+        project_id: project.id
+      )
+    end
+
+    it 'passes send_snowplow_event on to InternalEvents.track_event' do
+      expect(Gitlab::InternalEvents).to receive(:track_event).with(
+        event_name,
+        send_snowplow_event: false,
+        user: user,
+        namespace: namespace,
+        project: project
+      )
+
+      helper.track_event(event_name,
+        send_snowplow_event: false,
+        user: user,
+        namespace_id: namespace.id,
+        project_id: project.id
+      )
     end
 
     it 'logs an exception for unknown event' do
@@ -798,13 +820,21 @@ RSpec.describe API::Helpers, feature_category: :shared do
           event_name: unknown_event
         )
 
-      helper.track_event(unknown_event, user: user, namespace_id: namespace.id, project_id: project.id)
+      helper.track_event(unknown_event,
+        user: user,
+        namespace_id: namespace.id,
+        project_id: project.id
+      )
     end
 
     it 'does not track event for nil user' do
       expect(Gitlab::InternalEvents).not_to receive(:track_event)
 
-      helper.track_event(unknown_event, user: nil, namespace_id: namespace.id, project_id: project.id)
+      helper.track_event(unknown_event,
+        user: nil,
+        namespace_id: namespace.id,
+        project_id: project.id
+      )
     end
   end
 
