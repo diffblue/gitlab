@@ -462,8 +462,8 @@ module API
       items.search(text)
     end
 
-    def order_options_with_tie_breaker
-      order_by = if params[:order_by] == 'created_at'
+    def order_options_with_tie_breaker(override_created_at: true)
+      order_by = if params[:order_by] == 'created_at' && override_created_at
                    'id'
                  else
                    params[:order_by]
