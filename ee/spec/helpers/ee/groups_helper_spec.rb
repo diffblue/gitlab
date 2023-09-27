@@ -372,7 +372,7 @@ RSpec.describe GroupsHelper do
   end
 
   describe '#show_code_suggestions_tab?' do
-    describe 'when enable_hamilton_in_usage_quotas_ui is enabled' do
+    describe 'when hamilton_seat_management is enabled' do
       where(:has_free_or_no_subscription?, :gitlab_com?, :result) do
         true  | true  | false
         true  | false | false
@@ -390,9 +390,9 @@ RSpec.describe GroupsHelper do
       end
     end
 
-    describe 'when enable_hamilton_in_usage_quotas_ui is disabled' do
+    describe 'when hamilton_seat_management is disabled' do
       before do
-        stub_feature_flags(enable_hamilton_in_usage_quotas_ui: false)
+        stub_feature_flags(hamilton_seat_management: false)
       end
 
       where(:has_free_or_no_subscription?, :gitlab_com?, :result) do
