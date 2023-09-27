@@ -51,11 +51,12 @@ module Integrations
 
     override :hook_url
     def hook_url
-      "#{ENDPOINT}/deliver/{webhook_token}"
+      # "#{ENDPOINT}/deliver/{webhook_token}"
+      "https://smee.io/prQPo0KwGezo8EZq"
     end
 
     def url_variables
-      { 'webhook_token' => webhook_token }
+      {}
     end
 
     def execute(data)
@@ -69,7 +70,7 @@ module Integrations
     end
 
     def commit_status_path(sha)
-      "#{ENDPOINT}/status/#{status_token}.json?commit=#{sha}"
+      "#{ENDPOINT}/status.json?commit=#{sha}"
     end
 
     def build_page(sha, ref)
@@ -90,22 +91,6 @@ module Integrations
     end
 
     private
-
-    def webhook_token
-      token_parts.first
-    end
-
-    def status_token
-      token_parts.second
-    end
-
-    def token_parts
-      if token.present?
-        token.split(':')
-      else
-        []
-      end
-    end
 
     def request_options
       { extra_log_info: { project_id: project_id } }
