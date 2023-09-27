@@ -30723,10 +30723,13 @@ msgid_plural "NamespaceStorageSize|You have reached the free storage limit of %{
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "NamespaceStorageSize|You have used %{usage_in_percent} of the storage quota for %{namespace_name}"
+msgid "NamespaceStorageSize|You have used %{usage_in_percent} of the purchased storage for %{namespace_name}"
 msgstr ""
 
 msgid "NamespaceStorageSize|You have used %{usage_in_percent} of the storage quota for %{namespace_name} (%{used_storage} of %{storage_limit})"
+msgstr ""
+
+msgid "NamespaceStorageSize|You have used all available storage for %{namespace_name}"
 msgstr ""
 
 msgid "NamespaceStorage|%{name_with_link} is now read-only. Projects under this namespace are locked and actions are restricted."

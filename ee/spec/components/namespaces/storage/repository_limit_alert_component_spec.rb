@@ -5,7 +5,8 @@ require "spec_helper"
 RSpec.describe Namespaces::Storage::RepositoryLimitAlertComponent, :saas, type: :component, feature_category: :consumables_cost_management do
   let(:group) { build_stubbed(:group) }
   let(:user) { build_stubbed(:user) }
-  let(:alert_title) { /You have used \d+% of the storage quota for #{group.name}/ }
+  let(:alert_title) { /You have used \d+% of the purchased storage for #{group.name}/ }
+  let(:alert_title_over_storage_limit) { "You have used all available storage for #{group.name}" }
   let(:alert_title_free_tier) { "You have reached the free storage limit of 1,000 MiB on 72 projects" }
 
   let(:alert_message_below_limit) do
@@ -101,7 +102,7 @@ RSpec.describe Namespaces::Storage::RepositoryLimitAlertComponent, :saas, type: 
 
         it 'renders the alert title' do
           render_inline(component)
-          expect(page).to have_content(alert_title)
+          expect(page).to have_content(alert_title_over_storage_limit)
         end
 
         it 'renders the alert message' do
