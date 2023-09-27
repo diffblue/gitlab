@@ -1,4 +1,4 @@
-import { GlDrawer, GlLoadingIcon, GlFormCheckbox } from '@gitlab/ui';
+import { GlAlert, GlDrawer, GlLoadingIcon, GlFormCheckbox } from '@gitlab/ui';
 import AvailableVisualizationsDrawer from 'ee/vue_shared/components/customizable_dashboard/dashboard_editor/available_visualizations_drawer.vue';
 import { humanize } from '~/lib/utils/text_utility';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
@@ -42,6 +42,7 @@ describe('AvailableVisualizationsDrawer', () => {
       propsData: {
         visualizations: [],
         loading: false,
+        hasError: false,
         open: false,
         ...props,
       },
@@ -57,6 +58,7 @@ describe('AvailableVisualizationsDrawer', () => {
   const findListItemBySlug = (slug) => wrapper.findByTestId(`list-item-${slug}`);
   const findCheckboxBySlug = (slug) => findListItemBySlug(slug).findComponent(GlFormCheckbox);
   const findCategoryTitles = () => wrapper.findAllByTestId('category-title');
+  const findAlert = () => wrapper.findComponent(GlAlert);
 
   describe('default behaviour', () => {
     beforeEach(() => {
@@ -198,6 +200,29 @@ describe('AvailableVisualizationsDrawer', () => {
           visualizations[3],
         ]);
       });
+    });
+  });
+
+  describe('when the drawer is open and there is an error', () => {
+    beforeEach(() => {
+      createWrapper({ open: true, loading: false, hasError: true });
+    });
+
+    it('does not render the loading icon', () => {
+      expect(findLoadingIcon().exists()).toBe(false);
+    });
+
+    it('does not render any list items', () => {
+      expect(findListItems()).toHaveLength(0);
+    });
+
+    it('renders an error', () => {
+      const alert = findAlert();
+
+      expect(alert.exists()).toBe(true);
+      expect(alert.text()).toContain(
+        'Something went wrong while loading available visualizations. Refresh the page to try again.',
+      );
     });
   });
 

@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlLoadingIcon, GlDrawer, GlFormCheckbox } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLoadingIcon, GlDrawer, GlFormCheckbox } from '@gitlab/ui';
 import { humanize } from '~/lib/utils/text_utility';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
@@ -11,6 +11,7 @@ import { CATEGORY_SINGLE_STATS, CATEGORY_CHARTS, CATEGORY_TABLES } from '../cons
 export default {
   name: 'AvailableVisualizatiosnDrawer',
   components: {
+    GlAlert,
     GlButton,
     GlLoadingIcon,
     GlDrawer,
@@ -24,6 +25,11 @@ export default {
     loading: {
       type: Boolean,
       required: true,
+    },
+    hasError: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
     open: {
       type: Boolean,
@@ -130,6 +136,20 @@ export default {
     </template>
 
     <gl-loading-icon v-if="loading" size="md" class="gl-mb-4" />
+
+    <gl-alert
+      v-else-if="hasError"
+      variant="danger"
+      :show-icon="false"
+      :dismissible="false"
+      class="gl-m-4"
+    >
+      {{
+        s__(
+          'Analytics|Something went wrong while loading available visualizations. Refresh the page to try again.',
+        )
+      }}
+    </gl-alert>
 
     <div v-else>
       <div v-for="(category, key) in filteredCategorizedVisualizations" :key="key">
