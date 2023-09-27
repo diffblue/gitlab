@@ -43,7 +43,12 @@ export default () => {
   const epicMeta = convertObjectPropsToCamelCase(JSON.parse(el.dataset.meta), { deep: true });
   const epicData = parseIssuableData(el);
 
-  const { treeElementSelector, roadmapElementSelector, containerElementSelector } = el.dataset;
+  const {
+    treeElementSelector,
+    roadmapElementSelector,
+    containerElementSelector,
+    reportAbusePath,
+  } = el.dataset;
 
   // Collapse the sidebar on mobile screens by default
   const bpBreakpoint = bp.getBreakpointSize();
@@ -71,6 +76,7 @@ export default () => {
       treeElementSelector,
       roadmapElementSelector,
       containerElementSelector,
+      reportAbusePath,
     },
     created() {
       this.setEpicMeta({

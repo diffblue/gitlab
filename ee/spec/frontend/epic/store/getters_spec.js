@@ -31,4 +31,38 @@ describe('Epic Store Getters', () => {
       expect(getters.isUserSignedIn()).toBe(true);
     });
   });
+
+  describe('isEpicAuthor', () => {
+    let epicState = {
+      author: { id: 1 },
+    };
+
+    it('returns `true` when the logged in user is the epic author', () => {
+      gon.current_user_id = 1;
+
+      expect(getters.isEpicAuthor(epicState)).toBe(true);
+    });
+
+    it('returns `false` when the logged in user is not the epic author', () => {
+      gon.current_user_id = 2;
+
+      expect(getters.isEpicAuthor(epicState)).toBe(false);
+    });
+
+    it('returns `false` when no user is logged in', () => {
+      gon.current_user_id = null;
+
+      expect(getters.isEpicAuthor(epicState)).toBe(false);
+    });
+
+    it('returns `false` when the epic has no author', () => {
+      epicState = {
+        author: null,
+      };
+
+      gon.current_user_id = 1;
+
+      expect(getters.isEpicAuthor(epicState)).toBe(false);
+    });
+  });
 });

@@ -15,6 +15,7 @@ import issuesEventHub from '~/issues/show/event_hub';
 import { isLoggedIn } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
+import AbuseCategorySelector from '~/abuse_reports/components/abuse_category_selector.vue';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import toast from '~/vue_shared/plugins/global_toast';
 
@@ -28,6 +29,7 @@ export default {
     edit: __('Edit'),
     editTitleAndDescription: __('Edit title and description'),
     newEpicText: __('New epic'),
+    reportAbuse: __('Report abuse to administrator'),
   },
   directives: {
     GlModal: GlModalDirective,
@@ -40,19 +42,27 @@ export default {
     GlDisclosureDropdownItem,
     GlDisclosureDropdownGroup,
     SidebarSubscriptionsWidget,
+    AbuseCategorySelector,
   },
   mixins: [glFeatureFlagMixin()],
   inject: ['fullPath', 'iid'],
+  data() {
+    return {
+      isReportAbuseDrawerOpen: false,
+    };
+  },
   computed: {
     ...mapState([
+      'author',
       'canCreate',
       'canUpdate',
       'canDestroy',
       'epicStatusChangeInProgress',
       'newEpicWebUrl',
+      'webUrl',
       'reference',
     ]),
-    ...mapGetters(['isEpicOpen']),
+    ...mapGetters(['isEpicOpen', 'isEpicAuthor']),
     actionButtonText() {
       return this.isEpicOpen ? __('Close epic') : __('Reopen epic');
     },
@@ -137,6 +147,12 @@ export default {
 
       return { items };
     },
+    canReportAbuseToAdmin() {
+      return !this.isEpicAuthor;
+    },
+    authorId() {
+      return this.author?.id;
+    },
   },
   methods: {
     ...mapActions(['toggleEpicStatus']),
@@ -153,6 +169,9 @@ export default {
     closeActionsDropdown() {
       this.$refs.epicActionsDropdownMobile?.close();
       this.$refs.epicActionsDropdownDesktop?.close();
+    },
+    toggleReportAbuseDrawer(isOpen) {
+      this.isReportAbuseDrawerOpen = isOpen;
     },
   },
 };
@@ -182,7 +201,16 @@ export default {
         :group="actionsDropdownGroupMobile"
         :bordered="showNotificationToggle"
       />
-      <gl-disclosure-dropdown-group v-if="canDestroy" bordered>
+
+      <gl-disclosure-dropdown-group v-if="canReportAbuseToAdmin" bordered>
+        <gl-disclosure-dropdown-item @action="toggleReportAbuseDrawer(true)">
+          <template #list-item>
+            {{ $options.i18n.reportAbuse }}
+          </template>
+        </gl-disclosure-dropdown-item>
+      </gl-disclosure-dropdown-group>
+
+      <gl-disclosure-dropdown-group v-if="canDestroy">
         <gl-disclosure-dropdown-item v-gl-modal="$options.deleteModalId">
           <template #list-item>
             <span class="gl-text-red-500">
@@ -242,7 +270,15 @@ export default {
         :bordered="showNotificationToggle"
       />
 
-      <gl-disclosure-dropdown-group v-if="canDestroy" bordered>
+      <gl-disclosure-dropdown-group v-if="canReportAbuseToAdmin" bordered>
+        <gl-disclosure-dropdown-item @action="toggleReportAbuseDrawer(true)">
+          <template #list-item>
+            {{ $options.i18n.reportAbuse }}
+          </template>
+        </gl-disclosure-dropdown-item>
+      </gl-disclosure-dropdown-group>
+
+      <gl-disclosure-dropdown-group v-if="canDestroy">
         <gl-disclosure-dropdown-item v-gl-modal="$options.deleteModalId">
           <template #list-item>
             <span class="gl-text-red-500">
@@ -257,6 +293,14 @@ export default {
       :issue-type="$options.TYPE_EPIC"
       :modal-id="$options.deleteModalId"
       :title="$options.i18n.deleteButtonText"
+    />
+
+    <abuse-category-selector
+      v-if="isReportAbuseDrawerOpen"
+      :reported-user-id="authorId"
+      :reported-from-url="webUrl"
+      :show-drawer="isReportAbuseDrawerOpen"
+      @close-drawer="toggleReportAbuseDrawer(false)"
     />
   </div>
 </template>

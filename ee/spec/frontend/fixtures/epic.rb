@@ -25,7 +25,7 @@ RSpec.describe 'Epics (JavaScript fixtures)' do
     MARKDOWN
   end
 
-  let(:epic) { create(:epic, group: group, title: 'This is a sample epic', description: markdown, start_date_fixed: '2018-06-01', due_date_fixed: '2018-08-01') }
+  let(:epic) { create(:epic, group: group, title: 'This is a sample epic', description: markdown, start_date_fixed: '2018-06-01', due_date_fixed: '2018-08-01', author: user) }
 
   let!(:epic_issues) do
     [

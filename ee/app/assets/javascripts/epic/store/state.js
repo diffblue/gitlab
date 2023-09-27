@@ -13,6 +13,7 @@ export default () => ({
   labelsWebUrl: '',
   markdownDocsPath: '',
   newEpicWebUrl: '',
+  webUrl: '',
 
   // Flags
   canCreate: false,

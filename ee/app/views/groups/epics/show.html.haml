@@ -35,6 +35,7 @@
 
 %div{ class: [containerClass, container_class, @content_class] }
   #epic-app-root{ data: epic_show_app_data(@epic),
+    'data-report-abuse-path' => add_category_abuse_reports_path,
     'data-allow-sub-epics' => allow_sub_epics,
     'data-tree-element-selector' => "##{treeElementID}",
     'data-roadmap-element-selector' => "##{roadmapElementID}",
