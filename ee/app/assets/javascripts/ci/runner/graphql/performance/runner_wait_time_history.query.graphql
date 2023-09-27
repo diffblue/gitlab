@@ -1,0 +1,11 @@
+query runnerWaitTimeHistory($fromTime: Time, $toTime: Time) {
+  ciQueueingHistory(runnerType: INSTANCE_TYPE, fromTime: $fromTime, toTime: $toTime) {
+    timeSeries {
+      time
+      p99
+      p90
+      p75
+      p50
+    }
+  }
+}

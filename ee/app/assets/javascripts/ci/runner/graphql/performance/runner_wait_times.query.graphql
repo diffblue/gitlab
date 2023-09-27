@@ -1,11 +1,11 @@
-query runnersWaitTimeEE {
+query runnersWaitTimesEE {
   runners(type: INSTANCE_TYPE) {
     jobsStatistics {
       queuedDuration {
-        p50
-        p75
-        p90
         p99
+        p90
+        p75
+        p50
       }
     }
   }
