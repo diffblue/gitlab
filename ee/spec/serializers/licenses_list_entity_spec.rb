@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe LicensesListEntity, feature_category: :security_policy_management do
+RSpec.describe LicensesListEntity, feature_category: :dependency_management do
   let!(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
   let(:license_compliance) { project.license_compliance }
 

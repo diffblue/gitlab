@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe LicensesListSerializer do
+RSpec.describe LicensesListSerializer, feature_category: :dependency_management do
   describe '#to_json' do
     subject do
       described_class.new(project: project, user: user)
