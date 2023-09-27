@@ -12342,19 +12342,28 @@ msgstr ""
 msgid "ComplianceReport|Update result"
 msgstr ""
 
+msgid "ComplianceStandardsAdherence|A rule is configured to prevent author approved merge requests."
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|A rule is configured to prevent merge requests approved by committers."
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|A rule is configured to require two approvals."
+msgstr ""
+
 msgid "ComplianceStandardsAdherence|At least two approvals"
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|Failure reason"
 msgstr ""
 
-msgid "ComplianceStandardsAdherence|Have a valid rule that prevents author approved merge requests"
+msgid "ComplianceStandardsAdherence|Have a valid rule that prevents author-approved merge requests from being merged"
 msgstr ""
 
-msgid "ComplianceStandardsAdherence|Have a valid rule that prevents merge requests approved by committers"
+msgid "ComplianceStandardsAdherence|Have a valid rule that prevents merge requests with less than two approvals from being merged"
 msgstr ""
 
-msgid "ComplianceStandardsAdherence|Have a valid rule that requires any merge request to have more than two approvals"
+msgid "ComplianceStandardsAdherence|Have a valid rule that prevents users from approving merge requests where they’ve added commits"
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|How to fix"
@@ -12366,10 +12375,10 @@ msgstr ""
 msgid "ComplianceStandardsAdherence|No projects with standards adherence checks found"
 msgstr ""
 
-msgid "ComplianceStandardsAdherence|No rule configured to prevent merge requests approved by committers."
+msgid "ComplianceStandardsAdherence|No rule is configured to prevent author approved merge requests."
 msgstr ""
 
-msgid "ComplianceStandardsAdherence|No rule is configured to prevent author approved merge requests."
+msgid "ComplianceStandardsAdherence|No rule is configured to prevent merge requests approved by committers."
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|No rule is configured to require two approvals."
@@ -12382,6 +12391,9 @@ msgid "ComplianceStandardsAdherence|Prevent committers as approvers"
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|Requirement"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Success reason"
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|The following features help satisfy this requirement."

@@ -112,7 +112,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
         expect(rowText).toStrictEqual([
           'Success',
           'Example Project',
-          'Prevent authors as approvers Have a valid rule that prevents author approved merge requests',
+          'Prevent authors as approvers Have a valid rule that prevents author-approved merge requests from being merged',
           'GitLab',
           'Jul 1, 2023',
           'View details',
@@ -140,7 +140,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
         expect(rowText).toStrictEqual([
           'Success',
           'Example Project',
-          'Prevent committers as approvers Have a valid rule that prevents merge requests approved by committers',
+          'Prevent committers as approvers Have a valid rule that prevents users from approving merge requests where they’ve added commits',
           'GitLab',
           'Jul 1, 2023',
           'View details',
@@ -166,7 +166,7 @@ describe('ComplianceStandardsAdherenceTable component', () => {
         expect(rowText).toStrictEqual([
           'Success',
           'Example Project',
-          'At least two approvals Have a valid rule that requires any merge request to have more than two approvals',
+          'At least two approvals Have a valid rule that prevents merge requests with less than two approvals from being merged',
           'GitLab',
           'Jul 1, 2023',
           'View details',
