@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe LicenseEntity do
+RSpec.describe LicenseEntity, feature_category: :dependency_management do
   describe "#as_json" do
     subject { described_class.represent(license_policy).as_json }
 
