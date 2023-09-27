@@ -9,9 +9,15 @@ module Namespaces
           namespace_name: root_namespace.name
         }
 
-        s_(
-          "NamespaceStorageSize|You have used %{usage_in_percent} of the storage quota for %{namespace_name}"
-        ) % text_args
+        if root_storage_size.above_size_limit?
+          s_(
+            "NamespaceStorageSize|You have used all available storage for %{namespace_name}"
+          ) % text_args
+        else
+          s_(
+            "NamespaceStorageSize|You have used %{usage_in_percent} of the purchased storage for %{namespace_name}"
+          ) % text_args
+        end
       end
 
       def free_tier_alert_title
