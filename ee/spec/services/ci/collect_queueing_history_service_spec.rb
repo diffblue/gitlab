@@ -41,14 +41,14 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
 
     it 'returns error' do
       expect(result.error?).to eq(true)
-      expect(result.errors).to eq(['Feature not enabled'])
+      expect(result.errors).to contain_exactly('Feature clickhouse_ci_analytics not enabled')
     end
   end
 
   shared_examples "returns Not allowed error" do
     it 'returns error' do
       expect(result.error?).to eq(true)
-      expect(result.errors).to eq(['Not allowed'])
+      expect(result.errors).to contain_exactly('Not allowed')
     end
   end
 
