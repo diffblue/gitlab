@@ -56,7 +56,7 @@ module Sbom
     end
 
     scope :filter_by_component_names, ->(component_names) do
-      joins(:component).where(sbom_components: { name: component_names })
+      where(component_name: component_names)
     end
 
     scope :filter_by_search_with_component_and_group, ->(search, component_id, group) do

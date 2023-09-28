@@ -305,6 +305,36 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                   expect(json_response['dependencies'].count).to eq(1)
                   expect(json_response['dependencies'].pluck('name')).to eq([sbom_occurrence_bundler.name])
                 end
+
+                context 'when `group_level_dependencies_filtering` is disabled' do
+                  before do
+                    stub_feature_flags(group_level_dependencies_filtering: false)
+                  end
+
+                  it 'ignores the filter' do
+                    subject
+
+                    expect(json_response['dependencies'].pluck('name')).to match_array([
+                      sbom_occurrence_bundler.component_name,
+                      sbom_occurrence_npm.component_name
+                    ])
+                  end
+                end
+
+                context 'when the group hierarchy depth is too high' do
+                  before do
+                    stub_const('::Groups::DependenciesController::GROUP_COUNT_LIMIT', 0)
+                  end
+
+                  it 'ignores the filter' do
+                    subject
+
+                    expect(json_response['dependencies'].pluck('name')).to match_array([
+                      sbom_occurrence_bundler.component_name,
+                      sbom_occurrence_npm.component_name
+                    ])
+                  end
+                end
               end
             end
           end
