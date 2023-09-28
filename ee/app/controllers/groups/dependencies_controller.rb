@@ -50,14 +50,22 @@ module Groups
     end
 
     def dependencies_finder
-      ::Sbom::DependenciesFinder.new(group, params: params.permit(
-        :page,
-        :per_page,
-        :sort,
-        :sort_by,
-        component_names: [],
-        package_managers: []
-      ))
+      ::Sbom::DependenciesFinder.new(group, params: dependencies_finder_params)
+    end
+
+    def dependencies_finder_params
+      if Feature.enabled?(:group_level_dependencies_filtering, group) && filtering_allowed?
+        params.permit(
+          :page,
+          :per_page,
+          :sort,
+          :sort_by,
+          component_names: [],
+          package_managers: []
+        )
+      else
+        params.permit(:page, :per_page, :sort, :sort_by)
+      end
     end
 
     def dependencies_serializer
@@ -78,7 +86,11 @@ module Groups
     end
 
     def set_enable_project_search
-      @enable_project_search = group.count_within_namespaces <= GROUP_COUNT_LIMIT
+      @enable_project_search = filtering_allowed?
+    end
+
+    def filtering_allowed?
+      group.count_within_namespaces <= GROUP_COUNT_LIMIT
     end
   end
 end
