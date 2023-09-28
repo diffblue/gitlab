@@ -69,7 +69,7 @@ namespace :tw do
       CodeOwnerRule.new('Provision', '@fneill'),
       CodeOwnerRule.new('Purchase', '@fneill'),
       CodeOwnerRule.new('Redirect', 'Redirect'),
-      CodeOwnerRule.new('Respond', '@msedlakjakubowski'),
+      # CodeOwnerRule.new('Respond', ''),
       CodeOwnerRule.new('Runner', '@fneill'),
       CodeOwnerRule.new('Runner SaaS', '@fneill'),
       CodeOwnerRule.new('Security Policies', '@rdickenson'),
