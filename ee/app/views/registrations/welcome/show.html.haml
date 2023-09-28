@@ -29,7 +29,7 @@
             .row
               .form-group.col-sm-12
                 = f.label :role, _('Role'), class: 'label-bold'
-                = f.select :role, ::User.roles.keys.map { |role| [role.titleize, role] }, { include_blank: _('Select a role') }, class: 'form-control js-user-role-dropdown', required: true, data: { qa_selector: 'role_dropdown' }
+                = f.select :role, ::User.roles.keys.map { |role| [role.titleize, role] }, { include_blank: _('Select a role') }, class: 'form-control js-user-role-dropdown', required: true, data: { testid: 'role-dropdown' }
             = render 'jobs_to_be_done', f: f
             = render 'setup_for_company', f: f
             = render 'joining_project'
@@ -37,6 +37,6 @@
             .row
               .form-group.col-sm-12.gl-mb-0
                 = render Pajamas::ButtonComponent.new(variant: :confirm, block: true,
-                  button_options: { type: :submit, data: { qa_selector: 'get_started_button' },
+                  button_options: { type: :submit, data: { testid: 'get-started-button' },
                   class: 'js-trial-welcome-btn'}) do
                   = welcome_submit_button_text

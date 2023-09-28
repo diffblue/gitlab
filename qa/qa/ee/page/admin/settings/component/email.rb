@@ -8,23 +8,23 @@ module QA
           module Component
             class Email < QA::Page::Base
               view 'app/views/admin/application_settings/_email.html.haml' do
-                element :save_changes_button
+                element 'save-changes-button'
               end
 
               view 'ee/app/views/admin/application_settings/_email_additional_text_setting.html.haml' do
-                element :additional_text_textarea_field
+                element 'additional-text-textarea-field'
               end
 
               def additional_text_textarea_text
-                find_element(:additional_text_textarea_field).text
+                find_element('additional-text-textarea-field').text
               end
 
               def fill_additional_text(text)
-                fill_element(:additional_text_textarea_field, text)
+                fill_element('additional-text-textarea-field', text)
               end
 
               def save_changes
-                click_element(:save_changes_button)
+                click_element('save-changes-button')
               end
             end
           end

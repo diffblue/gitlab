@@ -6,5 +6,5 @@
   = f.fields_for :gitlab_subscription do |f|
     = f.select :hosted_plan_id, Plan.pluck(:title, :id),
       { include_blank: _('No plan') },
-      class: 'gl-form-select custom-select', data: { qa_selector: 'plan_dropdown' }
+      class: 'gl-form-select custom-select', data: { testid: 'plan-dropdown' }
 -# rubocop:enable CodeReuse/ActiveRecord

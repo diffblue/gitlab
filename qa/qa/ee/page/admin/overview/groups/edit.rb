@@ -14,13 +14,13 @@ module QA
 
                 base.class_eval do
                   view 'ee/app/views/admin/_namespace_plan.html.haml' do
-                    element :plan_dropdown
+                    element 'plan-dropdown'
                   end
                 end
               end
 
               def select_plan(plan)
-                select_element(:plan_dropdown, plan)
+                select_element('plan-dropdown', plan)
               end
             end
           end

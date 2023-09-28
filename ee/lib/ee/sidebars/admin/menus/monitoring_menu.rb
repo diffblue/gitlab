@@ -28,7 +28,7 @@ module EE
               link: admin_audit_logs_path,
               active_routes: { path: 'admin/audit_logs#index' },
               item_id: :audit_logs,
-              container_html_options: { 'data-qa-selector': 'admin_monitoring_audit_logs_link' }
+              container_html_options: { testid: 'admin-monitoring-audit-logs-link' }
             )
           end
         end

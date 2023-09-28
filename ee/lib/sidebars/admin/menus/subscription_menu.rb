@@ -21,7 +21,7 @@ module Sidebars
 
         override :extra_container_html_options
         def extra_container_html_options
-          { 'data-qa-selector': 'admin_subscription_menu_link' }
+          { testid: 'admin-subscription-menu-link' }
         end
 
         override :active_routes
