@@ -13,7 +13,6 @@ module EE
       prepended do
         before_action only: [:index] do
           push_frontend_feature_flag(:data_transfer_monitoring, group)
-          push_frontend_feature_flag(:enable_hamilton_in_usage_quotas_ui, group)
           push_frontend_feature_flag(:limited_access_modal)
         end
       end
