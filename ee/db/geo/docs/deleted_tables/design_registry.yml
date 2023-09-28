@@ -7,5 +7,5 @@ description: TODO
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/1382
 milestone: '9.0'
 gitlab_schema: gitlab_geo
-removed_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/125524
-removed_in_milestone: '16.5'
+removed_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/126132
+removed_in_milestone: '16.4'
